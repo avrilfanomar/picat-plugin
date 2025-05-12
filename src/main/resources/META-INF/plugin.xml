@@ -22,5 +22,16 @@
             implementationClass="com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighterFactory"/>
         <colorSettingsPage
             implementation="com.github.avrilfanomar.picatplugin.language.highlighting.PicatColorSettingsPage"/>
+        <projectService serviceImplementation="com.github.avrilfanomar.picatplugin.settings.PicatSettings"/>
+        <projectConfigurable
+            parentId="tools"
+            instance="com.github.avrilfanomar.picatplugin.settings.PicatSettingsConfigurable"
+            id="com.github.avrilfanomar.picatplugin.settings.PicatSettingsConfigurable"
+            displayName="Picat"/>
+        <!-- Run configuration -->
+        <configurationType implementation="com.github.avrilfanomar.picatplugin.run.PicatConfigurationType"/>
+        <runLineMarkerContributor
+            language="Picat"
+            implementationClass="com.github.avrilfanomar.picatplugin.run.PicatRunLineMarkerContributor"/>
     </extensions>
 </idea-plugin>

@@ -21,6 +21,12 @@ The Picat Plugin provides support for the [Picat programming language](http://pi
   - Highlighting for keywords, operators, strings, numbers, comments, etc.
   - Customizable colors through the IDE's color settings page
 
+- **Run Configuration**:
+  - Configure the path to the Picat executable in Settings | Tools | Picat
+  - Run Picat programs directly from the IDE
+  - Console output handling
+  - Run line markers in the editor gutter
+
 ### Planned Features
 
 - **Parser and PSI Structure**:
@@ -44,22 +50,20 @@ The Picat Plugin provides support for the [Picat programming language](http://pi
 - **Structure View**:
   - Hierarchical view of predicates, modules, etc.
 
-- **Run Configuration**:
-  - Run Picat programs directly from the IDE
-  - Console output handling
-
 - **Debugging Support**:
   - Breakpoints
   - Step-by-step debugging
 
 ## Implementation Status
 
-This plugin is currently in early development. The basic language support and syntax highlighting are implemented, but more advanced features are still in progress.
+This plugin is currently in early development. The basic language support, syntax highlighting, and run configuration are implemented, but more advanced features are still in progress. You can now configure the path to the Picat executable and run Picat programs directly from the IDE.
 
 <!-- Plugin description -->
-Picat Plugin provides support for the Picat programming language in IntelliJ IDEA. Features include syntax highlighting, file type recognition, and more to come.
+Picat Plugin provides support for the Picat programming language in IntelliJ IDEA. Features include syntax highlighting, file type recognition, run configuration for Picat programs, and more to come.
 
 Picat is a multi-paradigm programming language that integrates logic-based and function-based programming with constraint solving capabilities.
+
+You can configure the path to the Picat executable in Settings | Tools | Picat and run Picat programs directly from the IDE.
 <!-- Plugin description end -->
 
 ## Installation
