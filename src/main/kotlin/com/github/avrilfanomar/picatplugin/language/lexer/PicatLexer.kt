@@ -55,9 +55,16 @@ class PicatLexer : LexerBase() {
             return
         }
 
-        // Handle comments (% to end of line)
+        // Handle comments (% to end of line or /* ... */)
         if (buffer[tokenStart] == '%') {
-            tokenEnd = skipComment(tokenStart)
+            tokenEnd = skipLineComment(tokenStart)
+            currentToken = PicatTokenTypes.COMMENT
+            return
+        }
+
+        // Handle multi-line comments /* ... */
+        if (tokenStart + 1 < bufferEnd && buffer[tokenStart] == '/' && buffer[tokenStart + 1] == '*') {
+            tokenEnd = skipMultiLineComment(tokenStart)
             currentToken = PicatTokenTypes.COMMENT
             return
         }
@@ -119,6 +126,16 @@ class PicatLexer : LexerBase() {
         // Handle operators and separators
         tokenEnd = tokenStart + 1
 
+        // Check for three-character operators
+        if (tokenEnd + 1 < bufferEnd) {
+            val threeChars = buffer.substring(tokenStart, tokenStart + 3)
+            if (threeChars == "?=>") {
+                tokenEnd = tokenStart + 3
+                currentToken = PicatTokenTypes.BACKTRACKABLE_ARROW_OP
+                return
+            }
+        }
+
         // Check for two-character operators
         if (tokenEnd < bufferEnd) {
             val twoChars = buffer.substring(tokenStart, tokenStart + 2)
@@ -149,6 +166,13 @@ class PicatLexer : LexerBase() {
             '<' -> PicatTokenTypes.LESS
             '>' -> PicatTokenTypes.GREATER
             '!' -> PicatTokenTypes.NOT
+            '|' -> PicatTokenTypes.PIPE
+            '@' -> PicatTokenTypes.AS_PATTERN
+            '$' -> PicatTokenTypes.DATA_CONSTRUCTOR
+            '^' -> PicatTokenTypes.POWER
+            '#' -> PicatTokenTypes.HASH
+            '~' -> PicatTokenTypes.TILDE
+            '\\' -> PicatTokenTypes.BACKSLASH
             ',' -> PicatTokenTypes.COMMA
             '.' -> PicatTokenTypes.DOT
             ';' -> PicatTokenTypes.SEMICOLON
@@ -171,9 +195,20 @@ class PicatLexer : LexerBase() {
         return i
     }
 
-    private fun skipComment(start: Int): Int {
+    private fun skipLineComment(start: Int): Int {
         var i = start
         while (i < bufferEnd && buffer[i] != '\n') {
+            i++
+        }
+        return i
+    }
+
+    private fun skipMultiLineComment(start: Int): Int {
+        var i = start + 2  // Skip the initial /*
+        while (i + 1 < bufferEnd) {
+            if (buffer[i] == '*' && buffer[i + 1] == '/') {
+                return i + 2  // Skip the closing */
+            }
             i++
         }
         return i

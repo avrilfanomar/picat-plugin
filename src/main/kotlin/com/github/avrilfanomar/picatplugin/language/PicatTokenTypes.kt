@@ -30,6 +30,7 @@ object PicatTokenTypes {
     // Operators
     val ASSIGN_OP = PicatTokenType("ASSIGN_OP") // =
     val ARROW_OP = PicatTokenType("ARROW_OP") // =>
+    val BACKTRACKABLE_ARROW_OP = PicatTokenType("BACKTRACKABLE_ARROW_OP") // ?=>
     val PLUS = PicatTokenType("PLUS") // +
     val MINUS = PicatTokenType("MINUS") // -
     val MULTIPLY = PicatTokenType("MULTIPLY") // *
@@ -43,6 +44,13 @@ object PicatTokenTypes {
     val GREATER_EQUAL = PicatTokenType("GREATER_EQUAL") // >=
     val AND = PicatTokenType("AND") // &&
     val OR = PicatTokenType("OR") // ||
+    val PIPE = PicatTokenType("PIPE") // |
+    val AS_PATTERN = PicatTokenType("AS_PATTERN") // @
+    val DATA_CONSTRUCTOR = PicatTokenType("DATA_CONSTRUCTOR") // $
+    val POWER = PicatTokenType("POWER") // ^
+    val HASH = PicatTokenType("HASH") // #
+    val TILDE = PicatTokenType("TILDE") // ~
+    val BACKSLASH = PicatTokenType("BACKSLASH") // \
     val NOT = PicatTokenType("NOT") // !
 
     // Separators
@@ -81,9 +89,9 @@ object PicatTokenTypes {
     )
 
     val OPERATORS = TokenSet.create(
-        ASSIGN_OP, ARROW_OP, PLUS, MINUS, MULTIPLY, DIVIDE, MODULO,
+        ASSIGN_OP, ARROW_OP, BACKTRACKABLE_ARROW_OP, PLUS, MINUS, MULTIPLY, DIVIDE, MODULO,
         EQUAL, NOT_EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL,
-        AND, OR, NOT
+        AND, OR, PIPE, AS_PATTERN, DATA_CONSTRUCTOR, POWER, HASH, TILDE, BACKSLASH, NOT
     )
 
     val COMMENTS = TokenSet.create(COMMENT)
