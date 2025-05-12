@@ -5,6 +5,6 @@
 build
 
 #refs
-doc/
-exs/
+doc
+exs
 examples.pi
