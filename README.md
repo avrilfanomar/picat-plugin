@@ -1,36 +1,74 @@
-# picat-plugin
+# Picat Plugin for IntelliJ IDEA
 
 ![Build](https://github.com/avrilfanomar/picat-plugin/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
 
-## Template ToDo list
-- [x] Create a new [IntelliJ Platform Plugin Template][template] project.
-- [ ] Get familiar with the [template documentation][template].
-- [ ] Adjust the [pluginGroup](./gradle.properties) and [pluginName](./gradle.properties), as well as the [id](./src/main/resources/META-INF/plugin.xml) and [sources package](./src/main/kotlin).
-- [ ] Adjust the plugin description in `README` (see [Tips][docs:plugin-description])
-- [ ] Review the [Legal Agreements](https://plugins.jetbrains.com/docs/marketplace/legal-agreements.html?from=IJPluginTemplate).
-- [ ] [Publish a plugin manually](https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate) for the first time.
-- [ ] Set the `MARKETPLACE_ID` in the above README badges. You can obtain it once the plugin is published to JetBrains Marketplace.
-- [ ] Set the [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html?from=IJPluginTemplate) related [secrets](https://github.com/JetBrains/intellij-platform-plugin-template#environment-variables).
-- [ ] Set the [Deployment Token](https://plugins.jetbrains.com/docs/marketplace/plugin-upload.html?from=IJPluginTemplate).
-- [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
+## Description
+
+The Picat Plugin provides support for the [Picat programming language](http://picat-lang.org/) in IntelliJ IDEA. Picat is a multi-paradigm programming language that integrates logic-based and function-based programming with constraint solving capabilities.
+
+## Features
+
+### Implemented Features
+
+- **Basic Language Support**:
+  - File type recognition for `.pi` files
+  - Picat language definition
+  - Custom file icon
+
+- **Syntax Highlighting**:
+  - Highlighting for keywords, operators, strings, numbers, comments, etc.
+  - Customizable colors through the IDE's color settings page
+
+### Planned Features
+
+- **Parser and PSI Structure**:
+  - Grammar definition for Picat
+  - Parser implementation
+  - Program Structure Interface (PSI) for code understanding
+
+- **Code Completion**:
+  - Completion for built-in predicates and functions
+  - Completion for user-defined predicates
+
+- **Code Navigation**:
+  - Reference resolution
+  - Go to declaration
+  - Find usages
+
+- **Code Formatting**:
+  - Automatic code formatting
+  - Customizable formatting options
+
+- **Structure View**:
+  - Hierarchical view of predicates, modules, etc.
+
+- **Run Configuration**:
+  - Run Picat programs directly from the IDE
+  - Console output handling
+
+- **Debugging Support**:
+  - Breakpoints
+  - Step-by-step debugging
+
+## Implementation Status
+
+This plugin is currently in early development. The basic language support and syntax highlighting are implemented, but more advanced features are still in progress.
 
 <!-- Plugin description -->
-This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.
+Picat Plugin provides support for the Picat programming language in IntelliJ IDEA. Features include syntax highlighting, file type recognition, and more to come.
 
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
-
-To keep everything working, do not remove `<!-- ... -->` sections. 
+Picat is a multi-paradigm programming language that integrates logic-based and function-based programming with constraint solving capabilities.
 <!-- Plugin description end -->
 
 ## Installation
 
 - Using the IDE built-in plugin system:
-  
+
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "picat-plugin"</kbd> >
   <kbd>Install</kbd>
-  
+
 - Using JetBrains Marketplace:
 
   Go to [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID) and install it by clicking the <kbd>Install to ...</kbd> button in case your IDE is running.

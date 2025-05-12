@@ -1,8 +1,9 @@
 package com.github.avrilfanomar.picatplugin.language.highlighting
 
 import com.github.avrilfanomar.picatplugin.language.PicatTokenType
+ import com.github.avrilfanomar.picatplugin.language.PicatTokenTypes
+import com.github.avrilfanomar.picatplugin.language.lexer.PicatLexer
 import com.intellij.lexer.Lexer
-import com.intellij.lexer.EmptyLexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
@@ -16,19 +17,45 @@ import com.intellij.psi.tree.IElementType
  */
 class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
     override fun getHighlightingLexer(): Lexer {
-        // Using EmptyLexer as a placeholder
-        // In a real implementation, we would create a proper lexer for Picat
-        return EmptyLexer()
+        return PicatLexer()
     }
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
-        if (tokenType == TokenType.BAD_CHARACTER) {
+        if (tokenType == TokenType.BAD_CHARACTER || tokenType == PicatTokenTypes.BAD_CHARACTER) {
             return pack(BAD_CHARACTER)
         }
-        
-        // This is a placeholder implementation
-        // In a real implementation, we would handle different token types
-        return TextAttributesKey.EMPTY_ARRAY
+
+        // Handle different token types
+        return when (tokenType) {
+            // Keywords
+            in PicatTokenTypes.KEYWORDS -> pack(KEYWORD)
+
+            // Comments
+            PicatTokenTypes.COMMENT -> pack(COMMENT)
+
+            // Strings
+            PicatTokenTypes.STRING -> pack(STRING)
+
+            // Numbers
+            PicatTokenTypes.INTEGER, PicatTokenTypes.FLOAT -> pack(NUMBER)
+
+            // Operators
+            in PicatTokenTypes.OPERATORS -> pack(OPERATOR)
+
+            // Parentheses, braces, brackets
+            PicatTokenTypes.LPAR, PicatTokenTypes.RPAR -> pack(PARENTHESES)
+            PicatTokenTypes.LBRACE, PicatTokenTypes.RBRACE -> pack(BRACES)
+            PicatTokenTypes.LBRACKET, PicatTokenTypes.RBRACKET -> pack(BRACKETS)
+
+            // Variables
+            PicatTokenTypes.VARIABLE -> pack(VARIABLE)
+
+            // Identifiers (including predicates)
+            PicatTokenTypes.IDENTIFIER -> pack(IDENTIFIER)
+
+            // Default case
+            else -> TextAttributesKey.EMPTY_ARRAY
+        }
     }
 
     companion object {
