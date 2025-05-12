@@ -24,6 +24,7 @@ The Picat Plugin provides support for the [Picat programming language](http://pi
 - **Run Configuration**:
   - Configure the path to the Picat executable in Settings | Tools | Picat
   - Run Picat programs directly from the IDE
+  - Run the current file directly from the editor context menu or Run menu
   - Console output handling
   - Run line markers in the editor gutter
 

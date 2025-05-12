@@ -6,11 +6,17 @@
 
     <depends>com.intellij.modules.platform</depends>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
+    <actions>
+        <action id="Picat.RunFile" 
+                class="com.github.avrilfanomar.picatplugin.run.PicatRunFileAction" 
+                text="Run Picat File" 
+                description="Run current Picat file">
+            <add-to-group group-id="RunMenu" anchor="first"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+    </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.avrilfanomar.picatplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.avrilfanomar.picatplugin.startup.MyProjectActivity" />
         <fileType
             name="Picat"
             implementationClass="com.github.avrilfanomar.picatplugin.language.PicatFileType"
@@ -33,5 +39,6 @@
         <runLineMarkerContributor
             language="Picat"
             implementationClass="com.github.avrilfanomar.picatplugin.run.PicatRunLineMarkerContributor"/>
+        <runConfigurationProducer implementation="com.github.avrilfanomar.picatplugin.run.PicatRunConfigurationProducer"/>
     </extensions>
 </idea-plugin>
