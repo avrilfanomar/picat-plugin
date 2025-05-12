@@ -3,3 +3,8 @@
 .intellijPlatform
 .qodana
 build
+
+#refs
+doc/
+exs/
+examples.pi
