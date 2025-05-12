@@ -11,5 +11,16 @@
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow factoryClass="com.github.avrilfanomar.picatplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
         <postStartupActivity implementation="com.github.avrilfanomar.picatplugin.startup.MyProjectActivity" />
+        <fileType
+            name="Picat"
+            implementationClass="com.github.avrilfanomar.picatplugin.language.PicatFileType"
+            fieldName="INSTANCE"
+            language="Picat"
+            extensions="pi"/>
+        <lang.syntaxHighlighterFactory
+            language="Picat"
+            implementationClass="com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighterFactory"/>
+        <colorSettingsPage
+            implementation="com.github.avrilfanomar.picatplugin.language.highlighting.PicatColorSettingsPage"/>
     </extensions>
 </idea-plugin>
