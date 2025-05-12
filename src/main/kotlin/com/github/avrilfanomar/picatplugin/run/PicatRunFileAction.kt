@@ -20,7 +20,7 @@ import com.intellij.openapi.project.DumbAware
 class PicatRunFileAction : AnAction("Run Picat File", "Run current Picat file", PicatIcons.FILE), DumbAware {
 
     override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.EDT
+        return ActionUpdateThread.BGT
     }
 
     override fun update(e: AnActionEvent) {
