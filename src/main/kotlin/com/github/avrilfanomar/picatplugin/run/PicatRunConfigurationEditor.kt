@@ -12,7 +12,7 @@ import javax.swing.JComponent
  * Editor for Picat run configurations.
  * Provides UI for editing Picat run configuration settings.
  */
-class PicatRunConfigurationEditor(private val project: Project) : SettingsEditor<PicatRunConfiguration>() {
+class PicatRunConfigurationEditor(project: Project) : SettingsEditor<PicatRunConfiguration>() {
     private val picatFilePathField = TextFieldWithBrowseButton()
     private val programParametersField = RawCommandLineEditor()
     private val workingDirectoryField = TextFieldWithBrowseButton()
