@@ -1,10 +1,47 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.avrilfanomar.picatplugin</id>
-    <name>picat-plugin</name>
-    <vendor>avrilfanomar</vendor>
+    <name>Picat Language Support</name>
+    <vendor email="95ge70c9i@mozmail.com" url="https://github.com/avrilfanomar/picat-plugin">Andrii Andriichuk</vendor>
+
+    <description><![CDATA[
+        Support for the Picat programming language in IntelliJ IDEA.
+
+        <p>Picat is a multi-paradigm programming language that integrates logic-based and function-based programming with constraint solving capabilities.</p>
+
+        <h3>Features:</h3>
+        <ul>
+            <li>Syntax highlighting for Picat files (.pi)</li>
+            <li>Run configuration for Picat programs</li>
+            <li>File type recognition</li>
+            <li>Custom file icon</li>
+        </ul>
+    ]]></description>
+
+    <idea-version since-build="242" until-build="252.*" />
 
     <depends>com.intellij.modules.platform</depends>
+
+    <tags>
+        <tag>picat</tag>
+        <tag>programming language</tag>
+        <tag>logic programming</tag>
+        <tag>constraint programming</tag>
+    </tags>
+
+    <change-notes><![CDATA[
+        <h3>0.0.1</h3>
+        <ul>
+            <li>Initial release</li>
+            <li>Basic language support for Picat</li>
+            <li>File type recognition for .pi files</li>
+            <li>Syntax highlighting for Picat language elements</li>
+            <li>Run configuration for Picat programs</li>
+            <li>Settings page to configure Picat executable path</li>
+            <li>Run line markers in the editor gutter</li>
+            <li>Custom file icon for Picat files</li>
+        </ul>
+    ]]></change-notes>
 
     <actions>
         <action id="Picat.RunFile" 
