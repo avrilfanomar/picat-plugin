@@ -8,6 +8,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  * Persistent settings for the Picat plugin.
  * Stores the path to the Picat executable.
  */
+@Service(Service.Level.PROJECT)
 @State(
     name = "PicatSettings",
     storages = [Storage("picatSettings.xml")]

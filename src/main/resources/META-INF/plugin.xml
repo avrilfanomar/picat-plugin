@@ -60,7 +60,6 @@
             implementationClass="com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighterFactory"/>
         <colorSettingsPage
             implementation="com.github.avrilfanomar.picatplugin.language.highlighting.PicatColorSettingsPage"/>
-        <projectService serviceImplementation="com.github.avrilfanomar.picatplugin.settings.PicatSettings"/>
         <projectConfigurable
             parentId="tools"
             instance="com.github.avrilfanomar.picatplugin.settings.PicatSettingsConfigurable"
