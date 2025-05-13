@@ -16,6 +16,8 @@
             <li>File type recognition</li>
             <li>Custom file icon</li>
         </ul>
+
+        <p>This plugin is licensed under the <a href="https://github.com/avrilfanomar/picat-plugin/blob/main/LICENSE">MIT License</a>.</p>
     ]]></description>
 
     <idea-version since-build="242" until-build="252.*" />

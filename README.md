@@ -87,6 +87,10 @@ You can configure the path to the Picat executable in Settings | Tools | Picat a
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
 
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ---
 Plugin based on the [IntelliJ Platform Plugin Template][template].
 
