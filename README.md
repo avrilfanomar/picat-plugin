@@ -1,8 +1,8 @@
-# Picat Plugin for IntelliJ IDEA
+# Picat Language Support for IntelliJ IDEA
 
 ![Build](https://github.com/avrilfanomar/picat-plugin/workflows/Build/badge.svg)
-[![Version](https://img.shields.io/jetbrains/plugin/v/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
+[![Version](https://img.shields.io/jetbrains/plugin/v/com.github.avrilfanomar.picatplugin.svg)](https://plugins.jetbrains.com/plugin/com.github.avrilfanomar.picatplugin)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/com.github.avrilfanomar.picatplugin.svg)](https://plugins.jetbrains.com/plugin/com.github.avrilfanomar.picatplugin)
 
 ## Description
 
@@ -71,14 +71,14 @@ You can configure the path to the Picat executable in Settings | Tools | Picat a
 
 - Using the IDE built-in plugin system:
 
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "picat-plugin"</kbd> >
+  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "Picat Language Support"</kbd> >
   <kbd>Install</kbd>
 
 - Using JetBrains Marketplace:
 
-  Go to [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID) and install it by clicking the <kbd>Install to ...</kbd> button in case your IDE is running.
+  Go to [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/com.github.avrilfanomar.picatplugin) and install it by clicking the <kbd>Install to ...</kbd> button in case your IDE is running.
 
-  You can also download the [latest release](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID/versions) from JetBrains Marketplace and install it manually using
+  You can also download the [latest release](https://plugins.jetbrains.com/plugin/com.github.avrilfanomar.picatplugin/versions) from JetBrains Marketplace and install it manually using
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
 
 - Manually:
