@@ -1,7 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.highlighting
 
-import com.github.avrilfanomar.picatplugin.language.PicatTokenType
- import com.github.avrilfanomar.picatplugin.language.PicatTokenTypes
+import com.github.avrilfanomar.picatplugin.language.PicatTokenTypes
 import com.github.avrilfanomar.picatplugin.language.lexer.PicatLexer
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
@@ -60,17 +59,28 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
 
     companion object {
         // Define text attribute keys for different token types
-        val KEYWORD = TextAttributesKey.createTextAttributesKey("PICAT_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD)
-        val COMMENT = TextAttributesKey.createTextAttributesKey("PICAT_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT)
+        val KEYWORD =
+            TextAttributesKey.createTextAttributesKey("PICAT_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD)
+        val COMMENT =
+            TextAttributesKey.createTextAttributesKey("PICAT_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT)
         val STRING = TextAttributesKey.createTextAttributesKey("PICAT_STRING", DefaultLanguageHighlighterColors.STRING)
         val NUMBER = TextAttributesKey.createTextAttributesKey("PICAT_NUMBER", DefaultLanguageHighlighterColors.NUMBER)
-        val OPERATOR = TextAttributesKey.createTextAttributesKey("PICAT_OPERATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN)
-        val PARENTHESES = TextAttributesKey.createTextAttributesKey("PICAT_PARENTHESES", DefaultLanguageHighlighterColors.PARENTHESES)
+        val OPERATOR =
+            TextAttributesKey.createTextAttributesKey("PICAT_OPERATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN)
+        val PARENTHESES =
+            TextAttributesKey.createTextAttributesKey("PICAT_PARENTHESES", DefaultLanguageHighlighterColors.PARENTHESES)
         val BRACES = TextAttributesKey.createTextAttributesKey("PICAT_BRACES", DefaultLanguageHighlighterColors.BRACES)
-        val BRACKETS = TextAttributesKey.createTextAttributesKey("PICAT_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS)
-        val IDENTIFIER = TextAttributesKey.createTextAttributesKey("PICAT_IDENTIFIER", DefaultLanguageHighlighterColors.IDENTIFIER)
-        val PREDICATE = TextAttributesKey.createTextAttributesKey("PICAT_PREDICATE", DefaultLanguageHighlighterColors.FUNCTION_DECLARATION)
-        val VARIABLE = TextAttributesKey.createTextAttributesKey("PICAT_VARIABLE", DefaultLanguageHighlighterColors.LOCAL_VARIABLE)
-        val BAD_CHARACTER = TextAttributesKey.createTextAttributesKey("PICAT_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER)
+        val BRACKETS =
+            TextAttributesKey.createTextAttributesKey("PICAT_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS)
+        val IDENTIFIER =
+            TextAttributesKey.createTextAttributesKey("PICAT_IDENTIFIER", DefaultLanguageHighlighterColors.IDENTIFIER)
+        val PREDICATE = TextAttributesKey.createTextAttributesKey(
+            "PICAT_PREDICATE",
+            DefaultLanguageHighlighterColors.FUNCTION_DECLARATION
+        )
+        val VARIABLE =
+            TextAttributesKey.createTextAttributesKey("PICAT_VARIABLE", DefaultLanguageHighlighterColors.LOCAL_VARIABLE)
+        val BAD_CHARACTER =
+            TextAttributesKey.createTextAttributesKey("PICAT_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER)
     }
 }

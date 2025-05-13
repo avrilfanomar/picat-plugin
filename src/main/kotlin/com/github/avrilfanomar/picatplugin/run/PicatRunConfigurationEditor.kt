@@ -3,10 +3,8 @@ package com.github.avrilfanomar.picatplugin.run
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.RawCommandLineEditor
-import com.intellij.ui.components.JBPanel
 import com.intellij.util.ui.FormBuilder
 import javax.swing.JComponent
 

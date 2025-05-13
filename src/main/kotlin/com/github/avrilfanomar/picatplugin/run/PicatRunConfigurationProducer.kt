@@ -22,17 +22,17 @@ class PicatRunConfigurationProducer : LazyRunConfigurationProducer<PicatRunConfi
         sourceElement: Ref<PsiElement>
     ): Boolean {
         val psiFile = context.psiLocation?.containingFile ?: return false
-        
+
         // Only handle Picat files
         if (psiFile.fileType != PicatFileType.INSTANCE) {
             return false
         }
-        
+
         // Set the configuration properties
         val virtualFile = psiFile.virtualFile ?: return false
         configuration.picatFilePath = virtualFile.path
         configuration.name = virtualFile.nameWithoutExtension
-        
+
         return true
     }
 
@@ -41,12 +41,12 @@ class PicatRunConfigurationProducer : LazyRunConfigurationProducer<PicatRunConfi
         context: ConfigurationContext
     ): Boolean {
         val psiFile = context.psiLocation?.containingFile ?: return false
-        
+
         // Only handle Picat files
         if (psiFile.fileType != PicatFileType.INSTANCE) {
             return false
         }
-        
+
         val virtualFile = psiFile.virtualFile ?: return false
         return configuration.picatFilePath == virtualFile.path
     }

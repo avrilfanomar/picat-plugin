@@ -4,7 +4,6 @@ import com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHigh
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.testFramework.LexerTestCase
-import org.junit.Assert.fail
 import org.junit.Test
 import java.io.File
 

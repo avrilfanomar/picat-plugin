@@ -3,7 +3,6 @@ package com.github.avrilfanomar.picatplugin.language.lexer
 import com.github.avrilfanomar.picatplugin.language.PicatTokenTypes
 import com.intellij.lexer.LexerBase
 import com.intellij.psi.tree.IElementType
-import com.intellij.util.text.CharArrayUtil
 import org.jetbrains.annotations.NotNull
 
 /**
@@ -93,11 +92,13 @@ class PicatLexer : LexerBase() {
                         currentToken = PicatTokenTypes.HEX_INTEGER
                         return
                     }
+
                     'o', 'O' -> {
                         tokenEnd = skipOctalNumber(tokenStart)
                         currentToken = PicatTokenTypes.OCTAL_INTEGER
                         return
                     }
+
                     'b', 'B' -> {
                         tokenEnd = skipBinaryNumber(tokenStart)
                         currentToken = PicatTokenTypes.BINARY_INTEGER
@@ -182,61 +183,73 @@ class PicatLexer : LexerBase() {
                     currentToken = PicatTokenTypes.BACKTRACKABLE_ARROW_OP
                     return
                 }
+
                 "!==" -> {
                     tokenEnd = tokenStart + 3
                     currentToken = PicatTokenTypes.NOT_IDENTICAL
                     return
                 }
+
                 "===" -> {
                     tokenEnd = tokenStart + 3
                     currentToken = PicatTokenTypes.IDENTICAL
                     return
                 }
+
                 "#=>" -> {
                     tokenEnd = tokenStart + 3
                     currentToken = PicatTokenTypes.CONSTRAINT_IMPL
                     return
                 }
+
                 "#/\\" -> {
                     tokenEnd = tokenStart + 3
                     currentToken = PicatTokenTypes.CONSTRAINT_AND
                     return
                 }
+
                 "#\\/" -> {
                     tokenEnd = tokenStart + 3
                     currentToken = PicatTokenTypes.CONSTRAINT_OR
                     return
                 }
+
                 "#<=" -> {
                     tokenEnd = tokenStart + 3
                     currentToken = PicatTokenTypes.CONSTRAINT_LE_ALT
                     return
                 }
+
                 "#!=" -> {
                     tokenEnd = tokenStart + 3
                     currentToken = PicatTokenTypes.CONSTRAINT_NEQ
                     return
                 }
+
                 "#>=" -> {
                     tokenEnd = tokenStart + 3
                     currentToken = PicatTokenTypes.CONSTRAINT_GE
                     return
                 }
+
                 "#=<" -> {
                     tokenEnd = tokenStart + 3
                     currentToken = PicatTokenTypes.CONSTRAINT_LE
                     return
                 }
+
                 "@=<" -> {
                     tokenEnd = tokenStart + 3
                     currentToken = PicatTokenTypes.TERM_LE
                     return
                 }
+
                 "@<=" -> {
                     tokenEnd = tokenStart + 3
                     currentToken = PicatTokenTypes.TERM_LE_ALT
                     return
                 }
+
                 "@>=" -> {
                     tokenEnd = tokenStart + 3
                     currentToken = PicatTokenTypes.TERM_GE
@@ -254,106 +267,127 @@ class PicatLexer : LexerBase() {
                     currentToken = PicatTokenTypes.ARROW_OP
                     return
                 }
+
                 "==" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.EQUAL
                     return
                 }
+
                 "!=" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.NOT_EQUAL
                     return
                 }
+
                 "<=" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.LESS_EQUAL
                     return
                 }
+
                 "=<" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.LESS_EQUAL_ALT
                     return
                 }
+
                 ">=" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.GREATER_EQUAL
                     return
                 }
+
                 "&&" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.AND
                     return
                 }
+
                 "||" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.OR
                     return
                 }
+
                 "**" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.POWER_OP
                     return
                 }
+
                 "//" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.INT_DIVIDE
                     return
                 }
+
                 "/<" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.DIVIDE_LT
                     return
                 }
+
                 "/>" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.DIVIDE_GT
                     return
                 }
+
                 ":=" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.ASSIGN_ONCE
                     return
                 }
+
                 "::" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.TYPE_CONSTRAINT
                     return
                 }
+
                 ".." -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.RANGE
                     return
                 }
+
                 "++" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.CONCAT
                     return
                 }
+
                 "<<" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.SHIFT_LEFT
                     return
                 }
+
                 ">>" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.SHIFT_RIGHT
                     return
                 }
+
                 "/\\" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.BITWISE_AND
                     return
                 }
+
                 "\\/" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.BITWISE_OR
                     return
                 }
+
                 "#=" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.CONSTRAINT_EQ
                     return
                 }
+
                 "#!" -> {
                     // Skip this case, as "#!=" is handled by three-character operators
                     // and "#!" by itself is not a valid operator
@@ -361,31 +395,37 @@ class PicatLexer : LexerBase() {
                     currentToken = PicatTokenTypes.BAD_CHARACTER
                     return
                 }
+
                 "#<" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.CONSTRAINT_LT
                     return
                 }
+
                 "#>" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.CONSTRAINT_GT
                     return
                 }
+
                 "#~" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.CONSTRAINT_NOT
                     return
                 }
+
                 "#^" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.CONSTRAINT_XOR
                     return
                 }
+
                 "@<" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.TERM_LT
                     return
                 }
+
                 "@>" -> {
                     tokenEnd = tokenStart + 2
                     currentToken = PicatTokenTypes.TERM_GT
@@ -487,8 +527,9 @@ class PicatLexer : LexerBase() {
             } else if (buffer[i] == '_') {
                 // Allow underscores in numbers for readability (e.g., 1_000_000)
                 i++
-            } else if (i + 1 < bufferEnd && (buffer[i] == 'e' || buffer[i] == 'E') && 
-                      (isDigit(buffer[i + 1]) || buffer[i + 1] == '+' || buffer[i + 1] == '-')) {
+            } else if (i + 1 < bufferEnd && (buffer[i] == 'e' || buffer[i] == 'E') &&
+                (isDigit(buffer[i + 1]) || buffer[i + 1] == '+' || buffer[i + 1] == '-')
+            ) {
                 // Handle exponent notation (e.g., 1.0e10, 1.0e+10, 1.0e-10)
                 i++
                 if (buffer[i] == '+' || buffer[i] == '-') {

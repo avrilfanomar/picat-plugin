@@ -28,8 +28,8 @@ class PicatRunFileAction : AnAction("Run Picat File", "Run current Picat file", 
         val file = e.getData(CommonDataKeys.VIRTUAL_FILE)
 
         // Only enable for Picat files
-        e.presentation.isEnabledAndVisible = project != null && 
-                file != null && 
+        e.presentation.isEnabledAndVisible = project != null &&
+                file != null &&
                 file.fileType == PicatFileType.INSTANCE
     }
 
@@ -44,8 +44,8 @@ class PicatRunFileAction : AnAction("Run Picat File", "Run current Picat file", 
 
         // Look for existing configuration for this file
         val existingConfigs = runManager.getConfigurationSettingsList(configurationType)
-        val config: RunnerAndConfigurationSettings? = existingConfigs.find { 
-            (it.configuration as? PicatRunConfiguration)?.picatFilePath == file.path 
+        val config: RunnerAndConfigurationSettings? = existingConfigs.find {
+            (it.configuration as? PicatRunConfiguration)?.picatFilePath == file.path
         } ?: run {
             // Create new configuration
             val configuration = factory.createConfiguration(
