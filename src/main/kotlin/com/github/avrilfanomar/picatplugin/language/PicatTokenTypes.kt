@@ -130,6 +130,9 @@ object PicatTokenTypes {
     // Comments
     val COMMENT = PicatTokenType("COMMENT")
 
+    // Module functions and operators
+    val BASIC_MODULE_FUNCTION = PicatTokenType("BASIC_MODULE_FUNCTION")
+
     // Other
     val IDENTIFIER = PicatTokenType("IDENTIFIER")
     val WHITE_SPACE = PicatTokenType("WHITE_SPACE")

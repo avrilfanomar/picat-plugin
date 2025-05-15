@@ -20,6 +20,7 @@ The Picat Plugin provides support for the [Picat programming language](http://pi
 - **Syntax Highlighting**:
   - Highlighting for keywords, operators, strings, numbers, comments, etc.
   - Customizable colors through the IDE's color settings page
+  - Support for 'basic' module functions and operators
 
 - **Run Configuration**:
   - Configure the path to the Picat executable in Settings | Tools | Picat

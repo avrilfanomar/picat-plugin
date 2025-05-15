@@ -10,6 +10,36 @@ import org.jetbrains.annotations.NotNull
  * This lexer tokenizes Picat code into tokens defined in PicatTokenTypes.
  */
 class PicatLexer : LexerBase() {
+    companion object {
+        // List of functions and operators from the 'basic' module
+        private val BASIC_MODULE_FUNCTIONS = setOf(
+            "acyclic_term", "and_to_list", "append", "apply", "arg", "arity", "array",
+            "ascii_alpha", "ascii_alpha_digit", "ascii_digit", "ascii_lowercase", "ascii_uppercase",
+            "atom", "atom_chars", "atom_codes", "atomic", "attr_var", "avg", "between",
+            "bigint", "bind_vars", "call", "call_cleanup", "catch", "char", "chr", "clear",
+            "compare_terms", "compound", "copy_term", "count_all", "del", "delete", "delete_all",
+            "different_terms", "digit", "dvar", "dvar_or_int", "fail", "false", "find_all",
+            "findall", "first", "flatten", "float", "fold", "freeze", "functor", "get",
+            "get_attr", "get_global_map", "get_heap_map", "get_table_map", "ground",
+            "handle_exception", "has_key", "hash_code", "head", "heap_is_empty", "heap_pop",
+            "heap_push", "heap_size", "heap_to_list", "heap_top", "insert", "insert_all",
+            "insert_ordered", "insert_ordered_down", "int", "integer", "is", "keys", "last",
+            "len", "length", "list", "list_to_and", "lowercase", "map", "map_to_list", "max",
+            "maxint_small", "maxof", "maxof_inc", "membchk", "member", "min", "minint_small",
+            "minof", "minof_inc", "name", "new_array", "new_list", "new_map", "new_max_heap",
+            "new_min_heap", "new_set", "new_struct", "nonvar", "not", "nth", "number",
+            "number_chars", "number_codes", "number_vars", "once", "ord", "parse_radix_string",
+            "parse_term", "post_event", "post_event_any", "post_event_bound", "post_event_dom",
+            "post_event_ins", "prod", "put", "put_attr", "real", "reduce", "remove_dups",
+            "repeat", "reverse", "second", "select", "size", "slice", "sort", "sort_down",
+            "sort_down_remove_dups", "sort_remove_dups", "sorted", "sorted_down", "string",
+            "struct", "subsumes", "sum", "tail", "throw", "to_array", "to_atom",
+            "to_binary_string", "to_codes", "to_fstring", "to_hex_string", "to_int",
+            "to_integer", "to_list", "to_lowercase", "to_number", "to_oct_string",
+            "to_radix_string", "to_real", "to_string", "to_uppercase", "true", "uppercase",
+            "values", "var", "variant", "vars", "zip"
+        )
+    }
     private var buffer: CharSequence = ""
     private var bufferEnd: Int = 0
     private var bufferStart: Int = 0
@@ -159,7 +189,14 @@ class PicatLexer : LexerBase() {
                 "false" -> PicatTokenTypes.FALSE_KEYWORD
                 "fail" -> PicatTokenTypes.FAIL_KEYWORD
                 "repeat" -> PicatTokenTypes.REPEAT_KEYWORD
-                else -> PicatTokenTypes.IDENTIFIER
+                else -> {
+                    // Check if the identifier is a 'basic' module function or operator
+                    if (BASIC_MODULE_FUNCTIONS.contains(text)) {
+                        PicatTokenTypes.BASIC_MODULE_FUNCTION
+                    } else {
+                        PicatTokenTypes.IDENTIFIER
+                    }
+                }
             }
             return
         }

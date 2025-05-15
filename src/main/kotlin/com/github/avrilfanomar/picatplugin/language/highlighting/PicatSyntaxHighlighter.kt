@@ -49,6 +49,9 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             // Variables
             PicatTokenTypes.VARIABLE -> pack(VARIABLE)
 
+            // Basic module functions and operators
+            PicatTokenTypes.BASIC_MODULE_FUNCTION -> pack(BASIC_MODULE_FUNCTION)
+
             // Identifiers (including predicates)
             PicatTokenTypes.IDENTIFIER -> pack(IDENTIFIER)
 
@@ -80,6 +83,10 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
         )
         val VARIABLE =
             TextAttributesKey.createTextAttributesKey("PICAT_VARIABLE", DefaultLanguageHighlighterColors.LOCAL_VARIABLE)
+        val BASIC_MODULE_FUNCTION = TextAttributesKey.createTextAttributesKey(
+            "PICAT_BASIC_MODULE_FUNCTION",
+            DefaultLanguageHighlighterColors.INSTANCE_METHOD
+        )
         val BAD_CHARACTER =
             TextAttributesKey.createTextAttributesKey("PICAT_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER)
     }

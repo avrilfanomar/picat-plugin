@@ -25,6 +25,7 @@ class PicatColorSettingsPage : ColorSettingsPage {
         AttributesDescriptor("Identifier", PicatSyntaxHighlighter.IDENTIFIER),
         AttributesDescriptor("Predicate", PicatSyntaxHighlighter.PREDICATE),
         AttributesDescriptor("Variable", PicatSyntaxHighlighter.VARIABLE),
+        AttributesDescriptor("Basic module function", PicatSyntaxHighlighter.BASIC_MODULE_FUNCTION),
         AttributesDescriptor("Bad character", PicatSyntaxHighlighter.BAD_CHARACTER)
     )
 
@@ -40,18 +41,31 @@ class PicatColorSettingsPage : ColorSettingsPage {
 
     override fun getDemoText(): String = """
         % This is a sample Picat program
-        
+
         import util.
-        
+
         main => 
             println("Hello, world!"),
             X = 42,
             Y = X + 10,
-            println(Y).
-        
+            println(Y),
+            % Using basic module functions
+            L = [1, 2, 3, 4, 5],
+            length(L) = Len,
+            println("Length: " ++ Len),
+            append(L, [6, 7], L2),
+            println(L2),
+            sort(L2) = Sorted,
+            println(Sorted),
+            if member(3, L) then
+                println("3 is in the list")
+            else
+                println("3 is not in the list")
+            end.
+
         factorial(0) = 1.
         factorial(N) = N * factorial(N-1) => N > 0.
-        
+
         fibonacci(0) = 0.
         fibonacci(1) = 1.
         fibonacci(N) = fibonacci(N-1) + fibonacci(N-2) => N > 1.
