@@ -26,7 +26,16 @@ class PicatSyntaxHighlightingTest : LexerTestCase() {
                 println("Hello, world!"),
                 X = 42,
                 Y = X + 10,
-                println(Y).
+                println(Y),
+                if true then
+                    println("This is true")
+                else
+                    fail
+                end,
+                repeat
+                    Z = Z + 1
+                until Z > 10,
+                false.
 
             factorial(0) = 1.
             factorial(N) = N * factorial(N-1) => N > 0.
