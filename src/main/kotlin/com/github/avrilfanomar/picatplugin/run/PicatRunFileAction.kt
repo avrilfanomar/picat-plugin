@@ -17,7 +17,7 @@ import com.intellij.openapi.project.DumbAware
  * Action to run the current Picat file.
  * Adds a menu item to the context menu and the Run menu.
  */
-class PicatRunFileAction : AnAction("Run Picat File", "Run current Picat file", PicatIcons.FILE), DumbAware {
+class PicatRunFileAction : AnAction(), DumbAware {
 
     override fun getActionUpdateThread(): ActionUpdateThread {
         return ActionUpdateThread.BGT
@@ -27,27 +27,32 @@ class PicatRunFileAction : AnAction("Run Picat File", "Run current Picat file", 
         val project = e.project
         val file = e.getData(CommonDataKeys.VIRTUAL_FILE)
 
+        // Set presentation properties lazily
+        e.presentation.setText("Run Picat File")
+        e.presentation.description = "Run current Picat file"
+        e.presentation.icon = PicatIcons.FILE
+
         // Only enable for Picat files
         e.presentation.isEnabledAndVisible = project != null &&
                 file != null &&
-                file.fileType == PicatFileType.INSTANCE
+                file.fileType == PicatFileType.Companion.INSTANCE
     }
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         val file = e.getData(CommonDataKeys.VIRTUAL_FILE) ?: return
 
-        // Create or get existing run configuration
+        // Create or get an existing run configuration
         val runManager = RunManager.getInstance(project)
         val configurationType = PicatConfigurationType()
         val factory = configurationType.configurationFactories[0]
 
-        // Look for existing configuration for this file
+        // Look for an existing configuration for this file
         val existingConfigs = runManager.getConfigurationSettingsList(configurationType)
         val config: RunnerAndConfigurationSettings? = existingConfigs.find {
             (it.configuration as? PicatRunConfiguration)?.picatFilePath == file.path
         } ?: run {
-            // Create new configuration
+            // Create a new configuration
             val configuration = factory.createConfiguration(
                 file.nameWithoutExtension,
                 factory.createTemplateConfiguration(project)

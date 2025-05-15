@@ -7,9 +7,10 @@ import com.intellij.lang.Language
  * Picat is a multi-paradigm programming language that integrates logic-based and function-based programming.
  */
 object PicatLanguage : Language("Picat") {
-    override fun getDisplayName(): String = "Picat"
+    override fun getDisplayName(): String = LANGUAGE_ID
     override fun getMimeTypes(): Array<String> = arrayOf("text/picat")
-
-    // ID used for internal language identification
     const val LANGUAGE_ID = "Picat"
+
+    @Suppress("unused")
+    private fun readResolve(): Any = PicatLanguage
 }

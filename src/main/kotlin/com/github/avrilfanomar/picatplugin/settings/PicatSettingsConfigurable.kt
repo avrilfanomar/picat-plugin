@@ -1,5 +1,6 @@
 package com.github.avrilfanomar.picatplugin.settings
 
+import com.github.avrilfanomar.picatplugin.language.PicatLanguage
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
@@ -17,7 +18,7 @@ class PicatSettingsConfigurable(private val project: Project) : Configurable {
     private var picatExecutablePathField: TextFieldWithBrowseButton? = null
     private val settings: PicatSettings = PicatSettings.getInstance(project)
 
-    override fun getDisplayName(): String = "Picat"
+    override fun getDisplayName(): String = PicatLanguage.LANGUAGE_ID
 
     override fun createComponent(): JComponent {
         picatExecutablePathField = TextFieldWithBrowseButton()

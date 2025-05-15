@@ -8,11 +8,12 @@ import javax.swing.Icon
  * Picat files have the .pi extension.
  */
 class PicatFileType : LanguageFileType(PicatLanguage) {
-    override fun getName(): String = "Picat"
+    override fun getName(): String = PicatLanguage.LANGUAGE_ID
     override fun getDescription(): String = "Picat programming language file"
     override fun getDefaultExtension(): String = "pi"
     override fun getIcon(): Icon = PicatIcons.FILE
 
+    @Suppress("CompanionObjectInExtension")
     companion object {
         @JvmStatic
         val INSTANCE = PicatFileType()

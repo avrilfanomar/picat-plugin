@@ -15,19 +15,18 @@ class PicatRunLineMarkerContributor : RunLineMarkerContributor() {
         val file = element.containingFile ?: return null
 
         // Only add run marker to Picat files
-        if (file.fileType != PicatFileType.INSTANCE) {
+        if (file.fileType != PicatFileType.Companion.INSTANCE) {
             return null
         }
 
-        // Only add run marker to the first element in the file
+        // Only add a run marker to the first element in the file
         if (element.textOffset > 0) {
             return null
         }
 
         return Info(
             AllIcons.RunConfigurations.TestState.Run,
-            ExecutorAction.getActions(1),
-            { "Run Picat program" }
-        )
+            ExecutorAction.getActions(1)
+        ) { "Run Picat program" }
     }
 }

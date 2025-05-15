@@ -24,7 +24,7 @@ class PicatRunConfigurationProducer : LazyRunConfigurationProducer<PicatRunConfi
         val psiFile = context.psiLocation?.containingFile ?: return false
 
         // Only handle Picat files
-        if (psiFile.fileType != PicatFileType.INSTANCE) {
+        if (psiFile.fileType != PicatFileType.Companion.INSTANCE) {
             return false
         }
 
@@ -43,7 +43,7 @@ class PicatRunConfigurationProducer : LazyRunConfigurationProducer<PicatRunConfi
         val psiFile = context.psiLocation?.containingFile ?: return false
 
         // Only handle Picat files
-        if (psiFile.fileType != PicatFileType.INSTANCE) {
+        if (psiFile.fileType != PicatFileType.Companion.INSTANCE) {
             return false
         }
 

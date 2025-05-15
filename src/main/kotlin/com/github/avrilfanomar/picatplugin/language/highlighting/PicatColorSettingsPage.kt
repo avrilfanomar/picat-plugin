@@ -33,7 +33,7 @@ class PicatColorSettingsPage : ColorSettingsPage {
 
     override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
 
-    override fun getDisplayName(): String = "Picat"
+    override fun getDisplayName(): String = com.github.avrilfanomar.picatplugin.language.PicatLanguage.LANGUAGE_ID
 
     override fun getIcon(): Icon = PicatIcons.FILE
 

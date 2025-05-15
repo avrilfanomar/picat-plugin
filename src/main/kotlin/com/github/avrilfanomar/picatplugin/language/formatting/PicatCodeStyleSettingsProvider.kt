@@ -19,7 +19,7 @@ class PicatCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
     }
 
     override fun getConfigurableDisplayName(): String {
-        return "Picat"
+        return PicatLanguage.LANGUAGE_ID
     }
 
     override fun createConfigurable(

@@ -9,10 +9,3 @@ import org.jetbrains.annotations.NonNls
 class PicatTokenType(@NonNls debugName: String) : IElementType(debugName, PicatLanguage) {
     override fun toString(): String = "PicatTokenType." + super.toString()
 }
-
-/**
- * Element type for Picat language elements.
- */
-class PicatElementType(@NonNls debugName: String) : IElementType(debugName, PicatLanguage) {
-    override fun toString(): String = "PicatElementType." + super.toString()
-}
