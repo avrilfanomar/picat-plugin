@@ -154,6 +154,7 @@ class PicatLexer : LexerBase() {
                 "rem" -> PicatTokenTypes.REM_KEYWORD
                 "in" -> PicatTokenTypes.IN_KEYWORD
                 "notin" -> PicatTokenTypes.NOTIN_KEYWORD
+                "writef" -> PicatTokenTypes.WRITEF_KEYWORD
                 else -> PicatTokenTypes.IDENTIFIER
             }
             return
