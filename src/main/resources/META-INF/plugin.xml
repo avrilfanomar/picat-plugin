@@ -12,6 +12,7 @@
         <h3>Features:</h3>
         <ul>
             <li>Syntax highlighting for Picat files (.pi)</li>
+            <li>Code formatting with customizable settings</li>
             <li>Run configuration for Picat programs</li>
             <li>File type recognition</li>
             <li>Custom file icon</li>
@@ -30,6 +31,7 @@
             <li>Added support for 'basic' module functions and operators</li>
             <li>Improved syntax highlighting for 'basic' module functions</li>
             <li>Added tests for 'basic' module support</li>
+            <li>Added code formatting support with customizable settings</li>
         </ul>
 
         <h3>0.0.1</h3>
@@ -78,5 +80,12 @@
             language="Picat"
             implementationClass="com.github.avrilfanomar.picatplugin.run.PicatRunLineMarkerContributor"/>
         <runConfigurationProducer implementation="com.github.avrilfanomar.picatplugin.run.PicatRunConfigurationProducer"/>
+
+        <!-- Formatting -->
+        <lang.formatter
+            language="Picat"
+            implementationClass="com.github.avrilfanomar.picatplugin.language.formatting.PicatFormattingModelBuilder"/>
+        <codeStyleSettingsProvider implementation="com.github.avrilfanomar.picatplugin.language.formatting.PicatCodeStyleSettingsProvider"/>
+        <langCodeStyleSettingsProvider implementation="com.github.avrilfanomar.picatplugin.language.formatting.PicatLanguageCodeStyleSettingsProvider"/>
     </extensions>
 </idea-plugin>

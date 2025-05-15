@@ -22,6 +22,10 @@ The Picat Plugin provides support for the [Picat programming language](http://pi
   - Customizable colors through the IDE's color settings page
   - Support for 'basic' module functions and operators
 
+- **Code Formatting**:
+  - Automatic code formatting
+  - Customizable formatting options
+
 - **Run Configuration**:
   - Configure the path to the Picat executable in Settings | Tools | Picat
   - Run Picat programs directly from the IDE
@@ -45,10 +49,6 @@ The Picat Plugin provides support for the [Picat programming language](http://pi
   - Go to declaration
   - Find usages
 
-- **Code Formatting**:
-  - Automatic code formatting
-  - Customizable formatting options
-
 - **Structure View**:
   - Hierarchical view of predicates, modules, etc.
 
@@ -58,14 +58,14 @@ The Picat Plugin provides support for the [Picat programming language](http://pi
 
 ## Implementation Status
 
-This plugin is currently in early development. The basic language support, syntax highlighting, and run configuration are implemented, but more advanced features are still in progress. You can now configure the path to the Picat executable and run Picat programs directly from the IDE.
+This plugin is currently in early development. The basic language support, syntax highlighting, code formatting, and run configuration are implemented, but more advanced features are still in progress. You can now configure the path to the Picat executable, format your code with customizable settings, and run Picat programs directly from the IDE.
 
 <!-- Plugin description -->
-Picat Plugin provides support for the Picat programming language in IntelliJ IDEA. Features include syntax highlighting, file type recognition, run configuration for Picat programs, and more to come.
+Picat Plugin provides support for the Picat programming language in IntelliJ IDEA. Features include syntax highlighting, code formatting, file type recognition, run configuration for Picat programs, and more to come.
 
 Picat is a multi-paradigm programming language that integrates logic-based and function-based programming with constraint solving capabilities.
 
-You can configure the path to the Picat executable in Settings | Tools | Picat and run Picat programs directly from the IDE.
+You can configure the path to the Picat executable in Settings | Tools | Picat, format your code with customizable settings, and run Picat programs directly from the IDE.
 <!-- Plugin description end -->
 
 ## Installation
