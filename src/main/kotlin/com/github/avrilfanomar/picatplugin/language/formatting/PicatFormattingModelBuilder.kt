@@ -59,20 +59,22 @@ class PicatFormattingModelBuilder : FormattingModelBuilder {
         // Create a spacing builder with explicit spacing rules
         val builder = SpacingBuilder(settings, PicatLanguage)
             // Add spaces around operators - force to true instead of using settings
-            .around(Tokens.ASSIGNMENT_OPERATORS).spacing(1, 1, 0, true, 0)
-            .around(Tokens.ADDITIVE_OPERATORS).spacing(1, 1, 0, true, 0)
-            .around(Tokens.MULTIPLICATIVE_OPERATORS).spacing(1, 1, 0, true, 0)
-            .around(Tokens.RELATIONAL_OPERATORS).spacing(1, 1, 0, true, 0)
-            .around(Tokens.EQUALITY_OPERATORS).spacing(1, 1, 0, true, 0)
-            .around(Tokens.LOGICAL_OPERATORS).spacing(1, 1, 0, true, 0)
+            // Use spaceIf(true) to ensure consistent spacing
+            .around(Tokens.ASSIGNMENT_OPERATORS).spaceIf(true)
+            .around(Tokens.ADDITIVE_OPERATORS).spaceIf(true)
+            .around(Tokens.MULTIPLICATIVE_OPERATORS).spaceIf(true)
+            .around(Tokens.RELATIONAL_OPERATORS).spaceIf(true)
+            .around(Tokens.EQUALITY_OPERATORS).spaceIf(true)
+            .around(Tokens.LOGICAL_OPERATORS).spaceIf(true)
 
             // Add spaces around Picat-specific operators
-            .around(Tokens.RULE_OPERATORS).spacing(1, 1, 0, true, 0)
-            .around(Tokens.CONSTRAINT_OPERATORS).spacing(1, 1, 0, true, 0)
-            .around(Tokens.TERM_COMPARISON_OPERATORS).spacing(1, 1, 0, true, 0)
+            .around(Tokens.RULE_OPERATORS).spaceIf(true)
+            .around(Tokens.CONSTRAINT_OPERATORS).spaceIf(true)
+            .around(Tokens.TERM_COMPARISON_OPERATORS).spaceIf(true)
 
-            // Add space after comma
-            .after(Tokens.COMMA).spacing(1, 1, 0, true, 0)
+            // No space before comma, space after comma
+            .before(Tokens.COMMA).spaceIf(false)
+            .after(Tokens.COMMA).spaceIf(true)
 
             // Add space within parentheses
             .withinPair(Tokens.LPAR, Tokens.RPAR).spaceIf(picatSettings.SPACE_WITHIN_PARENTHESES)
@@ -140,4 +142,3 @@ class PicatFormattingModelBuilder : FormattingModelBuilder {
         val RBRACE = PicatTokenTypes.RBRACE
     }
 }
-

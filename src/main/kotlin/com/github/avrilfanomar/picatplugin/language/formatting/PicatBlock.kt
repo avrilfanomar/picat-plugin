@@ -68,48 +68,6 @@ class PicatBlock(
             }
         }
 
-        // Apply custom spacing rules if spacing builder didn't provide a result
-        if (child1 is PicatBlock && child2 is PicatBlock) {
-            val node1 = child1.node
-            val node2 = child2.node
-
-            // Check if either node is an operator
-            if (isOperator(node1.elementType) || isOperator(node2.elementType)) {
-                println("[DEBUG_LOG]   Applying spacing for operators")
-                return Spacing.createSpacing(1, 1, 0, true, 0)
-            }
-
-            // Special handling for rule operators (=> and ?=>)
-            if (node1.elementType == PicatTokenTypes.ARROW_OP || 
-                node1.elementType == PicatTokenTypes.BACKTRACKABLE_ARROW_OP ||
-                node2.elementType == PicatTokenTypes.ARROW_OP || 
-                node2.elementType == PicatTokenTypes.BACKTRACKABLE_ARROW_OP) {
-                println("[DEBUG_LOG]   Applying spacing for rule operators")
-                return Spacing.createSpacing(1, 1, 0, true, 0)
-            }
-
-            // Check if the second node is a comma
-            if (node2.elementType == PicatTokenTypes.COMMA) {
-                println("[DEBUG_LOG]   Applying spacing after comma")
-                return Spacing.createSpacing(0, 0, 0, false, 0)
-            }
-
-            // Check if we're after a comma (add space after comma)
-            if (node1.elementType == PicatTokenTypes.COMMA) {
-                println("[DEBUG_LOG]   Applying spacing after comma")
-                return Spacing.createSpacing(1, 1, 0, true, 0)
-            }
-
-            // Check if nodes are part of a list or array
-            if (node1.elementType == PicatTokenTypes.LBRACKET || 
-                node2.elementType == PicatTokenTypes.RBRACKET ||
-                node1.elementType == PicatTokenTypes.COLON) {
-                println("[DEBUG_LOG]   Applying spacing for list/array elements")
-                return Spacing.createSpacing(1, 1, 0, true, 0)
-            }
-        }
-
-        // Fallback to basic spacing rules
         println("[DEBUG_LOG]   Using fallback spacing")
         return Spacing.createSpacing(0, 1, 0, true, 0)
     }

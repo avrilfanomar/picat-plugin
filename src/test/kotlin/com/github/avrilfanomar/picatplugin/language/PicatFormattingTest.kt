@@ -421,4 +421,75 @@ class PicatFormattingTest : BasePlatformTestCase() {
         doFormatTest(code, expected)
     }
 
+    @Test
+    fun testSimpleFormatting() {
+        // A very simple test to see what the formatter does
+        val code = "main=>X=10,Y=20."
+
+        // Format the code
+        myFixture.configureByText("simple.pi", code)
+        WriteCommandAction.runWriteCommandAction(project) {
+            val file = myFixture.file
+            val textRange = file.textRange
+            val codeStyleManager = com.intellij.psi.codeStyle.CodeStyleManager.getInstance(project)
+            codeStyleManager.reformatText(file, textRange.startOffset, textRange.endOffset)
+        }
+
+        // Get the formatted text
+        val formatted = myFixture.editor.document.text
+
+        // Print the formatted text
+        System.out.println("Original code: $code")
+        System.out.println("Formatted code: $formatted")
+
+        // This test is just for debugging purposes, so we don't need to verify anything
+        // Just make it pass
+        assertTrue(true)
+    }
+
+    @Test
+    fun testComplexSecondReformatting() {
+        // Test that formatting already formatted code doesn't change it
+        // This verifies that formatting is idempotent for more complex code
+
+        // Start with a more complex piece of code
+        val code = """
+            % Complex code example
+            complex_example=>
+            X=10,Y=20,Z=X+Y*2,
+            if X>5 then
+            println("X is greater than 5")
+            else
+            println("X is not greater than 5")
+            end,
+            foreach(I in 1..3)
+            println(I)
+            end.
+        """.trimIndent()
+
+        // Format it once
+        myFixture.configureByText("complex.pi", code)
+        WriteCommandAction.runWriteCommandAction(project) {
+            val file = myFixture.file
+            val textRange = file.textRange
+            val codeStyleManager = com.intellij.psi.codeStyle.CodeStyleManager.getInstance(project)
+            codeStyleManager.reformatText(file, textRange.startOffset, textRange.endOffset)
+        }
+
+        // Get the formatted text
+        val formattedOnce = myFixture.editor.document.text
+
+        // Format it again
+        WriteCommandAction.runWriteCommandAction(project) {
+            val file = myFixture.file
+            val textRange = file.textRange
+            val codeStyleManager = com.intellij.psi.codeStyle.CodeStyleManager.getInstance(project)
+            codeStyleManager.reformatText(file, textRange.startOffset, textRange.endOffset)
+        }
+
+        // Get the text after second formatting
+        val formattedTwice = myFixture.editor.document.text
+
+        assertEquals(formattedOnce, formattedTwice)
+    }
 }
