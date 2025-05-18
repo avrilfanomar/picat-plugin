@@ -53,7 +53,6 @@ class PicatSyntaxHighlightingTest : LexerTestCase() {
             val tokenText = text.substring(lexer.tokenStart, lexer.tokenEnd)
             val attributes = tokenType?.let { highlighter.getTokenHighlights(it) } ?: emptyArray()
 
-            println("[DEBUG_LOG] Token: $tokenText, Type: $tokenType, Attributes: ${attributesToString(attributes)}")
 
             lexer.advance()
         }

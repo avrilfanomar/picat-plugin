@@ -20,20 +20,17 @@ class PicatBlock(
 ) : AbstractBlock(node, wrap, alignment) {
 
     init {
-        // Log block creation
-        println("[DEBUG_LOG] Creating PicatBlock for node: ${node.elementType}, text: '${node.text.take(20).replace("\n", "\\n")}${if (node.text.length > 20) "..." else ""}'")
+        // Block creation
     }
 
     override fun buildChildren(): List<Block> {
-        println("[DEBUG_LOG] Building children for node: ${myNode.elementType}")
         val blocks = ArrayList<Block>()
         var child = myNode.firstChildNode
         var childCount = 0
 
         while (child != null) {
             childCount++
-            // Log each child node
-            println("[DEBUG_LOG]   Child #$childCount: ${child.elementType}, isEmpty: ${child.textRange.isEmpty}, isWhitespace: ${isWhitespaceNode(child)}")
+            // Process each child node
 
             // Skip whitespace nodes
             if (!child.textRange.isEmpty && !isWhitespaceNode(child)) {
@@ -45,30 +42,23 @@ class PicatBlock(
                     spacingBuilder
                 )
                 blocks.add(block)
-                println("[DEBUG_LOG]   Added block for child #$childCount")
-            } else {
-                println("[DEBUG_LOG]   Skipped child #$childCount")
             }
             child = child.treeNext
         }
 
-        println("[DEBUG_LOG] Built ${blocks.size} children blocks out of $childCount child nodes")
         return blocks
     }
 
     override fun getSpacing(child1: Block?, child2: Block): Spacing? {
-        println("[DEBUG_LOG] Getting spacing between blocks: $child1 and $child2")
 
         // Use spacing builder if available
         if (spacingBuilder != null) {
             val spacing = spacingBuilder.getSpacing(this, child1, child2)
-            println("[DEBUG_LOG]   Using spacing builder, result: $spacing")
             if (spacing != null) {
                 return spacing
             }
         }
 
-        println("[DEBUG_LOG]   Using fallback spacing")
         return Spacing.createSpacing(0, 1, 0, true, 0)
     }
 
@@ -132,12 +122,10 @@ class PicatBlock(
     }
 
     override fun getIndent(): Indent? {
-        println("[DEBUG_LOG] Getting indent for node: ${myNode.elementType}")
 
         // Simplified indentation rules
         val parentNode = myNode.treeParent
         if (parentNode != null) {
-            println("[DEBUG_LOG]   Parent node: ${parentNode.elementType}")
 
             val elementType = myNode.elementType
             val elementTypeStr = elementType.toString()
@@ -146,13 +134,11 @@ class PicatBlock(
 
             // Special handling for comments
             if (elementType == PicatTokenTypes.COMMENT || text.startsWith("%")) {
-                println("[DEBUG_LOG]   Comment node, using none indent")
                 return Indent.getNoneIndent()
             }
 
             // Special handling for rule operators
             if (elementType == PicatTokenTypes.ARROW_OP || elementType == PicatTokenTypes.BACKTRACKABLE_ARROW_OP) {
-                println("[DEBUG_LOG]   Rule operator, using none indent")
                 return Indent.getNoneIndent()
             }
 
@@ -163,7 +149,6 @@ class PicatBlock(
                 elementType == PicatTokenTypes.THEN_KEYWORD || 
                 elementType == PicatTokenTypes.END_KEYWORD || 
                 elementType == PicatTokenTypes.FOREACH_KEYWORD) {
-                println("[DEBUG_LOG]   Keyword, using none indent")
                 return Indent.getNoneIndent()
             }
 
@@ -171,26 +156,22 @@ class PicatBlock(
 
             // If we're inside a predicate body, indent
             if (parentTypeStr == "Picat:PREDICATE_BODY" || parentTypeStr.contains("PicatPredicateBody")) {
-                println("[DEBUG_LOG]   Inside predicate body, using normal indent")
                 return Indent.getNormalIndent()
             }
 
             // If we're inside a function body, indent
             if (parentTypeStr == "Picat:FUNCTION_BODY" || parentTypeStr.contains("PicatFunctionBody")) {
-                println("[DEBUG_LOG]   Inside function body, using normal indent")
                 return Indent.getNormalIndent()
             }
 
             // If we're inside a clause list, indent
             if (parentTypeStr == "Picat:CLAUSE_LIST" || parentTypeStr.contains("PicatClauseList")) {
-                println("[DEBUG_LOG]   Inside clause list, using normal indent")
                 return Indent.getNormalIndent()
             }
 
             // If we're a clause in a clause list, indent
             if ((elementTypeStr == "Picat:CLAUSE" || elementTypeStr.contains("PicatClause")) &&
                 (parentTypeStr == "Picat:CLAUSE_LIST" || parentTypeStr.contains("PicatClauseList"))) {
-                println("[DEBUG_LOG]   Clause in clause list, using normal indent")
                 return Indent.getNormalIndent()
             }
 
@@ -222,7 +203,6 @@ class PicatBlock(
             }
 
             if (shouldIndent) {
-                println("[DEBUG_LOG]   After rule operator or block keyword in parent, using normal indent")
                 return Indent.getNormalIndent()
             }
 
@@ -244,7 +224,6 @@ class PicatBlock(
                         foundBlockKeyword = true
                     } else if ((foundRuleOp || foundBlockKeyword) && isDescendantOf(myNode, child)) {
                         // We're after a rule operator or block keyword, so indent
-                        println("[DEBUG_LOG]   After rule operator or block keyword in ancestor, using normal indent")
                         return Indent.getNormalIndent()
                     }
                     child = child.treeNext
@@ -254,7 +233,6 @@ class PicatBlock(
             }
         }
 
-        println("[DEBUG_LOG]   Default case, using none indent")
         return Indent.getNoneIndent()
     }
 
@@ -281,27 +259,23 @@ class PicatBlock(
      * children of the current block.
      */
     override fun getChildIndent(): Indent? {
-        println("[DEBUG_LOG] Getting child indent for node: ${myNode.elementType}")
 
         val elementType = myNode.elementType
 
         // Always use normal indent for file nodes
         if (elementType.toString() == "FILE") {
-            println("[DEBUG_LOG]   File node, using normal indent for children")
             return Indent.getNormalIndent()
         }
 
         // Always indent children after rule operators
         if (elementType == PicatTokenTypes.ARROW_OP || 
             elementType == PicatTokenTypes.BACKTRACKABLE_ARROW_OP) {
-            println("[DEBUG_LOG]   Rule operator, indenting children")
             return Indent.getNormalIndent()
         }
 
         // Always indent children after block keywords
         if (elementType == PicatTokenTypes.THEN_KEYWORD ||
             elementType == PicatTokenTypes.ELSE_KEYWORD) {
-            println("[DEBUG_LOG]   Block keyword, indenting children")
             return Indent.getNormalIndent()
         }
 
@@ -310,7 +284,6 @@ class PicatBlock(
             elementType == PicatTokenTypes.FOREACH_KEYWORD || 
             elementType == PicatTokenTypes.FOR_KEYWORD || 
             elementType == PicatTokenTypes.WHILE_KEYWORD) {
-            println("[DEBUG_LOG]   Block structure keyword, indenting children")
             return Indent.getNormalIndent()
         }
 
@@ -335,7 +308,6 @@ class PicatBlock(
         }
 
         if (containsRuleOp || containsBlockKeyword) {
-            println("[DEBUG_LOG]   Contains rule operator or block keyword, indenting children")
             return Indent.getNormalIndent()
         }
 
@@ -344,48 +316,40 @@ class PicatBlock(
 
         // For predicate definitions, we want to indent the body
         if (elementTypeStr == "Picat:PREDICATE_DEFINITION" || elementTypeStr.contains("PicatPredicateDefinition")) {
-            println("[DEBUG_LOG]   Predicate definition, indenting children")
             return Indent.getNormalIndent()
         }
 
         // For predicate bodies, we want to indent the clauses
         if (elementTypeStr == "Picat:PREDICATE_BODY" || elementTypeStr.contains("PicatPredicateBody")) {
-            println("[DEBUG_LOG]   Predicate body, indenting children")
             return Indent.getNormalIndent()
         }
 
         // For function definitions, we want to indent the body
         if (elementTypeStr == "Picat:FUNCTION_DEFINITION" || elementTypeStr.contains("PicatFunctionDefinition")) {
-            println("[DEBUG_LOG]   Function definition, indenting children")
             return Indent.getNormalIndent()
         }
 
         // For function bodies, we want to indent the expression
         if (elementTypeStr == "Picat:FUNCTION_BODY" || elementTypeStr.contains("PicatFunctionBody")) {
-            println("[DEBUG_LOG]   Function body, indenting children")
             return Indent.getNormalIndent()
         }
 
         // For clause lists, we want to indent the clauses
         if (elementTypeStr == "Picat:CLAUSE_LIST" || elementTypeStr.contains("PicatClauseList")) {
-            println("[DEBUG_LOG]   Clause list, indenting children")
             return Indent.getNormalIndent()
         }
 
         // For rule bodies, we want to indent the statements
         if (elementTypeStr == "Picat:RULE_BODY") {
-            println("[DEBUG_LOG]   Rule body, indenting children")
             return Indent.getNormalIndent()
         }
 
         // For block statements, we want to indent the contents
         if (elementTypeStr == "Picat:BLOCK_STATEMENT") {
-            println("[DEBUG_LOG]   Block statement, indenting children")
             return Indent.getNormalIndent()
         }
 
         // Default to none indent to avoid over-indentation
-        println("[DEBUG_LOG]   Default child indent, using none indent")
         return Indent.getNoneIndent()
     }
 
@@ -413,7 +377,6 @@ class PicatBlock(
      */
     private fun isWhitespaceNode(node: ASTNode): Boolean {
         val isWhitespace = node.elementType == TokenType.WHITE_SPACE
-        println("[DEBUG_LOG] Checking if node is whitespace: ${node.elementType}, result: $isWhitespace")
         return isWhitespace
     }
 }

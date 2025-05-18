@@ -19,7 +19,7 @@ class PicatBasicModuleTest : LexerTestCase() {
 
         val text = """
             % This is a test for basic module functions
-            
+
             main => 
                 % Test some basic module functions
                 L = [1, 2, 3, 4, 5],
@@ -34,7 +34,7 @@ class PicatBasicModuleTest : LexerTestCase() {
                 else
                     println("3 is not in the list")
                 end,
-                
+
                 % Test more basic module functions
                 X = 42,
                 Y = 10,
@@ -42,13 +42,13 @@ class PicatBasicModuleTest : LexerTestCase() {
                 min(X, Y) = Min,
                 println("Max: " ++ Max),
                 println("Min: " ++ Min),
-                
+
                 % Test list operations
                 reverse(L) = Rev,
                 println(Rev),
                 flatten([[1, 2], [3, 4]]) = Flat,
                 println(Flat),
-                
+
                 % Test map operations
                 M = new_map(),
                 put(M, "key1", "value1"),
@@ -83,30 +83,21 @@ class PicatBasicModuleTest : LexerTestCase() {
                 "length", "append", "sort", "member", "max", "min", "reverse", 
                 "flatten", "new_map", "put", "get", "keys", "values"
             )
-            
+
             if (expectedBasicModuleFunctions.contains(tokenText) && tokenType != PicatTokenTypes.BASIC_MODULE_FUNCTION) {
                 issues.add("Basic module function not recognized: '$tokenText' at position ${lexer.tokenStart}")
             }
-
-            println("[DEBUG_LOG] Token: $tokenText, Type: $tokenType, Attributes: ${attributesToString(attributes)}")
 
             lexer.advance()
         }
 
         // Report issues
         if (issues.isNotEmpty()) {
-            println("[DEBUG_LOG] Found ${issues.size} issues:")
-            issues.forEach { println("[DEBUG_LOG] $it") }
-
             // Fail the test with a detailed message
             fail("Found ${issues.size} issues in basic module test:\n${issues.joinToString("\n")}")
-        } else {
-            println("[DEBUG_LOG] No issues found in the test")
         }
 
-        // Report basic module functions found
-        println("[DEBUG_LOG] Found ${basicModuleFunctionsFound.size} basic module functions:")
-        basicModuleFunctionsFound.forEach { println("[DEBUG_LOG] $it") }
+        // Basic module functions found (not logged, but kept for test functionality)
     }
 
     private fun attributesToString(attributes: Array<TextAttributesKey>): String {

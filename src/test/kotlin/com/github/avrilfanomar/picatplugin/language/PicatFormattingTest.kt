@@ -46,9 +46,6 @@ class PicatFormattingTest : BasePlatformTestCase() {
         // Verify that a FormattingModelBuilder is registered for Picat language
         val formattingModelBuilder = LanguageFormatting.INSTANCE.forLanguage(PicatLanguage)
 
-        // Print debug information
-        println("[DEBUG_LOG] FormattingModelBuilder for Picat: $formattingModelBuilder")
-
         // Assert that a FormattingModelBuilder is registered
         assertNotNull("FormattingModelBuilder should be registered for Picat language", formattingModelBuilder)
 
@@ -80,7 +77,6 @@ class PicatFormattingTest : BasePlatformTestCase() {
         assertTrue("PicatFormattingModelBuilder should implement FormattingModelBuilder",
                   formattingModelBuilder is FormattingModelBuilder)
 
-        println("[DEBUG_LOG] PicatFormattingModelBuilder implementation verified")
     }
 
     @Test
@@ -106,7 +102,6 @@ class PicatFormattingTest : BasePlatformTestCase() {
         // Verify that the block has the expected properties
         assertNotNull("PicatBlock should have a spacing builder", block)
 
-        println("[DEBUG_LOG] PicatBlock implementation verified")
     }
 
     @Test

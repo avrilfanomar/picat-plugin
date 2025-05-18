@@ -21,12 +21,10 @@ class PicatExamplesTest : LexerTestCase() {
         // Read examples.pi file
         val examplesFile = File("examples.pi")
         if (!examplesFile.exists()) {
-            println("[DEBUG_LOG] examples.pi file not found")
             return
         }
 
         val text = examplesFile.readText()
-        println("[DEBUG_LOG] Loaded examples.pi with ${text.length} characters")
 
         // Track issues
         val issues = mutableListOf<String>()
@@ -70,20 +68,14 @@ class PicatExamplesTest : LexerTestCase() {
                 issues.add("As-pattern operator not recognized: '$tokenText' at position ${lexer.tokenStart}")
             }
 
-            println("[DEBUG_LOG] Token: $tokenText, Type: $tokenType, Attributes: ${attributesToString(attributes)}")
 
             lexer.advance()
         }
 
         // Report issues
         if (issues.isNotEmpty()) {
-            println("[DEBUG_LOG] Found ${issues.size} issues:")
-            issues.forEach { println("[DEBUG_LOG] $it") }
-
             // Fail the test with a detailed message
             fail("Found ${issues.size} issues in examples.pi:\n${issues.joinToString("\n")}")
-        } else {
-            println("[DEBUG_LOG] No issues found in the entire file")
         }
     }
 

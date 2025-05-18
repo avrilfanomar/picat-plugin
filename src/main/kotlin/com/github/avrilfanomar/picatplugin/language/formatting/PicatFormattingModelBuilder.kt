@@ -16,11 +16,6 @@ class PicatFormattingModelBuilder : FormattingModelBuilder {
         val file = formattingContext.psiElement.containingFile
         val settings = formattingContext.codeStyleSettings
 
-        // Log that formatting model is being created
-        println("[DEBUG_LOG] Creating formatting model for file: ${file.name}")
-        println("[DEBUG_LOG] PSI element: ${formattingContext.psiElement}")
-        println("[DEBUG_LOG] Node: ${formattingContext.node}")
-
         // Create spacing settings
         val spacingBuilder = createSpacingBuilder(settings)
 
@@ -32,8 +27,6 @@ class PicatFormattingModelBuilder : FormattingModelBuilder {
             spacingBuilder
         )
 
-        println("[DEBUG_LOG] Created root block: $rootBlock")
-
         return FormattingModelProvider.createFormattingModelForPsiFile(
             file,
             rootBlock,
@@ -43,18 +36,6 @@ class PicatFormattingModelBuilder : FormattingModelBuilder {
 
     private fun createSpacingBuilder(settings: CodeStyleSettings): SpacingBuilder {
         val picatSettings = settings.getCustomSettings(PicatCodeStyleSettings::class.java)
-
-        // Log the spacing settings
-        println("[DEBUG_LOG] Creating spacing builder with settings:")
-        println("[DEBUG_LOG] SPACE_AROUND_ASSIGNMENT_OPERATORS: ${picatSettings.SPACE_AROUND_ASSIGNMENT_OPERATORS}")
-        println("[DEBUG_LOG] SPACE_AROUND_ADDITIVE_OPERATORS: ${picatSettings.SPACE_AROUND_ADDITIVE_OPERATORS}")
-        println("[DEBUG_LOG] SPACE_AROUND_MULTIPLICATIVE_OPERATORS: ${picatSettings.SPACE_AROUND_MULTIPLICATIVE_OPERATORS}")
-        println("[DEBUG_LOG] SPACE_AROUND_RELATIONAL_OPERATORS: ${picatSettings.SPACE_AROUND_RELATIONAL_OPERATORS}")
-        println("[DEBUG_LOG] SPACE_AROUND_EQUALITY_OPERATORS: ${picatSettings.SPACE_AROUND_EQUALITY_OPERATORS}")
-        println("[DEBUG_LOG] SPACE_AROUND_LOGICAL_OPERATORS: ${picatSettings.SPACE_AROUND_LOGICAL_OPERATORS}")
-        println("[DEBUG_LOG] SPACE_AROUND_RULE_OPERATORS: ${picatSettings.SPACE_AROUND_RULE_OPERATORS}")
-        println("[DEBUG_LOG] SPACE_AROUND_CONSTRAINT_OPERATORS: ${picatSettings.SPACE_AROUND_CONSTRAINT_OPERATORS}")
-        println("[DEBUG_LOG] SPACE_AROUND_TERM_COMPARISON_OPERATORS: ${picatSettings.SPACE_AROUND_TERM_COMPARISON_OPERATORS}")
 
         // Create a spacing builder with explicit spacing rules
         val builder = SpacingBuilder(settings, PicatLanguage)
@@ -81,7 +62,6 @@ class PicatFormattingModelBuilder : FormattingModelBuilder {
             .withinPair(Tokens.LBRACKET, Tokens.RBRACKET).spaceIf(picatSettings.SPACE_WITHIN_BRACKETS)
             .withinPair(Tokens.LBRACE, Tokens.RBRACE).spaceIf(picatSettings.SPACE_WITHIN_BRACES)
 
-        println("[DEBUG_LOG] Created spacing builder: $builder")
         return builder
     }
 
