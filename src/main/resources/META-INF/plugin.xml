@@ -87,5 +87,19 @@
             implementationClass="com.github.avrilfanomar.picatplugin.language.formatting.PicatFormattingModelBuilder"/>
         <codeStyleSettingsProvider implementation="com.github.avrilfanomar.picatplugin.language.formatting.PicatCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider implementation="com.github.avrilfanomar.picatplugin.language.formatting.PicatLanguageCodeStyleSettingsProvider"/>
+
+        <!-- PSI and Parser -->
+        <lang.parserDefinition
+            language="Picat"
+            implementationClass="com.github.avrilfanomar.picatplugin.language.parser.PicatParserDefinition"/>
+
+        <!-- Structure View -->
+        <lang.psiStructureViewFactory
+            language="Picat"
+            implementationClass="com.github.avrilfanomar.picatplugin.language.structure.PicatStructureViewFactory"/>
+
+        <!-- Reference Contributor -->
+        <psi.referenceContributor
+            implementation="com.github.avrilfanomar.picatplugin.language.references.PicatReferenceContributor"/>
     </extensions>
 </idea-plugin>

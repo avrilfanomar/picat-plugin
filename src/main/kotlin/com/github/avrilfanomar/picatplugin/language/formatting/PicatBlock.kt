@@ -182,7 +182,9 @@ class PicatBlock(
             println("[DEBUG_LOG]   Parent node: ${parentNode.elementType}")
 
             val elementType = myNode.elementType
+            val elementTypeStr = elementType.toString()
             val text = myNode.text.trim()
+            val parentTypeStr = parentNode.elementType.toString()
 
             // Special handling for comments
             if (elementType == PicatTokenTypes.COMMENT || text.startsWith("%")) {
@@ -205,6 +207,33 @@ class PicatBlock(
                 elementType == PicatTokenTypes.FOREACH_KEYWORD) {
                 println("[DEBUG_LOG]   Keyword, using none indent")
                 return Indent.getNoneIndent()
+            }
+
+            // PSI-aware indentation rules
+
+            // If we're inside a predicate body, indent
+            if (parentTypeStr == "Picat:PREDICATE_BODY" || parentTypeStr.contains("PicatPredicateBody")) {
+                println("[DEBUG_LOG]   Inside predicate body, using normal indent")
+                return Indent.getNormalIndent()
+            }
+
+            // If we're inside a function body, indent
+            if (parentTypeStr == "Picat:FUNCTION_BODY" || parentTypeStr.contains("PicatFunctionBody")) {
+                println("[DEBUG_LOG]   Inside function body, using normal indent")
+                return Indent.getNormalIndent()
+            }
+
+            // If we're inside a clause list, indent
+            if (parentTypeStr == "Picat:CLAUSE_LIST" || parentTypeStr.contains("PicatClauseList")) {
+                println("[DEBUG_LOG]   Inside clause list, using normal indent")
+                return Indent.getNormalIndent()
+            }
+
+            // If we're a clause in a clause list, indent
+            if ((elementTypeStr == "Picat:CLAUSE" || elementTypeStr.contains("PicatClause")) &&
+                (parentTypeStr == "Picat:CLAUSE_LIST" || parentTypeStr.contains("PicatClauseList"))) {
+                println("[DEBUG_LOG]   Clause in clause list, using normal indent")
+                return Indent.getNormalIndent()
             }
 
             // Check if we're inside a rule body
@@ -352,20 +381,47 @@ class PicatBlock(
             return Indent.getNormalIndent()
         }
 
+        // PSI-aware indentation rules
+        val elementTypeStr = elementType.toString()
+
         // For predicate definitions, we want to indent the body
-        if (elementType.toString() == "Picat:PREDICATE_DEFINITION") {
+        if (elementTypeStr == "Picat:PREDICATE_DEFINITION" || elementTypeStr.contains("PicatPredicateDefinition")) {
             println("[DEBUG_LOG]   Predicate definition, indenting children")
             return Indent.getNormalIndent()
         }
 
+        // For predicate bodies, we want to indent the clauses
+        if (elementTypeStr == "Picat:PREDICATE_BODY" || elementTypeStr.contains("PicatPredicateBody")) {
+            println("[DEBUG_LOG]   Predicate body, indenting children")
+            return Indent.getNormalIndent()
+        }
+
+        // For function definitions, we want to indent the body
+        if (elementTypeStr == "Picat:FUNCTION_DEFINITION" || elementTypeStr.contains("PicatFunctionDefinition")) {
+            println("[DEBUG_LOG]   Function definition, indenting children")
+            return Indent.getNormalIndent()
+        }
+
+        // For function bodies, we want to indent the expression
+        if (elementTypeStr == "Picat:FUNCTION_BODY" || elementTypeStr.contains("PicatFunctionBody")) {
+            println("[DEBUG_LOG]   Function body, indenting children")
+            return Indent.getNormalIndent()
+        }
+
+        // For clause lists, we want to indent the clauses
+        if (elementTypeStr == "Picat:CLAUSE_LIST" || elementTypeStr.contains("PicatClauseList")) {
+            println("[DEBUG_LOG]   Clause list, indenting children")
+            return Indent.getNormalIndent()
+        }
+
         // For rule bodies, we want to indent the statements
-        if (elementType.toString() == "Picat:RULE_BODY") {
+        if (elementTypeStr == "Picat:RULE_BODY") {
             println("[DEBUG_LOG]   Rule body, indenting children")
             return Indent.getNormalIndent()
         }
 
         // For block statements, we want to indent the contents
-        if (elementType.toString() == "Picat:BLOCK_STATEMENT") {
+        if (elementTypeStr == "Picat:BLOCK_STATEMENT") {
             println("[DEBUG_LOG]   Block statement, indenting children")
             return Indent.getNormalIndent()
         }

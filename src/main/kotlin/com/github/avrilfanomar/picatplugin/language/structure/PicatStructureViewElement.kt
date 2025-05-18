@@ -1,0 +1,94 @@
+package com.github.avrilfanomar.picatplugin.language.structure
+
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition
+import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateDefinition
+import com.intellij.ide.projectView.PresentationData
+import com.intellij.ide.structureView.StructureViewTreeElement
+import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
+import com.intellij.ide.util.treeView.smartTree.TreeElement
+import com.intellij.navigation.ItemPresentation
+import com.intellij.psi.NavigatablePsiElement
+import com.intellij.psi.PsiElement
+import javax.swing.Icon
+
+/**
+ * Structure view element for Picat files.
+ * Represents elements in the structure view tree.
+ */
+class PicatStructureViewElement(private val element: PsiElement) : 
+    StructureViewTreeElement, SortableTreeElement {
+    
+    override fun getValue(): Any = element
+    
+    override fun navigate(requestFocus: Boolean) {
+        if (element is NavigatablePsiElement) {
+            element.navigate(requestFocus)
+        }
+    }
+    
+    override fun canNavigate(): Boolean = 
+        element is NavigatablePsiElement && (element as NavigatablePsiElement).canNavigate()
+    
+    override fun canNavigateToSource(): Boolean = 
+        element is NavigatablePsiElement && (element as NavigatablePsiElement).canNavigateToSource()
+    
+    override fun getAlphaSortKey(): String = 
+        when (element) {
+            is PicatPredicateDefinition -> (element.getName() ?: "") + "/" + element.getArity()
+            is PicatFunctionDefinition -> (element.getName() ?: "") + "/" + element.getArity()
+            else -> element.toString()
+        }
+    
+    override fun getPresentation(): ItemPresentation {
+        val presentation = when (element) {
+            is PicatFile -> PresentationData(
+                (element as PicatFile).name,
+                "Picat File",
+                null,
+                null
+            )
+            is PicatPredicateDefinition -> {
+                val name = element.getName()
+                val arity = element.getArity()
+                PresentationData(
+                    "$name/$arity",
+                    "Predicate",
+                    null,
+                    null
+                )
+            }
+            is PicatFunctionDefinition -> {
+                val name = element.getName()
+                val arity = element.getArity()
+                PresentationData(
+                    "$name/$arity",
+                    "Function",
+                    null,
+                    null
+                )
+            }
+            else -> PresentationData(element.toString(), "", null, null)
+        }
+        return presentation
+    }
+    
+    override fun getChildren(): Array<TreeElement> {
+        if (element !is PicatFile) return emptyArray()
+        
+        val file = element as PicatFile
+        val result = mutableListOf<TreeElement>()
+        
+        // Add predicates
+        file.getPredicates().forEach { 
+            result.add(PicatStructureViewElement(it))
+        }
+        
+        // Add functions
+        file.getFunctions().forEach {
+            result.add(PicatStructureViewElement(it))
+        }
+        
+        return result.toTypedArray()
+    }
+}
