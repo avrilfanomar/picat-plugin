@@ -10,27 +10,277 @@
   elementTypeHolderClass="com.github.avrilfanomar.picatplugin.language.psi.PicatTypes"
   elementTypeClass="com.github.avrilfanomar.picatplugin.language.psi.PicatElementType"
   tokenTypeClass="com.github.avrilfanomar.picatplugin.language.psi.PicatTokenType"
+
+  tokens = [
+    // Keywords
+    MODULE_KEYWORD="module"
+    END_MODULE_KEYWORD="end_module"
+    IMPORT_KEYWORD="import"
+    EXPORT_KEYWORD="export"
+    INCLUDE_KEYWORD="include"
+    IF_KEYWORD="if"
+    THEN_KEYWORD="then"
+    ELSE_KEYWORD="else"
+    END_KEYWORD="end"
+    FOREACH_KEYWORD="foreach"
+    IN_KEYWORD="in"
+    RETURN_KEYWORD="return"
+    CONTINUE_KEYWORD="continue"
+    BREAK_KEYWORD="break"
+    NOT_KEYWORD="not"
+    FAIL_KEYWORD="fail"
+    TRUE_KEYWORD="true"
+
+    // Operators
+    ARROW_OP="=>"
+    BACKTRACKABLE_ARROW_OP="?=>"
+    BICONDITIONAL_OP="<=>"
+    BACKTRACKABLE_BICONDITIONAL_OP="?<=>"
+    RULE_OP=":-"
+    ASSIGN_OP=":="
+    EQUAL="="
+    NOT_EQUAL="!="
+    LESS="<"
+    GREATER=">"
+    LESS_EQUAL="<="
+    GREATER_EQUAL=">="
+    IDENTICAL="=:="
+    NOT_IDENTICAL="=\\="
+    PLUS="+"
+    MINUS="-"
+    MULTIPLY="*"
+    POWER="**"
+    DIVIDE="/"
+    INT_DIVIDE="//"
+    MOD_KEYWORD="mod"
+    SHIFT_LEFT="<<"
+    SHIFT_RIGHT=">>"
+    BACKSLASH="\\"
+    AND_KEYWORD="and"
+    OR_KEYWORD="or"
+    CARET="^"
+    AMPERSAND="&"
+    PIPE="|"
+    IS_KEYWORD="is"
+
+    // Separators
+    DOT="."
+    COMMA=","
+    SEMICOLON=";"
+    COLON=":"
+    LPAR="("
+    RPAR=")"
+    LBRACKET="["
+    RBRACKET="]"
+    LBRACE="{"
+    RBRACE="}"
+    CUT="!"
+
+    // Literals
+    IDENTIFIER="regexp:[a-z][a-zA-Z0-9_]*"
+    VARIABLE="regexp:[A-Z][a-zA-Z0-9_]*"
+    ANONYMOUS_VARIABLE="regexp:_[a-zA-Z0-9_]*"
+    INTEGER="regexp:[0-9]+"
+    HEX_INTEGER="regexp:0[xX][0-9a-fA-F]+"
+    OCTAL_INTEGER="regexp:0[oO][0-7]+"
+    BINARY_INTEGER="regexp:0[bB][01]+"
+    FLOAT="regexp:[0-9]+\.[0-9]+"
+    STRING="regexp:\"[^\"]*\""
+    QUOTED_ATOM="regexp:'[^']*'"
+    COMMENT="regexp:%[^\r\n]*"
+  ]
 }
 
 // Root rule
-picatFile ::= item_*
+picatFile ::= program
 
-private item_ ::= (predicate_definition | function_definition | module_declaration | import_statement | COMMENT)
+program ::= item_*
+
+private item_ ::= (module_decl | directive | statement | rule | fact | COMMENT)
 
 // Module declaration
+module_decl ::= module_declaration | end_module_declaration
 module_declaration ::= "module" module_name "." {
   pin=1
   methods=[getName getModuleName]
 }
-module_name ::= identifier
-
-// Import statement
-import_statement ::= "import" module_name "." {
+end_module_declaration ::= "end_module" "." {
   pin=1
-  methods=[getModuleName]
+}
+module_name ::= atom
+
+// Directives
+directive ::= import_statement | export_statement | include_statement
+import_statement ::= "import" module_list "." {
+  pin=1
+  methods=[getModuleList]
+}
+export_statement ::= "export" export_list "." {
+  pin=1
+  methods=[getExportList]
+}
+include_statement ::= "include" STRING "." {
+  pin=1
+  methods=[getIncludePath]
 }
 
-// Predicate definition
+module_list ::= atom ("," atom)* {
+  methods=[getModules]
+}
+
+export_list ::= predicate_indicator ("," predicate_indicator)* {
+  methods=[getPredicateIndicators]
+}
+
+predicate_indicator ::= atom "/" INTEGER {
+  methods=[getName getArity]
+}
+
+// Facts
+fact ::= head "." {
+  pin=1
+  methods=[getHead]
+}
+
+// Rules
+rule ::= head rule_operator body "." {
+  pin=2
+  methods=[getHead getBody getRuleOperator]
+}
+
+rule_operator ::= "=>" | "?=>" | "<=>" | "?<=>" | ":-" {
+  methods=[getOperatorType]
+}
+
+head ::= atom | structure {
+  methods=[getName getArity]
+}
+
+body ::= goal ("," goal)* {
+  methods=[getGoals]
+}
+
+// Goals
+goal ::= call 
+       | if_then_else 
+       | assignment 
+       | unification 
+       | comparison 
+       | arithmetic_comparison 
+       | negation 
+       | fail 
+       | true_goal 
+       | not_goal 
+       | foreach_loop 
+       | list_comprehension 
+       | procedure_call 
+       | cut 
+       | return_stmt 
+       | continue_stmt 
+       | break_stmt {
+  methods=[getType]
+}
+
+call ::= atom | structure {
+  methods=[getName getArity]
+}
+
+if_then_else ::= "if" expression "then" body ["else" body] "end" {
+  pin=1
+  methods=[getCondition getThenBody getElseBody]
+}
+
+assignment ::= variable ":=" expression {
+  pin=2
+  methods=[getVariable getExpression]
+}
+
+unification ::= expression "=" expression | expression "!=" expression {
+  pin=2
+  methods=[getLeftExpression getRightExpression getOperator]
+}
+
+comparison ::= expression comparison_operator expression {
+  pin=2
+  methods=[getLeftExpression getRightExpression getOperator]
+}
+
+comparison_operator ::= "<" | ">" | "<=" | ">=" {
+  methods=[getOperatorType]
+}
+
+arithmetic_comparison ::= expression arithmetic_comparison_operator expression {
+  pin=2
+  methods=[getLeftExpression getRightExpression getOperator]
+}
+
+arithmetic_comparison_operator ::= "=:=" | "=\\=" {
+  methods=[getOperatorType]
+}
+
+negation ::= "not" goal {
+  pin=1
+  methods=[getGoal]
+}
+
+fail ::= "fail" {
+  methods=[getType]
+}
+
+true_goal ::= "true" {
+  methods=[getType]
+}
+
+not_goal ::= "not" goal {
+  pin=1
+  methods=[getGoal]
+}
+
+foreach_loop ::= "foreach" "(" foreach_generators ")" body "end" {
+  pin=1
+  methods=[getGenerators getBody]
+}
+
+foreach_generators ::= foreach_generator ("," foreach_generator)* {
+  methods=[getGenerators]
+}
+
+foreach_generator ::= variable "in" expression | variable "=" expression {
+  pin=2
+  methods=[getVariable getExpression getOperator]
+}
+
+list_comprehension ::= "[" expression "|" foreach_generators "]" {
+  pin=3
+  methods=[getExpression getGenerators]
+}
+
+procedure_call ::= atom "(" [argument_list] ")" {
+  pin=2
+  methods=[getName getArity getArgumentList]
+}
+
+cut ::= "!" {
+  methods=[getType]
+}
+
+return_stmt ::= "return" expression {
+  pin=1
+  methods=[getExpression]
+}
+
+continue_stmt ::= "continue" {
+  methods=[getType]
+}
+
+break_stmt ::= "break" {
+  methods=[getType]
+}
+
+// Statements (for compatibility with existing code)
+statement ::= predicate_definition | function_definition
+
+// Predicate definition (for compatibility with existing code)
 predicate_definition ::= predicate_head predicate_body "." {
   pin=1
   methods=[getName getArity getHead getBody]
@@ -40,7 +290,7 @@ predicate_head ::= identifier "(" [argument_list] ")" {
 }
 predicate_body ::= clause_list
 
-// Function definition
+// Function definition (for compatibility with existing code)
 function_definition ::= function_head function_body "." {
   pin=1
   methods=[getName getArity getHead getBody]
@@ -50,7 +300,7 @@ function_head ::= identifier "(" [argument_list] ")" "=" {
 }
 function_body ::= expression
 
-// Clauses
+// Clauses (for compatibility with existing code)
 clause_list ::= clause (("," | ";") clause)*
 clause ::= expression
 
@@ -59,34 +309,67 @@ argument_list ::= argument ("," argument)*
 argument ::= expression
 
 // Expressions
-expression ::= term (operator term)*
-term ::= literal | variable | list | structure | "(" expression ")"
+expression ::= term (operator term)* {
+  methods=[getTerms getOperators]
+}
+
+term ::= atom 
+       | number 
+       | STRING 
+       | variable 
+       | list 
+       | tuple 
+       | "(" expression ")" {
+  methods=[getType]
+}
 
 // Literals
-literal ::= INTEGER | FLOAT | STRING | atom
-atom ::= identifier | QUOTED_ATOM
-
-// Variables
-variable ::= VARIABLE
+number ::= INTEGER | FLOAT | HEX_INTEGER | OCTAL_INTEGER | BINARY_INTEGER {
+  methods=[getValue getType]
+}
 
 // Lists
-list ::= "[" [list_elements] "]"
-list_elements ::= expression ("," expression)* ["," "|" "," expression]
+list ::= "[" [list_items] "]" {
+  methods=[getItems]
+}
 
-// Structures
-structure ::= identifier "(" [argument_list] ")"
+list_items ::= expression ("," expression)* ["," "|" expression] {
+  methods=[getExpressions getTail]
+}
+
+// Tuples
+tuple ::= "{" [tuple_items] "}" {
+  methods=[getItems]
+}
+
+tuple_items ::= expression ("," expression)* {
+  methods=[getExpressions]
+}
 
 // Operators
-operator ::= "+" | "-" | "*" | "/" | "=" | "!=" | "<" | ">" | "<=" | ">=" | "==" | "!=" | "=:=" | "=\\=" | "is"
+operator ::= "+" | "-" | "*" | "/" | "mod" | "**" | "<<" | ">>" | "\\" | "/" | "//" 
+           | "and" | "or" | "^" | "&" | "|" | "is" {
+  methods=[getOperatorType]
+}
+
+// Atoms
+atom ::= identifier | QUOTED_ATOM {
+  methods=[getName]
+}
+
+// Variables
+variable ::= VARIABLE | ANONYMOUS_VARIABLE {
+  methods=[getName]
+}
+
+// Structures (for compatibility with existing code)
+structure ::= atom "(" [argument_list] ")" {
+  methods=[getName getArity getArgumentList]
+}
 
 // Identifiers
-identifier ::= IDENTIFIER
+identifier ::= IDENTIFIER {
+  methods=[getName]
+}
 
-// Tokens
-IDENTIFIER ::= regexp:[a-z][a-zA-Z0-9_]*
-VARIABLE ::= regexp:[A-Z_][a-zA-Z0-9_]*
-INTEGER ::= regexp:[0-9]+
-FLOAT ::= regexp:[0-9]+\.[0-9]+
-STRING ::= regexp:"[^"]*"
-QUOTED_ATOM ::= regexp:'[^']*'
-COMMENT ::= regexp:%[^\r\n]*
+// External tokens defined in the header
