@@ -59,12 +59,13 @@ class PicatFormattingTest : BasePlatformTestCase() {
     fun testOperatorSpacing() {
         // Test that spaces are added around operators
         val code = """
-            main=>X=10,Y=20,Z=X+Y*2,println(Z).
-        """.trimIndent()
+main=>X=10,Y=20,Z=X+Y*2,println(Z).
+        """
 
         val expected = """
-            main => X = 10, Y = 20, Z = X + Y * 2, println(Z).
-        """.trimIndent()
+main =>
+    X = 10, Y = 20, Z = X + Y * 2, println(Z).
+        """
 
         doFormatTest(code, expected)
     }
@@ -95,19 +96,19 @@ class PicatFormattingTest : BasePlatformTestCase() {
             foreach(I in 1..5)
             println(I)
             end.
-        """.trimIndent()
+        """
 
         val expected = """
-            main =>
-                if X > 10 then
-                    println("X is greater than 10")
-                else
-                    println("X is not greater than 10")
-                end,
-                foreach(I in 1..5)
-                    println(I)
-                end.
-        """.trimIndent()
+main =>
+    if X > 10 then
+        println("X is greater than 10")
+    else
+        println("X is not greater than 10")
+    end,
+    foreach(I in 1..5)
+        println(I)
+    end.
+        """
 
         doFormatTest(code, expected)
     }
@@ -121,15 +122,15 @@ class PicatFormattingTest : BasePlatformTestCase() {
             % This is another comment
             X=10, % This is an inline comment
             println(X).
-        """.trimIndent()
+        """
 
         val expected = """
-            % This is a comment
-            main =>
-                % This is another comment
-                X = 10, % This is an inline comment
-                println(X).
-        """.trimIndent()
+% This is a comment
+main =>
+    % This is another comment
+    X = 10, % This is an inline comment
+    println(X).
+        """
 
         doFormatTest(code, expected)
     }
@@ -138,24 +139,24 @@ class PicatFormattingTest : BasePlatformTestCase() {
     fun testLineBreaksAndBlankLines() {
         // Test that line breaks and blank lines are preserved
         val code = """
-            main=>
+main=>
 
-            X=10,
+X=10,
 
-            Y=20,
-            Z=X+Y,
-            println(Z).
-        """.trimIndent()
+Y=20,
+Z=X+Y,
+println(Z).
+        """
 
         val expected = """
-            main =>
+main =>
 
-                X = 10,
+    X = 10,
 
-                Y = 20,
-                Z = X + Y,
-                println(Z).
-        """.trimIndent()
+    Y = 20,
+    Z = X + Y,
+    println(Z).
+        """
 
         doFormatTest(code, expected)
     }
@@ -172,7 +173,7 @@ class PicatFormattingTest : BasePlatformTestCase() {
             fib(0)=0.
             fib(1)=1.
             fib(N)=fib(N-1)+fib(N-2)=>N>1.
-        """.trimIndent()
+        """
 
         val expected = """
             % Predicate definition with =>
@@ -183,7 +184,7 @@ class PicatFormattingTest : BasePlatformTestCase() {
             fib(0) = 0.
             fib(1) = 1.
             fib(N) = fib(N - 1) + fib(N - 2) => N > 1.
-        """.trimIndent()
+        """
 
         doFormatTest(code, expected)
     }
@@ -203,7 +204,7 @@ class PicatFormattingTest : BasePlatformTestCase() {
 
             solve=>
             println("No more solutions").
-        """.trimIndent()
+        """
 
         val expected = """
             % Backtrackable rule with ?=>
@@ -217,7 +218,7 @@ class PicatFormattingTest : BasePlatformTestCase() {
 
             solve =>
                 println("No more solutions").
-        """.trimIndent()
+        """
 
         doFormatTest(code, expected)
     }
@@ -243,27 +244,27 @@ class PicatFormattingTest : BasePlatformTestCase() {
             end,
 
             solve(Rows).
-        """.trimIndent()
+        """
 
         val expected = """
-            % Constraint programming example
-            sudoku =>
-                Rows = new_array(9, 9),
-                Rows :: 1..9,
+% Constraint programming example
+sudoku =>
+    Rows = new_array(9, 9),
+    Rows :: 1..9,
 
-                % Constraints
-                foreach(I in 1..9)
-                    all_different([Rows[I, J] : J in 1..9]),
-                    all_different([Rows[J, I] : J in 1..9])
-                end,
+    % Constraints
+    foreach(I in 1..9)
+        all_different([Rows[I, J] : J in 1..9]),
+        all_different([Rows[J, I] : J in 1..9])
+    end,
 
-                % Block constraints
-                foreach(I in 0..2, J in 0..2)
-                    all_different([Rows[I * 3 + X, J * 3 + Y] : X in 1..3, Y in 1..3])
-                end,
+    % Block constraints
+    foreach(I in 0..2, J in 0..2)
+        all_different([Rows[I * 3 + X, J * 3 + Y] : X in 1..3, Y in 1..3])
+    end,
 
-                solve(Rows).
-        """.trimIndent()
+    solve(Rows).
+        """
 
         doFormatTest(code, expected)
     }
@@ -285,23 +286,23 @@ class PicatFormattingTest : BasePlatformTestCase() {
             elseif X@>=Y then
             println("X is greater than or equal to Y")
             end.
-        """.trimIndent()
+        """
 
         val expected = """
-            % Term comparison example
-            compare_terms =>
-                X = 10,
-                Y = 20,
-                if X @< Y then
-                    println("X is less than Y")
-                elseif X @=< Y then
-                    println("X is less than or equal to Y")
-                elseif X @> Y then
-                    println("X is greater than Y")
-                elseif X @>= Y then
-                    println("X is greater than or equal to Y")
-                end.
-        """.trimIndent()
+% Term comparison example
+compare_terms =>
+    X = 10,
+    Y = 20,
+    if X @< Y then
+        println("X is less than Y")
+    elseif X @=< Y then
+        println("X is less than or equal to Y")
+    elseif X @> Y then
+        println("X is greater than Y")
+    elseif X @>= Y then
+        println("X is greater than or equal to Y")
+    end.
+        """
 
         doFormatTest(code, expected)
     }
@@ -323,23 +324,23 @@ class PicatFormattingTest : BasePlatformTestCase() {
             else
             println("X is not greater than 10")
             end.
-        """.trimIndent()
+        """
 
         val expected = """
-            % Nested structures example
-            nested_example =>
-                if X > 10 then
-                    foreach(I in 1..X)
-                        if I mod 2 == 0 then
-                            println("Even: " ++ I)
-                        else
-                            println("Odd: " ++ I)
-                        end
-                    end
-                else
-                    println("X is not greater than 10")
-                end.
-        """.trimIndent()
+% Nested structures example
+nested_example =>
+    if X > 10 then
+        foreach(I in 1..X)
+            if I mod 2 == 0 then
+                println("Even: " ++ I)
+            else
+                println("Odd: " ++ I)
+            end
+        end
+    else
+        println("X is not greater than 10")
+    end.
+        """
 
         doFormatTest(code, expected)
     }
@@ -367,29 +368,29 @@ class PicatFormattingTest : BasePlatformTestCase() {
             % Anonymous variables
             _=42,
             println(X+Y).
-        """.trimIndent()
+        """
 
         val expected = """
-            % Literals example
-            literals_example =>
-                % Integers
-                X = 42,
-                % Floats
-                Y = 3.14,
-                % Strings
-                S = "Hello, world!",
-                % Atoms
-                A = atom,
-                % Lists
-                L = [1, 2, 3, 4, 5],
-                % Structures
-                St = point(10, 20),
-                % Variables
-                Var = X,
-                % Anonymous variables
-                _ = 42,
-                println(X + Y).
-        """.trimIndent()
+% Literals example
+literals_example =>
+    % Integers
+    X = 42,
+    % Floats
+    Y = 3.14,
+    % Strings
+    S = "Hello, world!",
+    % Atoms
+    A = atom,
+    % Lists
+    L = [1, 2, 3, 4, 5],
+    % Structures
+    St = point(10, 20),
+    % Variables
+    Var = X,
+    % Anonymous variables
+    _ = 42,
+    println(X + Y).
+        """
 
         doFormatTest(code, expected)
     }
@@ -421,6 +422,32 @@ class PicatFormattingTest : BasePlatformTestCase() {
     }
 
     @Test
+    fun testConstraintRuleOperatorFormatting() {
+        // Test formatting of constraint rule operators (#=>, #<=>)
+        val code = """
+        % Constraint rule operators example
+        constraint_rule_example=>
+        % Constraint implication
+        X#=>Y,
+        % Constraint equivalence
+        A#<=>B,
+        println("Done").
+        """
+
+        val expected = """
+% Constraint rule operators example
+constraint_rule_example =>
+    % Constraint implication
+    X #=> Y,
+    % Constraint equivalence
+    A #<=> B,
+    println("Done").
+        """
+
+        doFormatTest(code, expected)
+    }
+
+    @Test
     fun testComplexSecondReformatting() {
         // Test that formatting already formatted code doesn't change it
         // This verifies that formatting is idempotent for more complex code
@@ -438,7 +465,7 @@ class PicatFormattingTest : BasePlatformTestCase() {
             foreach(I in 1..3)
             println(I)
             end.
-        """.trimIndent()
+        """
 
         // Format it once
         myFixture.configureByText("complex.pi", code)
