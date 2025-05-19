@@ -3,10 +3,10 @@ package com.github.avrilfanomar.picatplugin.language
 import com.github.avrilfanomar.picatplugin.language.formatting.PicatFormattingModelBuilder
 import com.intellij.formatting.FormattingModelBuilder
 import com.intellij.lang.LanguageFormatting
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.Test
-import com.intellij.openapi.command.WriteCommandAction
 
 /**
  * Test for Picat code formatting.
@@ -17,7 +17,7 @@ class PicatFormattingTest : BasePlatformTestCase() {
 
     /**
      * Helper method to test code formatting.
-     * 
+     *
      * @param code The input code to format
      * @param expected The expected formatted output
      * @param filename Optional filename for the test file (defaults to "test.pi")
@@ -50,8 +50,10 @@ class PicatFormattingTest : BasePlatformTestCase() {
         assertNotNull("FormattingModelBuilder should be registered for Picat language", formattingModelBuilder)
 
         // Assert that it's an instance of PicatFormattingModelBuilder
-        assertTrue("FormattingModelBuilder should be an instance of PicatFormattingModelBuilder", 
-                  formattingModelBuilder is PicatFormattingModelBuilder)
+        assertTrue(
+            "FormattingModelBuilder should be an instance of PicatFormattingModelBuilder",
+            formattingModelBuilder is PicatFormattingModelBuilder
+        )
     }
 
     @Test
@@ -74,8 +76,10 @@ class PicatFormattingTest : BasePlatformTestCase() {
         val formattingModelBuilder = PicatFormattingModelBuilder()
 
         // Verify that it's an instance of FormattingModelBuilder
-        assertTrue("PicatFormattingModelBuilder should implement FormattingModelBuilder",
-                  formattingModelBuilder is FormattingModelBuilder)
+        assertTrue(
+            "PicatFormattingModelBuilder should implement FormattingModelBuilder",
+            formattingModelBuilder is FormattingModelBuilder
+        )
 
     }
 
@@ -96,8 +100,10 @@ class PicatFormattingTest : BasePlatformTestCase() {
         )
 
         // Verify that it's an instance of Block
-        assertTrue("PicatBlock should implement Block",
-                  block is com.intellij.formatting.Block)
+        assertTrue(
+            "PicatBlock should implement Block",
+            block is com.intellij.formatting.Block
+        )
 
         // Verify that the block has the expected properties
         assertNotNull("PicatBlock should have a spacing builder", block)

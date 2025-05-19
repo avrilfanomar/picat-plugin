@@ -80,7 +80,7 @@ class PicatBasicModuleTest : LexerTestCase() {
 
             // Check for expected basic module functions that are not recognized
             val expectedBasicModuleFunctions = listOf(
-                "length", "append", "sort", "member", "max", "min", "reverse", 
+                "length", "append", "sort", "member", "max", "min", "reverse",
                 "flatten", "new_map", "put", "get", "keys", "values"
             )
 
