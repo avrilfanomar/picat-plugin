@@ -84,9 +84,8 @@
         <!-- Formatting -->
         <lang.formatter
             language="Picat"
-            implementationClass="com.github.avrilfanomar.picatplugin.language.formatting.PicatFormattingModelBuilder"/>
-        <codeStyleSettingsProvider implementation="com.github.avrilfanomar.picatplugin.language.formatting.PicatCodeStyleSettingsProvider"/>
-        <langCodeStyleSettingsProvider implementation="com.github.avrilfanomar.picatplugin.language.formatting.PicatLanguageCodeStyleSettingsProvider"/>
+            implementationClass="com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder"/>
+        <langCodeStyleSettingsProvider implementation="com.github.avrilfanomar.picatplugin.language.formatter.PicatLanguageCodeStyleSettingsProvider"/>
 
         <!-- PSI and Parser -->
         <lang.parserDefinition

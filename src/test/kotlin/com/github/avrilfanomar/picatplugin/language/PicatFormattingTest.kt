@@ -1,10 +1,9 @@
 package com.github.avrilfanomar.picatplugin.language
 
-import com.github.avrilfanomar.picatplugin.language.formatting.PicatFormattingModelBuilder
+import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder
 import com.intellij.formatting.FormattingModelBuilder
 import com.intellij.lang.LanguageFormatting
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.Test
 
@@ -80,33 +79,6 @@ class PicatFormattingTest : BasePlatformTestCase() {
             "PicatFormattingModelBuilder should implement FormattingModelBuilder",
             formattingModelBuilder is FormattingModelBuilder
         )
-
-    }
-
-    @Test
-    fun testPicatBlockImplementation() {
-        // Test that the PicatBlock class is implemented correctly
-        val node = com.intellij.lang.ASTFactory.leaf(PicatTokenTypes.IDENTIFIER, "test")
-        val settings = CodeStyleSettingsManager.getInstance(project).currentSettings
-        val spacingBuilder = com.intellij.formatting.SpacingBuilder(settings, PicatLanguage)
-
-        // Create a PicatBlock
-        val block = com.github.avrilfanomar.picatplugin.language.formatting.PicatBlock(
-            node,
-            null,
-            null,
-            settings,
-            spacingBuilder
-        )
-
-        // Verify that it's an instance of Block
-        assertTrue(
-            "PicatBlock should implement Block",
-            block is com.intellij.formatting.Block
-        )
-
-        // Verify that the block has the expected properties
-        assertNotNull("PicatBlock should have a spacing builder", block)
 
     }
 
