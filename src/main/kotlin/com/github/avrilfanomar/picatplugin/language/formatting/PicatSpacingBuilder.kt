@@ -18,67 +18,64 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
     init {
         val picatSettings = settings.getCustomSettings(PicatCodeStyleSettings::class.java)
 
-        // Create a spacing builder with explicit spacing rules
+        // Create a spacing builder with spacing rules based on settings
         spacingBuilder = SpacingBuilder(settings, PicatLanguage)
-            // Add spaces around operators - force to true instead of using settings
-            // Use exact spacing to ensure consistent formatting
-            .around(Tokens.ASSIGNMENT_OPERATORS).spacing(1, 1, 0, false, 0)
-            .around(Tokens.ADDITIVE_OPERATORS).spacing(1, 1, 0, false, 0)
-            .around(Tokens.MULTIPLICATIVE_OPERATORS).spacing(1, 1, 0, false, 0)
-            .around(Tokens.RELATIONAL_OPERATORS).spacing(1, 1, 0, false, 0)
-            .around(Tokens.EQUALITY_OPERATORS).spacing(1, 1, 0, false, 0)
-            .around(Tokens.LOGICAL_OPERATORS).spacing(1, 1, 0, false, 0)
+            // Add spaces around operators based on settings
+            .around(Tokens.ASSIGNMENT_OPERATORS).spaceIf(picatSettings.SPACE_AROUND_ASSIGNMENT_OPERATORS)
+            .around(Tokens.ADDITIVE_OPERATORS).spaceIf(picatSettings.SPACE_AROUND_ADDITIVE_OPERATORS)
+            .around(Tokens.MULTIPLICATIVE_OPERATORS).spaceIf(picatSettings.SPACE_AROUND_MULTIPLICATIVE_OPERATORS)
+            .around(Tokens.RELATIONAL_OPERATORS).spaceIf(picatSettings.SPACE_AROUND_RELATIONAL_OPERATORS)
+            .around(Tokens.EQUALITY_OPERATORS).spaceIf(picatSettings.SPACE_AROUND_EQUALITY_OPERATORS)
+            .around(Tokens.LOGICAL_OPERATORS).spaceIf(picatSettings.SPACE_AROUND_LOGICAL_OPERATORS)
 
-            // Add spaces around Picat-specific operators
-            .around(Tokens.RULE_OPERATORS).spacing(1, 1, 0, false, 0)
-            .around(Tokens.CONSTRAINT_OPERATORS).spacing(1, 1, 0, false, 0)
-            .around(Tokens.TERM_COMPARISON_OPERATORS).spacing(1, 1, 0, false, 0)
+            // Add spaces around Picat-specific operators based on settings
+            .around(Tokens.RULE_OPERATORS).spaceIf(picatSettings.SPACE_AROUND_RULE_OPERATORS)
+            .around(Tokens.CONSTRAINT_OPERATORS).spaceIf(picatSettings.SPACE_AROUND_CONSTRAINT_OPERATORS)
+            .around(Tokens.TERM_COMPARISON_OPERATORS).spaceIf(picatSettings.SPACE_AROUND_TERM_COMPARISON_OPERATORS)
+            .around(Tokens.RANGE_OPERATOR).spaceIf(picatSettings.SPACE_AROUND_RANGE_OPERATOR)
+            .around(Tokens.TYPE_CONSTRAINT_OPERATOR).spaceIf(picatSettings.SPACE_AROUND_TYPE_CONSTRAINT_OPERATOR)
+            .around(Tokens.BITWISE_OPERATORS).spaceIf(picatSettings.SPACE_AROUND_BITWISE_OPERATORS)
 
-            // No space before comma, space after comma
-            .before(Tokens.COMMA).spacing(0, 0, 0, false, 0)
-            .after(Tokens.COMMA).spacing(1, 1, 0, false, 0)
+            // Spacing around punctuation
+            .before(Tokens.COMMA).spaceIf(picatSettings.SPACE_BEFORE_COMMA)
+            .after(Tokens.COMMA).spaceIf(picatSettings.SPACE_AFTER_COMMA)
+            .around(Tokens.COLON).spaceIf(picatSettings.SPACE_AROUND_COLON)
 
-            // Add space within parentheses
+            // Spacing within parentheses, brackets, and braces
             .withinPair(Tokens.LPAR, Tokens.RPAR).spaceIf(picatSettings.SPACE_WITHIN_PARENTHESES)
             .withinPair(Tokens.LBRACKET, Tokens.RBRACKET).spaceIf(picatSettings.SPACE_WITHIN_BRACKETS)
             .withinPair(Tokens.LBRACE, Tokens.RBRACE).spaceIf(picatSettings.SPACE_WITHIN_BRACES)
 
-            // No space after left parenthesis and before right parenthesis
-            .after(Tokens.LPAR).spacing(0, 0, 0, false, 0)
-            .before(Tokens.RPAR).spacing(0, 0, 0, false, 0)
+            // Line breaks after rule operators with indentation
+            .after(Tokens.RULE_OPERATORS).spacing(0, 0, if (picatSettings.LINE_BREAK_AFTER_RULE_OPERATORS) 1 else 0, picatSettings.KEEP_LINE_BREAKS, if (picatSettings.LINE_BREAK_AFTER_RULE_OPERATORS) picatSettings.INDENT_SIZE else 0)
 
-            // No space after left bracket and before right bracket
-            .after(Tokens.LBRACKET).spacing(0, 0, 0, false, 0)
-            .before(Tokens.RBRACKET).spacing(0, 0, 0, false, 0)
+            // Line breaks after block keywords with indentation
+            .after(Tokens.THEN_KEYWORD).spacing(0, 0, if (picatSettings.LINE_BREAK_AFTER_BLOCK_KEYWORDS) 1 else 0, picatSettings.KEEP_LINE_BREAKS, if (picatSettings.LINE_BREAK_AFTER_BLOCK_KEYWORDS) picatSettings.INDENT_SIZE else 0)
+            .after(Tokens.ELSE_KEYWORD).spacing(0, 0, if (picatSettings.LINE_BREAK_AFTER_BLOCK_KEYWORDS) 1 else 0, picatSettings.KEEP_LINE_BREAKS, if (picatSettings.LINE_BREAK_AFTER_BLOCK_KEYWORDS) picatSettings.INDENT_SIZE else 0)
 
-            // No space after left brace and before right brace
-            .after(Tokens.LBRACE).spacing(0, 0, 0, false, 0)
-            .before(Tokens.RBRACE).spacing(0, 0, 0, false, 0)
+            // Spaces after control keywords
+            .after(Tokens.IF_KEYWORD).spaceIf(picatSettings.SPACE_AFTER_CONTROL_KEYWORDS)
+            .after(Tokens.FOREACH_KEYWORD).spaceIf(picatSettings.SPACE_AFTER_CONTROL_KEYWORDS)
+            .after(Tokens.FOR_KEYWORD).spaceIf(picatSettings.SPACE_AFTER_CONTROL_KEYWORDS)
+            .after(Tokens.WHILE_KEYWORD).spaceIf(picatSettings.SPACE_AFTER_CONTROL_KEYWORDS)
+            .after(Tokens.DO_KEYWORD).spaceIf(picatSettings.SPACE_AFTER_CONTROL_KEYWORDS)
+            .after(Tokens.REPEAT_KEYWORD).spaceIf(picatSettings.SPACE_AFTER_CONTROL_KEYWORDS)
+            .after(Tokens.CATCH_KEYWORD).spaceIf(picatSettings.SPACE_AFTER_CONTROL_KEYWORDS)
+            .after(Tokens.TRY_KEYWORD).spaceIf(picatSettings.SPACE_AFTER_CONTROL_KEYWORDS)
 
-            // Add line breaks after rule operators with indentation
-            .after(Tokens.RULE_OPERATORS).spacing(0, 0, 1, true, 1)
+            // Line breaks after the end keyword
+            .after(Tokens.END_KEYWORD).spacing(0, 0, if (picatSettings.LINE_BREAK_AFTER_END_KEYWORD) 1 else 0, picatSettings.KEEP_LINE_BREAKS, if (picatSettings.LINE_BREAK_AFTER_END_KEYWORD) picatSettings.INDENT_SIZE else 0)
 
-            // Add line breaks after block keywords with indentation
-            .after(Tokens.THEN_KEYWORD).spacing(0, 0, 1, true, 1)
-            .after(Tokens.ELSE_KEYWORD).spacing(0, 0, 1, true, 1)
+            // Line break after dot at the end of a predicate or function
+            .after(Tokens.DOT).spacing(0, 0, if (picatSettings.LINE_BREAK_AFTER_DOT) 1 else 0, picatSettings.KEEP_LINE_BREAKS, if (picatSettings.LINE_BREAK_AFTER_DOT) picatSettings.INDENT_SIZE else 0)
 
-            // Add spaces after block structure keywords
-            .after(Tokens.IF_KEYWORD).spacing(1, 1, 0, false, 0)
-            .after(Tokens.FOREACH_KEYWORD).spacing(1, 1, 0, false, 0)
-            .after(Tokens.FOR_KEYWORD).spacing(1, 1, 0, false, 0)
-            .after(Tokens.WHILE_KEYWORD).spacing(1, 1, 0, false, 0)
+            // Special handling for list comprehensions
+            .around(Tokens.IN_KEYWORD).spaceIf(true)
+            .around(Tokens.NOTIN_KEYWORD).spaceIf(true)
 
-            // Add line breaks after end keyword
-            .after(Tokens.END_KEYWORD).spacing(0, 0, 1, true, 0)
+            // Special handling for function calls
+            .between(Tokens.IDENTIFIER, Tokens.LPAR).spaceIf(false)
 
-            // Add spaces around colon in list comprehensions
-            .around(Tokens.COLON).spacing(1, 1, 0, false, 0)
-
-            // Add line break after dot at the end of a predicate or function
-            .after(Tokens.DOT).spacing(0, 0, 1, true, 0)
-
-            // Add space after comment
-            .after(PicatTokenTypes.COMMENT).spacing(0, 0, 1, true, 0)
     }
 
     /**
@@ -130,13 +127,20 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             PicatTokenTypes.CONSTRAINT_LT, PicatTokenTypes.CONSTRAINT_LE, PicatTokenTypes.CONSTRAINT_LE_ALT,
             PicatTokenTypes.CONSTRAINT_GT, PicatTokenTypes.CONSTRAINT_GE,
             PicatTokenTypes.CONSTRAINT_NOT, PicatTokenTypes.CONSTRAINT_AND, PicatTokenTypes.CONSTRAINT_OR,
-            PicatTokenTypes.CONSTRAINT_XOR, PicatTokenTypes.CONSTRAINT_IMPL, PicatTokenTypes.CONSTRAINT_EQUIV,
-            PicatTokenTypes.TYPE_CONSTRAINT
+            PicatTokenTypes.CONSTRAINT_XOR, PicatTokenTypes.CONSTRAINT_IMPL, PicatTokenTypes.CONSTRAINT_EQUIV
         )
 
         val TERM_COMPARISON_OPERATORS = TokenSet.create(
             PicatTokenTypes.TERM_LT, PicatTokenTypes.TERM_LE, PicatTokenTypes.TERM_LE_ALT,
             PicatTokenTypes.TERM_GT, PicatTokenTypes.TERM_GE
+        )
+
+        val RANGE_OPERATOR = PicatTokenTypes.RANGE
+        val TYPE_CONSTRAINT_OPERATOR = PicatTokenTypes.TYPE_CONSTRAINT
+
+        val BITWISE_OPERATORS = TokenSet.create(
+            PicatTokenTypes.BITWISE_AND, PicatTokenTypes.BITWISE_OR,
+            PicatTokenTypes.SHIFT_LEFT, PicatTokenTypes.SHIFT_RIGHT
         )
 
         // Block keywords
@@ -146,7 +150,15 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
         val FOREACH_KEYWORD = PicatTokenTypes.FOREACH_KEYWORD
         val FOR_KEYWORD = PicatTokenTypes.FOR_KEYWORD
         val WHILE_KEYWORD = PicatTokenTypes.WHILE_KEYWORD
+        val DO_KEYWORD = PicatTokenTypes.DO_KEYWORD
+        val REPEAT_KEYWORD = PicatTokenTypes.REPEAT_KEYWORD
+        val TRY_KEYWORD = PicatTokenTypes.TRY_KEYWORD
+        val CATCH_KEYWORD = PicatTokenTypes.CATCH_KEYWORD
         val END_KEYWORD = PicatTokenTypes.END_KEYWORD
+
+        // Special keywords
+        val IN_KEYWORD = PicatTokenTypes.IN_KEYWORD
+        val NOTIN_KEYWORD = PicatTokenTypes.NOTIN_KEYWORD
 
         // Other tokens
         val COMMA = PicatTokenTypes.COMMA
@@ -158,5 +170,6 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
         val LBRACE = PicatTokenTypes.LBRACE
         val RBRACE = PicatTokenTypes.RBRACE
         val COLON = PicatTokenTypes.COLON
+        val IDENTIFIER = PicatTokenTypes.IDENTIFIER
     }
 }

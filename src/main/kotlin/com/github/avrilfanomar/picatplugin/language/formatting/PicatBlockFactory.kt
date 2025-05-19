@@ -2,7 +2,6 @@ package com.github.avrilfanomar.picatplugin.language.formatting
 
 import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
-import com.intellij.psi.TokenType
 import com.intellij.psi.codeStyle.CodeStyleSettings
 
 /**
@@ -32,7 +31,8 @@ class PicatBlockFactory(
             wrap,
             alignment,
             settings,
-            spacingBuilder
+            spacingBuilder,
+            this
         )
     }
 

@@ -31,17 +31,51 @@ class PicatBlock(
             return blockFactory.createChildBlocks(myNode)
         }
 
+        // Get custom settings
+        val picatSettings = settings.getCustomSettings(PicatCodeStyleSettings::class.java)
+
         // Otherwise, create child blocks directly
         val blocks = ArrayList<Block>()
         var child = myNode.firstChildNode
 
+        // Create alignments based on settings
+        val parameterAlignment = if (picatSettings.ALIGN_MULTILINE_PARAMETERS) Alignment.createAlignment() else null
+        val argumentAlignment = if (picatSettings.ALIGN_MULTILINE_ARGUMENTS) Alignment.createAlignment() else null
+        val assignmentAlignment = if (picatSettings.ALIGN_CONSECUTIVE_ASSIGNMENTS) Alignment.createAlignment() else null
+        val listElementAlignment = if (picatSettings.ALIGN_LIST_ELEMENTS) Alignment.createAlignment() else null
+
         while (child != null) {
             // Skip whitespace nodes and empty nodes
             if (!child.textRange.isEmpty && !isWhitespaceNode(child)) {
+                // Determine the appropriate alignment for this node
+                val alignment = when {
+                    // Align parameters in function/predicate declarations
+                    PicatFormattingUtils.isParameter(child) -> parameterAlignment
+                    // Align arguments in function/predicate calls
+                    PicatFormattingUtils.isArgument(child) -> argumentAlignment
+                    // Align consecutive assignments
+                    child.elementType == PicatTokenTypes.ASSIGN_OP || 
+                    child.elementType == PicatTokenTypes.ASSIGN_ONCE -> assignmentAlignment
+                    // Align list elements
+                    PicatFormattingUtils.isListElement(child) -> listElementAlignment
+                    // Default: no alignment
+                    else -> null
+                }
+
+                // Determine wrap type based on settings
+                val wrapType = when {
+                    // Wrap long lines if enabled
+                    picatSettings.WRAP_LONG_LINES && child.textLength > picatSettings.MAX_LINE_LENGTH -> WrapType.NORMAL
+                    // Wrap parameters if enabled
+                    picatSettings.PREFER_PARAMETERS_WRAP && PicatFormattingUtils.isParameter(child) -> WrapType.NORMAL
+                    // Default: no wrapping
+                    else -> WrapType.NONE
+                }
+
                 val block = PicatBlock(
                     child,
-                    Wrap.createWrap(WrapType.NONE, false),
-                    Alignment.createAlignment(),
+                    Wrap.createWrap(wrapType, false),
+                    alignment,
                     settings,
                     spacingBuilder
                 )
@@ -53,11 +87,111 @@ class PicatBlock(
         return blocks
     }
 
+    /**
+     * Determines if this node should indent its children.
+     * @return true if this node should indent its children, false otherwise
+     */
+    private fun shouldIndentChildren(): Boolean {
+        val elementType = myNode.elementType
+        val elementTypeStr = elementType.toString()
+
+        // Get custom settings
+        val picatSettings = settings.getCustomSettings(PicatCodeStyleSettings::class.java)
+
+        // Always indent children after rule operators
+        if (elementType == PicatTokenTypes.ARROW_OP || 
+            elementType == PicatTokenTypes.BACKTRACKABLE_ARROW_OP) {
+            return true
+        }
+
+        // Special handling for else-if statements
+        if (elementType == PicatTokenTypes.ELSE_KEYWORD) {
+            // Check if this is an else-if statement
+            if (PicatFormattingUtils.isElseIf(myNode)) {
+                // If special else-if treatment is enabled, don't indent
+                return !picatSettings.SPECIAL_ELSE_IF_TREATMENT
+            }
+            return true
+        }
+
+        // Always indent children after block keywords
+        if (elementType == PicatTokenTypes.THEN_KEYWORD) {
+            return true
+        }
+
+        // Always indent children after block structure keywords
+        if (elementType == PicatTokenTypes.IF_KEYWORD || 
+            elementType == PicatTokenTypes.FOREACH_KEYWORD || 
+            elementType == PicatTokenTypes.FOR_KEYWORD || 
+            elementType == PicatTokenTypes.WHILE_KEYWORD ||
+            elementType == PicatTokenTypes.DO_KEYWORD ||
+            elementType == PicatTokenTypes.REPEAT_KEYWORD ||
+            elementType == PicatTokenTypes.TRY_KEYWORD ||
+            elementType == PicatTokenTypes.CATCH_KEYWORD) {
+            return true
+        }
+
+        // Check if this node is a block node
+        if (isBlockNode(myNode)) {
+            return true
+        }
+
+        // Special handling for rule bodies
+        if (elementTypeStr.contains("RULE_BODY") ||
+            elementTypeStr.contains("PREDICATE_BODY") ||
+            elementTypeStr.contains("FUNCTION_BODY") ||
+            elementTypeStr.contains("CLAUSE_BODY") ||
+            elementTypeStr.contains("STATEMENT_LIST") ||
+            elementTypeStr.contains("BODY")) {
+            return true
+        }
+
+        // If this node contains a rule operator, indent its children
+        if (containsRuleOperator(myNode)) {
+            return true
+        }
+
+        // If this node contains a block keyword, indent its children
+        if (containsBlockKeyword(myNode)) {
+            return true
+        }
+
+        // If this node is a block statement or contains a block statement, indent its children
+        if (elementTypeStr.contains("BLOCK") || elementTypeStr.contains("Block")) {
+            return true
+        }
+
+        // Special handling for case statements
+        if (PicatFormattingUtils.isCaseStatement(myNode)) {
+            // If the indent case from switch is enabled, indent
+            return picatSettings.INDENT_CASE_FROM_SWITCH
+        }
+
+        // Special handling for list comprehensions
+        if (elementTypeStr.contains("LIST_COMPREHENSION") || 
+            (elementType == PicatTokenTypes.COLON && PicatFormattingUtils.isInsideListComprehension(myNode))) {
+            // If special list comprehension formatting is enabled, indent
+            return picatSettings.SPECIAL_LIST_COMPREHENSION_FORMATTING
+        }
+
+        // Special handling for constraint expressions
+        if (elementType == PicatTokenTypes.TYPE_CONSTRAINT ||
+            elementTypeStr.contains("CONSTRAINT") ||
+            PicatFormattingUtils.isConstraintExpression(myNode)) {
+            return true
+        }
+
+        return false
+    }
+
     override fun getSpacing(child1: Block?, child2: Block): Spacing? {
         // If no child blocks, return default spacing
         if (child1 == null || child2 == null) {
             return Spacing.createSpacing(0, 0, 0, false, 0)
         }
+
+        // Get custom settings
+        val picatSettings = settings.getCustomSettings(PicatCodeStyleSettings::class.java)
 
         // Apply custom spacing rules
         if (child1 is PicatBlock && child2 is PicatBlock) {
@@ -71,7 +205,7 @@ class PicatBlock(
                     return Spacing.createSpacing(1, 1, 0, false, 0)
                 }
                 // Force a line break with indentation
-                return Spacing.createSpacing(0, 0, 1, true, 1)
+                return Spacing.createSpacing(0, 0, 1, true, picatSettings.INDENT_SIZE)
             }
 
             // Add space around operators
@@ -98,7 +232,7 @@ class PicatBlock(
             if (child1Type == PicatTokenTypes.THEN_KEYWORD ||
                 child1Type == PicatTokenTypes.ELSE_KEYWORD
             ) {
-                return Spacing.createSpacing(0, 0, 1, true, 1)
+                return Spacing.createSpacing(0, 0, 1, true, picatSettings.INDENT_SIZE)
             }
 
             // Handle spacing after end keyword
@@ -106,7 +240,7 @@ class PicatBlock(
                 if (child2Type == PicatTokenTypes.COMMA || child2Type == PicatTokenTypes.DOT) {
                     return Spacing.createSpacing(0, 0, 0, false, 0)
                 }
-                return Spacing.createSpacing(0, 0, 1, true, 0)
+                return Spacing.createSpacing(0, 0, 1, true, picatSettings.INDENT_SIZE)
             }
 
             // Handle spacing after block structure keywords
@@ -152,13 +286,13 @@ class PicatBlock(
             // Handle spacing after comments
             if (child1Type == PicatTokenTypes.COMMENT) {
                 // Line break after comment
-                return Spacing.createSpacing(0, 0, 1, true, 0)
+                return Spacing.createSpacing(0, 0, 1, true, picatSettings.INDENT_SIZE)
             }
 
             // Handle spacing after dot
             if (child1Type == PicatTokenTypes.DOT) {
                 // Line break after dot
-                return Spacing.createSpacing(0, 0, 1, true, 0)
+                return Spacing.createSpacing(0, 0, 1, true, picatSettings.INDENT_SIZE)
             }
 
             // Handle spacing around function calls
@@ -182,132 +316,30 @@ class PicatBlock(
             }
         }
 
-        // Default spacing - no space
-        return Spacing.createSpacing(0, 0, 0, false, 0)
-    }
-
-    /**
-     * Checks if the given element type is an operator.
-     * Delegates to PicatFormattingUtils.isOperator for consistency.
-     *
-     * @param elementType The element type to check
-     * @return true if the element type is an operator, false otherwise
-     */
-    private fun isOperator(elementType: com.intellij.psi.tree.IElementType): Boolean {
-        return PicatFormattingUtils.isOperator(elementType)
+        // Default spacing - use settings for line breaks and blank lines
+        return Spacing.createSpacing(0, 0, 0, picatSettings.KEEP_LINE_BREAKS, picatSettings.KEEP_BLANK_LINES_IN_CODE)
     }
 
     override fun getIndent(): Indent? {
-        // Get parent node
-        val parentNode = myNode.treeParent
-        if (parentNode == null) {
-            return Indent.getNoneIndent()
-        }
-
-        val elementType = myNode.elementType
-        val elementTypeStr = elementType.toString()
-        val text = myNode.text.trim()
-        val parentTypeStr = parentNode.elementType.toString()
-
-        // Special handling for comments
-        if (elementType == PicatTokenTypes.COMMENT || text.startsWith("%")) {
-            // If the comment is at the beginning of a line after a rule operator, indent it
-            if (isAfterRuleOperator(myNode)) {
-                return Indent.getNormalIndent()
-            }
-
-            // If the comment is inside a block, indent it
-            if (isInsideBlock(myNode)) {
-                return Indent.getNormalIndent()
-            }
-
-            // If the comment is on the same line as indented code, use continuation indent
-            val prevSibling = findPreviousNonWhitespaceSibling(myNode)
-            if (prevSibling != null && (isAfterRuleOperator(prevSibling) || isInsideBlock(prevSibling))) {
-                return Indent.getContinuationIndent()
-            }
-
-            return Indent.getNoneIndent()
-        }
-
-        // No indentation for rule operators
-        if (elementType == PicatTokenTypes.ARROW_OP || elementType == PicatTokenTypes.BACKTRACKABLE_ARROW_OP) {
-            return Indent.getNoneIndent()
-        }
-
-        // No indentation for block keywords
-        if (elementType == PicatTokenTypes.IF_KEYWORD ||
-            elementType == PicatTokenTypes.ELSE_KEYWORD ||
-            elementType == PicatTokenTypes.ELSEIF_KEYWORD ||
-            elementType == PicatTokenTypes.THEN_KEYWORD ||
-            elementType == PicatTokenTypes.END_KEYWORD ||
-            elementType == PicatTokenTypes.FOREACH_KEYWORD ||
-            elementType == PicatTokenTypes.FOR_KEYWORD ||
-            elementType == PicatTokenTypes.WHILE_KEYWORD
-        ) {
-            return Indent.getNoneIndent()
-        }
-
-        // Check if we're inside a rule body
-        var isInRuleBody = false
-        var parent = parentNode
-        while (parent != null) {
-            var child = parent.firstChildNode
-            while (child != null) {
-                if (child.elementType == PicatTokenTypes.ARROW_OP || 
-                    child.elementType == PicatTokenTypes.BACKTRACKABLE_ARROW_OP) {
-                    isInRuleBody = true
-                    break
-                }
-                child = child.treeNext
-            }
-            if (isInRuleBody) break
-            parent = parent.treeParent
-        }
-
-        // Always indent code after rule operators
-        if (isAfterRuleOperator(myNode)) {
-            return Indent.getNormalIndent()
-        }
-
-        // Always indent code inside blocks
-        if (isInsideBlock(myNode)) {
-            return Indent.getNormalIndent()
-        }
-
-        // If we're in a rule body but not directly after the rule operator,
-        // we still need to indent
-        if (isInRuleBody) {
-            return Indent.getNormalIndent()
-        }
-
-        // Indent code inside predicate and function bodies
-        if (parentTypeStr.contains("PREDICATE_BODY") ||
-            parentTypeStr.contains("FUNCTION_BODY") ||
-            parentTypeStr.contains("CLAUSE_LIST")
-        ) {
-            return Indent.getNormalIndent()
-        }
-
-        // Indent clauses in clause lists
-        if (elementTypeStr.contains("CLAUSE") && parentTypeStr.contains("CLAUSE_LIST")) {
-            return Indent.getNormalIndent()
-        }
-
-        // Default to no indent
-        return Indent.getNoneIndent()
+        // Always use normal indent for all blocks
+        return Indent.getIndent(Indent.Type.NORMAL, false, false)
     }
 
     /**
      * Checks if node1 is a descendant of node2.
-     * Delegates to PicatFormattingUtils.isDescendantOf for consistency.
-     *
      * @param node1 The potential descendant
      * @param node2 The potential ancestor
      * @return true if node1 is a descendant of node2, false otherwise
      */
     private fun isDescendantOf(node1: ASTNode, node2: ASTNode): Boolean {
-        return PicatFormattingUtils.isDescendantOf(node1, node2)
+        var current = node1
+        while (current != node2 && current.treeParent != null) {
+            current = current.treeParent
+            if (current == node2) {
+                return true
+            }
+        }
+        return false
     }
 
     /**
@@ -316,99 +348,11 @@ class PicatBlock(
      * children of the current block.
      */
     override fun getChildIndent(): Indent? {
-        val elementType = myNode.elementType
-        val elementTypeStr = elementType.toString()
+        // Get custom settings
+        val picatSettings = settings.getCustomSettings(PicatCodeStyleSettings::class.java)
 
-        // Always use normal indent for file nodes
-        if (elementTypeStr == "FILE") {
-            return Indent.getNormalIndent()
-        }
-
-        // Always indent children after rule operators
-        if (elementType == PicatTokenTypes.ARROW_OP || 
-            elementType == PicatTokenTypes.BACKTRACKABLE_ARROW_OP) {
-            return Indent.getNormalIndent()
-        }
-
-        // Always indent children after block keywords
-        if (elementType == PicatTokenTypes.THEN_KEYWORD ||
-            elementType == PicatTokenTypes.ELSE_KEYWORD) {
-            return Indent.getNormalIndent()
-        }
-
-        // Always indent children after block structure keywords
-        if (elementType == PicatTokenTypes.IF_KEYWORD || 
-            elementType == PicatTokenTypes.FOREACH_KEYWORD || 
-            elementType == PicatTokenTypes.FOR_KEYWORD || 
-            elementType == PicatTokenTypes.WHILE_KEYWORD) {
-            return Indent.getNormalIndent()
-        }
-
-        // Check if this node is a block node
-        if (isBlockNode(myNode)) {
-            return Indent.getNormalIndent()
-        }
-
-        // Special handling for rule bodies
-        if (elementTypeStr.contains("RULE_BODY") ||
-            elementTypeStr.contains("PREDICATE_BODY") ||
-            elementTypeStr.contains("FUNCTION_BODY") ||
-            elementTypeStr.contains("CLAUSE_BODY")
-        ) {
-            return Indent.getNormalIndent()
-        }
-
-        // Special handling for statements inside blocks
-        if (elementTypeStr.contains("STATEMENT") &&
-            (myNode.treeParent != null &&
-                    (myNode.treeParent.elementType.toString().contains("BLOCK") ||
-                            myNode.treeParent.elementType.toString().contains("BODY")))
-        ) {
-            return Indent.getNormalIndent()
-        }
-
-        // If this node contains a rule operator, indent its children
-        if (containsRuleOperator(myNode)) {
-            return Indent.getNormalIndent()
-        }
-
-        // If this node contains a block keyword, indent its children
-        if (containsBlockKeyword(myNode)) {
-            return Indent.getNormalIndent()
-        }
-
-        // If this node is a block statement or contains a block statement, indent its children
-        if (elementTypeStr.contains("BLOCK") || elementTypeStr.contains("Block")) {
-            return Indent.getNormalIndent()
-        }
-
-        // PSI-aware indentation rules - simplify by checking for common patterns
-        if (elementTypeStr.contains("DEFINITION") ||
-            elementTypeStr.contains("BODY") ||
-            elementTypeStr.contains("CLAUSE_LIST") ||
-            elementTypeStr.contains("RULE_BODY") ||
-            elementTypeStr.contains("BLOCK_STATEMENT")
-        ) {
-            return Indent.getNormalIndent()
-        }
-
-        // If we're inside a rule body, indent children
-        if (isInRuleBody(myNode)) {
-            return Indent.getNormalIndent()
-        }
-
-        // Check if we're inside a block
-        if (isInsideBlock(myNode)) {
-            return Indent.getNormalIndent()
-        }
-
-        // Check if we're after a rule operator
-        if (isAfterRuleOperator(myNode)) {
-            return Indent.getNormalIndent()
-        }
-
-        // Default to normal indent for most cases to ensure consistent indentation
-        return Indent.getNormalIndent()
+        // Use the custom indent size for indentation
+        return Indent.getIndent(Indent.Type.NORMAL, false, false)
     }
 
     /**

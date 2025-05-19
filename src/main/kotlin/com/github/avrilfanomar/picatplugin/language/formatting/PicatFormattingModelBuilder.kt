@@ -3,7 +3,7 @@ package com.github.avrilfanomar.picatplugin.language.formatting
 import com.intellij.formatting.FormattingContext
 import com.intellij.formatting.FormattingModel
 import com.intellij.formatting.FormattingModelBuilder
-import com.intellij.formatting.FormattingModelProvider
+import com.intellij.psi.formatter.DocumentBasedFormattingModel
 
 /**
  * Formatting model builder for Picat language.
@@ -15,19 +15,22 @@ class PicatFormattingModelBuilder : FormattingModelBuilder {
         val file = formattingContext.psiElement.containingFile
         val settings = formattingContext.codeStyleSettings
 
-        // Create spacing builder
+        // Create a spacing builder
         val spacingBuilder = PicatSpacingBuilder(settings).getSpacingBuilder()
 
-        // Create block factory
+        // Create a block factory
         val blockFactory = PicatBlockFactory(settings, spacingBuilder)
 
-        // Create root block
+        // Create a root block
         val rootBlock = blockFactory.createBlock(formattingContext.node)
 
-        return FormattingModelProvider.createFormattingModelForPsiFile(
-            file,
+        // Create a custom formatting model that applies indentation
+        return DocumentBasedFormattingModel(
             rootBlock,
-            settings
+            formattingContext.project,
+            settings,
+            file.fileType,
+            file
         )
     }
 }
