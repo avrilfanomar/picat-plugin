@@ -18,6 +18,10 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
         val picatSettings = settings.getCustomSettings(PicatCodeStyleSettings::class.java)
         val commonSettings = settings.getCommonSettings(PicatLanguage)
 
+        val ruleOperators = TokenSet.create(
+            PicatTokenTypes.ARROW_OP,
+            PicatTokenTypes.BACKTRACKABLE_ARROW_OP
+        )
         spacingBuilder = SpacingBuilder(settings, PicatLanguage)
             // Assignment operators (=, :=)
             .around(TokenSet.create(
@@ -70,16 +74,16 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .spaceIf(picatSettings.SPACE_AROUND_MULTIPLICATIVE_OPERATORS)
 
             // Rule operators (=>, ?=>)
-            .before(TokenSet.create(
-                PicatTokenTypes.ARROW_OP,
-                PicatTokenTypes.BACKTRACKABLE_ARROW_OP
-            ))
+            .before(ruleOperators)
             .spaceIf(picatSettings.SPACE_BEFORE_RULE_OPERATORS)
-            .after(TokenSet.create(
-                PicatTokenTypes.ARROW_OP,
-                PicatTokenTypes.BACKTRACKABLE_ARROW_OP
-            ))
-            .lineBreakInCodeIf(picatSettings.LINE_BREAK_AFTER_RULE_OPERATORS)
+            .after(ruleOperators)
+            .spacing(0, 0, 1, picatSettings.KEEP_LINE_BREAK_AFTER_RULE_OPERATORS, 1)
+            // Add indentation for the rule body (between rule operator and end dot)
+            .between(
+                ruleOperators,
+                PicatTokenTypes.DOT
+            )
+            .spacing(2, Integer.MAX_VALUE, 0, true, 1)
 
             // Constraint operators (#=, #!=, etc.)
             .around(TokenSet.create(
@@ -93,11 +97,25 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
                 PicatTokenTypes.CONSTRAINT_NOT,
                 PicatTokenTypes.CONSTRAINT_AND,
                 PicatTokenTypes.CONSTRAINT_OR,
-                PicatTokenTypes.CONSTRAINT_XOR,
+                PicatTokenTypes.CONSTRAINT_XOR
+            )
+            )
+            .spaceIf(picatSettings.SPACE_AROUND_CONSTRAINT_OPERATORS)
+
+            // Constraint rule operators (#=>, #<=>)
+            .around(
+                TokenSet.create(
                 PicatTokenTypes.CONSTRAINT_IMPL,
                 PicatTokenTypes.CONSTRAINT_EQUIV
             ))
             .spaceIf(picatSettings.SPACE_AROUND_CONSTRAINT_OPERATORS)
+            .after(
+                TokenSet.create(
+                    PicatTokenTypes.CONSTRAINT_IMPL,
+                    PicatTokenTypes.CONSTRAINT_EQUIV
+                )
+            )
+            .spacing(1, 1, 0, true, 1)
 
             // Term comparison operators (@<, @=<, etc.)
             .around(TokenSet.create(
@@ -130,7 +148,13 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .before(PicatTokenTypes.COMMA)
             .spaceIf(picatSettings.SPACE_BEFORE_COMMA)
             .after(PicatTokenTypes.COMMA)
-            .spaceIf(picatSettings.SPACE_AFTER_COMMA)
+            .spacing(
+                if (picatSettings.SPACE_AFTER_COMMA) 0 else 0,
+                if (picatSettings.SPACE_AFTER_COMMA) 1 else 0,
+                0,  // minLineFeeds
+                true,  // keepLineBreaks
+                0  // keepBlankLines
+            )
             .around(PicatTokenTypes.COLON)
             .spaceIf(picatSettings.SPACE_AROUND_COLON)
 
