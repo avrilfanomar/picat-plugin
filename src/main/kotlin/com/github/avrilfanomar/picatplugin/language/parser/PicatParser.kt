@@ -1,6 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatTypes
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.ASTNode
 import com.intellij.lang.PsiBuilder
 import com.intellij.lang.PsiParser
@@ -28,33 +28,33 @@ class PicatParser : PsiParser {
      */
     private fun parseItem(builder: PsiBuilder) {
         // Skip whitespace
-        if (builder.tokenType == PicatTypes.WHITE_SPACE) {
+        if (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
             builder.advanceLexer()
             return
         }
         
         // Parse comments
-        if (builder.tokenType == PicatTypes.COMMENT) {
+        if (builder.tokenType == PicatTokenTypes.COMMENT) {
             val marker = builder.mark()
             builder.advanceLexer()
-            marker.done(PicatTypes.COMMENT)
+            marker.done(PicatTokenTypes.COMMENT)
             return
         }
         
         // Parse module declarations
-        if (builder.tokenType == PicatTypes.MODULE_KEYWORD) {
+        if (builder.tokenType == PicatTokenTypes.MODULE_KEYWORD) {
             parseModuleDeclaration(builder)
             return
         }
         
         // Parse import statements
-        if (builder.tokenType == PicatTypes.IMPORT_KEYWORD) {
+        if (builder.tokenType == PicatTokenTypes.IMPORT_KEYWORD) {
             parseImportStatement(builder)
             return
         }
         
         // Parse predicate or function definitions
-        if (builder.tokenType == PicatTypes.IDENTIFIER) {
+        if (builder.tokenType == PicatTokenTypes.IDENTIFIER) {
             parsePredicateOrFunction(builder)
             return
         }
@@ -73,22 +73,22 @@ class PicatParser : PsiParser {
         builder.advanceLexer()
         
         // Parse module name
-        if (builder.tokenType == PicatTypes.IDENTIFIER) {
+        if (builder.tokenType == PicatTokenTypes.IDENTIFIER) {
             val nameMarker = builder.mark()
             builder.advanceLexer()
-            nameMarker.done(PicatTypes.MODULE_NAME)
+            nameMarker.done(PicatTokenTypes.MODULE_NAME)
         } else {
             builder.error("Expected module name")
         }
         
         // Consume "."
-        if (builder.tokenType == PicatTypes.DOT) {
+        if (builder.tokenType == PicatTokenTypes.DOT) {
             builder.advanceLexer()
         } else {
             builder.error("Expected '.'")
         }
         
-        marker.done(PicatTypes.MODULE_DECLARATION)
+        marker.done(PicatTokenTypes.MODULE_DECLARATION)
     }
     
     /**
@@ -101,22 +101,22 @@ class PicatParser : PsiParser {
         builder.advanceLexer()
         
         // Parse module name
-        if (builder.tokenType == PicatTypes.IDENTIFIER) {
+        if (builder.tokenType == PicatTokenTypes.IDENTIFIER) {
             val nameMarker = builder.mark()
             builder.advanceLexer()
-            nameMarker.done(PicatTypes.MODULE_NAME)
+            nameMarker.done(PicatTokenTypes.MODULE_NAME)
         } else {
             builder.error("Expected module name")
         }
         
         // Consume "."
-        if (builder.tokenType == PicatTypes.DOT) {
+        if (builder.tokenType == PicatTokenTypes.DOT) {
             builder.advanceLexer()
         } else {
             builder.error("Expected '.'")
         }
         
-        marker.done(PicatTypes.IMPORT_STATEMENT)
+        marker.done(PicatTokenTypes.IMPORT_STATEMENT)
     }
     
     /**
@@ -129,37 +129,37 @@ class PicatParser : PsiParser {
         builder.advanceLexer()
         
         // Parse arguments
-        if (builder.tokenType == PicatTypes.LPAR) {
+        if (builder.tokenType == PicatTokenTypes.LPAR) {
             parseArgumentList(builder)
         }
         
         // Check if it's a function (has "=")
-        val isFunction = builder.tokenType == PicatTypes.EQUAL
+        val isFunction = builder.tokenType == PicatTokenTypes.EQUAL
         if (isFunction) {
             builder.advanceLexer()
             
             // Parse function body
             val bodyMarker = builder.mark()
             parseExpression(builder)
-            bodyMarker.done(PicatTypes.FUNCTION_BODY)
+            bodyMarker.done(PicatTokenTypes.FUNCTION_BODY)
         } else {
             // Parse predicate body
             val bodyMarker = builder.mark()
             parseClauseList(builder)
-            bodyMarker.done(PicatTypes.PREDICATE_BODY)
+            bodyMarker.done(PicatTokenTypes.PREDICATE_BODY)
         }
         
         // Consume "."
-        if (builder.tokenType == PicatTypes.DOT) {
+        if (builder.tokenType == PicatTokenTypes.DOT) {
             builder.advanceLexer()
         } else {
             builder.error("Expected '.'")
         }
         
         if (isFunction) {
-            marker.done(PicatTypes.FUNCTION_DEFINITION)
+            marker.done(PicatTokenTypes.FUNCTION_DEFINITION)
         } else {
-            marker.done(PicatTypes.PREDICATE_DEFINITION)
+            marker.done(PicatTokenTypes.PREDICATE_DEFINITION)
         }
     }
     
@@ -173,11 +173,11 @@ class PicatParser : PsiParser {
         builder.advanceLexer()
         
         // Parse arguments
-        while (builder.tokenType != PicatTypes.RPAR && !builder.eof()) {
+        while (builder.tokenType != PicatTokenTypes.RPAR && !builder.eof()) {
             parseArgument(builder)
             
             // Consume "," if present
-            if (builder.tokenType == PicatTypes.COMMA) {
+            if (builder.tokenType == PicatTokenTypes.COMMA) {
                 builder.advanceLexer()
             } else {
                 break
@@ -185,13 +185,13 @@ class PicatParser : PsiParser {
         }
         
         // Consume ")"
-        if (builder.tokenType == PicatTypes.RPAR) {
+        if (builder.tokenType == PicatTokenTypes.RPAR) {
             builder.advanceLexer()
         } else {
             builder.error("Expected ')'")
         }
         
-        marker.done(PicatTypes.ARGUMENT_LIST)
+        marker.done(PicatTokenTypes.ARGUMENT_LIST)
     }
     
     /**
@@ -200,7 +200,7 @@ class PicatParser : PsiParser {
     private fun parseArgument(builder: PsiBuilder) {
         val marker = builder.mark()
         parseExpression(builder)
-        marker.done(PicatTypes.ARGUMENT)
+        marker.done(PicatTokenTypes.ARGUMENT)
     }
     
     /**
@@ -214,14 +214,14 @@ class PicatParser : PsiParser {
             parseClause(builder)
             
             // Consume "," or ";" if present
-            if (builder.tokenType == PicatTypes.COMMA || builder.tokenType == PicatTypes.SEMICOLON) {
+            if (builder.tokenType == PicatTokenTypes.COMMA || builder.tokenType == PicatTokenTypes.SEMICOLON) {
                 builder.advanceLexer()
             } else {
                 break
             }
         }
         
-        marker.done(PicatTypes.CLAUSE_LIST)
+        marker.done(PicatTokenTypes.CLAUSE_LIST)
     }
     
     /**
@@ -230,7 +230,7 @@ class PicatParser : PsiParser {
     private fun parseClause(builder: PsiBuilder) {
         val marker = builder.mark()
         parseExpression(builder)
-        marker.done(PicatTypes.CLAUSE)
+        marker.done(PicatTokenTypes.CLAUSE)
     }
     
     /**
@@ -246,12 +246,12 @@ class PicatParser : PsiParser {
         while (isOperator(builder.tokenType)) {
             val opMarker = builder.mark()
             builder.advanceLexer()
-            opMarker.done(PicatTypes.OPERATOR)
+            opMarker.done(PicatTokenTypes.OPERATOR)
             
             parseTerm(builder)
         }
         
-        marker.done(PicatTypes.EXPRESSION)
+        marker.done(PicatTokenTypes.EXPRESSION)
     }
     
     /**
@@ -261,16 +261,16 @@ class PicatParser : PsiParser {
         val marker = builder.mark()
         
         when (builder.tokenType) {
-            PicatTypes.INTEGER, PicatTypes.FLOAT, PicatTypes.STRING, PicatTypes.IDENTIFIER, PicatTypes.QUOTED_ATOM -> {
+            PicatTokenTypes.INTEGER, PicatTokenTypes.FLOAT, PicatTokenTypes.STRING, PicatTokenTypes.IDENTIFIER, PicatTokenTypes.QUOTED_ATOM -> {
                 parseLiteral(builder)
             }
-            PicatTypes.VARIABLE -> {
+            PicatTokenTypes.VARIABLE -> {
                 parseVariable(builder)
             }
-            PicatTypes.LBRACKET -> {
+            PicatTokenTypes.LBRACKET -> {
                 parseList(builder)
             }
-            PicatTypes.LPAR -> {
+            PicatTokenTypes.LPAR -> {
                 // Consume "("
                 builder.advanceLexer()
                 
@@ -278,7 +278,7 @@ class PicatParser : PsiParser {
                 parseExpression(builder)
                 
                 // Consume ")"
-                if (builder.tokenType == PicatTypes.RPAR) {
+                if (builder.tokenType == PicatTokenTypes.RPAR) {
                     builder.advanceLexer()
                 } else {
                     builder.error("Expected ')'")
@@ -290,7 +290,7 @@ class PicatParser : PsiParser {
             }
         }
         
-        marker.done(PicatTypes.TERM)
+        marker.done(PicatTokenTypes.TERM)
     }
     
     /**
@@ -300,10 +300,10 @@ class PicatParser : PsiParser {
         val marker = builder.mark()
         
         when (builder.tokenType) {
-            PicatTypes.INTEGER, PicatTypes.FLOAT, PicatTypes.STRING -> {
+            PicatTokenTypes.INTEGER, PicatTokenTypes.FLOAT, PicatTokenTypes.STRING -> {
                 builder.advanceLexer()
             }
-            PicatTypes.IDENTIFIER, PicatTypes.QUOTED_ATOM -> {
+            PicatTokenTypes.IDENTIFIER, PicatTokenTypes.QUOTED_ATOM -> {
                 parseAtom(builder)
             }
             else -> {
@@ -312,7 +312,7 @@ class PicatParser : PsiParser {
             }
         }
         
-        marker.done(PicatTypes.LITERAL)
+        marker.done(PicatTokenTypes.LITERAL)
     }
     
     /**
@@ -322,24 +322,24 @@ class PicatParser : PsiParser {
         val marker = builder.mark()
         
         when (builder.tokenType) {
-            PicatTypes.IDENTIFIER -> {
+            PicatTokenTypes.IDENTIFIER -> {
                 val idMarker = builder.mark()
                 builder.advanceLexer()
-                idMarker.done(PicatTypes.IDENTIFIER)
+                idMarker.done(PicatTokenTypes.IDENTIFIER)
                 
                 // Check if it's a structure
-                if (builder.tokenType == PicatTypes.LPAR) {
+                if (builder.tokenType == PicatTokenTypes.LPAR) {
                     marker.drop() // Drop the atom marker
                     val structMarker = builder.mark()
                     
                     // Parse argument list
                     parseArgumentList(builder)
                     
-                    structMarker.done(PicatTypes.STRUCTURE)
+                    structMarker.done(PicatTokenTypes.STRUCTURE)
                     return
                 }
             }
-            PicatTypes.QUOTED_ATOM -> {
+            PicatTokenTypes.QUOTED_ATOM -> {
                 builder.advanceLexer()
             }
             else -> {
@@ -348,7 +348,7 @@ class PicatParser : PsiParser {
             }
         }
         
-        marker.done(PicatTypes.ATOM)
+        marker.done(PicatTokenTypes.ATOM)
     }
     
     /**
@@ -357,7 +357,7 @@ class PicatParser : PsiParser {
     private fun parseVariable(builder: PsiBuilder) {
         val marker = builder.mark()
         builder.advanceLexer()
-        marker.done(PicatTypes.VARIABLE)
+        marker.done(PicatTokenTypes.VARIABLE)
     }
     
     /**
@@ -370,18 +370,18 @@ class PicatParser : PsiParser {
         builder.advanceLexer()
         
         // Parse list elements if present
-        if (builder.tokenType != PicatTypes.RBRACKET) {
+        if (builder.tokenType != PicatTokenTypes.RBRACKET) {
             parseListElements(builder)
         }
         
         // Consume "]"
-        if (builder.tokenType == PicatTypes.RBRACKET) {
+        if (builder.tokenType == PicatTokenTypes.RBRACKET) {
             builder.advanceLexer()
         } else {
             builder.error("Expected ']'")
         }
         
-        marker.done(PicatTypes.LIST)
+        marker.done(PicatTokenTypes.LIST)
     }
     
     /**
@@ -395,9 +395,9 @@ class PicatParser : PsiParser {
             parseExpression(builder)
             
             // Check for tail
-            if (builder.tokenType == PicatTypes.COMMA && 
-                builder.lookAhead(1) == PicatTypes.PIPE && 
-                builder.lookAhead(2) == PicatTypes.COMMA) {
+            if (builder.tokenType == PicatTokenTypes.COMMA && 
+                builder.lookAhead(1) == PicatTokenTypes.PIPE && 
+                builder.lookAhead(2) == PicatTokenTypes.COMMA) {
                 
                 // Consume ",", "|", ","
                 builder.advanceLexer()
@@ -410,34 +410,34 @@ class PicatParser : PsiParser {
             }
             
             // Consume "," if present
-            if (builder.tokenType == PicatTypes.COMMA) {
+            if (builder.tokenType == PicatTokenTypes.COMMA) {
                 builder.advanceLexer()
             } else {
                 break
             }
         }
         
-        marker.done(PicatTypes.LIST_ELEMENTS)
+        marker.done(PicatTokenTypes.LIST_ELEMENTS)
     }
     
     /**
      * Check if the token type is an operator.
      */
     private fun isOperator(tokenType: IElementType?): Boolean {
-        return tokenType == PicatTypes.PLUS ||
-               tokenType == PicatTypes.MINUS ||
-               tokenType == PicatTypes.MULTIPLY ||
-               tokenType == PicatTypes.DIVIDE ||
-               tokenType == PicatTypes.EQUAL ||
-               tokenType == PicatTypes.NOT_EQUAL ||
-               tokenType == PicatTypes.LESS ||
-               tokenType == PicatTypes.GREATER ||
-               tokenType == PicatTypes.LESS_EQUAL ||
-               tokenType == PicatTypes.GREATER_EQUAL ||
-               tokenType == PicatTypes.EQUAL_EQUAL ||
-               tokenType == PicatTypes.NOT_EQUAL ||
-               tokenType == PicatTypes.IDENTICAL ||
-               tokenType == PicatTypes.NOT_IDENTICAL ||
-               tokenType == PicatTypes.IS
+        return tokenType == PicatTokenTypes.PLUS ||
+               tokenType == PicatTokenTypes.MINUS ||
+               tokenType == PicatTokenTypes.MULTIPLY ||
+               tokenType == PicatTokenTypes.DIVIDE ||
+               tokenType == PicatTokenTypes.EQUAL ||
+               tokenType == PicatTokenTypes.NOT_EQUAL ||
+               tokenType == PicatTokenTypes.LESS ||
+               tokenType == PicatTokenTypes.GREATER ||
+               tokenType == PicatTokenTypes.LESS_EQUAL ||
+               tokenType == PicatTokenTypes.GREATER_EQUAL ||
+               tokenType == PicatTokenTypes.EQUAL_EQUAL ||
+               tokenType == PicatTokenTypes.NOT_EQUAL ||
+               tokenType == PicatTokenTypes.IDENTICAL ||
+               tokenType == PicatTokenTypes.NOT_IDENTICAL ||
+               tokenType == PicatTokenTypes.IS
     }
 }

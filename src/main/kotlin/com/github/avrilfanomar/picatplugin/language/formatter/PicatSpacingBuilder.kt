@@ -1,7 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.formatter
 
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
-import com.github.avrilfanomar.picatplugin.language.PicatTokenTypes
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.formatting.SpacingBuilder
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.tree.TokenSet
@@ -79,7 +79,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .after(ruleOperators)
             .spacing(0, 0, 1, picatSettings.KEEP_LINE_BREAK_AFTER_RULE_OPERATORS, 1)
 
-            // Add indentation for rule body (between rule operator and end dot)
+            // Add indentation for the rule body (between rule operator and end dot)
             .between(ruleOperators, PicatTokenTypes.DOT)
             .spacing(1, Integer.MAX_VALUE, 1, true, 1)
 

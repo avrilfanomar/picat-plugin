@@ -1,6 +1,6 @@
 package com.github.avrilfanomar.picatplugin.run
 
-import com.github.avrilfanomar.picatplugin.language.PicatFileType
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFileType
 import com.intellij.execution.lineMarker.ExecutorAction
 import com.intellij.execution.lineMarker.RunLineMarkerContributor
 import com.intellij.icons.AllIcons

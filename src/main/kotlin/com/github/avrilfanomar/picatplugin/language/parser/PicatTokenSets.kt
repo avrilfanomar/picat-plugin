@@ -1,6 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatTypes
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.psi.tree.TokenSet
 
 /**
@@ -11,15 +11,15 @@ object PicatTokenSets {
     /**
      * Token set for comments.
      */
-    val COMMENTS = PicatTypes.COMMENTS
+    val COMMENTS = PicatTokenTypes.COMMENTS
 
     /**
      * Token set for string literals.
      */
-    val STRINGS = PicatTypes.STRINGS
+    val STRINGS = PicatTokenTypes.STRING_LITERALS
 
     /**
      * Token set for operators.
      */
-    val OPERATORS = PicatTypes.OPERATORS
+    val OPERATORS = PicatTokenTypes.OPERATORS
 }

@@ -1,6 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.github.avrilfanomar.picatplugin.language.PicatFileType
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFileType
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.openapi.fileTypes.FileType

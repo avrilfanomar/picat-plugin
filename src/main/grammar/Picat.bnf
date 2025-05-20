@@ -7,7 +7,7 @@
   psiPackage="com.github.avrilfanomar.picatplugin.language.psi"
   psiImplPackage="com.github.avrilfanomar.picatplugin.language.psi.impl"
 
-  elementTypeHolderClass="com.github.avrilfanomar.picatplugin.language.psi.PicatTypes"
+  elementTypeHolderClass="com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes"
   elementTypeClass="com.github.avrilfanomar.picatplugin.language.psi.PicatElementType"
   tokenTypeClass="com.github.avrilfanomar.picatplugin.language.psi.PicatTokenType"
 

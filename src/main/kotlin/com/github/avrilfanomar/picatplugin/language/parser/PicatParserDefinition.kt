@@ -1,9 +1,11 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.github.avrilfanomar.picatplugin.language.lexer.PicatLexer
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.PicatTypes
+import com.github.avrilfanomar.picatplugin.language.parser.PicatTokenSets
+import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
@@ -37,7 +39,7 @@ class PicatParserDefinition : ParserDefinition {
 
     override fun getStringLiteralElements(): TokenSet = PicatTokenSets.STRINGS
 
-    override fun createElement(node: ASTNode): PsiElement = PicatTypes.Factory.createElement(node)
+    override fun createElement(node: ASTNode): PsiElement = ASTWrapperPsiElement(node)
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile = PicatFile(viewProvider)
 }

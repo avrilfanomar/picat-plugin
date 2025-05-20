@@ -1,6 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.lexer
 
-import com.github.avrilfanomar.picatplugin.language.PicatTokenTypes
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lexer.LexerBase
 import com.intellij.psi.tree.IElementType
 import org.jetbrains.annotations.NotNull

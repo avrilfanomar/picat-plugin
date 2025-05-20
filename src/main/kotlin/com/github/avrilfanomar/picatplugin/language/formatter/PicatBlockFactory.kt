@@ -46,32 +46,33 @@ class PicatBlockFactory(
         }
 
         while (child != null) {
-            if (child.elementType != TokenType.WHITE_SPACE) {
-                val childType = child.elementType.toString()
+            // Always create blocks for all nodes, including whitespace
+            // This ensures that the formatter can properly handle whitespace
+            val childType = child.elementType.toString()
 
-                // Determine if this child should use the shared alignment
-                val childAlignment = when {
-                    // Align elements in lists
-                    nodeType == "LIST" && (childType != "LBRACKET" && childType != "RBRACKET") -> alignment
-                    // Align arguments in function calls
-                    nodeType == "FUNCTION_CALL" && (childType != "LPAR" && childType != "RPAR") -> alignment
-                    // Align statements in rule bodies
-                    (nodeType == "RULE_BODY" || nodeType == "BODY") && childType == "STATEMENT" -> alignment
-                    else -> null
-                }
-
-                // Determine if this child should use the shared wrap
-                val childWrap = when {
-                    // Wrap elements in lists
-                    nodeType == "LIST" && (childType != "LBRACKET" && childType != "RBRACKET") -> wrap
-                    // Wrap arguments in function calls
-                    nodeType == "FUNCTION_CALL" && (childType != "LPAR" && childType != "RPAR") -> wrap
-                    else -> null
-                }
-
-                val childBlock = createBlock(child, childWrap, childAlignment)
-                blocks.add(childBlock)
+            // Determine if this child should use the shared alignment
+            val childAlignment = when {
+                // Align elements in lists
+                nodeType == "LIST" && (childType != "LBRACKET" && childType != "RBRACKET") -> alignment
+                // Align arguments in function calls
+                nodeType == "FUNCTION_CALL" && (childType != "LPAR" && childType != "RPAR") -> alignment
+                // Align statements in rule bodies
+                (nodeType == "RULE_BODY" || nodeType == "BODY") && childType == "STATEMENT" -> alignment
+                else -> null
             }
+
+            // Determine if this child should use the shared wrap
+            val childWrap = when {
+                // Wrap elements in lists
+                nodeType == "LIST" && (childType != "LBRACKET" && childType != "RBRACKET") -> wrap
+                // Wrap arguments in function calls
+                nodeType == "FUNCTION_CALL" && (childType != "LPAR" && childType != "RPAR") -> wrap
+                else -> null
+            }
+
+            val childBlock = createBlock(child, childWrap, childAlignment)
+            blocks.add(childBlock)
+
             child = child.treeNext
         }
 

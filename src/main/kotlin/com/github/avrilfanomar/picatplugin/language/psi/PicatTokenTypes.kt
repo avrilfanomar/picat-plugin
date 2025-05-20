@@ -1,10 +1,10 @@
-package com.github.avrilfanomar.picatplugin.language
+package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.intellij.psi.tree.TokenSet
 
 /**
- * Token types for Picat language.
- * This file defines constants for all token types used in the Picat language.
+ * Token types and element types for Picat language.
+ * This file defines constants for all token types and PSI element types used in the Picat language.
  */
 object PicatTokenTypes {
     // Keywords
@@ -167,4 +167,38 @@ object PicatTokenTypes {
     val ATOMS = TokenSet.create(ATOM, QUOTED_ATOM)
     val VARIABLES = TokenSet.create(VARIABLE, ANONYMOUS_VARIABLE)
     val WHITESPACES = TokenSet.create(WHITE_SPACE)
+
+    // PSI Element Types
+    val MODULE_NAME = PicatElementType("MODULE_NAME")
+    val MODULE_DECLARATION = PicatElementType("MODULE_DECLARATION")
+    val IMPORT_STATEMENT = PicatElementType("IMPORT_STATEMENT")
+    val FUNCTION_BODY = PicatElementType("FUNCTION_BODY")
+    val PREDICATE_BODY = PicatElementType("PREDICATE_BODY")
+    val FUNCTION_DEFINITION = PicatElementType("FUNCTION_DEFINITION")
+    val PREDICATE_DEFINITION = PicatElementType("PREDICATE_DEFINITION")
+    val ARGUMENT_LIST = PicatElementType("ARGUMENT_LIST")
+    val ARGUMENT = PicatElementType("ARGUMENT")
+    val CLAUSE_LIST = PicatElementType("CLAUSE_LIST")
+    val CLAUSE = PicatElementType("CLAUSE")
+    val OPERATOR = PicatElementType("OPERATOR")
+    val EXPRESSION = PicatElementType("EXPRESSION")
+    val TERM = PicatElementType("TERM")
+    val LITERAL = PicatElementType("LITERAL")
+    val STRUCTURE = PicatElementType("STRUCTURE")
+    val LIST = PicatElementType("LIST")
+    val LIST_ELEMENTS = PicatElementType("LIST_ELEMENTS")
+    val EQUAL_EQUAL = PicatElementType("EQUAL_EQUAL")
+    val IS = PicatElementType("IS")
+    val BODY = PicatElementType("BODY")
+    val RULE = PicatElementType("RULE")
+    val RULE_BODY = PicatElementType("RULE_BODY")
+    val STATEMENT = PicatElementType("STATEMENT")
+    val PROGRAM = PicatElementType("PROGRAM")
+    val IF_THEN_ELSE = PicatElementType("IF_THEN_ELSE")
+    val FOREACH_LOOP = PicatElementType("FOREACH_LOOP")
+    val WHILE_LOOP = PicatElementType("WHILE_LOOP")
+    val FOR_LOOP = PicatElementType("FOR_LOOP")
+    val TRY_CATCH = PicatElementType("TRY_CATCH")
+    val LIST_COMPREHENSION = PicatElementType("LIST_COMPREHENSION")
+    val FUNCTION_CALL = PicatElementType("FUNCTION_CALL")
 }
