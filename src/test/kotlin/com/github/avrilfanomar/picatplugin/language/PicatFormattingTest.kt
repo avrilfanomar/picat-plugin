@@ -176,14 +176,14 @@ main =>
         """
 
         val expected = """
-            % Predicate definition with =>
-            factorial(0) = 1.
-            factorial(N) = N * factorial(N - 1) => N > 0.
+% Predicate definition with =>
+factorial(0) = 1.
+factorial(N) = N * factorial(N - 1) => N > 0.
 
-            % Predicate with multiple clauses
-            fib(0) = 0.
-            fib(1) = 1.
-            fib(N) = fib(N - 1) + fib(N - 2) => N > 1.
+% Predicate with multiple clauses
+fib(0) = 0.
+fib(1) = 1.
+fib(N) = fib(N - 1) + fib(N - 2) => N > 1.
         """
 
         doFormatTest(code, expected)
@@ -207,17 +207,17 @@ main =>
         """
 
         val expected = """
-            % Backtrackable rule with ?=>
-            solve ?=>
-                X = 1,
-                println(X).
+% Backtrackable rule with ?=>
+solve ?=>
+    X = 1,
+    println(X).
 
-            solve ?=>
-                X = 2,
-                println(X).
+solve ?=>
+    X = 2,
+    println(X).
 
-            solve =>
-                println("No more solutions").
+solve =>
+    println("No more solutions").
         """
 
         doFormatTest(code, expected)
