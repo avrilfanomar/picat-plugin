@@ -5,6 +5,10 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.github.avrilfanomar.picatplugin.language.lexer.PicatLexer
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
 import com.github.avrilfanomar.picatplugin.language.parser.PicatTokenSets
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExpressionImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPsiElementImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatRuleImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatTermImpl
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
@@ -39,7 +43,15 @@ class PicatParserDefinition : ParserDefinition {
 
     override fun getStringLiteralElements(): TokenSet = PicatTokenSets.STRINGS
 
-    override fun createElement(node: ASTNode): PsiElement = ASTWrapperPsiElement(node)
+    override fun createElement(node: ASTNode): PsiElement {
+        val type = node.elementType
+        return when (type) {
+            PicatTokenTypes.RULE -> PicatRuleImpl(node)
+            PicatTokenTypes.EXPRESSION -> PicatExpressionImpl(node)
+            PicatTokenTypes.TERM -> PicatTermImpl(node)
+            else -> PicatPsiElementImpl(node)
+        }
+    }
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile = PicatFile(viewProvider)
 }
