@@ -492,4 +492,98 @@ constraint_rule_example =>
 
         assertEquals(formattedOnce, formattedTwice)
     }
+
+    @Test
+    fun testListComprehensionFormatting() {
+        // Test formatting of list comprehensions
+        val code = """
+            % List comprehension example
+            list_comprehension_example=>
+            % Simple list comprehension
+            L1=[X:X in 1..10],
+            % List comprehension with condition
+            L2=[X:X in 1..10,X mod 2==0],
+            % Nested list comprehension
+            L3=[[X,Y]:X in 1..3,Y in 1..3,X!=Y],
+            println(L1),println(L2),println(L3).
+        """
+
+        val expected = """
+% List comprehension example
+list_comprehension_example =>
+    % Simple list comprehension
+    L1 = [X : X in 1..10],
+    % List comprehension with condition
+    L2 = [X : X in 1..10, X mod 2 == 0],
+    % Nested list comprehension
+    L3 = [[X, Y] : X in 1..3, Y in 1..3, X != Y],
+    println(L1), println(L2), println(L3).
+        """
+
+        doFormatTest(code, expected)
+    }
+
+    @Test
+    fun testComplexFunctionCallFormatting() {
+        // Test formatting of function calls with complex arguments
+        val code = """
+            % Complex function call example
+            complex_function_call_example=>
+            % Function call with multiple arguments
+            result1=complex_function(10,20,30,40,50),
+            % Function call with nested expressions
+            result2=another_function(1+2*3,(4+5)*6,7*8+9),
+            % Function call with list comprehension
+            result3=process_list([X*2:X in 1..5]),
+            % Function call with nested function calls
+            result4=outer_function(inner_function1(10,20),inner_function2(30,40)),
+            println(result1),println(result2),println(result3),println(result4).
+        """
+
+        val expected = """
+% Complex function call example
+complex_function_call_example =>
+    % Function call with multiple arguments
+    result1 = complex_function(10, 20, 30, 40, 50),
+    % Function call with nested expressions
+    result2 = another_function(1 + 2 * 3, (4 + 5) * 6, 7 * 8 + 9),
+    % Function call with list comprehension
+    result3 = process_list([X * 2 : X in 1..5]),
+    % Function call with nested function calls
+    result4 = outer_function(inner_function1(10, 20), inner_function2(30, 40)),
+    println(result1), println(result2), println(result3), println(result4).
+        """
+
+        doFormatTest(code, expected)
+    }
+
+    @Test
+    fun testCommaFollowedByClosingBracketFormatting() {
+        // Test formatting of commas followed by closing brackets
+        val code = """
+            % Comma followed by closing bracket example
+            comma_bracket_example=>
+            % List with trailing comma
+            L1=[1,2,3,],
+            % Nested list with trailing commas
+            L2=[[1,2,],[3,4,],],
+            % Function call with trailing comma
+            result=function(10,20,),
+            println(L1),println(L2),println(result).
+        """
+
+        val expected = """
+% Comma followed by closing bracket example
+comma_bracket_example =>
+    % List with trailing comma
+    L1 = [1, 2, 3,],
+    % Nested list with trailing commas
+    L2 = [[1, 2,], [3, 4,],],
+    % Function call with trailing comma
+    result = function(10, 20,),
+    println(L1), println(L2), println(result).
+        """
+
+        doFormatTest(code, expected)
+    }
 }

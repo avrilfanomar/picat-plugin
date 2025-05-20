@@ -78,12 +78,10 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .spaceIf(picatSettings.SPACE_BEFORE_RULE_OPERATORS)
             .after(ruleOperators)
             .spacing(0, 0, 1, picatSettings.KEEP_LINE_BREAK_AFTER_RULE_OPERATORS, 1)
-            // Add indentation for the rule body (between rule operator and end dot)
-            .between(
-                ruleOperators,
-                PicatTokenTypes.DOT
-            )
-            .spacing(2, Integer.MAX_VALUE, 0, true, 1)
+
+            // Add indentation for rule body (between rule operator and end dot)
+            .between(ruleOperators, PicatTokenTypes.DOT)
+            .spacing(1, Integer.MAX_VALUE, 1, true, 1)
 
             // Constraint operators (#=, #!=, etc.)
             .around(TokenSet.create(
@@ -155,6 +153,18 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
                 true,  // keepLineBreaks
                 0  // keepBlankLines
             )
+
+            // No space after comma when followed by closing brackets/parentheses/braces
+            .between(
+                PicatTokenTypes.COMMA,
+                TokenSet.create(
+                    PicatTokenTypes.RBRACKET,
+                    PicatTokenTypes.RPAR,
+                    PicatTokenTypes.RBRACE
+                )
+            )
+            .spaces(0)
+
             .around(PicatTokenTypes.COLON)
             .spaceIf(picatSettings.SPACE_AROUND_COLON)
 
@@ -177,6 +187,31 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
                 PicatTokenTypes.RETURN_KEYWORD
             ))
             .spaces(1)
+
+            // Ensure proper indentation for statements after block keywords
+            .between(
+                TokenSet.create(
+                    PicatTokenTypes.THEN_KEYWORD,
+                    PicatTokenTypes.ELSE_KEYWORD
+                ),
+                TokenSet.create(
+                    PicatTokenTypes.END_KEYWORD,
+                    PicatTokenTypes.ELSE_KEYWORD,
+                    PicatTokenTypes.ELSEIF_KEYWORD
+                )
+            )
+            .spacing(1, Integer.MAX_VALUE, 1, true, 1)
+
+            // Ensure proper indentation for statements after loop keywords
+            .between(
+                TokenSet.create(
+                    PicatTokenTypes.FOREACH_KEYWORD,
+                    PicatTokenTypes.WHILE_KEYWORD,
+                    PicatTokenTypes.FOR_KEYWORD
+                ),
+                PicatTokenTypes.END_KEYWORD
+            )
+            .spacing(1, Integer.MAX_VALUE, 1, true, 1)
     }
 
     /**

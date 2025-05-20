@@ -26,7 +26,7 @@ class PicatCodeStyleSettings(settings: CodeStyleSettings) : CustomCodeStyleSetti
 
     // Punctuation
     @JvmField var SPACE_BEFORE_COMMA = false
-    @JvmField var SPACE_AFTER_COMMA = false
+    @JvmField var SPACE_AFTER_COMMA = true
     @JvmField var SPACE_AROUND_COLON = true
 
     // Line breaks
