@@ -15,11 +15,11 @@ class PicatListElementsImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatLis
     override fun getExpressions(): List<PicatExpression> {
         return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatExpression::class.java)
     }
-    
+
     /**
      * Returns the tail expression of the list, if any.
      * The tail expression is the expression after the pipe (|) in a list.
-     * 
+     *
      * Note: This is a simplified implementation. In a real implementation,
      * we would need to identify which expression is the tail expression.
      */

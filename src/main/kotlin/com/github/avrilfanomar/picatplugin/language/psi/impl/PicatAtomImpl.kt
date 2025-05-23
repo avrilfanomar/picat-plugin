@@ -17,7 +17,7 @@ class PicatAtomImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatAtom {
     override fun getIdentifier(): PicatIdentifier? {
         return PsiTreeUtil.getChildOfType(this, PicatIdentifier::class.java)
     }
-    
+
     /**
      * Returns the quoted atom, if it's a quoted atom.
      */

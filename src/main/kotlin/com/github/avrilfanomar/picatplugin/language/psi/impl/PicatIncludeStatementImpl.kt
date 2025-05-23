@@ -4,7 +4,6 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatIncludeStatement
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
 
 /**
  * Implementation of the PicatIncludeStatement interface.
@@ -24,7 +23,7 @@ class PicatIncludeStatementImpl(node: ASTNode) : PicatPsiElementImpl(node), Pica
         }
         return null
     }
-    
+
     /**
      * Returns the string literal element representing the include path.
      */

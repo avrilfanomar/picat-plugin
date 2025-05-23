@@ -21,7 +21,7 @@
         <p>This plugin is licensed under the <a href="https://github.com/avrilfanomar/picat-plugin/blob/main/LICENSE">MIT License</a>.</p>
     ]]></description>
 
-    <idea-version since-build="242" until-build="252.*" />
+    <idea-version since-build="242" until-build="252.*"/>
 
     <depends>com.intellij.modules.platform</depends>
 
@@ -48,9 +48,9 @@
     ]]></change-notes>
 
     <actions>
-        <action id="Picat.RunFile" 
-                class="com.github.avrilfanomar.picatplugin.run.PicatRunFileAction" 
-                text="Run Picat File" 
+        <action id="Picat.RunFile"
+                class="com.github.avrilfanomar.picatplugin.run.PicatRunFileAction"
+                text="Run Picat File"
                 description="Run current Picat file">
             <add-to-group group-id="RunMenu" anchor="first"/>
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
@@ -59,46 +59,48 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType
-            name="Picat"
-            implementationClass="com.github.avrilfanomar.picatplugin.language.psi.PicatFileType"
-            fieldName="INSTANCE"
-            language="Picat"
-            extensions="pi"/>
+                name="Picat"
+                implementationClass="com.github.avrilfanomar.picatplugin.language.psi.PicatFileType"
+                fieldName="INSTANCE"
+                language="Picat"
+                extensions="pi"/>
         <lang.syntaxHighlighterFactory
-            language="Picat"
-            implementationClass="com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighterFactory"/>
+                language="Picat"
+                implementationClass="com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighterFactory"/>
         <colorSettingsPage
-            implementation="com.github.avrilfanomar.picatplugin.language.highlighting.PicatColorSettingsPage"/>
+                implementation="com.github.avrilfanomar.picatplugin.language.highlighting.PicatColorSettingsPage"/>
         <projectConfigurable
-            parentId="tools"
-            instance="com.github.avrilfanomar.picatplugin.settings.PicatSettingsConfigurable"
-            id="com.github.avrilfanomar.picatplugin.settings.PicatSettingsConfigurable"
-            displayName="Picat"/>
+                parentId="tools"
+                instance="com.github.avrilfanomar.picatplugin.settings.PicatSettingsConfigurable"
+                id="com.github.avrilfanomar.picatplugin.settings.PicatSettingsConfigurable"
+                displayName="Picat"/>
         <!-- Run configuration -->
         <configurationType implementation="com.github.avrilfanomar.picatplugin.run.PicatConfigurationType"/>
         <runLineMarkerContributor
-            language="Picat"
-            implementationClass="com.github.avrilfanomar.picatplugin.run.PicatRunLineMarkerContributor"/>
-        <runConfigurationProducer implementation="com.github.avrilfanomar.picatplugin.run.PicatRunConfigurationProducer"/>
+                language="Picat"
+                implementationClass="com.github.avrilfanomar.picatplugin.run.PicatRunLineMarkerContributor"/>
+        <runConfigurationProducer
+                implementation="com.github.avrilfanomar.picatplugin.run.PicatRunConfigurationProducer"/>
 
         <!-- Formatting -->
         <lang.formatter
-            language="Picat"
-            implementationClass="com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder"/>
-        <langCodeStyleSettingsProvider implementation="com.github.avrilfanomar.picatplugin.language.formatter.PicatLanguageCodeStyleSettingsProvider"/>
+                language="Picat"
+                implementationClass="com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder"/>
+        <langCodeStyleSettingsProvider
+                implementation="com.github.avrilfanomar.picatplugin.language.formatter.PicatLanguageCodeStyleSettingsProvider"/>
 
         <!-- PSI and Parser -->
         <lang.parserDefinition
-            language="Picat"
-            implementationClass="com.github.avrilfanomar.picatplugin.language.parser.PicatParserDefinition"/>
+                language="Picat"
+                implementationClass="com.github.avrilfanomar.picatplugin.language.parser.PicatParserDefinition"/>
 
         <!-- Structure View -->
         <lang.psiStructureViewFactory
-            language="Picat"
-            implementationClass="com.github.avrilfanomar.picatplugin.language.structure.PicatStructureViewFactory"/>
+                language="Picat"
+                implementationClass="com.github.avrilfanomar.picatplugin.language.structure.PicatStructureViewFactory"/>
 
         <!-- Reference Contributor -->
         <psi.referenceContributor
-            implementation="com.github.avrilfanomar.picatplugin.language.references.PicatReferenceContributor"/>
+                implementation="com.github.avrilfanomar.picatplugin.language.references.PicatReferenceContributor"/>
     </extensions>
 </idea-plugin>

@@ -17,7 +17,7 @@ class PicatPredicateHeadImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatPr
         // This is a simplified implementation
         return node.firstChildNode?.text
     }
-    
+
     /**
      * Returns the arity of the predicate (number of arguments).
      */
@@ -25,7 +25,7 @@ class PicatPredicateHeadImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatPr
         val argumentList = getArgumentList()
         return argumentList?.getArguments()?.size ?: 0
     }
-    
+
     /**
      * Returns the argument list of the predicate, if any.
      */

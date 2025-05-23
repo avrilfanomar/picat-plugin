@@ -10,7 +10,7 @@ interface PicatListElements : PsiElement {
      * Returns the expressions in the list.
      */
     fun getExpressions(): List<PicatExpression>
-    
+
     /**
      * Returns the tail expression of the list, if any.
      */

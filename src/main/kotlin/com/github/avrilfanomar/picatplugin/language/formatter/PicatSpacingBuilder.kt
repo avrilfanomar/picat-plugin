@@ -24,53 +24,65 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
         )
         spacingBuilder = SpacingBuilder(settings, PicatLanguage)
             // Assignment operators (=, :=)
-            .around(TokenSet.create(
-                PicatTokenTypes.ASSIGN_OP,
-                PicatTokenTypes.ASSIGN_ONCE
-            ))
+            .around(
+                TokenSet.create(
+                    PicatTokenTypes.ASSIGN_OP,
+                    PicatTokenTypes.ASSIGN_ONCE
+                )
+            )
             .spaceIf(picatSettings.SPACE_AROUND_ASSIGNMENT_OPERATORS)
 
             // Logical operators (&&, ||, !)
-            .around(TokenSet.create(
-                PicatTokenTypes.AND,
-                PicatTokenTypes.OR,
-                PicatTokenTypes.NOT
-            ))
+            .around(
+                TokenSet.create(
+                    PicatTokenTypes.AND,
+                    PicatTokenTypes.OR,
+                    PicatTokenTypes.NOT
+                )
+            )
             .spaceIf(picatSettings.SPACE_AROUND_LOGICAL_OPERATORS)
 
             // Equality operators (==, !=, ===, !==)
-            .around(TokenSet.create(
-                PicatTokenTypes.EQUAL,
-                PicatTokenTypes.NOT_EQUAL,
-                PicatTokenTypes.IDENTICAL,
-                PicatTokenTypes.NOT_IDENTICAL
-            ))
+            .around(
+                TokenSet.create(
+                    PicatTokenTypes.EQUAL,
+                    PicatTokenTypes.NOT_EQUAL,
+                    PicatTokenTypes.IDENTICAL,
+                    PicatTokenTypes.NOT_IDENTICAL
+                )
+            )
             .spaceIf(picatSettings.SPACE_AROUND_EQUALITY_OPERATORS)
 
             // Relational operators (<, >, <=, >=)
-            .around(TokenSet.create(
-                PicatTokenTypes.LESS,
-                PicatTokenTypes.GREATER,
-                PicatTokenTypes.LESS_EQUAL,
-                PicatTokenTypes.LESS_EQUAL_ALT,
-                PicatTokenTypes.GREATER_EQUAL
-            ))
+            .around(
+                TokenSet.create(
+                    PicatTokenTypes.LESS,
+                    PicatTokenTypes.GREATER,
+                    PicatTokenTypes.LESS_EQUAL,
+                    PicatTokenTypes.LESS_EQUAL_ALT,
+                    PicatTokenTypes.GREATER_EQUAL
+                )
+            )
             .spaceIf(picatSettings.SPACE_AROUND_RELATIONAL_OPERATORS)
 
             // Additive operators (+, -)
-            .around(TokenSet.create(
-                PicatTokenTypes.PLUS,
-                PicatTokenTypes.MINUS
-            ))
+            .around(
+                TokenSet.create(
+                    PicatTokenTypes.PLUS,
+                    PicatTokenTypes.MINUS
+                )
+            )
             .spaceIf(picatSettings.SPACE_AROUND_ADDITIVE_OPERATORS)
 
             // Multiplicative operators (*, /, //, mod)
-            .around(TokenSet.create(
-                PicatTokenTypes.MULTIPLY,
-                PicatTokenTypes.DIVIDE,
-                PicatTokenTypes.INT_DIVIDE,
-                PicatTokenTypes.MODULO
-            ))
+            .around(
+                TokenSet.create(
+                    PicatTokenTypes.MULTIPLY,
+                    PicatTokenTypes.DIVIDE,
+                    PicatTokenTypes.INT_DIVIDE,
+                    PicatTokenTypes.MODULO
+                )
+            )
             .spaceIf(picatSettings.SPACE_AROUND_MULTIPLICATIVE_OPERATORS)
 
             // Rule operators (=>, ?=>)
@@ -84,28 +96,30 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .spacing(1, Integer.MAX_VALUE, 1, true, 1)
 
             // Constraint operators (#=, #!=, etc.)
-            .around(TokenSet.create(
-                PicatTokenTypes.CONSTRAINT_EQ,
-                PicatTokenTypes.CONSTRAINT_NEQ,
-                PicatTokenTypes.CONSTRAINT_LT,
-                PicatTokenTypes.CONSTRAINT_LE,
-                PicatTokenTypes.CONSTRAINT_LE_ALT,
-                PicatTokenTypes.CONSTRAINT_GT,
-                PicatTokenTypes.CONSTRAINT_GE,
-                PicatTokenTypes.CONSTRAINT_NOT,
-                PicatTokenTypes.CONSTRAINT_AND,
-                PicatTokenTypes.CONSTRAINT_OR,
-                PicatTokenTypes.CONSTRAINT_XOR
-            )
+            .around(
+                TokenSet.create(
+                    PicatTokenTypes.CONSTRAINT_EQ,
+                    PicatTokenTypes.CONSTRAINT_NEQ,
+                    PicatTokenTypes.CONSTRAINT_LT,
+                    PicatTokenTypes.CONSTRAINT_LE,
+                    PicatTokenTypes.CONSTRAINT_LE_ALT,
+                    PicatTokenTypes.CONSTRAINT_GT,
+                    PicatTokenTypes.CONSTRAINT_GE,
+                    PicatTokenTypes.CONSTRAINT_NOT,
+                    PicatTokenTypes.CONSTRAINT_AND,
+                    PicatTokenTypes.CONSTRAINT_OR,
+                    PicatTokenTypes.CONSTRAINT_XOR
+                )
             )
             .spaceIf(picatSettings.SPACE_AROUND_CONSTRAINT_OPERATORS)
 
             // Constraint rule operators (#=>, #<=>)
             .around(
                 TokenSet.create(
-                PicatTokenTypes.CONSTRAINT_IMPL,
-                PicatTokenTypes.CONSTRAINT_EQUIV
-            ))
+                    PicatTokenTypes.CONSTRAINT_IMPL,
+                    PicatTokenTypes.CONSTRAINT_EQUIV
+                )
+            )
             .spaceIf(picatSettings.SPACE_AROUND_CONSTRAINT_OPERATORS)
             .after(
                 TokenSet.create(
@@ -116,13 +130,15 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .spacing(1, 1, 0, true, 1)
 
             // Term comparison operators (@<, @=<, etc.)
-            .around(TokenSet.create(
-                PicatTokenTypes.TERM_LT,
-                PicatTokenTypes.TERM_LE,
-                PicatTokenTypes.TERM_LE_ALT,
-                PicatTokenTypes.TERM_GT,
-                PicatTokenTypes.TERM_GE
-            ))
+            .around(
+                TokenSet.create(
+                    PicatTokenTypes.TERM_LT,
+                    PicatTokenTypes.TERM_LE,
+                    PicatTokenTypes.TERM_LE_ALT,
+                    PicatTokenTypes.TERM_GT,
+                    PicatTokenTypes.TERM_GE
+                )
+            )
             .spaceIf(picatSettings.SPACE_AROUND_TERM_COMPARISON_OPERATORS)
 
             // Range operator (..)
@@ -134,12 +150,14 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .spaceIf(picatSettings.SPACE_AROUND_TYPE_CONSTRAINT_OPERATOR)
 
             // Bitwise operators (/\, \/, <<, >>)
-            .around(TokenSet.create(
-                PicatTokenTypes.BITWISE_AND,
-                PicatTokenTypes.BITWISE_OR,
-                PicatTokenTypes.SHIFT_LEFT,
-                PicatTokenTypes.SHIFT_RIGHT
-            ))
+            .around(
+                TokenSet.create(
+                    PicatTokenTypes.BITWISE_AND,
+                    PicatTokenTypes.BITWISE_OR,
+                    PicatTokenTypes.SHIFT_LEFT,
+                    PicatTokenTypes.SHIFT_RIGHT
+                )
+            )
             .spaceIf(picatSettings.SPACE_AROUND_BITWISE_OPERATORS)
 
             // Punctuation
@@ -177,15 +195,17 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .spaceIf(commonSettings.SPACE_WITHIN_BRACES)
 
             // After keywords
-            .after(TokenSet.create(
-                PicatTokenTypes.IF_KEYWORD,
-                PicatTokenTypes.THEN_KEYWORD,
-                PicatTokenTypes.ELSE_KEYWORD,
-                PicatTokenTypes.FOREACH_KEYWORD,
-                PicatTokenTypes.WHILE_KEYWORD,
-                PicatTokenTypes.FOR_KEYWORD,
-                PicatTokenTypes.RETURN_KEYWORD
-            ))
+            .after(
+                TokenSet.create(
+                    PicatTokenTypes.IF_KEYWORD,
+                    PicatTokenTypes.THEN_KEYWORD,
+                    PicatTokenTypes.ELSE_KEYWORD,
+                    PicatTokenTypes.FOREACH_KEYWORD,
+                    PicatTokenTypes.WHILE_KEYWORD,
+                    PicatTokenTypes.FOR_KEYWORD,
+                    PicatTokenTypes.RETURN_KEYWORD
+                )
+            )
             .spaces(1)
 
             // Ensure proper indentation for statements after block keywords

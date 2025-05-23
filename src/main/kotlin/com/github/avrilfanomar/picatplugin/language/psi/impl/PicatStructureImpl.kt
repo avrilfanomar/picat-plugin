@@ -4,7 +4,6 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatArgumentList
 import com.github.avrilfanomar.picatplugin.language.psi.PicatIdentifier
 import com.github.avrilfanomar.picatplugin.language.psi.PicatStructure
 import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
 /**
@@ -17,21 +16,21 @@ class PicatStructureImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatStruct
     override fun getIdentifier(): PicatIdentifier? {
         return PsiTreeUtil.getChildOfType(this, PicatIdentifier::class.java)
     }
-    
+
     /**
      * Returns the argument list of the structure, if any.
      */
     override fun getArgumentList(): PicatArgumentList? {
         return PsiTreeUtil.getChildOfType(this, PicatArgumentList::class.java)
     }
-    
+
     /**
      * Returns the name of the structure.
      */
     override fun getName(): String? {
         return getIdentifier()?.getName()
     }
-    
+
     /**
      * Returns the arity of the structure (number of arguments).
      */

@@ -10,7 +10,7 @@ interface PicatAtom : PsiElement {
      * Returns the identifier of the atom, if it's an identifier.
      */
     fun getIdentifier(): PicatIdentifier?
-    
+
     /**
      * Returns the quoted atom, if it's a quoted atom.
      */

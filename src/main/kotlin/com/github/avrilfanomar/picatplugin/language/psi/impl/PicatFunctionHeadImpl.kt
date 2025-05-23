@@ -16,21 +16,21 @@ class PicatFunctionHeadImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatFun
     override fun getIdentifier(): PicatIdentifier? {
         return PsiTreeUtil.getChildOfType(this, PicatIdentifier::class.java)
     }
-    
+
     /**
      * Returns the argument list of the function, if any.
      */
     override fun getArgumentList(): PicatArgumentList? {
         return PsiTreeUtil.getChildOfType(this, PicatArgumentList::class.java)
     }
-    
+
     /**
      * Returns the name of the function.
      */
     override fun getName(): String? {
         return getIdentifier()?.getName()
     }
-    
+
     /**
      * Returns the arity of the function (number of arguments).
      */

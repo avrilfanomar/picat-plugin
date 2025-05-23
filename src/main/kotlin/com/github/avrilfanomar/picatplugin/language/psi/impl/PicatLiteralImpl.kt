@@ -17,21 +17,21 @@ class PicatLiteralImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatLiteral 
     override fun getInteger(): PsiElement? {
         return findChildByType(PicatTokenTypes.INTEGER)
     }
-    
+
     /**
      * Returns the float value of the literal, if it's a float.
      */
     override fun getFloat(): PsiElement? {
         return findChildByType(PicatTokenTypes.FLOAT)
     }
-    
+
     /**
      * Returns the string value of the literal, if it's a string.
      */
     override fun getString(): PsiElement? {
         return findChildByType(PicatTokenTypes.STRING)
     }
-    
+
     /**
      * Returns the atom of the literal, if it's an atom.
      */

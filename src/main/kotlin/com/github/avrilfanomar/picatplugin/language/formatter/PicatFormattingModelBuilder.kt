@@ -16,12 +16,12 @@ class PicatFormattingModelBuilder : FormattingModelBuilder {
     override fun createModel(formattingContext: FormattingContext): FormattingModel {
         val element = formattingContext.psiElement
         val settings = formattingContext.codeStyleSettings
-        
+
         val spacingBuilder = PicatSpacingBuilder(settings).getSpacingBuilder()
         val blockFactory = PicatBlockFactory(settings, spacingBuilder)
-        
+
         val rootBlock = blockFactory.createBlock(element.node)
-        
+
         return FormattingModelProvider.createFormattingModelForPsiFile(
             element.containingFile,
             rootBlock,

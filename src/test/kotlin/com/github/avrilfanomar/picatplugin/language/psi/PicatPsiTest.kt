@@ -1,6 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.github.avrilfanomar.picatplugin.language.PicatLanguage
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.Test
 

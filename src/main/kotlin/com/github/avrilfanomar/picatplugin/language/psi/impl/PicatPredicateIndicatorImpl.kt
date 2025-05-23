@@ -5,7 +5,6 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateIndicator
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.IncorrectOperationException
@@ -18,7 +17,7 @@ class PicatPredicateIndicatorImpl(node: ASTNode) : ASTWrapperPsiElement(node), P
      * Returns the name of the predicate.
      */
     override fun getName(): String? {
-        return getAtom()?.getText()
+        return getAtom()?.text
     }
 
     /**

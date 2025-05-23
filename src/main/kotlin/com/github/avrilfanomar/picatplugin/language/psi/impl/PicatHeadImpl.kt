@@ -19,17 +19,17 @@ class PicatHeadImpl(node: ASTNode) : ASTWrapperPsiElement(node), PicatHead {
     override fun getName(): String? {
         val atom = getAtom()
         if (atom != null) {
-            return atom.getText()
+            return atom.text
         }
-        
+
         val structure = getStructure()
         if (structure != null) {
             return structure.getName()
         }
-        
+
         return null
     }
-    
+
     /**
      * Sets the name of the head.
      * Note: This is a read-only PSI element, so this method throws an exception.
@@ -37,7 +37,7 @@ class PicatHeadImpl(node: ASTNode) : ASTWrapperPsiElement(node), PicatHead {
     override fun setName(name: String): PsiElement {
         throw IncorrectOperationException("Cannot modify head name")
     }
-    
+
     /**
      * Returns the arity of the head (number of arguments).
      */
@@ -46,17 +46,17 @@ class PicatHeadImpl(node: ASTNode) : ASTWrapperPsiElement(node), PicatHead {
         if (structure != null) {
             return structure.getArity()
         }
-        
+
         return 0
     }
-    
+
     /**
      * Returns the atom of the head, if it's an atom.
      */
     override fun getAtom(): PicatAtom? {
         return PsiTreeUtil.getChildOfType(this, PicatAtom::class.java)
     }
-    
+
     /**
      * Returns the structure of the head, if it's a structure.
      */

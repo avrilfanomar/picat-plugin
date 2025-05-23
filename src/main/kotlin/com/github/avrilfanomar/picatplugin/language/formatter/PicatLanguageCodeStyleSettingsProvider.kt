@@ -5,13 +5,7 @@ import com.intellij.application.options.CodeStyleAbstractConfigurable
 import com.intellij.application.options.CodeStyleAbstractPanel
 import com.intellij.application.options.TabbedLanguageCodeStylePanel
 import com.intellij.lang.Language
-import com.intellij.psi.codeStyle.CodeStyleConfigurable
-import com.intellij.psi.codeStyle.CodeStyleSettings
-import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
-import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.OptionAnchor
-import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.SpacingOption
-import com.intellij.psi.codeStyle.CustomCodeStyleSettings
-import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
+import com.intellij.psi.codeStyle.*
 
 /**
  * Provides code style settings for Picat language to the IDE.
@@ -93,6 +87,7 @@ class PicatLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
                     "Punctuation"
                 )
             }
+
             SettingsType.WRAPPING_AND_BRACES_SETTINGS -> {
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
@@ -119,6 +114,7 @@ class PicatLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
                     "Line Breaks"
                 )
             }
+
             SettingsType.INDENT_SETTINGS -> {
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
@@ -139,6 +135,7 @@ class PicatLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
                     "Indentation"
                 )
             }
+
             else -> {}
         }
     }

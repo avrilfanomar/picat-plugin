@@ -16,21 +16,21 @@ class PicatPredicateDefinitionImpl(node: ASTNode) : PicatPsiElementImpl(node), P
     override fun getName(): String? {
         return getHead()?.getName()
     }
-    
+
     /**
      * Returns the arity of the predicate (number of arguments).
      */
     override fun getArity(): Int {
         return getHead()?.getArity() ?: 0
     }
-    
+
     /**
      * Returns the head of the predicate.
      */
     override fun getHead(): PicatPredicateHead? {
         return PsiTreeUtil.getChildOfType(this, PicatPredicateHead::class.java)
     }
-    
+
     /**
      * Returns the body of the predicate.
      */

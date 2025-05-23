@@ -2,9 +2,7 @@ package com.github.avrilfanomar.picatplugin.language.psi.impl
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatList
 import com.github.avrilfanomar.picatplugin.language.psi.PicatListElements
-import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
 /**

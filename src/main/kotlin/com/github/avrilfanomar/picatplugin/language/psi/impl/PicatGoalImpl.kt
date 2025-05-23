@@ -59,9 +59,10 @@ class PicatGoalImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatGoal {
         // Look for an expression followed by an equal sign
         val children = node.getChildren(null)
         for (i in 0 until children.size - 1) {
-            if (children[i].elementType == PicatTokenTypes.EXPRESSION && 
-                (children[i+1].elementType == PicatTokenTypes.EQUAL || 
-                 children[i+1].elementType == PicatTokenTypes.NOT_EQUAL)) {
+            if (children[i].elementType == PicatTokenTypes.EXPRESSION &&
+                (children[i + 1].elementType == PicatTokenTypes.EQUAL ||
+                        children[i + 1].elementType == PicatTokenTypes.NOT_EQUAL)
+            ) {
                 return children[i].psi
             }
         }
@@ -75,11 +76,12 @@ class PicatGoalImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatGoal {
         // Look for an expression followed by a comparison operator
         val children = node.getChildren(null)
         for (i in 0 until children.size - 1) {
-            if (children[i].elementType == PicatTokenTypes.EXPRESSION && 
-                (children[i+1].elementType == PicatTokenTypes.LESS || 
-                 children[i+1].elementType == PicatTokenTypes.GREATER || 
-                 children[i+1].elementType == PicatTokenTypes.LESS_EQUAL || 
-                 children[i+1].elementType == PicatTokenTypes.GREATER_EQUAL)) {
+            if (children[i].elementType == PicatTokenTypes.EXPRESSION &&
+                (children[i + 1].elementType == PicatTokenTypes.LESS ||
+                        children[i + 1].elementType == PicatTokenTypes.GREATER ||
+                        children[i + 1].elementType == PicatTokenTypes.LESS_EQUAL ||
+                        children[i + 1].elementType == PicatTokenTypes.GREATER_EQUAL)
+            ) {
                 return children[i].psi
             }
         }

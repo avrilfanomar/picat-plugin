@@ -17,10 +17,10 @@ class PicatReferenceProvider : PsiReferenceProvider() {
         if (element !is PicatStructure) {
             return PsiReference.EMPTY_ARRAY
         }
-        
+
         val structure = element as PicatStructure
         val identifier = structure.getIdentifier() ?: return PsiReference.EMPTY_ARRAY
-        
+
         // Create a reference for the structure
         val range = TextRange(0, identifier.textLength)
         return arrayOf(PicatReference(identifier, range, structure.getArity()))

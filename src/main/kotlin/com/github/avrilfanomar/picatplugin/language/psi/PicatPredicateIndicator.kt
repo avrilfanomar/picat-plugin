@@ -12,17 +12,17 @@ interface PicatPredicateIndicator : PsiNamedElement {
      * Returns the name of the predicate.
      */
     override fun getName(): String?
-    
+
     /**
      * Returns the arity of the predicate.
      */
     fun getArity(): Int
-    
+
     /**
      * Returns the atom element representing the predicate name.
      */
     fun getAtom(): PicatAtom?
-    
+
     /**
      * Returns the integer element representing the predicate arity.
      */

@@ -10,17 +10,17 @@ interface PicatPredicateDefinition : PsiElement {
      * Returns the name of the predicate.
      */
     fun getName(): String?
-    
+
     /**
      * Returns the arity of the predicate (number of arguments).
      */
     fun getArity(): Int
-    
+
     /**
      * Returns the head of the predicate.
      */
     fun getHead(): PicatPredicateHead?
-    
+
     /**
      * Returns the body of the predicate.
      */

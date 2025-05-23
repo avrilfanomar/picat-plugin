@@ -11,12 +11,12 @@ interface PicatRule : PicatPsiElement {
      * Returns the head of the rule.
      */
     fun getHead(): PsiElement?
-    
+
     /**
      * Returns the body of the rule.
      */
     fun getBody(): PsiElement?
-    
+
     /**
      * Returns the rule operator.
      */

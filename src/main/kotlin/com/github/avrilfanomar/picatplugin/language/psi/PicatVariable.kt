@@ -1,6 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 
 /**

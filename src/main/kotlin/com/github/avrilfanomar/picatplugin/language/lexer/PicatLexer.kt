@@ -40,6 +40,7 @@ class PicatLexer : LexerBase() {
             "values", "var", "variant", "vars", "zip"
         )
     }
+
     private var buffer: CharSequence = ""
     private var bufferEnd: Int = 0
     private var bufferStart: Int = 0

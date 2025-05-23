@@ -1,7 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.psi.impl
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatVariable
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
+import com.github.avrilfanomar.picatplugin.language.psi.PicatVariable
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.util.IncorrectOperationException

@@ -1,7 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
-import com.intellij.psi.tree.TokenSet
 
 /**
  * Token sets for Picat language.

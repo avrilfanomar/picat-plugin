@@ -1,6 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFileType
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.openapi.fileTypes.FileType
@@ -18,13 +17,13 @@ class PicatFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, Pica
     /**
      * Returns all predicate definitions in the file.
      */
-    fun getPredicates(): List<PicatPredicateDefinition> = 
+    fun getPredicates(): List<PicatPredicateDefinition> =
         findChildrenByClass(PicatPredicateDefinition::class.java).toList()
 
     /**
      * Returns all function definitions in the file.
      */
-    fun getFunctions(): List<PicatFunctionDefinition> = 
+    fun getFunctions(): List<PicatFunctionDefinition> =
         findChildrenByClass(PicatFunctionDefinition::class.java).toList()
 
     /**

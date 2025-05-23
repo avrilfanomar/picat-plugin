@@ -11,7 +11,7 @@ interface PicatIncludeStatement : PicatPsiElement {
      * Returns the path of the included file.
      */
     fun getIncludePath(): String?
-    
+
     /**
      * Returns the string literal element representing the include path.
      */

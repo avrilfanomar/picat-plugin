@@ -1,7 +1,7 @@
 package com.github.avrilfanomar.picatplugin.run
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFileType
 import com.github.avrilfanomar.picatplugin.language.PicatIcons
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFileType
 import com.intellij.execution.ExecutorRegistry
 import com.intellij.execution.RunManager
 import com.intellij.execution.RunnerAndConfigurationSettings

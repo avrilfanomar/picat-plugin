@@ -4,7 +4,6 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatFact
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
 
 /**
  * Implementation of the PicatFact interface.

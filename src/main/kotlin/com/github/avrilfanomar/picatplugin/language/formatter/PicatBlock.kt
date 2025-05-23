@@ -75,20 +75,20 @@ class PicatBlock(
                 parentType == PicatTokenTypes.WHILE_LOOP || parentType == PicatTokenTypes.FOR_LOOP ||
                 parentType == PicatTokenTypes.TRY_CATCH ||
                 // Also indent whitespace in statements within rule bodies or block statements
-                (parentType == PicatTokenTypes.STATEMENT && 
-                    (grandParentType == PicatTokenTypes.RULE_BODY || grandParentType == PicatTokenTypes.RULE ||
-                     grandParentType == PicatTokenTypes.IF_THEN_ELSE || grandParentType == PicatTokenTypes.FOREACH_LOOP ||
-                     grandParentType == PicatTokenTypes.WHILE_LOOP || grandParentType == PicatTokenTypes.FOR_LOOP ||
-                     grandParentType == PicatTokenTypes.TRY_CATCH)) ||
+                (parentType == PicatTokenTypes.STATEMENT &&
+                        (grandParentType == PicatTokenTypes.RULE_BODY || grandParentType == PicatTokenTypes.RULE ||
+                                grandParentType == PicatTokenTypes.IF_THEN_ELSE || grandParentType == PicatTokenTypes.FOREACH_LOOP ||
+                                grandParentType == PicatTokenTypes.WHILE_LOOP || grandParentType == PicatTokenTypes.FOR_LOOP ||
+                                grandParentType == PicatTokenTypes.TRY_CATCH)) ||
                 // Also indent whitespace in comments within rule bodies or block statements
-                (parentType == PicatTokenTypes.COMMENT && 
-                    (grandParentType == PicatTokenTypes.RULE_BODY || grandParentType == PicatTokenTypes.RULE ||
-                     grandParentType == PicatTokenTypes.IF_THEN_ELSE || grandParentType == PicatTokenTypes.FOREACH_LOOP ||
-                     grandParentType == PicatTokenTypes.WHILE_LOOP || grandParentType == PicatTokenTypes.FOR_LOOP ||
-                     grandParentType == PicatTokenTypes.TRY_CATCH)) ||
+                (parentType == PicatTokenTypes.COMMENT &&
+                        (grandParentType == PicatTokenTypes.RULE_BODY || grandParentType == PicatTokenTypes.RULE ||
+                                grandParentType == PicatTokenTypes.IF_THEN_ELSE || grandParentType == PicatTokenTypes.FOREACH_LOOP ||
+                                grandParentType == PicatTokenTypes.WHILE_LOOP || grandParentType == PicatTokenTypes.FOR_LOOP ||
+                                grandParentType == PicatTokenTypes.TRY_CATCH)) ||
                 // Also indent whitespace in expressions within statements
-                (parentType == PicatTokenTypes.EXPRESSION && 
-                    (grandParentType == PicatTokenTypes.STATEMENT || grandParentType == PicatTokenTypes.RULE_BODY))
+                (parentType == PicatTokenTypes.EXPRESSION &&
+                        (grandParentType == PicatTokenTypes.STATEMENT || grandParentType == PicatTokenTypes.RULE_BODY))
             ) {
                 return Indent.getNormalIndent()
             }
@@ -127,7 +127,8 @@ class PicatBlock(
             elementType != PicatTokenTypes.TRY_KEYWORD &&
             elementType != PicatTokenTypes.CATCH_KEYWORD &&
             elementType != PicatTokenTypes.END_KEYWORD &&
-            picatSettings.INDENT_BLOCK_STATEMENTS) {
+            picatSettings.INDENT_BLOCK_STATEMENTS
+        ) {
             return Indent.getNormalIndent()
         }
 
@@ -136,7 +137,8 @@ class PicatBlock(
             elementType != PicatTokenTypes.LBRACKET &&
             elementType != PicatTokenTypes.RBRACKET &&
             elementType != PicatTokenTypes.PIPE &&
-            picatSettings.INDENT_LIST_COMPREHENSION) {
+            picatSettings.INDENT_LIST_COMPREHENSION
+        ) {
             return Indent.getNormalIndent()
         }
 
