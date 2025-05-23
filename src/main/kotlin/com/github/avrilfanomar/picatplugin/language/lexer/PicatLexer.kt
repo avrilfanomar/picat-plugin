@@ -159,6 +159,8 @@ class PicatLexer : LexerBase() {
             val text = buffer.substring(tokenStart, tokenEnd)
             currentToken = when (text) {
                 "import" -> PicatTokenTypes.IMPORT_KEYWORD
+                "export" -> PicatTokenTypes.EXPORT_KEYWORD
+                "include" -> PicatTokenTypes.INCLUDE_KEYWORD
                 "module" -> PicatTokenTypes.MODULE_KEYWORD
                 "index" -> PicatTokenTypes.INDEX_KEYWORD
                 "private" -> PicatTokenTypes.PRIVATE_KEYWORD

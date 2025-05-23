@@ -53,6 +53,18 @@ class PicatParser : PsiParser {
             return
         }
 
+        // Parse export statements
+        if (builder.tokenType == PicatTokenTypes.EXPORT_KEYWORD) {
+            parseExportStatement(builder)
+            return
+        }
+
+        // Parse include statements
+        if (builder.tokenType == PicatTokenTypes.INCLUDE_KEYWORD) {
+            parseIncludeStatement(builder)
+            return
+        }
+
         // Parse predicate or function definitions
         if (builder.tokenType == PicatTokenTypes.IDENTIFIER) {
             parsePredicateOrFunction(builder)
@@ -120,33 +132,87 @@ class PicatParser : PsiParser {
     }
 
     /**
-     * Parse a predicate or function definition.
+     * Parse an export statement.
      */
-    private fun parsePredicateOrFunction(builder: PsiBuilder) {
+    private fun parseExportStatement(builder: PsiBuilder) {
         val marker = builder.mark()
 
-        // Parse identifier
+        // Consume "export" keyword
         builder.advanceLexer()
 
-        // Parse arguments
-        if (builder.tokenType == PicatTokenTypes.LPAR) {
-            parseArgumentList(builder)
+        // Parse predicate indicators (name/arity pairs)
+        parsePredicateIndicatorList(builder)
+
+        // Consume "."
+        if (builder.tokenType == PicatTokenTypes.DOT) {
+            builder.advanceLexer()
+        } else {
+            builder.error("Expected '.'")
         }
 
-        // Check if it's a function (has "=")
-        val isFunction = builder.tokenType == PicatTokenTypes.EQUAL
-        if (isFunction) {
-            builder.advanceLexer()
+        marker.done(PicatTokenTypes.EXPORT_STATEMENT)
+    }
 
-            // Parse function body
-            val bodyMarker = builder.mark()
-            parseExpression(builder)
-            bodyMarker.done(PicatTokenTypes.FUNCTION_BODY)
+    /**
+     * Parse a list of predicate indicators (name/arity pairs).
+     */
+    private fun parsePredicateIndicatorList(builder: PsiBuilder) {
+        // Parse first predicate indicator
+        parsePredicateIndicator(builder)
+
+        // Parse additional predicate indicators separated by commas
+        while (builder.tokenType == PicatTokenTypes.COMMA) {
+            builder.advanceLexer() // Consume ","
+            parsePredicateIndicator(builder)
+        }
+    }
+
+    /**
+     * Parse a predicate indicator (name/arity pair).
+     */
+    private fun parsePredicateIndicator(builder: PsiBuilder) {
+        val marker = builder.mark()
+
+        // Parse predicate name
+        if (builder.tokenType == PicatTokenTypes.IDENTIFIER || builder.tokenType == PicatTokenTypes.QUOTED_ATOM) {
+            val nameMarker = builder.mark()
+            builder.advanceLexer()
+            nameMarker.done(PicatTokenTypes.ATOM)
         } else {
-            // Parse predicate body
-            val bodyMarker = builder.mark()
-            parseClauseList(builder)
-            bodyMarker.done(PicatTokenTypes.PREDICATE_BODY)
+            builder.error("Expected predicate name")
+        }
+
+        // Consume "/"
+        if (builder.tokenType == PicatTokenTypes.DIVIDE) {
+            builder.advanceLexer()
+        } else {
+            builder.error("Expected '/'")
+        }
+
+        // Parse arity
+        if (builder.tokenType == PicatTokenTypes.INTEGER) {
+            builder.advanceLexer()
+        } else {
+            builder.error("Expected integer arity")
+        }
+
+        marker.done(PicatTokenTypes.PREDICATE_INDICATOR)
+    }
+
+    /**
+     * Parse an include statement.
+     */
+    private fun parseIncludeStatement(builder: PsiBuilder) {
+        val marker = builder.mark()
+
+        // Consume "include" keyword
+        builder.advanceLexer()
+
+        // Parse file path
+        if (builder.tokenType == PicatTokenTypes.STRING) {
+            builder.advanceLexer()
+        } else {
+            builder.error("Expected string literal for file path")
         }
 
         // Consume "."
@@ -156,9 +222,88 @@ class PicatParser : PsiParser {
             builder.error("Expected '.'")
         }
 
+        marker.done(PicatTokenTypes.INCLUDE_STATEMENT)
+    }
+
+    /**
+     * Parse a predicate, function definition, or fact.
+     */
+    private fun parsePredicateOrFunction(builder: PsiBuilder) {
+        val marker = builder.mark()
+
+        // Parse head
+        val headMarker = builder.mark()
+
+        // Parse identifier
+        builder.advanceLexer()
+
+        // Parse arguments
+        if (builder.tokenType == PicatTokenTypes.LPAR) {
+            parseArgumentList(builder)
+        }
+
+        headMarker.done(PicatTokenTypes.HEAD)
+
+        // Check if it's a function (has "=")
+        val isFunction = builder.tokenType == PicatTokenTypes.EQUAL
+
+        // Check if it's a fact (has ".")
+        val isFact = builder.tokenType == PicatTokenTypes.DOT
+
         if (isFunction) {
-            marker.done(PicatTokenTypes.FUNCTION_DEFINITION)
+            builder.advanceLexer()
+
+            // Parse function body
+            val bodyMarker = builder.mark()
+            parseExpression(builder)
+            bodyMarker.done(PicatTokenTypes.FUNCTION_BODY)
+
+            // Check if it's a rule (has "=>", "?=>", etc.)
+            val isRule = builder.tokenType == PicatTokenTypes.ARROW_OP || 
+                         builder.tokenType == PicatTokenTypes.BACKTRACKABLE_ARROW_OP
+
+            if (isRule) {
+                // Parse rule operator
+                val opMarker = builder.mark()
+                builder.advanceLexer()
+                opMarker.done(PicatTokenTypes.OPERATOR)
+
+                // Parse rule body
+                val ruleBodyMarker = builder.mark()
+                parseClauseList(builder)
+                ruleBodyMarker.done(PicatTokenTypes.BODY)
+            }
+
+            // Consume "."
+            if (builder.tokenType == PicatTokenTypes.DOT) {
+                builder.advanceLexer()
+            } else {
+                builder.error("Expected '.'")
+            }
+
+            if (isRule) {
+                marker.done(PicatTokenTypes.RULE)
+            } else {
+                marker.done(PicatTokenTypes.FUNCTION_DEFINITION)
+            }
+        } else if (isFact) {
+            // Consume "."
+            builder.advanceLexer()
+
+            marker.done(PicatTokenTypes.FACT)
         } else {
+            // Parse predicate body
+            val bodyMarker = builder.mark()
+            parseClauseList(builder)
+            bodyMarker.done(PicatTokenTypes.PREDICATE_BODY)
+
+            // Consume "."
+            if (builder.tokenType == PicatTokenTypes.DOT) {
+                builder.advanceLexer()
+            } else {
+                builder.error("Expected '.'")
+            }
+
             marker.done(PicatTokenTypes.PREDICATE_DEFINITION)
         }
     }
