@@ -201,4 +201,12 @@ object PicatTokenTypes {
     val TRY_CATCH = PicatElementType("TRY_CATCH")
     val LIST_COMPREHENSION = PicatElementType("LIST_COMPREHENSION")
     val FUNCTION_CALL = PicatElementType("FUNCTION_CALL")
+
+    // Additional PSI Element Types
+    val FACT = PicatElementType("FACT")
+    val EXPORT_STATEMENT = PicatElementType("EXPORT_STATEMENT")
+    val PREDICATE_INDICATOR = PicatElementType("PREDICATE_INDICATOR")
+    val INCLUDE_STATEMENT = PicatElementType("INCLUDE_STATEMENT")
+    val HEAD = PicatElementType("HEAD")
+    val GOAL = PicatElementType("GOAL")
 }

@@ -9,6 +9,13 @@ import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExpressionImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPsiElementImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatRuleImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatTermImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFactImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExportStatementImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPredicateIndicatorImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatIncludeStatementImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatHeadImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatBodyImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatGoalImpl
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
@@ -49,6 +56,13 @@ class PicatParserDefinition : ParserDefinition {
             PicatTokenTypes.RULE -> PicatRuleImpl(node)
             PicatTokenTypes.EXPRESSION -> PicatExpressionImpl(node)
             PicatTokenTypes.TERM -> PicatTermImpl(node)
+            PicatTokenTypes.FACT -> PicatFactImpl(node)
+            PicatTokenTypes.EXPORT_STATEMENT -> PicatExportStatementImpl(node)
+            PicatTokenTypes.PREDICATE_INDICATOR -> PicatPredicateIndicatorImpl(node)
+            PicatTokenTypes.INCLUDE_STATEMENT -> PicatIncludeStatementImpl(node)
+            PicatTokenTypes.HEAD -> PicatHeadImpl(node)
+            PicatTokenTypes.BODY -> PicatBodyImpl(node)
+            PicatTokenTypes.GOAL -> PicatGoalImpl(node)
             else -> PicatPsiElementImpl(node)
         }
     }
