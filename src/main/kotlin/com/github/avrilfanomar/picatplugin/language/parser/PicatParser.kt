@@ -223,7 +223,7 @@ class PicatParser : PsiParser {
         val isFact = builder.tokenType == PicatTokenTypes.DOT
 
         if (isFunction) {
-            builder.advanceLexer()
+            builder.advanceLexer() // Consume "="
 
             // Parse function body
             val bodyMarker = builder.mark()
@@ -244,14 +244,15 @@ class PicatParser : PsiParser {
                 val ruleBodyMarker = builder.mark()
                 parseClauseList(builder)
                 ruleBodyMarker.done(PicatTokenTypes.BODY)
-            }
 
-            // Consume "."
-            expectToken(builder, PicatTokenTypes.DOT, "Expected '.'")
+                // Consume "."
+                expectToken(builder, PicatTokenTypes.DOT, "Expected '.'")
 
-            if (isRule) {
                 marker.done(PicatTokenTypes.RULE)
             } else {
+                // Consume "."
+                expectToken(builder, PicatTokenTypes.DOT, "Expected '.'")
+
                 marker.done(PicatTokenTypes.FACT)
             }
         } else if (isFact) {
@@ -281,15 +282,15 @@ class PicatParser : PsiParser {
         // Consume "("
         builder.advanceLexer()
 
-        // Parse arguments
-        while (builder.tokenType != PicatTokenTypes.RPAR && !builder.eof()) {
+        // Check if there are any arguments
+        if (builder.tokenType != PicatTokenTypes.RPAR) {
+            // Parse first argument
             parseArgument(builder)
 
-            // Consume "," if present
-            if (builder.tokenType == PicatTokenTypes.COMMA) {
-                builder.advanceLexer()
-            } else {
-                break
+            // Parse additional arguments separated by commas
+            while (builder.tokenType == PicatTokenTypes.COMMA) {
+                builder.advanceLexer() // Consume ","
+                parseArgument(builder)
             }
         }
 

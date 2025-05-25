@@ -32,6 +32,58 @@ class PicatPsiTest : BasePlatformTestCase() {
     }
 
     @Test
+    fun testFactWithMultipleArgumentsPsi() {
+        // Test that a fact with multiple arguments is correctly parsed
+        val code = """
+            sum(1, 2, 3) = 6.
+        """.trimIndent()
+
+        myFixture.configureByText("test.pi", code)
+        val file = myFixture.file as PicatFile
+
+        // Debug: Print all PSI elements in the file
+        println("[DEBUG_LOG] PSI elements in the file:")
+        file.children.forEach { element ->
+            println("[DEBUG_LOG] ${element.javaClass.simpleName}: ${element.text}")
+        }
+
+        // Find all facts in the file
+        val facts = file.findChildrenByClass(PicatFact::class.java)
+
+        // Debug: Print the number of facts found
+        println("[DEBUG_LOG] Number of facts found: ${facts.size}")
+
+        // Verify that there is exactly one fact
+        assertEquals("There should be exactly one fact", 1, facts.size)
+
+        // Verify that the fact has the correct head
+        val fact = facts[0]
+        val head = fact.getHead()
+        assertNotNull("Fact should have a head", head)
+
+        // Verify that the head is a structure
+        assertTrue("Head should be a structure", head is PicatStructure)
+        val structure = head as PicatStructure
+
+        // Verify that the structure has the correct name and arity
+        assertEquals("Structure should have name sum", "sum", structure.getName())
+        assertEquals("Structure should have arity 3", 3, structure.getArity())
+
+        // Verify that the structure has an argument list
+        val argumentList = structure.getArgumentList()
+        assertNotNull("Structure should have an argument list", argumentList)
+
+        // Verify that the argument list has the correct number of arguments
+        val arguments = argumentList!!.getArguments()
+        assertEquals("Argument list should have 3 arguments", 3, arguments.size)
+
+        // Verify that each argument has the correct expression
+        assertEquals("First argument should be 1", "1", arguments[0].getExpression()?.text)
+        assertEquals("Second argument should be 2", "2", arguments[1].getExpression()?.text)
+        assertEquals("Third argument should be 3", "3", arguments[2].getExpression()?.text)
+    }
+
+    @Test
     fun testRulePsi() {
         // Test that a rule is correctly parsed into a PicatRule PSI element
         val code = """
@@ -110,20 +162,20 @@ class PicatPsiTest : BasePlatformTestCase() {
         // Test that a more complex Picat program is correctly parsed into PSI elements
         val code = """
             % This is a sample Picat program
-            
+
             import util.
             export factorial/1, fibonacci/1.
             include "utils.pi".
-            
+
             main => 
                 println("Hello, world!"),
                 X = 42,
                 Y = X + 10,
                 println(Y).
-            
+
             factorial(0) = 1.
             factorial(N) = N * factorial(N-1) => N > 0.
-            
+
             fibonacci(0) = 0.
             fibonacci(1) = 1.
             fibonacci(N) = fibonacci(N-1) + fibonacci(N-2) => N > 1.
