@@ -4,10 +4,16 @@ import com.intellij.psi.PsiElement
 
 /**
  * Interface for Picat import statement PSI elements.
+ * An import statement in Picat imports modules to be used by the current module.
  */
-interface PicatImportStatement : PsiElement {
+interface PicatImportStatement : PicatPsiElement {
     /**
-     * Returns the module name of the import statement.
+     * Returns the list of module names in the import statement.
      */
-    fun getModuleName(): PicatModuleName?
+    fun getModuleNames(): List<PicatModuleName>
+
+    /**
+     * Returns the module list.
+     */
+    fun getModuleList(): PsiElement?
 }

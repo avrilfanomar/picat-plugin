@@ -4,10 +4,16 @@ import com.intellij.psi.PsiElement
 
 /**
  * Interface for Picat module name PSI elements.
+ * A module name in Picat is the name of a module that can be imported.
  */
-interface PicatModuleName : PsiElement {
+interface PicatModuleName : PicatPsiElement {
     /**
-     * Returns the identifier of the module name.
+     * Returns the name of the module.
      */
-    fun getIdentifier(): PicatIdentifier?
+    fun getName(): String?
+
+    /**
+     * Returns the identifier of the module.
+     */
+    fun getIdentifier(): PsiElement?
 }

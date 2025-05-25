@@ -38,4 +38,15 @@ class PicatFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, Pica
     fun getFunctions(): List<PicatFunctionDefinition> =
         PsiTreeUtil.findChildrenOfType(this, PicatFunctionDefinition::class.java).toList()
 
+    /**
+     * Returns all import statements in the file.
+     */
+    fun getImportStatements(): List<PicatImportStatement> =
+        PsiTreeUtil.findChildrenOfType(this, PicatImportStatement::class.java).toList()
+
+    /**
+     * Returns all module names imported in the file.
+     */
+    fun getImportedModuleNames(): List<PicatModuleName> =
+        getImportStatements().flatMap { it.getModuleNames() }
 }

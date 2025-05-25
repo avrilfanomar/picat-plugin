@@ -97,35 +97,35 @@ picatFile ::= program
 
 program ::= item_*
 
-private item_ ::= (module_decl | directive | statement | rule | fact | COMMENT)
+private item_ ::= (module_decl | directive | fact | rule | statement | COMMENT)
 
 // Module declaration
 module_decl ::= module_declaration | end_module_declaration
-module_declaration ::= "module" module_name "." {
+module_declaration ::= MODULE_KEYWORD module_name "." {
   pin=1
   methods=[getName getModuleName]
 }
-end_module_declaration ::= "end_module" "." {
+end_module_declaration ::= END_MODULE_KEYWORD "." {
   pin=1
 }
 module_name ::= atom
 
 // Directives
 directive ::= import_statement | export_statement | include_statement
-import_statement ::= "import" module_list "." {
+import_statement ::= IMPORT_KEYWORD module_list "." {
   pin=1
-  methods=[getModuleList]
+  methods=[getModuleNames getModuleList]
 }
-export_statement ::= "export" export_list "." {
+export_statement ::= EXPORT_KEYWORD export_list "." {
   pin=1
   methods=[getExportList]
 }
-include_statement ::= "include" STRING "." {
+include_statement ::= INCLUDE_KEYWORD STRING "." {
   pin=1
   methods=[getIncludePath]
 }
 
-module_list ::= atom ("," atom)* {
+module_list ::= module_name ("," module_name)* {
   methods=[getModules]
 }
 
@@ -291,7 +291,8 @@ predicate_body ::= clause_list
 // Function definition (for compatibility with existing code)
 function_definition ::= atom "(" [argument_list] ")" "=" function_body "." {
   pin=1
-  methods=[getName getArity getArgumentList getBody]
+  implements=["com.github.avrilfanomar.picatplugin.language.psi.PicatFact"]
+  methods=[getName getArity getArgumentList getBody getHead]
 }
 function_body ::= expression
 
