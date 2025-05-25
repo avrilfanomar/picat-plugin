@@ -197,7 +197,7 @@ class PicatPsiTest : BasePlatformTestCase() {
         assertEquals("There should be exactly one include statement", 1, includeStatements.size)
 
         // Find all facts in the file
-        val facts = file.findChildrenByClass(PicatFact::class.java)
+        val facts = file.getAllFacts()
         assertEquals("There should be exactly 3 facts", 3, facts.size)
 
         // Find all rules in the file

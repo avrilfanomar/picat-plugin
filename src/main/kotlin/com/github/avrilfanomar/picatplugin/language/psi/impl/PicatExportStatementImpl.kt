@@ -14,7 +14,19 @@ class PicatExportStatementImpl(node: ASTNode) : PicatPsiElementImpl(node), Picat
      * Returns the list of predicate indicators in the export statement.
      */
     override fun getPredicateIndicators(): List<PicatPredicateIndicator> {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatPredicateIndicator::class.java)
+        // First try to get direct children
+        val directChildren = PsiTreeUtil.getChildrenOfTypeAsList(this, PicatPredicateIndicator::class.java)
+        if (directChildren.isNotEmpty()) {
+            return directChildren
+        }
+
+        // If no direct children, search recursively
+        val exportList = getExportList()
+        if (exportList != null) {
+            return PsiTreeUtil.findChildrenOfType(exportList, PicatPredicateIndicator::class.java).toList()
+        }
+
+        return emptyList()
     }
 
     /**

@@ -10,9 +10,4 @@ interface PicatModuleDeclaration : PsiNamedElement {
      * Returns the name of the module.
      */
     override fun getName(): String?
-
-    /**
-     * Returns the module name element.
-     */
-    fun getModuleName(): PicatModuleName?
 }

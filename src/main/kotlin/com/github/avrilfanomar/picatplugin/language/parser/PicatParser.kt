@@ -586,17 +586,6 @@ class PicatParser : PsiParser {
         }
     }
 
-    /**
-     * Parse a simple element with a marker.
-     * @param builder The PsiBuilder instance
-     * @param elementType The element type to mark the parsed element with
-     * @param parseFunction The function to call to parse the element content
-     */
-    private fun parseMarkedElement(builder: PsiBuilder, elementType: IElementType, parseFunction: (PsiBuilder) -> Unit) {
-        val marker = builder.mark()
-        parseFunction(builder)
-        marker.done(elementType)
-    }
 
     /**
      * Parse a simple token with a marker.

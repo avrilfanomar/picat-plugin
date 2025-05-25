@@ -4,6 +4,7 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatIncludeStatement
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 
 /**
  * Implementation of the PicatIncludeStatement interface.
@@ -28,6 +29,19 @@ class PicatIncludeStatementImpl(node: ASTNode) : PicatPsiElementImpl(node), Pica
      * Returns the string literal element representing the include path.
      */
     override fun getStringLiteral(): PsiElement? {
-        return findChildByType(PicatTokenTypes.STRING)
+        // Try to find the string literal directly
+        val directChild = findChildByType<PsiElement>(PicatTokenTypes.STRING)
+        if (directChild != null) {
+            return directChild
+        }
+
+        // If not found directly, try to find it in all children
+        for (child in children) {
+            if (child.node.elementType == PicatTokenTypes.STRING) {
+                return child
+            }
+        }
+
+        return null
     }
 }
