@@ -1,6 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.psi.impl
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
+import com.github.avrilfanomar.picatplugin.language.psi.PicatAtomNoArgs
 import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
 import com.github.avrilfanomar.picatplugin.language.psi.PicatStructure
 import com.intellij.extapi.psi.ASTWrapperPsiElement
@@ -17,9 +18,12 @@ class PicatHeadImpl(node: ASTNode) : ASTWrapperPsiElement(node), PicatHead {
      * Returns the name of the head.
      */
     override fun getName(): String? {
-        val atom = getAtom()
-        if (atom != null) {
-            return atom.text
+        val atomNoArgs = getAtomNoArgs()
+        if (atomNoArgs != null) {
+            val atom = atomNoArgs.getAtom()
+            if (atom != null) {
+                return atom.text
+            }
         }
 
         val structure = getStructure()
@@ -52,9 +56,19 @@ class PicatHeadImpl(node: ASTNode) : ASTWrapperPsiElement(node), PicatHead {
 
     /**
      * Returns the atom of the head, if it's an atom.
+     * @deprecated Use getAtomNoArgs() instead.
      */
+    @Deprecated("Use getAtomNoArgs() instead", ReplaceWith("getAtomNoArgs()?.getAtom()"))
     override fun getAtom(): PicatAtom? {
-        return PsiTreeUtil.getChildOfType(this, PicatAtom::class.java)
+        val atomNoArgs = getAtomNoArgs()
+        return atomNoArgs?.getAtom()
+    }
+
+    /**
+     * Returns the atom_no_args of the head, if it's an atom_no_args.
+     */
+    override fun getAtomNoArgs(): PicatAtomNoArgs? {
+        return PsiTreeUtil.getChildOfType(this, PicatAtomNoArgs::class.java)
     }
 
     /**

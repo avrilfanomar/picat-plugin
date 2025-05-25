@@ -38,6 +38,7 @@
     BACKTRACKABLE_BICONDITIONAL_OP="?<=>"
     RULE_OP=":-"
     ASSIGN_OP=":="
+    RANGE_OP=".."
     EQUAL="="
     NOT_EQUAL="!="
     LESS="<"
@@ -84,7 +85,7 @@
     HEX_INTEGER="regexp:0[xX][0-9a-fA-F]+"
     OCTAL_INTEGER="regexp:0[oO][0-7]+"
     BINARY_INTEGER="regexp:0[bB][01]+"
-    FLOAT="regexp:[0-9]+\.[0-9]+"
+    FLOAT="regexp:[0-9]+\\.[0-9]+"
     STRING="regexp:\"[^\"]*\""
     QUOTED_ATOM="regexp:'[^']*'"
     COMMENT="regexp:%[^\r\n]*"
@@ -137,7 +138,7 @@ predicate_indicator ::= atom "/" INTEGER {
 }
 
 // Facts
-fact ::= head "." {
+fact ::= (head | atom "(" [argument_list] ")" "=" function_body) "." {
   pin=1
   methods=[getHead]
 }
@@ -152,31 +153,34 @@ rule_operator ::= "=>" | "?=>" | "<=>" | "?<=>" | ":-" {
   methods=[getOperatorType]
 }
 
-head ::= atom | structure {
+// Heads
+head ::= structure | atom_no_args {
   methods=[getName getArity]
 }
+atom_no_args ::= atom !LPAR
 
+// Body
 body ::= goal ("," goal)* {
   methods=[getGoals]
 }
 
 // Goals
-goal ::= call 
-       | if_then_else 
-       | assignment 
-       | unification 
-       | comparison 
-       | arithmetic_comparison 
-       | negation 
-       | fail 
-       | true_goal 
-       | not_goal 
-       | foreach_loop 
-       | list_comprehension 
-       | procedure_call 
-       | cut 
-       | return_stmt 
-       | continue_stmt 
+goal ::= call
+       | if_then_else
+       | assignment
+       | unification
+       | comparison
+       | arithmetic_comparison
+       | negation
+       | fail
+       | true_goal
+       | not_goal
+       | foreach_loop
+       | list_comprehension
+       | procedure_call
+       | cut
+       | return_stmt
+       | continue_stmt
        | break_stmt {
   methods=[getType]
 }
@@ -223,17 +227,14 @@ negation ::= "not" goal {
   methods=[getGoal]
 }
 
+not_goal ::= negation
+
 fail ::= "fail" {
   methods=[getType]
 }
 
 true_goal ::= "true" {
   methods=[getType]
-}
-
-not_goal ::= "not" goal {
-  pin=1
-  methods=[getGoal]
 }
 
 foreach_loop ::= "foreach" "(" foreach_generators ")" body "end" {
@@ -281,22 +282,16 @@ break_stmt ::= "break" {
 statement ::= predicate_definition | function_definition
 
 // Predicate definition (for compatibility with existing code)
-predicate_definition ::= predicate_head predicate_body "." {
+predicate_definition ::= atom "(" [argument_list] ")" predicate_body "." {
   pin=1
-  methods=[getName getArity getHead getBody]
-}
-predicate_head ::= identifier "(" [argument_list] ")" {
-  methods=[getName getArity getArgumentList]
+  methods=[getName getArity getArgumentList getBody]
 }
 predicate_body ::= clause_list
 
 // Function definition (for compatibility with existing code)
-function_definition ::= function_head function_body "." {
+function_definition ::= atom "(" [argument_list] ")" "=" function_body "." {
   pin=1
-  methods=[getName getArity getHead getBody]
-}
-function_head ::= identifier "(" [argument_list] ")" "=" {
-  methods=[getName getArity getArgumentList]
+  methods=[getName getArity getArgumentList getBody]
 }
 function_body ::= expression
 
@@ -309,16 +304,21 @@ argument_list ::= argument ("," argument)*
 argument ::= expression
 
 // Expressions
-expression ::= term (operator term)* {
+expression ::= range_expression (operator term)* {
+  pin=1
   methods=[getTerms getOperators]
 }
 
-term ::= atom 
-       | number 
-       | STRING 
-       | variable 
-       | list 
-       | tuple 
+range_expression ::= term (".." term)? {
+  methods=[getLeft getRight]
+}
+
+term ::= atom
+       | number
+       | STRING
+       | variable
+       | list
+       | tuple
        | "(" expression ")" {
   methods=[getType]
 }
@@ -333,7 +333,7 @@ list ::= "[" [list_items] "]" {
   methods=[getItems]
 }
 
-list_items ::= expression ("," expression)* ["," "|" expression] {
+list_items ::= expression ("," expression)* ["|" expression] {
   methods=[getExpressions getTail]
 }
 
@@ -347,7 +347,7 @@ tuple_items ::= expression ("," expression)* {
 }
 
 // Operators
-operator ::= "+" | "-" | "*" | "/" | "mod" | "**" | "<<" | ">>" | "\\" | "/" | "//" 
+operator ::= "+" | "-" | "*" | "/" | "mod" | "**" | "<<" | ">>" | "\\" | "//"
            | "and" | "or" | "^" | "&" | "|" | "is" {
   methods=[getOperatorType]
 }
@@ -371,5 +371,3 @@ structure ::= atom "(" [argument_list] ")" {
 identifier ::= IDENTIFIER {
   methods=[getName]
 }
-
-// External tokens defined in the header

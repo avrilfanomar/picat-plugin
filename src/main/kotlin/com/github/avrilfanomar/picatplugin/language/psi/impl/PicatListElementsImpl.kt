@@ -2,6 +2,7 @@ package com.github.avrilfanomar.picatplugin.language.psi.impl
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatExpression
 import com.github.avrilfanomar.picatplugin.language.psi.PicatListElements
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.ASTNode
 import com.intellij.psi.util.PsiTreeUtil
 
@@ -19,13 +20,28 @@ class PicatListElementsImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatLis
     /**
      * Returns the tail expression of the list, if any.
      * The tail expression is the expression after the pipe (|) in a list.
-     *
-     * Note: This is a simplified implementation. In a real implementation,
-     * we would need to identify which expression is the tail expression.
      */
     override fun getTailExpression(): PicatExpression? {
-        // For now, we'll just return null
-        // In a real implementation, we would need to identify which expression is the tail expression
+        // Find all expressions in the list
+        val expressions = getExpressions()
+
+        // Check if there's a pipe token in the list
+        val pipeElement = node.findChildByType(PicatTokenTypes.PIPE)
+        if (pipeElement != null) {
+            // The tail expression is the expression after the pipe
+            // Find the expression that comes after the pipe in the AST
+            val pipeIndex = node.getChildren(null).indexOf(pipeElement)
+            if (pipeIndex >= 0 && pipeIndex < node.getChildren(null).size - 1) {
+                // Find the next expression after the pipe
+                for (i in pipeIndex + 1 until node.getChildren(null).size) {
+                    val child = node.getChildren(null)[i]
+                    if (child.psi is PicatExpression) {
+                        return child.psi as PicatExpression
+                    }
+                }
+            }
+        }
+
         return null
     }
 }

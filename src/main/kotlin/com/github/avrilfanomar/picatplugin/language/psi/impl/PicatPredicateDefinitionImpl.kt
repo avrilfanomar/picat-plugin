@@ -1,5 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.psi.impl
 
+import com.github.avrilfanomar.picatplugin.language.psi.PicatArgumentList
+import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateBody
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateDefinition
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateHead
@@ -14,19 +16,37 @@ class PicatPredicateDefinitionImpl(node: ASTNode) : PicatPsiElementImpl(node), P
      * Returns the name of the predicate.
      */
     override fun getName(): String? {
-        return getHead()?.getName()
+        val atom = getAtom()
+        return atom?.text
     }
 
     /**
      * Returns the arity of the predicate (number of arguments).
      */
     override fun getArity(): Int {
-        return getHead()?.getArity() ?: 0
+        val argumentList = getArgumentList()
+        return argumentList?.getArguments()?.size ?: 0
+    }
+
+    /**
+     * Returns the atom of the predicate.
+     */
+    override fun getAtom(): PicatAtom? {
+        return PsiTreeUtil.getChildOfType(this, PicatAtom::class.java)
+    }
+
+    /**
+     * Returns the argument list of the predicate, if any.
+     */
+    override fun getArgumentList(): PicatArgumentList? {
+        return PsiTreeUtil.getChildOfType(this, PicatArgumentList::class.java)
     }
 
     /**
      * Returns the head of the predicate.
+     * @deprecated The predicate_head rule has been removed from the grammar.
      */
+    @Deprecated("The predicate_head rule has been removed from the grammar")
     override fun getHead(): PicatPredicateHead? {
         return PsiTreeUtil.getChildOfType(this, PicatPredicateHead::class.java)
     }

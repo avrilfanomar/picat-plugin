@@ -20,7 +20,7 @@ class PicatPsiTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFile
 
         // Find all facts in the file
-        val facts = file.findChildrenByClass(PicatFact::class.java)
+        val facts = file.getAllFacts()
 
         // Verify that there is exactly one fact
         assertEquals("There should be exactly one fact", 1, facts.size)
@@ -48,7 +48,7 @@ class PicatPsiTest : BasePlatformTestCase() {
         }
 
         // Find all facts in the file
-        val facts = file.findChildrenByClass(PicatFact::class.java)
+        val facts = file.getAllFacts()
 
         // Debug: Print the number of facts found
         println("[DEBUG_LOG] Number of facts found: ${facts.size}")

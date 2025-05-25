@@ -3,7 +3,7 @@ package com.github.avrilfanomar.picatplugin.language.psi
 /**
  * Interface for Picat function definition PSI elements.
  */
-interface PicatFunctionDefinition : PicatPsiElement {
+interface PicatFunctionDefinition : PicatFact {
     /**
      * Returns the name of the function.
      */
@@ -15,9 +15,14 @@ interface PicatFunctionDefinition : PicatPsiElement {
     fun getArity(): Int
 
     /**
-     * Returns the head of the function.
+     * Returns the atom of the function.
      */
-    fun getHead(): PicatFunctionHead?
+    fun getAtom(): PicatAtom?
+
+    /**
+     * Returns the argument list of the function, if any.
+     */
+    fun getArgumentList(): PicatArgumentList?
 
     /**
      * Returns the body of the function.

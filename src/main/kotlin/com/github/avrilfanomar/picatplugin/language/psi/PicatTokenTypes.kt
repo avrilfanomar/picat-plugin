@@ -238,4 +238,6 @@ object PicatTokenTypes {
     val INCLUDE_STATEMENT = PicatElementType("INCLUDE_STATEMENT")
     val HEAD = PicatElementType("HEAD")
     val GOAL = PicatElementType("GOAL")
+    val ATOM_NO_ARGS = PicatElementType("ATOM_NO_ARGS")
+    val RANGE_EXPRESSION = PicatElementType("RANGE_EXPRESSION")
 }

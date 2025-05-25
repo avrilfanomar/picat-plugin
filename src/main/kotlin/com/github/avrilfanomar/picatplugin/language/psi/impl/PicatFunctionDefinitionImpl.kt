@@ -1,9 +1,11 @@
 package com.github.avrilfanomar.picatplugin.language.psi.impl
 
+import com.github.avrilfanomar.picatplugin.language.psi.PicatArgumentList
+import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionBody
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionHead
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
 /**
@@ -14,21 +16,30 @@ class PicatFunctionDefinitionImpl(node: ASTNode) : PicatPsiElementImpl(node), Pi
      * Returns the name of the function.
      */
     override fun getName(): String? {
-        return getHead()?.getName()
+        val atom = getAtom()
+        return atom?.text
     }
 
     /**
      * Returns the arity of the function (number of arguments).
      */
     override fun getArity(): Int {
-        return getHead()?.getArity() ?: 0
+        val argumentList = getArgumentList()
+        return argumentList?.getArguments()?.size ?: 0
     }
 
     /**
-     * Returns the head of the function.
+     * Returns the atom of the function.
      */
-    override fun getHead(): PicatFunctionHead? {
-        return PsiTreeUtil.getChildOfType(this, PicatFunctionHead::class.java)
+    override fun getAtom(): PicatAtom? {
+        return PsiTreeUtil.getChildOfType(this, PicatAtom::class.java)
+    }
+
+    /**
+     * Returns the argument list of the function, if any.
+     */
+    override fun getArgumentList(): PicatArgumentList? {
+        return PsiTreeUtil.getChildOfType(this, PicatArgumentList::class.java)
     }
 
     /**
@@ -36,5 +47,19 @@ class PicatFunctionDefinitionImpl(node: ASTNode) : PicatPsiElementImpl(node), Pi
      */
     override fun getBody(): PicatFunctionBody? {
         return PsiTreeUtil.getChildOfType(this, PicatFunctionBody::class.java)
+    }
+
+    /**
+     * Returns the head of the function definition.
+     * This is required by the PicatFact interface.
+     */
+    override fun getHead(): PsiElement? {
+        // Create a structure from the atom and argument list
+        val atom = getAtom()
+        val argumentList = getArgumentList()
+        if (atom != null) {
+            return atom
+        }
+        return null
     }
 }
