@@ -301,14 +301,22 @@ clause_list ::= clause (("," | ";") clause)*
 clause ::= expression
 
 // Arguments
-argument_list ::= argument ("," argument)*
-argument ::= expression
+argument_list ::= argument ("," argument)* {
+  pin=1
+}
+argument ::= expression {
+  pin=1
+}
 
 // Expressions
 expression ::= range_expression (operator term)* {
   pin=1
+  elementType = EXPRESSION
+  recoverWhile="expression_recover"
   methods=[getTerms getOperators]
 }
+
+private expression_recover ::= !(RPAR | RBRACKET | RBRACE | COMMA | DOT | SEMICOLON)
 
 range_expression ::= term (".." term)? {
   methods=[getLeft getRight]
@@ -331,10 +339,12 @@ number ::= INTEGER | FLOAT | HEX_INTEGER | OCTAL_INTEGER | BINARY_INTEGER {
 
 // Lists
 list ::= "[" [list_items] "]" {
+  elementType = LIST
   methods=[getItems]
 }
 
 list_items ::= expression ("," expression)* ["|" expression] {
+  elementType = LIST_ELEMENTS
   methods=[getExpressions getTail]
 }
 
@@ -350,6 +360,7 @@ tuple_items ::= expression ("," expression)* {
 // Operators
 operator ::= "+" | "-" | "*" | "/" | "mod" | "**" | "<<" | ">>" | "\\" | "//"
            | "and" | "or" | "^" | "&" | "|" | "is" {
+  elementType = OPERATOR
   methods=[getOperatorType]
 }
 

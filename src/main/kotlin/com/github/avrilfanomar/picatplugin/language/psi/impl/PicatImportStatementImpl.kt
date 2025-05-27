@@ -26,7 +26,6 @@ class PicatImportStatementImpl(node: ASTNode) : PicatPsiElementImpl(node), Picat
      * Returns the module list.
      */
     override fun getModuleList(): PsiElement? {
-        // Find the first child that contains module names
         return children.find { child ->
             PsiTreeUtil.findChildOfType(child, PicatModuleName::class.java) != null
         }

@@ -62,6 +62,7 @@ class PicatParserDefinition : ParserDefinition {
             PicatTokenTypes.LITERAL -> PicatLiteralImpl(node)
             PicatTokenTypes.VARIABLE -> PicatVariableImpl(node)
             PicatTokenTypes.PREDICATE_BODY -> PicatPredicateBodyImpl(node)
+            PicatTokenTypes.OPERATOR -> PicatOperatorImpl(node)
             else -> PicatPsiElementImpl(node)
         }
     }

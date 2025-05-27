@@ -217,13 +217,16 @@ class PicatParser : PsiParser {
         headMarker.done(PicatTokenTypes.HEAD)
 
         // Check if it's a function (has "=")
-        val isFunction = builder.tokenType == PicatTokenTypes.EQUAL
+        val isFunction = builder.tokenType == PicatTokenTypes.ASSIGN_OP
 
         // Check if it's a fact (has ".")
         val isFact = builder.tokenType == PicatTokenTypes.DOT
 
         if (isFunction) {
+            // Parse the assignment operator
+            val opMarker = builder.mark()
             builder.advanceLexer() // Consume "="
+            opMarker.done(PicatTokenTypes.OPERATOR)
 
             // Parse function body
             val bodyMarker = builder.mark()
@@ -236,9 +239,9 @@ class PicatParser : PsiParser {
 
             if (isRule) {
                 // Parse rule operator
-                val opMarker = builder.mark()
+                val ruleOpMarker = builder.mark()
                 builder.advanceLexer()
-                opMarker.done(PicatTokenTypes.OPERATOR)
+                ruleOpMarker.done(PicatTokenTypes.OPERATOR)
 
                 // Parse rule body
                 val ruleBodyMarker = builder.mark()
@@ -261,15 +264,76 @@ class PicatParser : PsiParser {
 
             marker.done(PicatTokenTypes.FACT)
         } else {
-            // Parse predicate body
-            val bodyMarker = builder.mark()
-            parseClauseList(builder)
-            bodyMarker.done(PicatTokenTypes.PREDICATE_BODY)
+            // Check if it's a rule (has "=>", "?=>", etc.)
+            val isRule = builder.tokenType == PicatTokenTypes.ARROW_OP ||
+                    builder.tokenType == PicatTokenTypes.BACKTRACKABLE_ARROW_OP
 
-            // Consume "."
-            expectToken(builder, PicatTokenTypes.DOT, "Expected '.'")
+            if (isRule) {
+                // Parse rule operator
+                val ruleOpMarker = builder.mark()
+                builder.advanceLexer()
+                ruleOpMarker.done(PicatTokenTypes.OPERATOR)
 
-            marker.done(PicatTokenTypes.PREDICATE_DEFINITION)
+                // Parse rule body
+                val ruleBodyMarker = builder.mark()
+
+                // Parse each statement in the rule body
+                while (!builder.eof() && builder.tokenType != PicatTokenTypes.DOT) {
+                    // Parse variable
+                    if (builder.tokenType == PicatTokenTypes.VARIABLE) {
+                        val varMarker = builder.mark()
+                        builder.advanceLexer() // Consume variable
+
+                        // Skip whitespace
+                        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                            builder.advanceLexer()
+                        }
+
+                        // Check for assignment
+                        if (builder.tokenType == PicatTokenTypes.ASSIGN_OP) {
+                            // Parse the assignment operator
+                            val assignOpMarker = builder.mark()
+                            builder.advanceLexer() // Consume "="
+                            assignOpMarker.done(PicatTokenTypes.OPERATOR)
+
+                            // Parse the expression
+                            parseExpression(builder)
+
+                            // Consume "," if present
+                            if (builder.tokenType == PicatTokenTypes.COMMA) {
+                                builder.advanceLexer()
+                            }
+                        }
+
+                        varMarker.done(PicatTokenTypes.VARIABLE)
+                    } else {
+                        // Parse other statements
+                        parseClause(builder)
+
+                        // Consume "," if present
+                        if (builder.tokenType == PicatTokenTypes.COMMA) {
+                            builder.advanceLexer()
+                        }
+                    }
+                }
+
+                ruleBodyMarker.done(PicatTokenTypes.BODY)
+
+                // Consume "."
+                expectToken(builder, PicatTokenTypes.DOT, "Expected '.'")
+
+                marker.done(PicatTokenTypes.RULE)
+            } else {
+                // Parse predicate body
+                val bodyMarker = builder.mark()
+                parseClauseList(builder)
+                bodyMarker.done(PicatTokenTypes.PREDICATE_BODY)
+
+                // Consume "."
+                expectToken(builder, PicatTokenTypes.DOT, "Expected '.'")
+
+                marker.done(PicatTokenTypes.PREDICATE_DEFINITION)
+            }
         }
     }
 
@@ -345,14 +409,29 @@ class PicatParser : PsiParser {
     private fun parseExpression(builder: PsiBuilder) {
         val marker = builder.mark()
 
+        // Skip whitespace
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
+
         // Parse first term
         parseTerm(builder)
+
+        // Skip whitespace
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
 
         // Check if this is a rule definition (has => or ?=> operator)
         if (builder.tokenType == PicatTokenTypes.ARROW_OP || builder.tokenType == PicatTokenTypes.BACKTRACKABLE_ARROW_OP) {
             val opMarker = builder.mark()
             builder.advanceLexer()
             opMarker.done(PicatTokenTypes.OPERATOR)
+
+            // Skip whitespace
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
 
             // Parse rule body
             val bodyMarker = builder.mark()
@@ -369,7 +448,17 @@ class PicatParser : PsiParser {
             builder.advanceLexer()
             opMarker.done(PicatTokenTypes.OPERATOR)
 
+            // Skip whitespace
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
+
             parseTerm(builder)
+
+            // Skip whitespace
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
         }
 
         marker.done(PicatTokenTypes.EXPRESSION)
@@ -380,6 +469,11 @@ class PicatParser : PsiParser {
      */
     private fun parseTerm(builder: PsiBuilder) {
         val marker = builder.mark()
+
+        // Skip whitespace
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
 
         when (builder.tokenType) {
             PicatTokenTypes.INTEGER, PicatTokenTypes.FLOAT, PicatTokenTypes.STRING, PicatTokenTypes.IDENTIFIER, PicatTokenTypes.QUOTED_ATOM -> {
@@ -398,8 +492,18 @@ class PicatParser : PsiParser {
                 // Consume "("
                 builder.advanceLexer()
 
+                // Skip whitespace
+                while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                    builder.advanceLexer()
+                }
+
                 // Parse expression
                 parseExpression(builder)
+
+                // Skip whitespace
+                while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                    builder.advanceLexer()
+                }
 
                 // Consume ")"
                 expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
@@ -409,6 +513,11 @@ class PicatParser : PsiParser {
                 builder.error("Expected term")
                 builder.advanceLexer()
             }
+        }
+
+        // Skip whitespace
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
         }
 
         marker.done(PicatTokenTypes.TERM)
@@ -494,9 +603,19 @@ class PicatParser : PsiParser {
         // Consume "["
         builder.advanceLexer()
 
+        // Skip whitespace
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
+
         // Parse list elements if present
         if (builder.tokenType != PicatTokenTypes.RBRACKET) {
             parseListElements(builder)
+        }
+
+        // Skip whitespace
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
         }
 
         // Consume "]"
@@ -517,18 +636,27 @@ class PicatParser : PsiParser {
 
         // Parse expressions
         while (!builder.eof()) {
+            // Skip whitespace
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
+
             parseExpression(builder)
 
-            // Check for tail
-            if (builder.tokenType == PicatTokenTypes.COMMA &&
-                builder.lookAhead(1) == PicatTokenTypes.PIPE &&
-                builder.lookAhead(2) == PicatTokenTypes.COMMA
-            ) {
+            // Skip whitespace
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
 
-                // Consume ",", "|", ","
+            // Check for tail
+            if (builder.tokenType == PicatTokenTypes.PIPE) {
+                // Consume "|"
                 builder.advanceLexer()
-                builder.advanceLexer()
-                builder.advanceLexer()
+
+                // Skip whitespace
+                while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                    builder.advanceLexer()
+                }
 
                 // Parse tail expression
                 parseExpression(builder)
@@ -538,6 +666,11 @@ class PicatParser : PsiParser {
             // Consume "," if present
             if (builder.tokenType == PicatTokenTypes.COMMA) {
                 builder.advanceLexer()
+
+                // Skip whitespace
+                while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                    builder.advanceLexer()
+                }
             } else {
                 break
             }
@@ -554,6 +687,7 @@ class PicatParser : PsiParser {
                 tokenType == PicatTokenTypes.MINUS ||
                 tokenType == PicatTokenTypes.MULTIPLY ||
                 tokenType == PicatTokenTypes.DIVIDE ||
+                tokenType == PicatTokenTypes.ASSIGN_OP ||  // Added ASSIGN_OP for "="
                 tokenType == PicatTokenTypes.EQUAL ||
                 tokenType == PicatTokenTypes.NOT_EQUAL ||
                 tokenType == PicatTokenTypes.LESS ||
