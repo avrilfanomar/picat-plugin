@@ -151,6 +151,7 @@ rule_operator ::= "=>" | "?=>" | "<=>" | "?<=>" | ":-" | "?->"
 // Heads
 head ::= atom_no_args | structure | qualified_atom
 qualified_atom ::= atom "." atom
+atom_no_args ::= atom !LPAR
 
 // Body
 body ::= goal ((";" | ",") goal)* [cut] { recoverWhile=body_recover }
@@ -180,6 +181,32 @@ goal ::= call
        | break_stmt
        | throw_stmt
 
+// Goal implementations
+call ::= atom | structure
+if_then_else ::= IF_KEYWORD expression THEN_KEYWORD body [elseif_clause] [ELSE_KEYWORD body] END_KEYWORD
+elseif_clause ::= ELSEIF_KEYWORD expression THEN_KEYWORD body [elseif_clause]
+assignment ::= variable ":=" expression
+unification ::= expression "=" expression | expression "!=" expression
+comparison ::= expression comparison_operator expression
+comparison_operator ::= "<" | ">" | "<=" | ">="
+arithmetic_comparison ::= expression arithmetic_comparison_operator expression
+arithmetic_comparison_operator ::= "=:=" | "=\\="
+negation ::= NOT_KEYWORD goal
+fail ::= FAIL_KEYWORD
+true_goal ::= TRUE_KEYWORD
+false_goal ::= FALSE_KEYWORD
+not_goal ::= negation
+foreach_loop ::= FOREACH_KEYWORD "(" foreach_generators ")" body END_KEYWORD
+foreach_generators ::= foreach_generator ("," foreach_generator)*
+foreach_generator ::= variable "in" expression | variable "=" expression
+list_comprehension ::= "[" expression "|" foreach_generators "]"
+procedure_call ::= atom "(" [argument_list] ")"
+cut ::= "!"
+return_stmt ::= RETURN_KEYWORD expression
+continue_stmt ::= CONTINUE_KEYWORD
+break_stmt ::= BREAK_KEYWORD
+throw_stmt ::= THROW_KEYWORD expression
+
 // New control structures
 case_expression ::= CASE_KEYWORD expression OF_KEYWORD case_arms END_KEYWORD
 case_arms ::= case_arm (";" case_arm)*
@@ -189,8 +216,6 @@ try_catch ::= TRY_KEYWORD body CATCH_KEYWORD catch_clauses [FINALLY_KEYWORD body
 catch_clauses ::= catch_clause (";" catch_clause)*
 catch_clause ::= pattern "=>" body
 
-throw_stmt ::= THROW_KEYWORD expression
-
 while_loop ::= WHILE_KEYWORD expression DO_KEYWORD body END_KEYWORD
 
 // Patterns
@@ -199,6 +224,15 @@ structure_pattern ::= atom "(" [pattern_list] ")"
 list_pattern ::= "[" [pattern_list] ["|" pattern] "]"
 tuple_pattern ::= "{" [pattern_list] "}"
 pattern_list ::= pattern ("," pattern)*
+
+// Basic elements
+atom ::= IDENTIFIER | QUOTED_ATOM
+variable ::= VARIABLE | ANONYMOUS_VARIABLE
+number ::= INTEGER | FLOAT | HEX_INTEGER | OCTAL_INTEGER | BINARY_INTEGER
+structure ::= atom "(" [argument_list] ")"
+tuple ::= "{" [tuple_items] "}"
+tuple_items ::= expression ("," expression)*
+argument_list ::= expression ("," expression)*
 
 // Expressions
 expression ::= conditional_expression {
