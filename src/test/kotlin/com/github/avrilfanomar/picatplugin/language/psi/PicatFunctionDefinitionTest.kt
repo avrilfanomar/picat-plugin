@@ -1,7 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 /**
  * Test for Picat function definition PSI implementation.
@@ -16,7 +16,7 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
             factorial(0) = 1.
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all function definitions in the file
@@ -29,28 +29,28 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         }
 
         // Verify that there is exactly one function definition
-        assertEquals("There should be exactly one function definition", 1, functionDefinitions.size)
+        assertEquals(1, functionDefinitions.size, "There should be exactly one function definition")
 
         // Verify that the function definition has the correct name and arity
         val functionDef = functionDefinitions[0]
-        assertEquals("Function name should be 'factorial'", "factorial", functionDef.getName())
-        assertEquals("Function arity should be 1", 1, functionDef.getArity())
+        assertEquals(functionDef.getName(, "Function name should be 'factorial'", "factorial"))
+        assertEquals(1, functionDef.getArity(, "Function arity should be 1"))
 
         // Verify that the function definition has an argument list
         val argumentList = functionDef.getArgumentList()
-        assertNotNull("Function should have an argument list", argumentList)
+        assertNotNull(argumentList, "Function should have an argument list")
 
         // Verify that the argument list has the correct number of arguments
         val arguments = argumentList!!.getArguments()
-        assertEquals("Argument list should have 1 argument", 1, arguments.size)
+        assertEquals(1, arguments.size, "Argument list should have 1 argument")
 
         // Verify that the argument has the correct expression
-        assertEquals("First argument should be 0", "0", arguments[0].getExpression()?.text)
+        assertEquals(arguments[0].getExpression(, "First argument should be 0", "0")?.text)
 
         // Verify that the function definition has a body
         val body = functionDef.getBody()
-        assertNotNull("Function should have a body", body)
-        assertEquals("Function body should be 1", "1", body?.text)
+        assertNotNull(body, "Function should have a body")
+        assertEquals(body?.text, "Function body should be 1", "1")
     }
 
     @Test
@@ -60,37 +60,37 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
             sum(1, 2, 3) = 6.
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all function definitions in the file
         val functionDefinitions = file.findChildrenByClass(PicatFunctionDefinition::class.java)
 
         // Verify that there is exactly one function definition
-        assertEquals("There should be exactly one function definition", 1, functionDefinitions.size)
+        assertEquals(1, functionDefinitions.size, "There should be exactly one function definition")
 
         // Verify that the function definition has the correct name and arity
         val functionDef = functionDefinitions[0]
-        assertEquals("Function name should be 'sum'", "sum", functionDef.getName())
-        assertEquals("Function arity should be 3", 3, functionDef.getArity())
+        assertEquals(functionDef.getName(, "Function name should be 'sum'", "sum"))
+        assertEquals(3, functionDef.getArity(, "Function arity should be 3"))
 
         // Verify that the function definition has an argument list
         val argumentList = functionDef.getArgumentList()
-        assertNotNull("Function should have an argument list", argumentList)
+        assertNotNull(argumentList, "Function should have an argument list")
 
         // Verify that the argument list has the correct number of arguments
         val arguments = argumentList!!.getArguments()
-        assertEquals("Argument list should have 3 arguments", 3, arguments.size)
+        assertEquals(3, arguments.size, "Argument list should have 3 arguments")
 
         // Verify that each argument has the correct expression
-        assertEquals("First argument should be 1", "1", arguments[0].getExpression()?.text)
-        assertEquals("Second argument should be 2", "2", arguments[1].getExpression()?.text)
-        assertEquals("Third argument should be 3", "3", arguments[2].getExpression()?.text)
+        assertEquals(arguments[0].getExpression(, "First argument should be 1", "1")?.text)
+        assertEquals(arguments[1].getExpression(, "Second argument should be 2", "2")?.text)
+        assertEquals(arguments[2].getExpression(, "Third argument should be 3", "3")?.text)
 
         // Verify that the function definition has a body
         val body = functionDef.getBody()
-        assertNotNull("Function should have a body", body)
-        assertEquals("Function body should be 6", "6", body?.text)
+        assertNotNull(body, "Function should have a body")
+        assertEquals(body?.text, "Function body should be 6", "6")
     }
 
     @Test
@@ -100,37 +100,37 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
             factorial(N) = N * factorial(N-1).
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all function definitions in the file
         val functionDefinitions = file.findChildrenByClass(PicatFunctionDefinition::class.java)
 
         // Verify that there is exactly one function definition
-        assertEquals("There should be exactly one function definition", 1, functionDefinitions.size)
+        assertEquals(1, functionDefinitions.size, "There should be exactly one function definition")
 
         // Verify that the function definition has the correct name and arity
         val functionDef = functionDefinitions[0]
-        assertEquals("Function name should be 'factorial'", "factorial", functionDef.getName())
-        assertEquals("Function arity should be 1", 1, functionDef.getArity())
+        assertEquals(functionDef.getName(, "Function name should be 'factorial'", "factorial"))
+        assertEquals(1, functionDef.getArity(, "Function arity should be 1"))
 
         // Verify that the function definition has an argument list
         val argumentList = functionDef.getArgumentList()
-        assertNotNull("Function should have an argument list", argumentList)
+        assertNotNull(argumentList, "Function should have an argument list")
 
         // Verify that the argument list has the correct number of arguments
         val arguments = argumentList!!.getArguments()
-        assertEquals("Argument list should have 1 argument", 1, arguments.size)
+        assertEquals(1, arguments.size, "Argument list should have 1 argument")
 
         // Verify that the argument has the correct expression
-        assertEquals("First argument should be N", "N", arguments[0].getExpression()?.text)
+        assertEquals(arguments[0].getExpression(, "First argument should be N", "N")?.text)
 
         // Verify that the function definition has a body
         val body = functionDef.getBody()
-        assertNotNull("Function should have a body", body)
+        assertNotNull(body, "Function should have a body")
         
         // The body should be a complex expression, so we just check that it's not empty
-        assertTrue("Function body should not be empty", body?.text?.isNotEmpty() ?: false)
+        assertTrue(body?.text?.isNotEmpty(, "Function body should not be empty") ?: false)
         
         // Debug: Print the body text
         println("[DEBUG_LOG] Function body: ${body?.text}")
@@ -145,23 +145,23 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
             sum(X, Y) = X + Y.
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all function definitions in the file
         val functionDefinitions = file.findChildrenByClass(PicatFunctionDefinition::class.java)
 
         // Verify that there are exactly three function definitions
-        assertEquals("There should be exactly three function definitions", 3, functionDefinitions.size)
+        assertEquals(3, functionDefinitions.size, "There should be exactly three function definitions")
 
         // Verify that each function definition has the correct name
-        assertEquals("First function name should be 'factorial'", "factorial", functionDefinitions[0].getName())
-        assertEquals("Second function name should be 'factorial'", "factorial", functionDefinitions[1].getName())
-        assertEquals("Third function name should be 'sum'", "sum", functionDefinitions[2].getName())
+        assertEquals(functionDefinitions[0].getName(, "First function name should be 'factorial'", "factorial"))
+        assertEquals(functionDefinitions[1].getName(, "Second function name should be 'factorial'", "factorial"))
+        assertEquals(functionDefinitions[2].getName(, "Third function name should be 'sum'", "sum"))
 
         // Verify that each function definition has the correct arity
-        assertEquals("First function arity should be 1", 1, functionDefinitions[0].getArity())
-        assertEquals("Second function arity should be 1", 1, functionDefinitions[1].getArity())
-        assertEquals("Third function arity should be 2", 2, functionDefinitions[2].getArity())
+        assertEquals(1, functionDefinitions[0].getArity(, "First function arity should be 1"))
+        assertEquals(1, functionDefinitions[1].getArity(, "Second function arity should be 1"))
+        assertEquals(2, functionDefinitions[2].getArity(, "Third function arity should be 2"))
     }
 }

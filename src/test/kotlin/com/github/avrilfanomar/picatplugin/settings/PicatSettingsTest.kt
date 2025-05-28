@@ -1,7 +1,7 @@
 package com.github.avrilfanomar.picatplugin.settings
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 /**
  * Test for the PicatSettings class.
@@ -15,11 +15,11 @@ class PicatSettingsTest : BasePlatformTestCase() {
         val settings = PicatSettings.getInstance(project)
         
         // Verify that the instance is not null
-        assertNotNull("Settings instance should not be null", settings)
+        assertNotNull(settings, "Settings instance should not be null")
         
         // Verify that getting the instance again returns the same instance
         val settings2 = PicatSettings.getInstance(project)
-        assertSame("Getting the instance twice should return the same instance", settings, settings2)
+        assertSame(settings, settings2, "Getting the instance twice should return the same instance")
     }
 
     @Test
@@ -32,11 +32,11 @@ class PicatSettingsTest : BasePlatformTestCase() {
         settings.picatExecutablePath = testPath
         
         // Verify that the path is correctly stored
-        assertEquals("Picat executable path should be correctly stored", testPath, settings.picatExecutablePath)
+        assertEquals(testPath, settings.picatExecutablePath, "Picat executable path should be correctly stored")
         
         // Get the settings instance again and verify that the path is still there
         val settings2 = PicatSettings.getInstance(project)
-        assertEquals("Picat executable path should be preserved across instances", testPath, settings2.picatExecutablePath)
+        assertEquals(testPath, settings2.picatExecutablePath, "Picat executable path should be preserved across instances")
     }
 
     @Test
@@ -52,10 +52,10 @@ class PicatSettingsTest : BasePlatformTestCase() {
         val state = settings.state
         
         // Verify that the state is the same as the settings instance
-        assertSame("State should be the same as the settings instance", settings, state)
+        assertSame(settings, state, "State should be the same as the settings instance")
         
         // Verify that the state has the correct Picat executable path
-        assertEquals("State should have the correct Picat executable path", testPath, state.picatExecutablePath)
+        assertEquals(testPath, state.picatExecutablePath, "State should have the correct Picat executable path")
     }
 
     @Test
@@ -72,6 +72,6 @@ class PicatSettingsTest : BasePlatformTestCase() {
         settings.loadState(newSettings)
         
         // Verify that the path is correctly loaded
-        assertEquals("Picat executable path should be correctly loaded", testPath, settings.picatExecutablePath)
+        assertEquals(testPath, settings.picatExecutablePath, "Picat executable path should be correctly loaded")
     }
 }

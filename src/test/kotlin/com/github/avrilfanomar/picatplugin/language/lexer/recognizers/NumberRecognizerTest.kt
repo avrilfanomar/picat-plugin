@@ -1,8 +1,8 @@
 package com.github.avrilfanomar.picatplugin.language.lexer.recognizers
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
-import org.junit.Assert.*
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 /**
  * Test for the NumberRecognizer class.
@@ -14,18 +14,18 @@ class NumberRecognizerTest {
     @Test
     fun testCanRecognizeDigit() {
         // Test with digits
-        assertTrue(recognizer.canRecognize("0", 0, 1))
-        assertTrue(recognizer.canRecognize("1", 0, 1))
-        assertTrue(recognizer.canRecognize("9", 0, 1))
-        assertTrue(recognizer.canRecognize("123", 0, 3))
+        assertTrue(recognizer.canRecognize(0, 1, "0"))
+        assertTrue(recognizer.canRecognize(0, 1, "1"))
+        assertTrue(recognizer.canRecognize(0, 1, "9"))
+        assertTrue(recognizer.canRecognize(0, 3, "123"))
     }
 
     @Test
     fun testCannotRecognizeNonDigit() {
         // Test with non-digits
-        assertFalse(recognizer.canRecognize("a", 0, 1))
-        assertFalse(recognizer.canRecognize(".", 0, 1)) // Just a dot
-        assertFalse(recognizer.canRecognize("x", 0, 1))
+        assertFalse(recognizer.canRecognize(0, 1, "a"))
+        assertFalse(recognizer.canRecognize(0, 1, ".")) // Just a dot
+        assertFalse(recognizer.canRecognize(0, 1, "x"))
         assertFalse(recognizer.canRecognize("", 0, 0)) // Empty string
     }
 

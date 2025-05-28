@@ -1,8 +1,8 @@
 package com.github.avrilfanomar.picatplugin.language.lexer.recognizers
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
-import org.junit.Assert.*
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 /**
  * Test for the CommentRecognizer class.

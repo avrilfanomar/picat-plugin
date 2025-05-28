@@ -1,7 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 /**
  * Test for Picat argument list PSI implementation.
@@ -16,38 +16,38 @@ class PicatArgumentListTest : BasePlatformTestCase() {
             factorial(0) = 1.
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all facts in the file
         val facts = file.findChildrenByClass(PicatFact::class.java)
 
         // Verify that there is exactly one fact
-        assertEquals("There should be exactly one fact", 1, facts.size)
+        assertEquals(1, facts.size, "There should be exactly one fact")
 
         // Verify that the fact has the correct head
         val fact = facts[0]
         val head = fact.getHead()
-        assertNotNull("Fact should have a head", head)
+        assertNotNull(head, "Fact should have a head")
 
         // Verify that the head is a structure
-        assertTrue("Head should be a structure", head is PicatStructure)
+        assertTrue(head is PicatStructure, "Head should be a structure")
         val structure = head as PicatStructure
 
         // Verify that the structure has the correct name and arity
-        assertEquals("Structure should have name factorial", "factorial", structure.getName())
-        assertEquals("Structure should have arity 1", 1, structure.getArity())
+        assertEquals(structure.getName(, "Structure should have name factorial", "factorial"))
+        assertEquals(1, structure.getArity(, "Structure should have arity 1"))
 
         // Verify that the structure has an argument list
         val argumentList = structure.getArgumentList()
-        assertNotNull("Structure should have an argument list", argumentList)
+        assertNotNull(argumentList, "Structure should have an argument list")
 
         // Verify that the argument list has the correct number of arguments
         val arguments = argumentList!!.getArguments()
-        assertEquals("Argument list should have 1 argument", 1, arguments.size)
+        assertEquals(1, arguments.size, "Argument list should have 1 argument")
 
         // Verify that the argument has the correct expression
-        assertEquals("First argument should be 0", "0", arguments[0].getExpression()?.text)
+        assertEquals(arguments[0].getExpression(, "First argument should be 0", "0")?.text)
     }
 
     @Test
@@ -57,39 +57,39 @@ class PicatArgumentListTest : BasePlatformTestCase() {
             sum(1, 2, 3) = 6.
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all facts in the file
         val facts = file.findChildrenByClass(PicatFact::class.java)
 
         // Verify that there is exactly one fact
-        assertEquals("There should be exactly one fact", 1, facts.size)
+        assertEquals(1, facts.size, "There should be exactly one fact")
 
         // Verify that the fact has the correct head
         val fact = facts[0]
         val head = fact.getHead()
-        assertNotNull("Fact should have a head", head)
+        assertNotNull(head, "Fact should have a head")
 
         // Verify that the head is a structure
-        assertTrue("Head should be a structure", head is PicatStructure)
+        assertTrue(head is PicatStructure, "Head should be a structure")
         val structure = head as PicatStructure
 
         // Verify that the structure has the correct name and arity
-        assertEquals("Structure should have name sum", "sum", structure.getName())
-        assertEquals("Structure should have arity 3", 3, structure.getArity())
+        assertEquals(structure.getName(, "Structure should have name sum", "sum"))
+        assertEquals(3, structure.getArity(, "Structure should have arity 3"))
 
         // Verify that the structure has an argument list
         val argumentList = structure.getArgumentList()
-        assertNotNull("Structure should have an argument list", argumentList)
+        assertNotNull(argumentList, "Structure should have an argument list")
 
         // Verify that the argument list has the correct number of arguments
         val arguments = argumentList!!.getArguments()
-        assertEquals("Argument list should have 3 arguments", 3, arguments.size)
+        assertEquals(3, arguments.size, "Argument list should have 3 arguments")
 
         // Verify that each argument has the correct expression
-        assertEquals("First argument should be 1", "1", arguments[0].getExpression()?.text)
-        assertEquals("Second argument should be 2", "2", arguments[1].getExpression()?.text)
-        assertEquals("Third argument should be 3", "3", arguments[2].getExpression()?.text)
+        assertEquals(arguments[0].getExpression(, "First argument should be 1", "1")?.text)
+        assertEquals(arguments[1].getExpression(, "Second argument should be 2", "2")?.text)
+        assertEquals(arguments[2].getExpression(, "Third argument should be 3", "3")?.text)
     }
 }

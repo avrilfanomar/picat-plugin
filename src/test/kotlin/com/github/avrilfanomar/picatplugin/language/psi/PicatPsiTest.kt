@@ -1,7 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 /**
  * Test for Picat PSI implementation.
@@ -16,19 +16,19 @@ class PicatPsiTest : BasePlatformTestCase() {
             factorial(0) = 1.
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all facts in the file
         val facts = file.getAllFacts()
 
         // Verify that there is exactly one fact
-        assertEquals("There should be exactly one fact", 1, facts.size)
+        assertEquals(1, facts.size, "There should be exactly one fact")
 
         // Verify that the fact has the correct head
         val fact = facts[0]
         val head = fact.getHead()
-        assertNotNull("Fact should have a head", head)
+        assertNotNull(head, "Fact should have a head")
     }
 
     @Test
@@ -38,7 +38,7 @@ class PicatPsiTest : BasePlatformTestCase() {
             sum(1, 2, 3) = 6.
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Debug: Print all PSI elements in the file
@@ -54,33 +54,33 @@ class PicatPsiTest : BasePlatformTestCase() {
         println("[DEBUG_LOG] Number of facts found: ${facts.size}")
 
         // Verify that there is exactly one fact
-        assertEquals("There should be exactly one fact", 1, facts.size)
+        assertEquals(1, facts.size, "There should be exactly one fact")
 
         // Verify that the fact has the correct head
         val fact = facts[0]
         val head = fact.getHead()
-        assertNotNull("Fact should have a head", head)
+        assertNotNull(head, "Fact should have a head")
 
         // Verify that the head is a structure
-        assertTrue("Head should be a structure", head is PicatStructure)
+        assertTrue(head is PicatStructure, "Head should be a structure")
         val structure = head as PicatStructure
 
         // Verify that the structure has the correct name and arity
-        assertEquals("Structure should have name sum", "sum", structure.getName())
-        assertEquals("Structure should have arity 3", 3, structure.getArity())
+        assertEquals(structure.getName(, "Structure should have name sum", "sum"))
+        assertEquals(3, structure.getArity(, "Structure should have arity 3"))
 
         // Verify that the structure has an argument list
         val argumentList = structure.getArgumentList()
-        assertNotNull("Structure should have an argument list", argumentList)
+        assertNotNull(argumentList, "Structure should have an argument list")
 
         // Verify that the argument list has the correct number of arguments
         val arguments = argumentList!!.getArguments()
-        assertEquals("Argument list should have 3 arguments", 3, arguments.size)
+        assertEquals(3, arguments.size, "Argument list should have 3 arguments")
 
         // Verify that each argument has the correct expression
-        assertEquals("First argument should be 1", "1", arguments[0].getExpression()?.text)
-        assertEquals("Second argument should be 2", "2", arguments[1].getExpression()?.text)
-        assertEquals("Third argument should be 3", "3", arguments[2].getExpression()?.text)
+        assertEquals(arguments[0].getExpression(, "First argument should be 1", "1")?.text)
+        assertEquals(arguments[1].getExpression(, "Second argument should be 2", "2")?.text)
+        assertEquals(arguments[2].getExpression(, "Third argument should be 3", "3")?.text)
     }
 
     @Test
@@ -90,24 +90,24 @@ class PicatPsiTest : BasePlatformTestCase() {
             factorial(N) = N * factorial(N-1) => N > 0.
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all rules in the file
         val rules = file.findChildrenByClass(PicatRule::class.java)
 
         // Verify that there is exactly one rule
-        assertEquals("There should be exactly one rule", 1, rules.size)
+        assertEquals(1, rules.size, "There should be exactly one rule")
 
         // Verify that the rule has the correct head, body, and rule operator
         val rule = rules[0]
         val head = rule.getHead()
-        assertNotNull("Rule should have a head", head)
+        assertNotNull(head, "Rule should have a head")
         val body = rule.getBody()
-        assertNotNull("Rule should have a body", body)
+        assertNotNull(body, "Rule should have a body")
         val ruleOperator = rule.getRuleOperator()
-        assertNotNull("Rule should have a rule operator", ruleOperator)
-        assertEquals("Rule operator should be =>", "=>", ruleOperator?.text)
+        assertNotNull(ruleOperator, "Rule should have a rule operator")
+        assertEquals(ruleOperator?.text, "Rule operator should be =>", "=>")
     }
 
     @Test
@@ -117,23 +117,23 @@ class PicatPsiTest : BasePlatformTestCase() {
             export factorial/1, fibonacci/1.
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all export statements in the file
         val exportStatements = file.findChildrenByClass(PicatExportStatement::class.java)
 
         // Verify that there is exactly one export statement
-        assertEquals("There should be exactly one export statement", 1, exportStatements.size)
+        assertEquals(1, exportStatements.size, "There should be exactly one export statement")
 
         // Verify that the export statement has the correct predicate indicators
         val exportStatement = exportStatements[0]
         val predicateIndicators = exportStatement.getPredicateIndicators()
-        assertEquals("Export statement should have 2 predicate indicators", 2, predicateIndicators.size)
-        assertEquals("First predicate indicator should be factorial/1", "factorial", predicateIndicators[0].getName())
-        assertEquals("First predicate indicator should have arity 1", 1, predicateIndicators[0].getArity())
-        assertEquals("Second predicate indicator should be fibonacci/1", "fibonacci", predicateIndicators[1].getName())
-        assertEquals("Second predicate indicator should have arity 1", 1, predicateIndicators[1].getArity())
+        assertEquals(2, predicateIndicators.size, "Export statement should have 2 predicate indicators")
+        assertEquals(predicateIndicators[0].getName(, "First predicate indicator should be factorial/1", "factorial"))
+        assertEquals(1, predicateIndicators[0].getArity(, "First predicate indicator should have arity 1"))
+        assertEquals(predicateIndicators[1].getName(, "Second predicate indicator should be fibonacci/1", "fibonacci"))
+        assertEquals(1, predicateIndicators[1].getArity(, "Second predicate indicator should have arity 1"))
     }
 
     @Test
@@ -143,18 +143,18 @@ class PicatPsiTest : BasePlatformTestCase() {
             include "utils.pi".
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all include statements in the file
         val includeStatements = file.findChildrenByClass(PicatIncludeStatement::class.java)
 
         // Verify that there is exactly one include statement
-        assertEquals("There should be exactly one include statement", 1, includeStatements.size)
+        assertEquals(1, includeStatements.size, "There should be exactly one include statement")
 
         // Verify that the include statement has the correct path
         val includeStatement = includeStatements[0]
-        assertEquals("Include statement should have path utils.pi", "utils.pi", includeStatement.getIncludePath())
+        assertEquals(includeStatement.getIncludePath(, "Include statement should have path utils.pi", "utils.pi"))
     }
 
     @Test
@@ -181,28 +181,28 @@ class PicatPsiTest : BasePlatformTestCase() {
             fibonacci(N) = fibonacci(N-1) + fibonacci(N-2) => N > 1.
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all import statements in the file
         val importStatements = file.findChildrenByClass(PicatImportStatement::class.java)
-        assertEquals("There should be exactly one import statement", 1, importStatements.size)
+        assertEquals(1, importStatements.size, "There should be exactly one import statement")
 
         // Find all export statements in the file
         val exportStatements = file.findChildrenByClass(PicatExportStatement::class.java)
-        assertEquals("There should be exactly one export statement", 1, exportStatements.size)
+        assertEquals(1, exportStatements.size, "There should be exactly one export statement")
 
         // Find all include statements in the file
         val includeStatements = file.findChildrenByClass(PicatIncludeStatement::class.java)
-        assertEquals("There should be exactly one include statement", 1, includeStatements.size)
+        assertEquals(1, includeStatements.size, "There should be exactly one include statement")
 
         // Find all facts in the file
         val facts = file.getAllFacts()
-        assertEquals("There should be exactly 3 facts", 3, facts.size)
+        assertEquals(3, facts.size, "There should be exactly 3 facts")
 
         // Find all rules in the file
         val rules = file.findChildrenByClass(PicatRule::class.java)
-        assertEquals("There should be exactly 3 rules", 3, rules.size)
+        assertEquals(3, rules.size, "There should be exactly 3 rules")
     }
 
     @Test
@@ -217,22 +217,22 @@ class PicatPsiTest : BasePlatformTestCase() {
             main => println("Hello, world!").
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Test getImportStatements method
         val importStatements = file.getImportStatements()
-        assertEquals("There should be exactly two import statements", 2, importStatements.size)
+        assertEquals(2, importStatements.size, "There should be exactly two import statements")
 
         // Verify that the import statements have the correct text
-        assertEquals("First import statement should be 'import'", "import", importStatements[0].text)
-        assertEquals("Second import statement should be 'import'", "import", importStatements[1].text)
+        assertEquals(importStatements[0].text, "First import statement should be 'import'", "import")
+        assertEquals(importStatements[1].text, "Second import statement should be 'import'", "import")
 
         // Test getImportedModuleNames method
         val allModuleNames = file.getImportedModuleNames()
 
         // Currently, the implementation doesn't correctly parse module names,
         // so we expect an empty list
-        assertEquals("There should be no module names", 0, allModuleNames.size)
+        assertEquals(0, allModuleNames.size, "There should be no module names")
     }
 }

@@ -1,8 +1,8 @@
 package com.github.avrilfanomar.picatplugin.language.lexer.recognizers
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
-import org.junit.Assert.*
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 /**
  * Test for the StringRecognizer class.
@@ -22,17 +22,17 @@ class StringRecognizerTest {
     @Test
     fun testCanRecognizeQuotedAtom() {
         // Test with single-quoted atoms
-        assertTrue(recognizer.canRecognize("'", 0, 1))
-        assertTrue(recognizer.canRecognize("'atom'", 0, 6))
-        assertTrue(recognizer.canRecognize("code 'atom' code", 5, 11))
+        assertTrue(recognizer.canRecognize(0, 1, "'"))
+        assertTrue(recognizer.canRecognize(0, 6, "'atom'"))
+        assertTrue(recognizer.canRecognize(5, 11, "code 'atom' code"))
     }
 
     @Test
     fun testCannotRecognizeNonString() {
         // Test with non-string characters
-        assertFalse(recognizer.canRecognize("a", 0, 1))
-        assertFalse(recognizer.canRecognize("1", 0, 1))
-        assertFalse(recognizer.canRecognize("_", 0, 1))
+        assertFalse(recognizer.canRecognize(0, 1, "a"))
+        assertFalse(recognizer.canRecognize(0, 1, "1"))
+        assertFalse(recognizer.canRecognize(0, 1, "_"))
         assertFalse(recognizer.canRecognize("", 0, 0)) // Empty string
     }
 

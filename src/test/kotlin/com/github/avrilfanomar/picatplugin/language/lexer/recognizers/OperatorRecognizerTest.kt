@@ -1,8 +1,8 @@
 package com.github.avrilfanomar.picatplugin.language.lexer.recognizers
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
-import org.junit.Assert.*
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 /**
  * Test for the OperatorRecognizer class.
@@ -16,17 +16,18 @@ class OperatorRecognizerTest {
         // Test with various operators
         val operators = "=+-*/<>!|@$^#~\\,.;:()[]{}?"
         for (c in operators) {
-            assertTrue("Should recognize operator '$c'", 
-                recognizer.canRecognize(c.toString(), 0, 1))
+            assertTrue(
+                recognizer.canRecognize(c.toString(), 0, 1),
+                "Should recognize operator '$c'")
         }
     }
 
     @Test
     fun testCannotRecognizeNonOperators() {
         // Test with non-operators
-        assertFalse(recognizer.canRecognize("a", 0, 1))
-        assertFalse(recognizer.canRecognize("1", 0, 1))
-        assertFalse(recognizer.canRecognize("_", 0, 1))
+        assertFalse(recognizer.canRecognize(0, 1, "a"))
+        assertFalse(recognizer.canRecognize(0, 1, "1"))
+        assertFalse(recognizer.canRecognize(0, 1, "_"))
         assertFalse(recognizer.canRecognize("", 0, 0)) // Empty string
     }
 
@@ -60,8 +61,9 @@ class OperatorRecognizerTest {
 
         for ((op, expectedType) in operatorTests) {
             val (tokenType, endPos) = recognizer.recognize(op, 0, op.length)
-            assertEquals("Operator '$op' should be recognized as ${expectedType.toString()}", 
-                expectedType, tokenType)
+            assertEquals(
+                expectedType, tokenType,
+                "Operator '$op' should be recognized as ${expectedType.toString()}")
             assertEquals(3, endPos)
         }
     }

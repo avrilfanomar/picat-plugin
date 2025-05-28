@@ -4,7 +4,7 @@ import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingMod
 import com.intellij.lang.LanguageFormatting
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 /**
  * Test for Picat code formatting.
@@ -390,7 +390,7 @@ literals_example =>
         val code = "main=>X=10,Y=20."
 
         // Format the code
-        myFixture.configureByText("simple.pi", code)
+        myFixture.configureByText(code, "simple.pi")
         WriteCommandAction.runWriteCommandAction(project) {
             val file = myFixture.file
             val textRange = file.textRange
@@ -472,7 +472,7 @@ complex_example =>
         """
 
         // Format it once
-        myFixture.configureByText("complex.pi", code)
+        myFixture.configureByText(code, "complex.pi")
         WriteCommandAction.runWriteCommandAction(project) {
             val file = myFixture.file
             val textRange = file.textRange

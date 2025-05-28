@@ -2,7 +2,7 @@ package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.psi.util.PsiTreeUtil
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 /**
  * Test for Picat structure PSI implementation.
@@ -19,7 +19,7 @@ class PicatStructureTest : BasePlatformTestCase() {
                 println(X).
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all structures in the file
@@ -32,27 +32,27 @@ class PicatStructureTest : BasePlatformTestCase() {
         }
 
         // Verify that there are at least two structures (point and println)
-        assertTrue("There should be at least two structures", structures.size >= 2)
+        assertTrue(structures.size >= 2, "There should be at least two structures")
 
         // Find the point structure
         val pointStructure = structures.find { it.getName() == "point" }
-        assertNotNull("There should be a point structure", pointStructure)
+        assertNotNull(pointStructure, "There should be a point structure")
 
         // Verify that the point structure has the correct name and arity
-        assertEquals("Structure name should be 'point'", "point", pointStructure?.getName())
-        assertEquals("Structure arity should be 2", 2, pointStructure?.getArity())
+        assertEquals(pointStructure?.getName(, "Structure name should be 'point'", "point"))
+        assertEquals(2, pointStructure?.getArity(, "Structure arity should be 2"))
 
         // Verify that the point structure has an argument list
         val argumentList = pointStructure?.getArgumentList()
-        assertNotNull("Structure should have an argument list", argumentList)
+        assertNotNull(argumentList, "Structure should have an argument list")
 
         // Verify that the argument list has the correct number of arguments
         val arguments = argumentList!!.getArguments()
-        assertEquals("Argument list should have 2 arguments", 2, arguments.size)
+        assertEquals(2, arguments.size, "Argument list should have 2 arguments")
 
         // Verify that each argument has the correct expression
-        assertEquals("First argument should be 1", "1", arguments[0].getExpression()?.text)
-        assertEquals("Second argument should be 2", "2", arguments[1].getExpression()?.text)
+        assertEquals(arguments[0].getExpression(, "First argument should be 1", "1")?.text)
+        assertEquals(arguments[1].getExpression(, "Second argument should be 2", "2")?.text)
     }
 
     @Test
@@ -64,36 +64,36 @@ class PicatStructureTest : BasePlatformTestCase() {
                 println(X).
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all structures in the file
         val structures = findStructuresInFile(file)
 
         // Verify that there are at least three structures (outer point, inner point, and println)
-        assertTrue("There should be at least three structures", structures.size >= 3)
+        assertTrue(structures.size >= 3, "There should be at least three structures")
 
         // Find the outer point structure
         val outerPointStructure = structures.find { 
             it.getName() == "point" && it.text.contains("point(2, 3)") 
         }
-        assertNotNull("There should be an outer point structure", outerPointStructure)
+        assertNotNull(outerPointStructure, "There should be an outer point structure")
 
         // Verify that the outer point structure has the correct name and arity
-        assertEquals("Structure name should be 'point'", "point", outerPointStructure?.getName())
-        assertEquals("Structure arity should be 2", 2, outerPointStructure?.getArity())
+        assertEquals(outerPointStructure?.getName(, "Structure name should be 'point'", "point"))
+        assertEquals(2, outerPointStructure?.getArity(, "Structure arity should be 2"))
 
         // Verify that the outer point structure has an argument list
         val outerArgumentList = outerPointStructure?.getArgumentList()
-        assertNotNull("Structure should have an argument list", outerArgumentList)
+        assertNotNull(outerArgumentList, "Structure should have an argument list")
 
         // Verify that the argument list has the correct number of arguments
         val outerArguments = outerArgumentList!!.getArguments()
-        assertEquals("Argument list should have 2 arguments", 2, outerArguments.size)
+        assertEquals(2, outerArguments.size, "Argument list should have 2 arguments")
 
         // Verify that the second argument is a structure
         val secondArgExpression = outerArguments[1].getExpression()
-        assertNotNull("Second argument should have an expression", secondArgExpression)
+        assertNotNull(secondArgExpression, "Second argument should have an expression")
 
         // Debug: Print the second argument expression
         println("[DEBUG_LOG] Second argument expression: ${secondArgExpression?.text}, Class: ${secondArgExpression?.javaClass?.simpleName}")
@@ -102,11 +102,11 @@ class PicatStructureTest : BasePlatformTestCase() {
         val innerPointStructure = structures.find { 
             it.getName() == "point" && it.text == "point(2, 3)" 
         }
-        assertNotNull("There should be an inner point structure", innerPointStructure)
+        assertNotNull(innerPointStructure, "There should be an inner point structure")
 
         // Verify that the inner point structure has the correct name and arity
-        assertEquals("Structure name should be 'point'", "point", innerPointStructure?.getName())
-        assertEquals("Structure arity should be 2", 2, innerPointStructure?.getArity())
+        assertEquals(innerPointStructure?.getName(, "Structure name should be 'point'", "point"))
+        assertEquals(2, innerPointStructure?.getArity(, "Structure arity should be 2"))
     }
 
     @Test
@@ -120,7 +120,7 @@ class PicatStructureTest : BasePlatformTestCase() {
                 println(Z).
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all structures in the file
@@ -128,23 +128,23 @@ class PicatStructureTest : BasePlatformTestCase() {
 
         // Find the point structure
         val pointStructure = structures.find { it.getName() == "point" }
-        assertNotNull("There should be a point structure", pointStructure)
+        assertNotNull(pointStructure, "There should be a point structure")
 
         // Verify that the point structure has the correct name and arity
-        assertEquals("Structure name should be 'point'", "point", pointStructure?.getName())
-        assertEquals("Structure arity should be 2", 2, pointStructure?.getArity())
+        assertEquals(pointStructure?.getName(, "Structure name should be 'point'", "point"))
+        assertEquals(2, pointStructure?.getArity(, "Structure arity should be 2"))
 
         // Verify that the point structure has an argument list
         val argumentList = pointStructure?.getArgumentList()
-        assertNotNull("Structure should have an argument list", argumentList)
+        assertNotNull(argumentList, "Structure should have an argument list")
 
         // Verify that the argument list has the correct number of arguments
         val arguments = argumentList!!.getArguments()
-        assertEquals("Argument list should have 2 arguments", 2, arguments.size)
+        assertEquals(2, arguments.size, "Argument list should have 2 arguments")
 
         // Verify that each argument has the correct expression
-        assertEquals("First argument should be X", "X", arguments[0].getExpression()?.text)
-        assertEquals("Second argument should be Y", "Y", arguments[1].getExpression()?.text)
+        assertEquals(arguments[0].getExpression(, "First argument should be X", "X")?.text)
+        assertEquals(arguments[1].getExpression(, "Second argument should be Y", "Y")?.text)
     }
 
     @Test
@@ -155,30 +155,30 @@ class PicatStructureTest : BasePlatformTestCase() {
                 println(point(1, 2)).
         """.trimIndent()
 
-        myFixture.configureByText("test.pi", code)
+        myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
         // Find all structures in the file
         val structures = findStructuresInFile(file)
 
         // Verify that there are at least two structures (println and point)
-        assertTrue("There should be at least two structures", structures.size >= 2)
+        assertTrue(structures.size >= 2, "There should be at least two structures")
 
         // Find the point structure
         val pointStructure = structures.find { it.getName() == "point" }
-        assertNotNull("There should be a point structure", pointStructure)
+        assertNotNull(pointStructure, "There should be a point structure")
 
         // Verify that the point structure has the correct name and arity
-        assertEquals("Structure name should be 'point'", "point", pointStructure?.getName())
-        assertEquals("Structure arity should be 2", 2, pointStructure?.getArity())
+        assertEquals(pointStructure?.getName(, "Structure name should be 'point'", "point"))
+        assertEquals(2, pointStructure?.getArity(, "Structure arity should be 2"))
 
         // Find the println structure
         val printlnStructure = structures.find { it.getName() == "println" }
-        assertNotNull("There should be a println structure", printlnStructure)
+        assertNotNull(printlnStructure, "There should be a println structure")
 
         // Verify that the println structure has the correct name and arity
-        assertEquals("Structure name should be 'println'", "println", printlnStructure?.getName())
-        assertEquals("Structure arity should be 1", 1, printlnStructure?.getArity())
+        assertEquals(printlnStructure?.getName(, "Structure name should be 'println'", "println"))
+        assertEquals(1, printlnStructure?.getArity(, "Structure arity should be 1"))
     }
 
     /**

@@ -1,8 +1,8 @@
 package com.github.avrilfanomar.picatplugin.language.lexer.recognizers
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
-import org.junit.Assert.*
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 /**
  * Test for the IdentifierRecognizer class.
@@ -79,7 +79,7 @@ class IdentifierRecognizerTest {
     @Test
     fun testRecognizeBasicModuleFunctions() {
         // Test recognizing functions from the basic module
-        val basicFunctions = listOf("append", "length", "member", "sort", "sum")
+        val basicFunctions = listOf("length", "member", "sort", "sum", "append")
 
         for (func in basicFunctions) {
             val (tokenType, endPos) = recognizer.recognize(func, 0, func.length)
@@ -92,7 +92,7 @@ class IdentifierRecognizerTest {
     @Test
     fun testRecognizeRegularIdentifiers() {
         // Test recognizing regular identifiers
-        val identifiers = listOf("factorial", "fibonacci", "myFunc", "custom_predicate")
+        val identifiers = listOf("fibonacci", "myFunc", "custom_predicate", "factorial")
 
         for (id in identifiers) {
             val (tokenType, endPos) = recognizer.recognize(id, 0, id.length)

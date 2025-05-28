@@ -4,7 +4,7 @@ import com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHigh
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.testFramework.LexerTestCase
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 /**
  * Test for Picat syntax highlighting.
