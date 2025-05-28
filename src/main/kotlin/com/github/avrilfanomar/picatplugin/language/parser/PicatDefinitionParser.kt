@@ -1,0 +1,270 @@
+package com.github.avrilfanomar.picatplugin.language.parser
+
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
+import com.intellij.lang.PsiBuilder
+
+/**
+ * Parser component responsible for parsing Picat definitions (facts, rules, predicates, functions).
+ */
+class PicatDefinitionParser : PicatBaseParser() {
+
+    /**
+     * Parses a Picat definition (fact, rule, predicate, or function).
+     */
+    fun parseDefinition(builder: PsiBuilder) {
+        // Don't create a marker here, let the specific parse methods create their own markers
+
+        // Check what kind of definition this is
+        when {
+            isFunctionDefinition(builder) -> {
+                // Parse as a function definition (which is also marked as a fact)
+                parseFunctionDefinition(builder)
+            }
+            isRuleDefinition(builder) -> {
+                // Parse as a rule
+                parseRuleDefinition(builder)
+            }
+            isPredicateDefinition(builder) -> {
+                // Parse as a predicate definition
+                parsePredicateDefinition(builder)
+            }
+            isFact(builder) -> {
+                // Parse as a simple fact
+                parseFact(builder)
+            }
+            else -> {
+                // Error case
+                val errorMarker = builder.mark()
+                builder.error("Unexpected definition")
+                builder.advanceLexer()
+                errorMarker.drop()
+            }
+        }
+    }
+
+    /**
+     * Tries to parse a fact without consuming tokens.
+     */
+    private fun tryParseFact(builder: PsiBuilder): Boolean {
+        var success = true
+
+        // Try to parse the head
+        if (PicatParserUtil.isAtom(builder.tokenType) || isStructure(builder) || isQualifiedAtom(builder)) {
+            if (isStructure(builder)) {
+                // Skip the atom
+                builder.advanceLexer()
+                // Skip the opening parenthesis
+                builder.advanceLexer()
+                // Skip the arguments
+                var parenCount = 1
+                while (parenCount > 0 && !builder.eof()) {
+                    if (builder.tokenType == PicatTokenTypes.LPAR) {
+                        parenCount++
+                    } else if (builder.tokenType == PicatTokenTypes.RPAR) {
+                        parenCount--
+                    }
+                    builder.advanceLexer()
+                }
+            } else {
+                // Skip the atom or qualified atom
+                builder.advanceLexer()
+                if (isQualifiedAtom(builder)) {
+                    // Skip the dot and the second atom
+                    builder.advanceLexer()
+                    builder.advanceLexer()
+                }
+            }
+
+            // Optional equals sign and expression
+            if (builder.tokenType == PicatTokenTypes.EQUAL) {
+                builder.advanceLexer()
+                // Skip the expression (this is simplified)
+                while (builder.tokenType != PicatTokenTypes.DOT && !builder.eof()) {
+                    builder.advanceLexer()
+                }
+            }
+
+            // Check for the dot
+            success = builder.tokenType == PicatTokenTypes.DOT
+        } else {
+            success = false
+        }
+
+        return success
+    }
+
+    /**
+     * Parses a function definition.
+     */
+    fun parseFunctionDefinition(builder: PsiBuilder) {
+        val marker = builder.mark()
+        parseHead(builder)
+
+        PicatParserUtil.expectToken(builder, PicatTokenTypes.EQUAL, "Expected '=' in function definition")
+
+        expressionParser.parseExpression(builder)
+        PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after function definition")
+        // Mark as both a function definition and a fact
+        val factMarker = marker.precede()
+        marker.done(PicatTokenTypes.FUNCTION_DEFINITION)
+        factMarker.done(PicatTokenTypes.FACT)
+    }
+
+    /**
+     * Parses a rule definition.
+     */
+    fun parseRuleDefinition(builder: PsiBuilder) {
+        val marker = builder.mark()
+        parseHead(builder)
+
+        // Parse rule operator (=>, ?=>, <=>, ?<=>, :-)
+        val opMarker = builder.mark()
+        if (PicatParserUtil.isRuleOperator(builder.tokenType)) {
+            builder.advanceLexer()
+            opMarker.done(PicatTokenTypes.RULE_OPERATOR)
+        } else {
+            opMarker.drop()
+            builder.error("Expected rule operator (=>, ?=>, <=>, ?<=>, :-)")
+        }
+
+        statementParser.parseBody(builder)
+        PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after rule definition")
+        marker.done(PicatTokenTypes.RULE)
+    }
+
+    /**
+     * Parses a predicate definition.
+     */
+    fun parsePredicateDefinition(builder: PsiBuilder) {
+        val marker = builder.mark()
+        parseHead(builder)
+
+        // Check if this is a function definition (has an equals sign)
+        val isFunction = builder.tokenType == PicatTokenTypes.EQUAL
+
+        // Optional body
+        if (builder.tokenType != PicatTokenTypes.DOT) {
+            if (isFunction) {
+                builder.advanceLexer() // Skip the equals sign
+                expressionParser.parseExpression(builder) // Parse the expression
+            } else {
+                statementParser.parseBody(builder)
+            }
+        }
+
+        PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after predicate definition")
+
+        // If this is a function definition, mark it as both a function definition and a fact
+        if (isFunction) {
+            val factMarker = marker.precede()
+            marker.done(PicatTokenTypes.FUNCTION_DEFINITION)
+            factMarker.done(PicatTokenTypes.FACT)
+        } else {
+            marker.done(PicatTokenTypes.PREDICATE_DEFINITION)
+        }
+    }
+
+    /**
+     * Parses a fact.
+     */
+    fun parseFact(builder: PsiBuilder) {
+        val marker = builder.mark()
+        parseHead(builder)
+
+        // Optional function body
+        if (builder.tokenType == PicatTokenTypes.EQUAL) {
+            builder.advanceLexer()
+            expressionParser.parseExpression(builder)
+        }
+
+        PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after fact")
+        marker.done(PicatTokenTypes.FACT)
+    }
+
+    /**
+     * Parses a predicate/function head.
+     */
+    fun parseHead(builder: PsiBuilder) {
+        val marker = builder.mark()
+
+        when {
+            PicatParserUtil.isAtom(builder.tokenType) -> parseAtom(builder)
+            isStructure(builder) -> parseStructure(builder)
+            isQualifiedAtom(builder) -> parseQualifiedAtom(builder)
+            else -> {
+                builder.error("Expected predicate/function head")
+                builder.advanceLexer()
+                marker.drop()
+                return
+            }
+        }
+
+        marker.done(PicatTokenTypes.HEAD)
+    }
+
+    /**
+     * Checks if the current token sequence represents a function definition.
+     */
+    fun isFunctionDefinition(builder: PsiBuilder): Boolean {
+        // Look ahead to see if this is a function definition
+        val marker = builder.mark()
+        var result = false
+
+        parseHead(builder)
+        result = builder.tokenType == PicatTokenTypes.EQUAL
+        marker.rollbackTo()
+
+        return result
+    }
+
+    /**
+     * Checks if the current token sequence represents a rule definition.
+     */
+    fun isRuleDefinition(builder: PsiBuilder): Boolean {
+        val marker = builder.mark()
+        var result = false
+
+        parseHead(builder)
+        result = PicatParserUtil.isRuleOperator(builder.tokenType)
+        marker.rollbackTo()
+
+        return result
+    }
+
+    /**
+     * Checks if the current token sequence represents a predicate definition.
+     */
+    fun isPredicateDefinition(builder: PsiBuilder): Boolean {
+        val marker = builder.mark()
+        var result = false
+
+        parseHead(builder)
+        // A predicate definition has a body (not just a dot)
+        // and doesn't have an equals sign (which would make it a function definition)
+        result = builder.tokenType != PicatTokenTypes.DOT && builder.tokenType != PicatTokenTypes.EQUAL
+        marker.rollbackTo()
+
+        return result
+    }
+
+    /**
+     * Checks if the current token sequence represents a fact.
+     */
+    fun isFact(builder: PsiBuilder): Boolean {
+        val marker = builder.mark()
+        var result = false
+
+        parseHead(builder)
+        // A fact is either just a head followed by a dot,
+        // or a head followed by an equals sign, an expression, and a dot
+        if (builder.tokenType == PicatTokenTypes.DOT) {
+            result = true
+        } else if (builder.tokenType == PicatTokenTypes.EQUAL) {
+            // This is a function definition, which is also a fact
+            result = true
+        }
+        marker.rollbackTo()
+
+        return result
+    }
+}
