@@ -2,7 +2,14 @@ package com.github.avrilfanomar.picatplugin.run
 
 import com.github.avrilfanomar.picatplugin.settings.PicatSettings
 import com.intellij.execution.Executor
-import com.intellij.execution.configurations.*
+import com.intellij.execution.configurations.ConfigurationFactory
+import com.intellij.execution.configurations.RunConfigurationBase
+import com.intellij.execution.configurations.RunConfiguration
+import com.intellij.execution.configurations.RuntimeConfigurationError
+import com.intellij.execution.configurations.RunProfileState
+import com.intellij.execution.configurations.CommandLineState
+import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.configurations.RunConfigurationOptions
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessHandlerFactory
 import com.intellij.execution.process.ProcessTerminatedListener
@@ -38,7 +45,7 @@ class PicatRunConfiguration(
     override fun checkConfiguration() {
         val settings = PicatSettings.getInstance(project)
         if (settings.picatExecutablePath.isBlank()) {
-            throw RuntimeConfigurationError("Picat executable path is not set. Please configure it in Settings | Tools | Picat.")
+            throw RuntimeConfigurationError("Picat executable path is not set. Please configure it in Settings -> Tools -> Picat.")
         }
 
         val picatExecutable = File(settings.picatExecutablePath)

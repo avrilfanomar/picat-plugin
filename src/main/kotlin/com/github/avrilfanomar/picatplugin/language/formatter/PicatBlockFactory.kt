@@ -1,6 +1,10 @@
 package com.github.avrilfanomar.picatplugin.language.formatter
 
-import com.intellij.formatting.*
+import com.intellij.formatting.Block
+import com.intellij.formatting.Wrap
+import com.intellij.formatting.WrapType
+import com.intellij.formatting.Alignment
+import com.intellij.formatting.SpacingBuilder
 import com.intellij.lang.ASTNode
 import com.intellij.psi.codeStyle.CodeStyleSettings
 

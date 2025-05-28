@@ -11,55 +11,55 @@ class PicatCodeStyleSettings(settings: CodeStyleSettings) :
     CustomCodeStyleSettings("PicatCodeStyleSettings", settings) {
     // Spacing options
     @JvmField
-    var SPACE_AROUND_ASSIGNMENT_OPERATORS = true
+    var spaceAroundAssignmentOperators = true
     @JvmField
-    var SPACE_AROUND_LOGICAL_OPERATORS = true
+    var spaceAroundLogicalOperators = true
     @JvmField
-    var SPACE_AROUND_EQUALITY_OPERATORS = true
+    var spaceAroundEqualityOperators = true
     @JvmField
-    var SPACE_AROUND_RELATIONAL_OPERATORS = true
+    var spaceAroundRelationalOperators = true
     @JvmField
-    var SPACE_AROUND_ADDITIVE_OPERATORS = true
+    var spaceAroundAdditiveOperators = true
     @JvmField
-    var SPACE_AROUND_MULTIPLICATIVE_OPERATORS = true
+    var spaceAroundMultiplicativeOperators = true
 
     // Picat-specific operators
     @JvmField
-    var SPACE_BEFORE_RULE_OPERATORS = true
+    var spaceBeforeRuleOperators = true
     @JvmField
-    var SPACE_AROUND_CONSTRAINT_OPERATORS = true
+    var spaceAroundConstraintOperators = true
     @JvmField
-    var SPACE_AROUND_TERM_COMPARISON_OPERATORS = true
+    var spaceAroundTermComparisonOperators = true
     @JvmField
-    var SPACE_AROUND_RANGE_OPERATOR = true
+    var spaceAroundRangeOperator = true
     @JvmField
-    var SPACE_AROUND_TYPE_CONSTRAINT_OPERATOR = true
+    var spaceAroundTypeConstraintOperator = true
     @JvmField
-    var SPACE_AROUND_BITWISE_OPERATORS = true
+    var spaceAroundBitwiseOperators = true
 
     // Punctuation
     @JvmField
-    var SPACE_BEFORE_COMMA = false
+    var spaceBeforeComma = false
     @JvmField
-    var SPACE_AFTER_COMMA = true
+    var spaceAfterComma = true
     @JvmField
-    var SPACE_AROUND_COLON = true
+    var spaceAroundColon = true
 
     // Line breaks
     @JvmField
-    var KEEP_LINE_BREAK_AFTER_RULE_OPERATORS = true
+    var keepLineBreakAfterRuleOperators = true
     @JvmField
-    var LINE_BREAK_AFTER_BLOCK_KEYWORDS = true
+    var lineBreakAfterBlockKeywords = true
     @JvmField
-    var LINE_BREAK_AFTER_DOT = true
+    var lineBreakAfterDot = true
     @JvmField
-    var LINE_BREAK_AFTER_END_KEYWORD = true
+    var lineBreakAfterEndKeyword = true
 
     // Indentation
     @JvmField
-    var INDENT_RULE_BODY = true
+    var indentRuleBody = true
     @JvmField
-    var INDENT_BLOCK_STATEMENTS = true
+    var indentBlockStatements = true
     @JvmField
-    var INDENT_LIST_COMPREHENSION = true
+    var indentListComprehension = true
 }

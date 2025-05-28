@@ -5,7 +5,12 @@ import com.intellij.application.options.CodeStyleAbstractConfigurable
 import com.intellij.application.options.CodeStyleAbstractPanel
 import com.intellij.application.options.TabbedLanguageCodeStylePanel
 import com.intellij.lang.Language
-import com.intellij.psi.codeStyle.*
+import com.intellij.psi.codeStyle.CodeStyleConfigurable
+import com.intellij.psi.codeStyle.CodeStyleSettings
+import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
+import com.intellij.psi.codeStyle.CustomCodeStyleSettings
+import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
+import com.intellij.psi.codeStyle.SettingsType
 
 /**
  * Provides code style settings for Picat language to the IDE.
@@ -46,43 +51,43 @@ class PicatLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
                 // Picat-specific operators
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "SPACE_AROUND_RULE_OPERATORS",
+                    "spaceBeforeRuleOperators",
                     "Around rule operators (=>, ?=>)",
                     "Operators"
                 )
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "SPACE_AROUND_CONSTRAINT_OPERATORS",
+                    "spaceAroundConstraintOperators",
                     "Around constraint operators (#=, #!=, etc.)",
                     "Operators"
                 )
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "SPACE_AROUND_TERM_COMPARISON_OPERATORS",
+                    "spaceAroundTermComparisonOperators",
                     "Around term comparison operators (@<, @=<, etc.)",
                     "Operators"
                 )
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "SPACE_AROUND_RANGE_OPERATOR",
+                    "spaceAroundRangeOperator",
                     "Around range operator (..)",
                     "Operators"
                 )
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "SPACE_AROUND_TYPE_CONSTRAINT_OPERATOR",
+                    "spaceAroundTypeConstraintOperator",
                     "Around type constraint operator (::)",
                     "Operators"
                 )
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "SPACE_AROUND_BITWISE_OPERATORS",
+                    "spaceAroundBitwiseOperators",
                     "Around bitwise operators (/\\, \\/, <<, >>)",
                     "Operators"
                 )
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "SPACE_AROUND_COLON",
+                    "spaceAroundColon",
                     "Around colon (:)",
                     "Punctuation"
                 )
@@ -91,25 +96,25 @@ class PicatLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
             SettingsType.WRAPPING_AND_BRACES_SETTINGS -> {
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "LINE_BREAK_AFTER_RULE_OPERATORS",
+                    "keepLineBreakAfterRuleOperators",
                     "After rule operators (=> and ?=>)",
                     "Line Breaks"
                 )
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "LINE_BREAK_AFTER_BLOCK_KEYWORDS",
+                    "lineBreakAfterBlockKeywords",
                     "After block keywords (then, else)",
                     "Line Breaks"
                 )
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "LINE_BREAK_AFTER_DOT",
+                    "lineBreakAfterDot",
                     "After dot (.)",
                     "Line Breaks"
                 )
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "LINE_BREAK_AFTER_END_KEYWORD",
+                    "lineBreakAfterEndKeyword",
                     "After end keyword",
                     "Line Breaks"
                 )
@@ -118,19 +123,19 @@ class PicatLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
             SettingsType.INDENT_SETTINGS -> {
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "INDENT_RULE_BODY",
+                    "indentRuleBody",
                     "Indent rule body",
                     "Indentation"
                 )
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "INDENT_BLOCK_STATEMENTS",
+                    "indentBlockStatements",
                     "Indent block statements",
                     "Indentation"
                 )
                 consumer.showCustomOption(
                     PicatCodeStyleSettings::class.java,
-                    "INDENT_LIST_COMPREHENSION",
+                    "indentListComprehension",
                     "Indent list comprehension",
                     "Indentation"
                 )

@@ -2,7 +2,8 @@ package com.github.avrilfanomar.picatplugin.language.lexer
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.psi.tree.IElementType
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -219,8 +220,8 @@ class PicatLexerTest {
         assertTrue(tokenTypes.contains(PicatTokenTypes.VARIABLE), "Should contain VARIABLE tokens")
         assertTrue(tokenTypes.contains(PicatTokenTypes.STRING), "Should contain STRING tokens")
         assertTrue(
-            tokenTypes.contains(PicatTokenTypes.ASSIGN_OP) || 
-            tokenTypes.contains(PicatTokenTypes.MULTIPLY) ||
+            tokenTypes.contains(PicatTokenTypes.ASSIGN_OP) && 
+            tokenTypes.contains(PicatTokenTypes.MULTIPLY) && 
             tokenTypes.contains(PicatTokenTypes.ARROW_OP),
             "Should contain operator tokens")
     }

@@ -13,7 +13,7 @@ import javax.swing.Icon
  * Allows users to customize syntax highlighting colors.
  */
 class PicatColorSettingsPage : ColorSettingsPage {
-    private val DESCRIPTORS = arrayOf(
+    private val descriptors = arrayOf(
         AttributesDescriptor("Keyword", PicatSyntaxHighlighter.KEYWORD),
         AttributesDescriptor("Comment", PicatSyntaxHighlighter.COMMENT),
         AttributesDescriptor("String", PicatSyntaxHighlighter.STRING),
@@ -29,7 +29,7 @@ class PicatColorSettingsPage : ColorSettingsPage {
         AttributesDescriptor("Bad character", PicatSyntaxHighlighter.BAD_CHARACTER)
     )
 
-    override fun getAttributeDescriptors(): Array<AttributesDescriptor> = DESCRIPTORS
+    override fun getAttributeDescriptors(): Array<AttributesDescriptor> = descriptors
 
     override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
 

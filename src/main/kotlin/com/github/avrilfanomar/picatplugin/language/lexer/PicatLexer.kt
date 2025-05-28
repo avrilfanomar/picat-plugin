@@ -1,6 +1,11 @@
 package com.github.avrilfanomar.picatplugin.language.lexer
 
-import com.github.avrilfanomar.picatplugin.language.lexer.recognizers.*
+import com.github.avrilfanomar.picatplugin.language.lexer.recognizers.WhitespaceRecognizer
+import com.github.avrilfanomar.picatplugin.language.lexer.recognizers.CommentRecognizer
+import com.github.avrilfanomar.picatplugin.language.lexer.recognizers.StringRecognizer
+import com.github.avrilfanomar.picatplugin.language.lexer.recognizers.NumberRecognizer
+import com.github.avrilfanomar.picatplugin.language.lexer.recognizers.IdentifierRecognizer
+import com.github.avrilfanomar.picatplugin.language.lexer.recognizers.OperatorRecognizer
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lexer.LexerBase
 import com.intellij.psi.tree.IElementType

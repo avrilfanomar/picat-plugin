@@ -22,9 +22,6 @@ class PicatListElementsImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatLis
      * The tail expression is the expression after the pipe (|) in a list.
      */
     override fun getTailExpression(): PicatExpression? {
-        // Find all expressions in the list
-        val expressions = getExpressions()
-
         // Check if there's a pipe token in the list
         val pipeElement = node.findChildByType(PicatTokenTypes.PIPE)
         if (pipeElement != null) {

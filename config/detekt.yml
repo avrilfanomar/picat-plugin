@@ -1,18 +1,6 @@
 # Default detekt configuration:
 # https://github.com/detekt/detekt/blob/master/detekt-core/src/main/resources/default-detekt-config.yml
 
-formatting:
-  Indentation:
-    active: true
-    indentSize: 4
-    continuationIndentSize: 4
-  ParameterListWrapping:
-    active: true
-    indentSize: 4
-  MaximumLineLength:
-    active: true
-    maxLineLength: 120
-
 style:
   MagicNumber:
     active: true
@@ -20,11 +8,15 @@ style:
   WildcardImport:
     active: true
     excludeImports: ['java.util.*', 'kotlinx.android.synthetic.*']
+  MaxLineLength:
+    active: true
+    maxLineLength: 120
 
 complexity:
   LongParameterList:
     active: true
-    threshold: 6
+    functionThreshold: 6
+    constructorThreshold: 6
     ignoreDefaultParameters: false
   TooManyFunctions:
     active: true
@@ -63,10 +55,8 @@ naming:
     active: true
     functionPattern: '[a-zA-Z][a-zA-Z0-9]*'
     excludeClassPattern: '$^'
-    ignoreOverridden: true
   VariableNaming:
     active: true
     variablePattern: '[a-z][A-Za-z0-9]*'
     privateVariablePattern: '(_)?[a-z][A-Za-z0-9]*'
     excludeClassPattern: '$^'
-    ignoreOverridden: true

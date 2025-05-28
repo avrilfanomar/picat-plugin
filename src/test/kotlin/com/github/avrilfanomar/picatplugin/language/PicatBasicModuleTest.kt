@@ -72,7 +72,6 @@ class PicatBasicModuleTest : LexerTestCase() {
         while (lexer.tokenType != null) {
             val tokenType = lexer.tokenType
             val tokenText = text.substring(lexer.tokenStart, lexer.tokenEnd)
-            val attributes = tokenType?.let { highlighter.getTokenHighlights(it) } ?: emptyArray()
 
             // Check if the token is a basic module function
             if (tokenType == PicatTokenTypes.BASIC_MODULE_FUNCTION) {
@@ -101,9 +100,6 @@ class PicatBasicModuleTest : LexerTestCase() {
         // Basic module functions found (not logged, but kept for test functionality)
     }
 
-    private fun attributesToString(attributes: Array<TextAttributesKey>): String {
-        return attributes.joinToString(", ") { it.externalName }
-    }
 
     override fun createLexer(): Lexer {
         return PicatSyntaxHighlighter().highlightingLexer

@@ -39,7 +39,6 @@ class PicatExamplesTest : LexerTestCase() {
         while (lexer.tokenType != null) {
             val tokenType = lexer.tokenType
             val tokenText = sampleText.substring(lexer.tokenStart, lexer.tokenEnd)
-            val attributes = tokenType?.let { highlighter.getTokenHighlights(it) } ?: emptyArray()
 
             // Check for BAD_CHARACTER tokens
             if (tokenType == PicatTokenTypes.BAD_CHARACTER) {
@@ -80,9 +79,6 @@ class PicatExamplesTest : LexerTestCase() {
         }
     }
 
-    private fun attributesToString(attributes: Array<TextAttributesKey>): String {
-        return attributes.joinToString(", ") { it.externalName }
-    }
 
     override fun createLexer(): Lexer {
         return PicatSyntaxHighlighter().highlightingLexer

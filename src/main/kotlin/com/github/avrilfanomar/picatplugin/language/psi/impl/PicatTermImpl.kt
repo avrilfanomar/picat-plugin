@@ -1,6 +1,11 @@
 package com.github.avrilfanomar.picatplugin.language.psi.impl
 
-import com.github.avrilfanomar.picatplugin.language.psi.*
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTerm
+import com.github.avrilfanomar.picatplugin.language.psi.PicatLiteral
+import com.github.avrilfanomar.picatplugin.language.psi.PicatVariable
+import com.github.avrilfanomar.picatplugin.language.psi.PicatList
+import com.github.avrilfanomar.picatplugin.language.psi.PicatStructure
+import com.github.avrilfanomar.picatplugin.language.psi.PicatExpression
 import com.intellij.lang.ASTNode
 import com.intellij.psi.util.PsiTreeUtil
 

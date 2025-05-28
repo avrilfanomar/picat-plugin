@@ -42,56 +42,6 @@ class PicatDefinitionParser : PicatBaseParser() {
         }
     }
 
-    /**
-     * Tries to parse a fact without consuming tokens.
-     */
-    private fun tryParseFact(builder: PsiBuilder): Boolean {
-        var success = true
-
-        // Try to parse the head
-        if (PicatParserUtil.isAtom(builder.tokenType) || isStructure(builder) || isQualifiedAtom(builder)) {
-            if (isStructure(builder)) {
-                // Skip the atom
-                builder.advanceLexer()
-                // Skip the opening parenthesis
-                builder.advanceLexer()
-                // Skip the arguments
-                var parenCount = 1
-                while (parenCount > 0 && !builder.eof()) {
-                    if (builder.tokenType == PicatTokenTypes.LPAR) {
-                        parenCount++
-                    } else if (builder.tokenType == PicatTokenTypes.RPAR) {
-                        parenCount--
-                    }
-                    builder.advanceLexer()
-                }
-            } else {
-                // Skip the atom or qualified atom
-                builder.advanceLexer()
-                if (isQualifiedAtom(builder)) {
-                    // Skip the dot and the second atom
-                    builder.advanceLexer()
-                    builder.advanceLexer()
-                }
-            }
-
-            // Optional equals sign and expression
-            if (builder.tokenType == PicatTokenTypes.EQUAL) {
-                builder.advanceLexer()
-                // Skip the expression (this is simplified)
-                while (builder.tokenType != PicatTokenTypes.DOT && !builder.eof()) {
-                    builder.advanceLexer()
-                }
-            }
-
-            // Check for the dot
-            success = builder.tokenType == PicatTokenTypes.DOT
-        } else {
-            success = false
-        }
-
-        return success
-    }
 
     /**
      * Parses a function definition.
