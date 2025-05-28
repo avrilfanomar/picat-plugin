@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
+    id("io.gitlab.arturbosch.detekt") version "1.23.4" // Detekt for static code analysis
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -121,6 +122,18 @@ kover {
                 onCheck = true
             }
         }
+    }
+}
+
+// Configure Detekt - read more: https://detekt.dev/docs/introduction/gradle/
+detekt {
+    buildUponDefaultConfig = true // preconfigure defaults
+    allRules = false // activate all available (even unstable) rules
+    config.setFrom(files("$projectDir/config/detekt.yml")) // point to your custom config defining rules to run, overwriting default behavior
+    baseline = file("$projectDir/config/baseline.xml") // a way of suppressing issues before introducing detekt
+
+    reports {
+        html.required.set(true) // observe findings in your browser with structure and code snippets
     }
 }
 

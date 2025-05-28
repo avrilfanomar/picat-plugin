@@ -1,0 +1,72 @@
+# Default detekt configuration:
+# https://github.com/detekt/detekt/blob/master/detekt-core/src/main/resources/default-detekt-config.yml
+
+formatting:
+  Indentation:
+    active: true
+    indentSize: 4
+    continuationIndentSize: 4
+  ParameterListWrapping:
+    active: true
+    indentSize: 4
+  MaximumLineLength:
+    active: true
+    maxLineLength: 120
+
+style:
+  MagicNumber:
+    active: true
+    ignoreNumbers: ['-1', '0', '1', '2', '3', '4', '5', '10', '100', '1000']
+  WildcardImport:
+    active: true
+    excludeImports: ['java.util.*', 'kotlinx.android.synthetic.*']
+
+complexity:
+  LongParameterList:
+    active: true
+    threshold: 6
+    ignoreDefaultParameters: false
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 15
+    thresholdInClasses: 15
+    thresholdInInterfaces: 15
+    thresholdInObjects: 15
+    thresholdInEnums: 15
+    ignoreDeprecated: false
+    ignorePrivate: false
+    ignoreOverridden: false
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: true
+    exceptionNames:
+      - ArrayIndexOutOfBoundsException
+      - Error
+      - Exception
+      - IllegalMonitorStateException
+      - NullPointerException
+      - IndexOutOfBoundsException
+      - RuntimeException
+      - Throwable
+    allowedExceptionNameRegex: "^(_|(ignore|expected).*)"
+  TooGenericExceptionThrown:
+    active: true
+    exceptionNames:
+      - Error
+      - Exception
+      - Throwable
+      - RuntimeException
+
+naming:
+  FunctionNaming:
+    active: true
+    functionPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    excludeClassPattern: '$^'
+    ignoreOverridden: true
+  VariableNaming:
+    active: true
+    variablePattern: '[a-z][A-Za-z0-9]*'
+    privateVariablePattern: '(_)?[a-z][A-Za-z0-9]*'
+    excludeClassPattern: '$^'
+    ignoreOverridden: true
