@@ -20,10 +20,10 @@ class PicatVariableImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatVariabl
 
     /**
      * Sets the name of the variable.
-     * This is required by PsiNamedElement but not implemented for now.
+     * Note: This is a read-only PSI element, so this method throws an exception.
      */
     @Throws(IncorrectOperationException::class)
     override fun setName(name: String): PsiElement {
-        throw IncorrectOperationException("Rename not supported")
+        throw IncorrectOperationException("Cannot modify variable name")
     }
 }
