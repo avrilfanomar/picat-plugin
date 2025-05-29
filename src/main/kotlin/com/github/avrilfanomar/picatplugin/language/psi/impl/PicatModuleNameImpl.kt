@@ -12,34 +12,32 @@ import com.intellij.psi.util.PsiTreeUtil
 class PicatModuleNameImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatModuleName {
     /**
      * Returns the identifier of the module.
+     * According to the BNF, a module name is an atom, so we return the atom child element.
      */
     override fun getIdentifier(): PsiElement? {
-        return firstChild
+        return PsiTreeUtil.getChildOfType(this, PicatAtom::class.java)
     }
 
     /**
      * Returns the name of the module.
+     * According to the BNF, a module name is simply an atom, so we directly use the atom's name.
      */
     override fun getName(): String? {
         // According to the grammar, a module name is an atom
         val atom = PsiTreeUtil.getChildOfType(this, PicatAtom::class.java)
 
-        // Try to get the name from the identifier
-        val identifier = atom?.getIdentifier()
-        if (identifier != null) {
-            return identifier.getName()
-        }
+        // If the atom has an identifier, use its name
+        atom?.getIdentifier()?.getName()?.let { return it }
 
-        // If there's no identifier, try to get the name from the quoted atom
-        val quotedAtom = atom?.getQuotedAtom()
-        if (quotedAtom != null) {
-            // Remove the quotes from the quoted atom
-            val text = quotedAtom.text
+        // If the atom has a quoted atom, remove the quotes and return the text
+        atom?.getQuotedAtom()?.let { 
+            val text = it.text
             if (text.length >= 2) {
                 return text.substring(1, text.length - 1)
             }
         }
 
+        // If all else fails, return the atom's text
         return atom?.text
     }
 }
