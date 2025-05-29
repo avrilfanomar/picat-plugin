@@ -7,7 +7,7 @@ import com.intellij.lang.PsiBuilder
  * Parser component responsible for parsing Picat expressions.
  */
 class PicatExpressionParser : PicatBaseParser() {
-    
+
     /**
      * Parses a Picat expression.
      */
@@ -19,8 +19,14 @@ class PicatExpressionParser : PicatBaseParser() {
         // Ternary operator
         if (builder.tokenType == PicatTokenTypes.QUESTION) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseExpression(builder)
             PicatParserUtil.expectToken(builder, PicatTokenTypes.COLON, "Expected ':' in ternary operator")
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseExpression(builder)
         }
 
@@ -31,6 +37,9 @@ class PicatExpressionParser : PicatBaseParser() {
         parseLogicalAndExpression(builder)
         while (builder.tokenType == PicatTokenTypes.OR_KEYWORD) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseLogicalAndExpression(builder)
         }
     }
@@ -39,6 +48,9 @@ class PicatExpressionParser : PicatBaseParser() {
         parseBitwiseOrExpression(builder)
         while (builder.tokenType == PicatTokenTypes.AND_KEYWORD) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseBitwiseOrExpression(builder)
         }
     }
@@ -47,6 +59,9 @@ class PicatExpressionParser : PicatBaseParser() {
         parseBitwiseXorExpression(builder)
         while (builder.tokenType == PicatTokenTypes.PIPE) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseBitwiseXorExpression(builder)
         }
     }
@@ -55,6 +70,9 @@ class PicatExpressionParser : PicatBaseParser() {
         parseBitwiseAndExpression(builder)
         while (builder.tokenType == PicatTokenTypes.XOR_KEYWORD || builder.tokenType == PicatTokenTypes.CARET) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseBitwiseAndExpression(builder)
         }
     }
@@ -63,6 +81,9 @@ class PicatExpressionParser : PicatBaseParser() {
         parseEqualityExpression(builder)
         while (builder.tokenType == PicatTokenTypes.AMPERSAND) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseEqualityExpression(builder)
         }
     }
@@ -71,6 +92,9 @@ class PicatExpressionParser : PicatBaseParser() {
         parseRelationalExpression(builder)
         while (builder.tokenType == PicatTokenTypes.IDENTICAL || builder.tokenType == PicatTokenTypes.NOT_IDENTICAL) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseRelationalExpression(builder)
         }
     }
@@ -79,6 +103,9 @@ class PicatExpressionParser : PicatBaseParser() {
         parseShiftExpression(builder)
         while (PicatParserUtil.isRelationalOperator(builder.tokenType)) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseShiftExpression(builder)
         }
     }
@@ -87,6 +114,9 @@ class PicatExpressionParser : PicatBaseParser() {
         parseAdditiveExpression(builder)
         while (builder.tokenType == PicatTokenTypes.SHIFT_LEFT || builder.tokenType == PicatTokenTypes.SHIFT_RIGHT) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseAdditiveExpression(builder)
         }
     }
@@ -95,6 +125,9 @@ class PicatExpressionParser : PicatBaseParser() {
         parseMultiplicativeExpression(builder)
         while (builder.tokenType == PicatTokenTypes.PLUS || builder.tokenType == PicatTokenTypes.MINUS) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseMultiplicativeExpression(builder)
         }
     }
@@ -103,6 +136,9 @@ class PicatExpressionParser : PicatBaseParser() {
         parsePowerExpression(builder)
         while (PicatParserUtil.isMultiplicativeOperator(builder.tokenType)) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parsePowerExpression(builder)
         }
     }
@@ -111,6 +147,9 @@ class PicatExpressionParser : PicatBaseParser() {
         parseUnaryExpression(builder)
         while (builder.tokenType == PicatTokenTypes.POWER) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseUnaryExpression(builder)
         }
     }
@@ -134,6 +173,9 @@ class PicatExpressionParser : PicatBaseParser() {
             builder.tokenType == PicatTokenTypes.STRING -> parseString(builder)
             builder.tokenType == PicatTokenTypes.LPAR -> {
                 builder.advanceLexer()
+                while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                    builder.advanceLexer()
+                }
                 parseExpression(builder)
                 PicatParserUtil.expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
             }
@@ -149,6 +191,9 @@ class PicatExpressionParser : PicatBaseParser() {
     private fun parseList(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectToken(builder, PicatTokenTypes.LBRACKET, "Expected '['")
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
 
         if (builder.tokenType != PicatTokenTypes.RBRACKET) {
             parseListItems(builder)
@@ -163,11 +208,17 @@ class PicatExpressionParser : PicatBaseParser() {
 
         while (builder.tokenType == PicatTokenTypes.COMMA || builder.tokenType == PicatTokenTypes.SEMICOLON) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseExpression(builder)
         }
 
         if (builder.tokenType == PicatTokenTypes.PIPE) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseExpression(builder)
         }
     }
@@ -175,6 +226,9 @@ class PicatExpressionParser : PicatBaseParser() {
     private fun parseMap(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectToken(builder, PicatTokenTypes.LBRACE, "Expected '{'")
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
 
         if (builder.tokenType != PicatTokenTypes.RBRACE) {
             parseMapEntries(builder)
@@ -189,6 +243,9 @@ class PicatExpressionParser : PicatBaseParser() {
 
         while (builder.tokenType == PicatTokenTypes.COMMA) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseMapEntry(builder)
         }
     }
@@ -196,6 +253,9 @@ class PicatExpressionParser : PicatBaseParser() {
     private fun parseMapEntry(builder: PsiBuilder) {
         parseExpression(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.COLON, "Expected ':'")
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
         parseExpression(builder)
     }
 }

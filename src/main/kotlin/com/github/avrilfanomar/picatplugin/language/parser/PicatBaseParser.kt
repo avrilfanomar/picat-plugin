@@ -50,6 +50,9 @@ abstract class PicatBaseParser : PicatParserComponent {
         val marker = builder.mark()
         parseAtom(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
 
         if (builder.tokenType != PicatTokenTypes.RPAR) {
             parseArgumentList(builder)
@@ -63,6 +66,9 @@ abstract class PicatBaseParser : PicatParserComponent {
         val marker = builder.mark()
         parseAtom(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.'")
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
         parseAtom(builder)
         marker.done(PicatTokenTypes.ATOM_NO_ARGS)
     }
@@ -97,6 +103,9 @@ abstract class PicatBaseParser : PicatParserComponent {
 
         while (builder.tokenType == PicatTokenTypes.COMMA) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             expressionParser.parseExpression(builder)
         }
 

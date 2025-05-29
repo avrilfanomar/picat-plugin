@@ -8,7 +8,7 @@ import com.intellij.lang.PsiBuilder
  * Patterns are used in case expressions and catch clauses.
  */
 class PicatPatternParser : PicatBaseParser() {
-    
+
     /**
      * Parses a Picat pattern.
      */
@@ -39,6 +39,9 @@ class PicatPatternParser : PicatBaseParser() {
         val marker = builder.mark()
         parseAtom(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
 
         if (builder.tokenType != PicatTokenTypes.RPAR) {
             parsePatternList(builder)
@@ -54,12 +57,18 @@ class PicatPatternParser : PicatBaseParser() {
     private fun parseListPattern(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectToken(builder, PicatTokenTypes.LBRACKET, "Expected '['")
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
 
         if (builder.tokenType != PicatTokenTypes.RBRACKET) {
             parsePatternList(builder)
 
             if (builder.tokenType == PicatTokenTypes.PIPE) {
                 builder.advanceLexer()
+                while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                    builder.advanceLexer()
+                }
                 parsePattern(builder)
             }
         }
@@ -74,6 +83,9 @@ class PicatPatternParser : PicatBaseParser() {
     private fun parseTuplePattern(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectToken(builder, PicatTokenTypes.LBRACE, "Expected '{'")
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
 
         if (builder.tokenType != PicatTokenTypes.RBRACE) {
             parsePatternList(builder)
@@ -92,6 +104,9 @@ class PicatPatternParser : PicatBaseParser() {
 
         while (builder.tokenType == PicatTokenTypes.COMMA) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parsePattern(builder)
         }
 
