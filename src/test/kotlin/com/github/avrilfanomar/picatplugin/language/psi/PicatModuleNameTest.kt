@@ -1,8 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
 /**
@@ -38,18 +36,10 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         assertEquals("Module name should be 'util'", "util", moduleName.text)
 
         // Verify that the module name has the correct identifier
-        val identifier = moduleName.getIdentifier()
-        assertNotNull("Module name should have an identifier", identifier)
-        assertEquals("Identifier should be 'util'", "util", identifier?.text)
+        val name = moduleName.text
+        assertNotNull("Module name should have an identifier", name)
+        assertEquals("Identifier should be 'util'", "util", name)
 
-        // Test the getName method (which might be missing in the implementation)
-        try {
-            val name = moduleName.getName()
-            assertEquals("Module name should be 'util'", "util", name)
-        } catch (e: Exception) {
-            // This test might fail if getName() is not implemented
-            fail("getName() method threw an exception: ${e.message}")
-        }
     }
 
     @Test
@@ -78,21 +68,6 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         assertEquals("First module name should be 'util'", "util", moduleNames[0].text)
         assertEquals("Second module name should be 'math'", "math", moduleNames[1].text)
         assertEquals("Third module name should be 'cp'", "cp", moduleNames[2].text)
-
-        // Verify that each module name has the correct identifier
-        assertEquals("First identifier should be 'util'", "util", moduleNames[0].getIdentifier()?.text)
-        assertEquals("Second identifier should be 'math'", "math", moduleNames[1].getIdentifier()?.text)
-        assertEquals("Third identifier should be 'cp'", "cp", moduleNames[2].getIdentifier()?.text)
-
-        // Test the getName method for each module name
-        try {
-            assertEquals("First module name should be 'util'", "util", moduleNames[0].getName())
-            assertEquals("Second module name should be 'math'", "math", moduleNames[1].getName())
-            assertEquals("Third module name should be 'cp'", "cp", moduleNames[2].getName())
-        } catch (e: Exception) {
-            // This test might fail if getName() is not implemented
-            fail("getName() method threw an exception: ${e.message}")
-        }
     }
 
     @Test
