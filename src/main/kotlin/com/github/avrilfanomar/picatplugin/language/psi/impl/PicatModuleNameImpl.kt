@@ -40,6 +40,6 @@ class PicatModuleNameImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatModul
             }
         }
 
-        return null
+        return atom?.text
     }
 }

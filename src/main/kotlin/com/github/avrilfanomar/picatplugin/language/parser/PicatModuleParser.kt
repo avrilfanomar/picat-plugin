@@ -7,7 +7,7 @@ import com.intellij.lang.PsiBuilder
  * Parser component responsible for parsing Picat module-related constructs.
  */
 class PicatModuleParser : PicatBaseParser() {
-    
+
     /**
      * Parses a module declaration.
      */
@@ -53,7 +53,11 @@ class PicatModuleParser : PicatBaseParser() {
     fun parseModuleName(builder: PsiBuilder) {
         val marker = builder.mark()
         if (builder.tokenType == PicatTokenTypes.IDENTIFIER || builder.tokenType == PicatTokenTypes.QUOTED_ATOM) {
+            // Create an ATOM element
+            val atomMarker = builder.mark()
             builder.advanceLexer()
+            atomMarker.done(PicatTokenTypes.ATOM)
+
             marker.done(PicatTokenTypes.MODULE_NAME)
         } else {
             marker.drop()
@@ -67,7 +71,9 @@ class PicatModuleParser : PicatBaseParser() {
     fun parseImportStatement(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.IMPORT_KEYWORD, "Expected 'import'")
-
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
         parseImportList(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after import statement")
         marker.done(PicatTokenTypes.IMPORT_STATEMENT)
@@ -211,6 +217,9 @@ class PicatModuleParser : PicatBaseParser() {
 
         while (builder.tokenType == PicatTokenTypes.COMMA) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseModuleSpec(builder)
         }
 
@@ -221,12 +230,15 @@ class PicatModuleParser : PicatBaseParser() {
      * Parses a module specification.
      */
     private fun parseModuleSpec(builder: PsiBuilder) {
+        val marker = builder.mark()
         parseModuleName(builder)
 
         if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
             builder.advanceLexer()
             parseRenameList(builder)
         }
+
+        marker.done(PicatTokenTypes.MODULE_SPEC)
     }
 
     /**

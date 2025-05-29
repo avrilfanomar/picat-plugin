@@ -2,6 +2,7 @@ package com.github.avrilfanomar.picatplugin.language.psi.impl
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatImportStatement
 import com.github.avrilfanomar.picatplugin.language.psi.PicatModuleName
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -15,19 +16,25 @@ class PicatImportStatementImpl(node: ASTNode) : PicatPsiElementImpl(node), Picat
      */
     override fun getModuleNames(): List<PicatModuleName> {
         val moduleList = getModuleList()
-        return if (moduleList != null) {
-            PsiTreeUtil.getChildrenOfTypeAsList(moduleList, PicatModuleName::class.java)
-        } else {
-            emptyList()
+
+        if (moduleList != null) {
+            val moduleSpecs = PsiTreeUtil.findChildrenOfType(moduleList, PsiElement::class.java)
+                .filter { it.node.elementType == PicatTokenTypes.MODULE_SPEC }
+
+            val moduleNames = moduleSpecs.flatMap { moduleSpec ->
+                PsiTreeUtil.findChildrenOfType(moduleSpec, PicatModuleName::class.java)
+            }
+
+            return moduleNames
         }
+
+        return emptyList()
     }
 
     /**
      * Returns the module list.
      */
     override fun getModuleList(): PsiElement? {
-        return children.find { child ->
-            PsiTreeUtil.findChildOfType(child, PicatModuleName::class.java) != null
-        }
+        return findChildByType(PicatTokenTypes.IMPORT_LIST)
     }
 }

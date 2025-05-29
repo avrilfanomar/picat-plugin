@@ -287,4 +287,5 @@ object PicatTokenTypes {
     val CATCH_CLAUSES = PicatElementType("CATCH_CLAUSES")
     val CATCH_CLAUSE = PicatElementType("CATCH_CLAUSE")
     val ELSEIF_CLAUSE = PicatElementType("ELSEIF_CLAUSE")
+    val MODULE_SPEC = PicatElementType("MODULE_SPEC")
 }
