@@ -32,12 +32,6 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         // Get the module names from the import statement
         val moduleNames = importStatements[0].getModuleNames()
 
-        // Debug: Print the number of module names found
-        println("[DEBUG_LOG] Number of module names found: ${moduleNames.size}")
-        moduleNames.forEach { moduleName ->
-            println("[DEBUG_LOG] Module name: ${moduleName.text}, Class: ${moduleName.javaClass.simpleName}")
-        }
-
         // Verify that there is exactly one module name
         assertEquals(1, moduleNames.size, "There should be exactly one module name")
 
@@ -55,7 +49,6 @@ class PicatModuleNameTest : BasePlatformTestCase() {
             val name = moduleName.getName()
             assertEquals("util", name, "Module name should be 'util'")
         } catch (e: Exception) {
-            println("[DEBUG_LOG] Exception when calling getName(): ${e.message}")
             // This test might fail if getName() is not implemented
             fail("getName() method threw an exception: ${e.message}")
         }
@@ -80,12 +73,6 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         // Get the module names from the import statement
         val moduleNames = importStatements[0].getModuleNames()
 
-        // Debug: Print the number of module names found
-        println("[DEBUG_LOG] Number of module names found: ${moduleNames.size}")
-        moduleNames.forEach { moduleName ->
-            println("[DEBUG_LOG] Module name: ${moduleName.text}, Class: ${moduleName.javaClass.simpleName}")
-        }
-
         // Verify that there are exactly three module names
         assertEquals(3, moduleNames.size, "There should be exactly three module names")
 
@@ -105,7 +92,6 @@ class PicatModuleNameTest : BasePlatformTestCase() {
             assertEquals("math", moduleNames[1].getName(), "Second module name should be 'math'")
             assertEquals("cp", moduleNames[2].getName(), "Third module name should be 'cp'")
         } catch (e: Exception) {
-            println("[DEBUG_LOG] Exception when calling getName(): ${e.message}")
             // This test might fail if getName() is not implemented
             fail("getName() method threw an exception: ${e.message}")
         }

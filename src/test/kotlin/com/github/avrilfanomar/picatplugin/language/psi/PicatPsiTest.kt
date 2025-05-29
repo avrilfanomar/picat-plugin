@@ -44,17 +44,8 @@ class PicatPsiTest : BasePlatformTestCase() {
         myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
-        // Debug: Print all PSI elements in the file
-        println("[DEBUG_LOG] PSI elements in the file:")
-        file.children.forEach { element ->
-            println("[DEBUG_LOG] ${element.javaClass.simpleName}: ${element.text}")
-        }
-
         // Find all facts in the file
         val facts = file.getAllFacts()
-
-        // Debug: Print the number of facts found
-        println("[DEBUG_LOG] Number of facts found: ${facts.size}")
 
         // Verify that there is exactly one fact
         assertEquals(1, facts.size, "There should be exactly one fact")

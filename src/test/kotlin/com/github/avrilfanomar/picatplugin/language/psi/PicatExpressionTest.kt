@@ -29,12 +29,6 @@ class PicatExpressionTest : BasePlatformTestCase() {
         // Find all expressions in the file
         val expressions = findExpressionsInFile(file)
 
-        // Debug: Print the number of expressions found
-        println("[DEBUG_LOG] Number of expressions found: ${expressions.size}")
-        expressions.forEach { expression ->
-            println("[DEBUG_LOG] Expression: ${expression.text}, Class: ${expression.javaClass.simpleName}")
-        }
-
         // Find expressions with a + operator
         val additionExpressions = expressions.filter { expr ->
             expr.getOperators().any { op -> op.text == "+" }
@@ -43,11 +37,8 @@ class PicatExpressionTest : BasePlatformTestCase() {
         // Verify that there is at least one addition expression
         assertTrue(additionExpressions.isNotEmpty(), "There should be at least one addition expression")
 
-        // Debug: Print the addition expression details
-        val additionExpression = additionExpressions.first()
-        println("[DEBUG_LOG] Addition expression: ${additionExpression.text}")
-
         // Verify that the expression has terms
+        val additionExpression = additionExpressions.first()
         val terms = additionExpression.getTerms()
         assertTrue(terms.isNotEmpty(), "Expression should have terms")
 
@@ -83,11 +74,8 @@ class PicatExpressionTest : BasePlatformTestCase() {
         // Verify that there is at least one complex expression
         assertTrue(complexExpressions.isNotEmpty(), "There should be at least one complex expression")
 
-        // Debug: Print the complex expression details
-        val complexExpression = complexExpressions.first()
-        println("[DEBUG_LOG] Complex expression: ${complexExpression.text}")
-
         // Verify that the expression has terms
+        val complexExpression = complexExpressions.first()
         val terms = complexExpression.getTerms()
         assertTrue(terms.isNotEmpty(), "Expression should have terms")
 
@@ -123,11 +111,8 @@ class PicatExpressionTest : BasePlatformTestCase() {
         // Verify that there is at least one multiplication expression
         assertTrue(multiplicationExpressions.isNotEmpty(), "There should be at least one multiplication expression")
 
-        // Debug: Print the nested expression details
-        val multiplicationExpression = multiplicationExpressions.first()
-        println("[DEBUG_LOG] Multiplication expression: ${multiplicationExpression.text}")
-
         // Verify that the expression has terms
+        val multiplicationExpression = multiplicationExpressions.first()
         val terms = multiplicationExpression.getTerms()
         assertTrue(terms.isNotEmpty(), "Expression should have terms")
 
@@ -144,7 +129,6 @@ class PicatExpressionTest : BasePlatformTestCase() {
             val nestedExpression = term.getExpression()
             if (nestedExpression != null) {
                 foundNestedExpression = true
-                println("[DEBUG_LOG] Found nested expression: ${nestedExpression.text}")
 
                 // Verify that the nested expression has terms
                 val nestedTerms = nestedExpression.getTerms()
@@ -187,11 +171,8 @@ class PicatExpressionTest : BasePlatformTestCase() {
         // Verify that there is at least one addition expression
         assertTrue(additionExpressions.isNotEmpty(), "There should be at least one addition expression")
 
-        // Debug: Print the variable expression details
-        val variableExpression = additionExpressions.first()
-        println("[DEBUG_LOG] Variable expression: ${variableExpression.text}")
-
         // Verify that the expression has terms
+        val variableExpression = additionExpressions.first()
         val terms = variableExpression.getTerms()
         assertTrue(terms.isNotEmpty(), "Expression should have terms")
 
@@ -208,7 +189,6 @@ class PicatExpressionTest : BasePlatformTestCase() {
             val variable = term.getVariable()
             if (variable != null) {
                 foundVariable = true
-                println("[DEBUG_LOG] Found variable: ${variable.text}")
             }
         }
 
@@ -233,23 +213,14 @@ class PicatExpressionTest : BasePlatformTestCase() {
         // Find all structures in the file (function calls are structures)
         val structures = PsiTreeUtil.findChildrenOfType(file, PicatStructure::class.java).toList()
 
-        // Debug: Print the number of structures found
-        println("[DEBUG_LOG] Number of structures found: ${structures.size}")
-        structures.forEach { structure ->
-            println("[DEBUG_LOG] Structure: ${structure.text}, Name: ${structure.getName()}")
-        }
-
         // Find the factorial structure
         val factorialStructures = structures.filter { it.getName() == "factorial" }
 
         // Verify that there is at least one factorial structure
         assertTrue(factorialStructures.isNotEmpty(), "There should be at least one factorial structure")
 
-        // Debug: Print the factorial structure details
-        val factorialStructure = factorialStructures.first()
-        println("[DEBUG_LOG] Factorial structure: ${factorialStructure.text}")
-
         // Verify that the structure has the correct name and arity
+        val factorialStructure = factorialStructures.first()
         assertEquals("factorial", factorialStructure.getName(), "Structure name should be 'factorial'")
         assertTrue(factorialStructure.getArity() >= 1, "Structure arity should be at least 1")
 
@@ -260,11 +231,6 @@ class PicatExpressionTest : BasePlatformTestCase() {
         // Verify that the argument list has the correct number of arguments
         val arguments = argumentList!!.getArguments()
         assertTrue(arguments.isNotEmpty(), "Argument list should have at least 1 argument")
-
-        // Debug: Print the arguments
-        arguments.forEach { argument ->
-            println("[DEBUG_LOG] Argument: ${argument.text}")
-        }
     }
 
     @Test
@@ -288,9 +254,6 @@ class PicatExpressionTest : BasePlatformTestCase() {
         val ifThenElseStatements = PsiTreeUtil.findChildrenOfType(file, PsiElement::class.java)
             .filter { it.text.contains("if") && it.text.contains("then") }
 
-        // Debug: Print the number of if-then-else statements found
-        println("[DEBUG_LOG] Number of if-then-else statements found: ${ifThenElseStatements.size}")
-
         // Verify that there is at least one if-then-else statement
         assertTrue(ifThenElseStatements.isNotEmpty(), "There should be at least one if-then-else statement")
 
@@ -298,18 +261,8 @@ class PicatExpressionTest : BasePlatformTestCase() {
         val comparisonExpressions = PsiTreeUtil.findChildrenOfType(file, PsiElement::class.java)
             .filter { it.text.contains("<") && it.text.contains("X") && it.text.contains("Y") }
 
-        // Debug: Print the number of comparison expressions found
-        println("[DEBUG_LOG] Number of comparison expressions found: ${comparisonExpressions.size}")
-        comparisonExpressions.forEach { expr ->
-            println("[DEBUG_LOG] Comparison expression: ${expr.text}")
-        }
-
         // Verify that there is at least one comparison expression
         assertTrue(comparisonExpressions.isNotEmpty(), "There should be at least one comparison expression")
-
-        // Debug: Print the comparison expression details
-        val comparisonExpression = comparisonExpressions.first()
-        println("[DEBUG_LOG] Comparison expression: ${comparisonExpression.text}")
     }
 
     /**

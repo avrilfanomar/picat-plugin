@@ -25,12 +25,6 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         // Find all function definitions in the file
         val functionDefinitions = file.findChildrenByClass(PicatFunctionDefinition::class.java)
 
-        // Debug: Print the number of function definitions found
-        println("[DEBUG_LOG] Number of function definitions found: ${functionDefinitions.size}")
-        functionDefinitions.forEach { functionDef ->
-            println("[DEBUG_LOG] Function definition: ${functionDef.text}, Class: ${functionDef.javaClass.simpleName}")
-        }
-
         // Verify that there is exactly one function definition
         assertEquals(1, functionDefinitions.size, "There should be exactly one function definition")
 
@@ -134,9 +128,6 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         
         // The body should be a complex expression, so we just check that it's not empty
         assertTrue(body?.text?.isNotEmpty() ?: false, "Function body should not be empty")
-        
-        // Debug: Print the body text
-        println("[DEBUG_LOG] Function body: ${body?.text}")
     }
 
     @Test

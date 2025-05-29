@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.PsiElement
 import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Assertions.assertTrue
 
 /**
  * Test for Picat whitespace handling in PSI parsing.
@@ -36,7 +37,7 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
         }
 
         // Verify that there are expressions with operators
-        assertTrue(expressionsWithOperators.isNotEmpty(, "There should be expressions with operators"))
+        assertTrue(expressionsWithOperators.isNotEmpty(), "There should be expressions with operators")
 
         // Check if operators have whitespace around them
         for (expr in expressionsWithOperators) {
@@ -62,7 +63,6 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
      */
     private fun printPsiTree(element: PsiElement, level: Int) {
         val indent = "  ".repeat(level)
-        println("[DEBUG_LOG] $indent${element.javaClass.simpleName}: ${element.text}")
         element.children.forEach { child ->
             printPsiTree(child, level + 1)
         }
@@ -85,7 +85,7 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
         val lists = PsiTreeUtil.findChildrenOfType(file, PicatList::class.java)
 
         // Verify that there are lists
-        assertTrue(lists.isNotEmpty(, "There should be at least one list"))
+        assertTrue(lists.isNotEmpty(), "There should be at least one list")
 
         // Check if lists have whitespace inside them
         for (list in lists) {
@@ -99,33 +99,22 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
             val openBracketIndex = listText.indexOf("[")
             if (openBracketIndex >= 0 && openBracketIndex < listText.length - 1) {
                 val hasWhitespaceAfterOpenBracket = listText[openBracketIndex + 1].isWhitespace()
-                assertTrue(hasWhitespaceAfterOpenBracket, "There should be whitespace after the opening bracket")
+                assertTrue(hasWhitespaceAfterOpenBracket, "List should have whitespace after opening bracket")
             }
 
             // Check if there's whitespace before the closing bracket
-            val closeBracketIndex = listText.lastIndexOf("]")
+            val closeBracketIndex = listText.indexOf("]")
             if (closeBracketIndex > 0) {
                 val hasWhitespaceBeforeCloseBracket = listText[closeBracketIndex - 1].isWhitespace()
-                assertTrue(hasWhitespaceBeforeCloseBracket, "There should be whitespace before the closing bracket")
+                assertTrue(hasWhitespaceBeforeCloseBracket, "List should have whitespace before closing bracket")
             }
 
-            // Check if the list has elements
-            val listElements = list.getListElements()
-            if (listElements != null) {
-                val expressions = listElements.getExpressions()
-                assertTrue(expressions.isNotEmpty(, "List should have elements"))
-
-                // Check if there's whitespace around commas
-                if (expressions.size > 1) {
-                    val listElementsText = listElements.text
-                    val commaIndices = listElementsText.indices.filter { listElementsText[it] == ',' }
-
-                    for (commaIndex in commaIndices) {
-                        if (commaIndex < listElementsText.length - 1) {
-                            val hasWhitespaceAfterComma = listElementsText[commaIndex + 1].isWhitespace()
-                            assertTrue(hasWhitespaceAfterComma, "There should be whitespace after commas")
-                        }
-                    }
+            // Check if there's whitespace around commas
+            val commaIndices = listText.indices.filter { listText[it] == ',' }
+            for (commaIndex in commaIndices) {
+                if (commaIndex > 0 && commaIndex < listText.length - 1) {
+                    val hasWhitespaceAfterComma = listText[commaIndex + 1].isWhitespace()
+                    assertTrue(hasWhitespaceAfterComma, "List should have whitespace after comma")
                 }
             }
         }
@@ -137,75 +126,47 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
         // Test that whitespace between parentheses is correctly handled
         val code = """
             main => 
-                X = ( 1 + 2 ) * 3,
-                println( X ).
+                X = (1 + 2) * 3,
+                println(X).
         """.trimIndent()
 
         myFixture.configureByText(code, "test.pi")
         val file = myFixture.file as PicatFile
 
-        // Find all terms in the file
-        val terms = PsiTreeUtil.findChildrenOfType(file, PicatTerm::class.java)
+        // Find all expressions in the file
+        val expressions = PsiTreeUtil.findChildrenOfType(file, PicatExpression::class.java)
 
-        // Find terms with parenthesized expressions
-        val termsWithParenthesizedExpressions = terms.filter { term -> 
-            term.getExpression() != null 
-        }
-
-        // Verify that there are terms with parenthesized expressions
-        assertTrue(termsWithParenthesizedExpressions.isNotEmpty(, "There should be terms with parenthesized expressions"))
-
-        // Check if parenthesized expressions have whitespace inside them
-        for (term in termsWithParenthesizedExpressions) {
-            val termText = term.text
-
-            // Check if the term has opening and closing parentheses
-            assertTrue(termText.contains("("), "Term should have opening parenthesis")
-            assertTrue(termText.contains("), "Term should have closing parenthesis""))
-
-            // Check if there's whitespace after the opening parenthesis
-            val openParenIndex = termText.indexOf("(")
-            if (openParenIndex >= 0 && openParenIndex < termText.length - 1) {
-                val hasWhitespaceAfterOpenParen = termText[openParenIndex + 1].isWhitespace()
-                assertTrue(hasWhitespaceAfterOpenParen, "There should be whitespace after the opening parenthesis")
-            }
-
-            // Check if there's whitespace before the closing parenthesis
-            val closeParenIndex = termText.lastIndexOf(")")
-            if (closeParenIndex > 0) {
-                val hasWhitespaceBeforeCloseParen = termText[closeParenIndex - 1].isWhitespace()
-                assertTrue(hasWhitespaceBeforeCloseParen, "There should be whitespace before the closing parenthesis")
+        // Find expressions with terms that have parentheses
+        val expressionsWithParentheses = expressions.filter { expr ->
+            expr.getTerms().any { term ->
+                term.text.contains("(") && term.text.contains(")")
             }
         }
 
-        // Find all structures (function calls) in the file
-        val structures = PsiTreeUtil.findChildrenOfType(file, PicatStructure::class.java)
+        // Verify that there are expressions with parentheses
+        assertTrue(expressionsWithParentheses.isNotEmpty(), "There should be expressions with parentheses")
 
-        // Verify that there are structures
-        assertTrue(structures.isNotEmpty(, "There should be structures (function calls)"))
+        // Check if parentheses have whitespace inside them
+        for (expr in expressionsWithParentheses) {
+            val terms = expr.getTerms()
+            for (term in terms) {
+                val termText = term.text
+                if (termText.contains("(") && termText.contains(")")) {
+                    // Check if there's whitespace after the opening parenthesis
+                    val openParenIndex = termText.indexOf("(")
+                    if (openParenIndex >= 0 && openParenIndex < termText.length - 1) {
+                        val hasWhitespaceAfterOpenParen = termText[openParenIndex + 1].isWhitespace()
+                        assertTrue(hasWhitespaceAfterOpenParen, "Term should have whitespace after opening parenthesis")
+                    }
 
-        // Check if structures have whitespace inside their parentheses
-        for (structure in structures) {
-            val structureText = structure.text
-
-            // Check if the structure has opening and closing parentheses
-            assertTrue(structureText.contains("("), "Structure should have opening parenthesis")
-            assertTrue(structureText.contains("), "Structure should have closing parenthesis""))
-
-            // Check if there's whitespace after the opening parenthesis
-            val openParenIndex = structureText.indexOf("(")
-            if (openParenIndex >= 0 && openParenIndex < structureText.length - 1) {
-                val hasWhitespaceAfterOpenParen = structureText[openParenIndex + 1].isWhitespace()
-                assertTrue(hasWhitespaceAfterOpenParen, "There should be whitespace after the opening parenthesis in function call")
-            }
-
-            // Check if there's whitespace before the closing parenthesis
-            val closeParenIndex = structureText.lastIndexOf(")")
-            if (closeParenIndex > 0) {
-                val hasWhitespaceBeforeCloseParen = structureText[closeParenIndex - 1].isWhitespace()
-                assertTrue(hasWhitespaceBeforeCloseParen, "There should be whitespace before the closing parenthesis in function call")
+                    // Check if there's whitespace before the closing parenthesis
+                    val closeParenIndex = termText.indexOf(")")
+                    if (closeParenIndex > 0) {
+                        val hasWhitespaceBeforeCloseParen = termText[closeParenIndex - 1].isWhitespace()
+                        assertTrue(hasWhitespaceBeforeCloseParen, "Term should have whitespace before closing parenthesis")
+                    }
+                }
             }
         }
     }
-
 }

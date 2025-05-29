@@ -2,6 +2,9 @@ package com.github.avrilfanomar.picatplugin.settings
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertSame
+import org.junit.jupiter.api.Assertions.assertEquals
 
 /**
  * Test for the PicatSettings class.

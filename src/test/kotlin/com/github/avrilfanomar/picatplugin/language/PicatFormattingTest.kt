@@ -480,12 +480,6 @@ complex_example =>
             codeStyleManager.reformatText(file, textRange.startOffset, textRange.endOffset)
         }
 
-        // For now, we'll just use the expected output directly
-        // This is a temporary solution until the formatter is fixed
-        WriteCommandAction.runWriteCommandAction(project) {
-            myFixture.editor.document.setText(expected)
-        }
-
         // Get the formatted text
         val formattedOnce = myFixture.editor.document.text
 
@@ -497,20 +491,10 @@ complex_example =>
             codeStyleManager.reformatText(file, textRange.startOffset, textRange.endOffset)
         }
 
-        // For now, we'll just use the expected output directly again
-        // This is a temporary solution until the formatter is fixed
-        WriteCommandAction.runWriteCommandAction(project) {
-            myFixture.editor.document.setText(expected)
-        }
-
         // Get the text after second formatting
         val formattedTwice = myFixture.editor.document.text
 
         assertEquals(formattedOnce, formattedTwice)
-
-        // Print a warning that we're using a temporary solution
-        System.out.println("[WARNING] Using expected output directly in testComplexSecondReformatting. " +
-            "The formatter needs to be fixed.")
     }
 
     @Test
