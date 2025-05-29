@@ -1,6 +1,10 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 
 /**
@@ -39,17 +43,17 @@ class PicatModuleNameTest : BasePlatformTestCase() {
 
         // Verify that the module name has the correct text
         val moduleName = moduleNames[0]
-        assertEquals(moduleName.text, "Module name should be 'util'", "util")
+        assertEquals("util", moduleName.text, "Module name should be 'util'")
 
         // Verify that the module name has the correct identifier
         val identifier = moduleName.getIdentifier()
         assertNotNull(identifier, "Module name should have an identifier")
-        assertEquals(identifier?.text, "Identifier should be 'util'", "util")
+        assertEquals("util", identifier?.text, "Identifier should be 'util'")
 
         // Test the getName method (which might be missing in the implementation)
         try {
             val name = moduleName.getName()
-            assertEquals(name, "Module name should be 'util'", "util")
+            assertEquals("util", name, "Module name should be 'util'")
         } catch (e: Exception) {
             println("[DEBUG_LOG] Exception when calling getName(): ${e.message}")
             // This test might fail if getName() is not implemented
@@ -86,20 +90,20 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         assertEquals(3, moduleNames.size, "There should be exactly three module names")
 
         // Verify that each module name has the correct text
-        assertEquals(moduleNames[0].text, "First module name should be 'util'", "util")
-        assertEquals(moduleNames[1].text, "Second module name should be 'math'", "math")
-        assertEquals(moduleNames[2].text, "Third module name should be 'cp'", "cp")
+        assertEquals("util", moduleNames[0].text, "First module name should be 'util'")
+        assertEquals("math", moduleNames[1].text, "Second module name should be 'math'")
+        assertEquals("cp", moduleNames[2].text, "Third module name should be 'cp'")
 
         // Verify that each module name has the correct identifier
-        assertEquals(moduleNames[0].getIdentifier(, "First identifier should be 'util'", "util")?.text)
-        assertEquals(moduleNames[1].getIdentifier(, "Second identifier should be 'math'", "math")?.text)
-        assertEquals(moduleNames[2].getIdentifier(, "Third identifier should be 'cp'", "cp")?.text)
+        assertEquals("util", moduleNames[0].getIdentifier()?.text, "First identifier should be 'util'")
+        assertEquals("math", moduleNames[1].getIdentifier()?.text, "Second identifier should be 'math'")
+        assertEquals("cp", moduleNames[2].getIdentifier()?.text, "Third identifier should be 'cp'")
 
         // Test the getName method for each module name
         try {
-            assertEquals(moduleNames[0].getName(, "First module name should be 'util'", "util"))
-            assertEquals(moduleNames[1].getName(, "Second module name should be 'math'", "math"))
-            assertEquals(moduleNames[2].getName(, "Third module name should be 'cp'", "cp"))
+            assertEquals("util", moduleNames[0].getName(), "First module name should be 'util'")
+            assertEquals("math", moduleNames[1].getName(), "Second module name should be 'math'")
+            assertEquals("cp", moduleNames[2].getName(), "Third module name should be 'cp'")
         } catch (e: Exception) {
             println("[DEBUG_LOG] Exception when calling getName(): ${e.message}")
             // This test might fail if getName() is not implemented
@@ -132,8 +136,8 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         }
 
         // Verify that each module name has the correct text
-        assertEquals(importStatements[0].getModuleNames(, "First module name should be 'util'", "util")[0].text)
-        assertEquals(importStatements[1].getModuleNames(, "Second module name should be 'math'", "math")[0].text)
-        assertEquals(importStatements[2].getModuleNames(, "Third module name should be 'cp'", "cp")[0].text)
+        assertEquals("util", importStatements[0].getModuleNames()[0].text, "First module name should be 'util'")
+        assertEquals("math", importStatements[1].getModuleNames()[0].text, "Second module name should be 'math'")
+        assertEquals("cp", importStatements[2].getModuleNames()[0].text, "Third module name should be 'cp'")
     }
 }

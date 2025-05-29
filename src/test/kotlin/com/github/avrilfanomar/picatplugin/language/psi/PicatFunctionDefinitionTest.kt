@@ -1,6 +1,9 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -33,8 +36,8 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
 
         // Verify that the function definition has the correct name and arity
         val functionDef = functionDefinitions[0]
-        assertEquals(functionDef.getName(, "Function name should be 'factorial'", "factorial"))
-        assertEquals(1, functionDef.getArity(, "Function arity should be 1"))
+        assertEquals("factorial", functionDef.getName(), "Function name should be 'factorial'")
+        assertEquals(1, functionDef.getArity(), "Function arity should be 1")
 
         // Verify that the function definition has an argument list
         val argumentList = functionDef.getArgumentList()
@@ -45,12 +48,12 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         assertEquals(1, arguments.size, "Argument list should have 1 argument")
 
         // Verify that the argument has the correct expression
-        assertEquals(arguments[0].getExpression(, "First argument should be 0", "0")?.text)
+        assertEquals("0", arguments[0].getExpression()?.text, "First argument should be 0")
 
         // Verify that the function definition has a body
         val body = functionDef.getBody()
         assertNotNull(body, "Function should have a body")
-        assertEquals(body?.text, "Function body should be 1", "1")
+        assertEquals("1", body?.text, "Function body should be 1")
     }
 
     @Test
@@ -71,8 +74,8 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
 
         // Verify that the function definition has the correct name and arity
         val functionDef = functionDefinitions[0]
-        assertEquals(functionDef.getName(, "Function name should be 'sum'", "sum"))
-        assertEquals(3, functionDef.getArity(, "Function arity should be 3"))
+        assertEquals("sum", functionDef.getName(), "Function name should be 'sum'")
+        assertEquals(3, functionDef.getArity(), "Function arity should be 3")
 
         // Verify that the function definition has an argument list
         val argumentList = functionDef.getArgumentList()
@@ -83,14 +86,14 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         assertEquals(3, arguments.size, "Argument list should have 3 arguments")
 
         // Verify that each argument has the correct expression
-        assertEquals(arguments[0].getExpression(, "First argument should be 1", "1")?.text)
-        assertEquals(arguments[1].getExpression(, "Second argument should be 2", "2")?.text)
-        assertEquals(arguments[2].getExpression(, "Third argument should be 3", "3")?.text)
+        assertEquals("1", arguments[0].getExpression()?.text, "First argument should be 1")
+        assertEquals("2", arguments[1].getExpression()?.text, "Second argument should be 2")
+        assertEquals("3", arguments[2].getExpression()?.text, "Third argument should be 3")
 
         // Verify that the function definition has a body
         val body = functionDef.getBody()
         assertNotNull(body, "Function should have a body")
-        assertEquals(body?.text, "Function body should be 6", "6")
+        assertEquals("6", body?.text, "Function body should be 6")
     }
 
     @Test
@@ -111,8 +114,8 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
 
         // Verify that the function definition has the correct name and arity
         val functionDef = functionDefinitions[0]
-        assertEquals(functionDef.getName(, "Function name should be 'factorial'", "factorial"))
-        assertEquals(1, functionDef.getArity(, "Function arity should be 1"))
+        assertEquals("factorial", functionDef.getName(), "Function name should be 'factorial'")
+        assertEquals(1, functionDef.getArity(), "Function arity should be 1")
 
         // Verify that the function definition has an argument list
         val argumentList = functionDef.getArgumentList()
@@ -123,14 +126,14 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         assertEquals(1, arguments.size, "Argument list should have 1 argument")
 
         // Verify that the argument has the correct expression
-        assertEquals(arguments[0].getExpression(, "First argument should be N", "N")?.text)
+        assertEquals("N", arguments[0].getExpression()?.text, "First argument should be N")
 
         // Verify that the function definition has a body
         val body = functionDef.getBody()
         assertNotNull(body, "Function should have a body")
         
         // The body should be a complex expression, so we just check that it's not empty
-        assertTrue(body?.text?.isNotEmpty(, "Function body should not be empty") ?: false)
+        assertTrue(body?.text?.isNotEmpty() ?: false, "Function body should not be empty")
         
         // Debug: Print the body text
         println("[DEBUG_LOG] Function body: ${body?.text}")
@@ -155,13 +158,13 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         assertEquals(3, functionDefinitions.size, "There should be exactly three function definitions")
 
         // Verify that each function definition has the correct name
-        assertEquals(functionDefinitions[0].getName(, "First function name should be 'factorial'", "factorial"))
-        assertEquals(functionDefinitions[1].getName(, "Second function name should be 'factorial'", "factorial"))
-        assertEquals(functionDefinitions[2].getName(, "Third function name should be 'sum'", "sum"))
+        assertEquals("factorial", functionDefinitions[0].getName(), "First function name should be 'factorial'")
+        assertEquals("factorial", functionDefinitions[1].getName(), "Second function name should be 'factorial'")
+        assertEquals("sum", functionDefinitions[2].getName(), "Third function name should be 'sum'")
 
         // Verify that each function definition has the correct arity
-        assertEquals(1, functionDefinitions[0].getArity(, "First function arity should be 1"))
-        assertEquals(1, functionDefinitions[1].getArity(, "Second function arity should be 1"))
-        assertEquals(2, functionDefinitions[2].getArity(, "Third function arity should be 2"))
+        assertEquals(1, functionDefinitions[0].getArity(), "First function arity should be 1")
+        assertEquals(1, functionDefinitions[1].getArity(), "Second function arity should be 1")
+        assertEquals(2, functionDefinitions[2].getArity(), "Third function arity should be 2")
     }
 }

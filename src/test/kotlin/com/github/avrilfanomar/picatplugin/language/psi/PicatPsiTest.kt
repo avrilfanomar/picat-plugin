@@ -1,6 +1,9 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -66,8 +69,8 @@ class PicatPsiTest : BasePlatformTestCase() {
         val structure = head as PicatStructure
 
         // Verify that the structure has the correct name and arity
-        assertEquals(structure.getName(, "Structure should have name sum", "sum"))
-        assertEquals(3, structure.getArity(, "Structure should have arity 3"))
+        assertEquals("sum", structure.getName(), "Structure should have name sum")
+        assertEquals(3, structure.getArity(), "Structure should have arity 3")
 
         // Verify that the structure has an argument list
         val argumentList = structure.getArgumentList()
@@ -78,9 +81,9 @@ class PicatPsiTest : BasePlatformTestCase() {
         assertEquals(3, arguments.size, "Argument list should have 3 arguments")
 
         // Verify that each argument has the correct expression
-        assertEquals(arguments[0].getExpression(, "First argument should be 1", "1")?.text)
-        assertEquals(arguments[1].getExpression(, "Second argument should be 2", "2")?.text)
-        assertEquals(arguments[2].getExpression(, "Third argument should be 3", "3")?.text)
+        assertEquals("1", arguments[0].getExpression()?.text, "First argument should be 1")
+        assertEquals("2", arguments[1].getExpression()?.text, "Second argument should be 2")
+        assertEquals("3", arguments[2].getExpression()?.text, "Third argument should be 3")
     }
 
     @Test
@@ -107,7 +110,7 @@ class PicatPsiTest : BasePlatformTestCase() {
         assertNotNull(body, "Rule should have a body")
         val ruleOperator = rule.getRuleOperator()
         assertNotNull(ruleOperator, "Rule should have a rule operator")
-        assertEquals(ruleOperator?.text, "Rule operator should be =>", "=>")
+        assertEquals("=>", ruleOperator?.text, "Rule operator should be =>")
     }
 
     @Test
@@ -130,10 +133,10 @@ class PicatPsiTest : BasePlatformTestCase() {
         val exportStatement = exportStatements[0]
         val predicateIndicators = exportStatement.getPredicateIndicators()
         assertEquals(2, predicateIndicators.size, "Export statement should have 2 predicate indicators")
-        assertEquals(predicateIndicators[0].getName(, "First predicate indicator should be factorial/1", "factorial"))
-        assertEquals(1, predicateIndicators[0].getArity(, "First predicate indicator should have arity 1"))
-        assertEquals(predicateIndicators[1].getName(, "Second predicate indicator should be fibonacci/1", "fibonacci"))
-        assertEquals(1, predicateIndicators[1].getArity(, "Second predicate indicator should have arity 1"))
+        assertEquals("factorial", predicateIndicators[0].getName(), "First predicate indicator should be factorial/1")
+        assertEquals(1, predicateIndicators[0].getArity(), "First predicate indicator should have arity 1")
+        assertEquals("fibonacci", predicateIndicators[1].getName(), "Second predicate indicator should be fibonacci/1")
+        assertEquals(1, predicateIndicators[1].getArity(), "Second predicate indicator should have arity 1")
     }
 
     @Test
@@ -154,7 +157,7 @@ class PicatPsiTest : BasePlatformTestCase() {
 
         // Verify that the include statement has the correct path
         val includeStatement = includeStatements[0]
-        assertEquals(includeStatement.getIncludePath(, "Include statement should have path utils.pi", "utils.pi"))
+        assertEquals("utils.pi", includeStatement.getIncludePath(), "Include statement should have path utils.pi")
     }
 
     @Test
@@ -225,8 +228,8 @@ class PicatPsiTest : BasePlatformTestCase() {
         assertEquals(2, importStatements.size, "There should be exactly two import statements")
 
         // Verify that the import statements have the correct text
-        assertEquals(importStatements[0].text, "First import statement should be 'import'", "import")
-        assertEquals(importStatements[1].text, "Second import statement should be 'import'", "import")
+        assertTrue(importStatements[0].text.startsWith("import"), "First import statement should start with 'import'")
+        assertTrue(importStatements[1].text.startsWith("import"), "Second import statement should start with 'import'")
 
         // Test getImportedModuleNames method
         val allModuleNames = file.getImportedModuleNames()

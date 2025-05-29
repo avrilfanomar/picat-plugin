@@ -1,6 +1,9 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -35,8 +38,8 @@ class PicatArgumentListTest : BasePlatformTestCase() {
         val structure = head as PicatStructure
 
         // Verify that the structure has the correct name and arity
-        assertEquals(structure.getName(, "Structure should have name factorial", "factorial"))
-        assertEquals(1, structure.getArity(, "Structure should have arity 1"))
+        assertEquals("factorial", structure.getName(), "Structure should have name factorial")
+        assertEquals(1, structure.getArity(), "Structure should have arity 1")
 
         // Verify that the structure has an argument list
         val argumentList = structure.getArgumentList()
@@ -47,7 +50,7 @@ class PicatArgumentListTest : BasePlatformTestCase() {
         assertEquals(1, arguments.size, "Argument list should have 1 argument")
 
         // Verify that the argument has the correct expression
-        assertEquals(arguments[0].getExpression(, "First argument should be 0", "0")?.text)
+        assertEquals("0", arguments[0].getExpression()?.text, "First argument should be 0")
     }
 
     @Test
@@ -76,8 +79,8 @@ class PicatArgumentListTest : BasePlatformTestCase() {
         val structure = head as PicatStructure
 
         // Verify that the structure has the correct name and arity
-        assertEquals(structure.getName(, "Structure should have name sum", "sum"))
-        assertEquals(3, structure.getArity(, "Structure should have arity 3"))
+        assertEquals("sum", structure.getName(), "Structure should have name sum")
+        assertEquals(3, structure.getArity(), "Structure should have arity 3")
 
         // Verify that the structure has an argument list
         val argumentList = structure.getArgumentList()
@@ -88,8 +91,8 @@ class PicatArgumentListTest : BasePlatformTestCase() {
         assertEquals(3, arguments.size, "Argument list should have 3 arguments")
 
         // Verify that each argument has the correct expression
-        assertEquals(arguments[0].getExpression(, "First argument should be 1", "1")?.text)
-        assertEquals(arguments[1].getExpression(, "Second argument should be 2", "2")?.text)
-        assertEquals(arguments[2].getExpression(, "Third argument should be 3", "3")?.text)
+        assertEquals("1", arguments[0].getExpression()?.text, "First argument should be 1")
+        assertEquals("2", arguments[1].getExpression()?.text, "Second argument should be 2")
+        assertEquals("3", arguments[2].getExpression()?.text, "Third argument should be 3")
     }
 }
