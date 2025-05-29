@@ -10,19 +10,21 @@ import com.intellij.util.ProcessingContext
 /**
  * Reference provider for Picat language.
  * Creates references for Picat elements.
+ * 
+ * Currently only handles structure references (predicate/function calls).
+ * Support for other types of references will be added in future updates.
  */
 class PicatReferenceProvider : PsiReferenceProvider() {
     override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
-        // For now, only handle structure references (predicate/function calls)
+        // Only handle structure references (predicate/function calls)
         if (element !is PicatStructure) {
             return PsiReference.EMPTY_ARRAY
         }
 
-        val structure = element as PicatStructure
-        val identifier = structure.getIdentifier() ?: return PsiReference.EMPTY_ARRAY
+        val identifier = element.getIdentifier() ?: return PsiReference.EMPTY_ARRAY
 
         // Create a reference for the structure
         val range = TextRange(0, identifier.textLength)
-        return arrayOf(PicatReference(identifier, range, structure.getArity()))
+        return arrayOf(PicatReference(identifier, range, element.getArity()))
     }
 }
