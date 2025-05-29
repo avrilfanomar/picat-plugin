@@ -19,7 +19,7 @@ class PicatPsiTest : BasePlatformTestCase() {
             factorial(0) = 1.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all facts in the file
@@ -41,7 +41,7 @@ class PicatPsiTest : BasePlatformTestCase() {
             sum(1, 2, 3) = 6.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all facts in the file
@@ -84,7 +84,7 @@ class PicatPsiTest : BasePlatformTestCase() {
             factorial(N) = N * factorial(N-1) => N > 0.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all rules in the file
@@ -111,7 +111,7 @@ class PicatPsiTest : BasePlatformTestCase() {
             export factorial/1, fibonacci/1.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all export statements in the file
@@ -137,7 +137,7 @@ class PicatPsiTest : BasePlatformTestCase() {
             include "utils.pi".
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all include statements in the file
@@ -175,7 +175,7 @@ class PicatPsiTest : BasePlatformTestCase() {
             fibonacci(N) = fibonacci(N-1) + fibonacci(N-2) => N > 1.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all import statements in the file
@@ -211,7 +211,7 @@ class PicatPsiTest : BasePlatformTestCase() {
             main => println("Hello, world!").
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Test getImportStatements method

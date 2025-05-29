@@ -23,7 +23,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
                 println(X).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all expressions in the file
@@ -59,7 +59,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
                 println(X).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all expressions in the file
@@ -97,7 +97,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
                 println(X).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all expressions in the file
@@ -157,7 +157,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
                 println(Z).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all expressions in the file
@@ -207,7 +207,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
             factorial(N) = N * factorial(N-1) => N > 0.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all structures in the file (function calls are structures)
@@ -247,7 +247,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
                 end.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all if-then-else statements in the file

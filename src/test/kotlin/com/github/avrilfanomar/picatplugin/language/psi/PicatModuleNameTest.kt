@@ -20,7 +20,7 @@ class PicatModuleNameTest : BasePlatformTestCase() {
             import util.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all import statements in the file
@@ -61,7 +61,7 @@ class PicatModuleNameTest : BasePlatformTestCase() {
             import util, math, cp.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all import statements in the file
@@ -106,7 +106,7 @@ class PicatModuleNameTest : BasePlatformTestCase() {
             import cp.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all import statements in the file

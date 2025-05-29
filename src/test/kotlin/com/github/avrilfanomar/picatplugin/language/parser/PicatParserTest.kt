@@ -17,7 +17,7 @@ class PicatParserTest : BasePlatformTestCase() {
     fun testEmptyFile() {
         // Test parsing an empty file
         val code = ""
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Verify that the file is empty
@@ -34,7 +34,7 @@ class PicatParserTest : BasePlatformTestCase() {
             factorial(0) = 1. % Comment after code
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Verify that comments are parsed correctly
@@ -55,7 +55,7 @@ class PicatParserTest : BasePlatformTestCase() {
             factorial(N) = N * factorial(N-1) => N > 0.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Verify that the module declaration is parsed correctly
@@ -86,7 +86,7 @@ class PicatParserTest : BasePlatformTestCase() {
                 println(Z).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Verify that the rule is parsed correctly
@@ -114,7 +114,7 @@ class PicatParserTest : BasePlatformTestCase() {
             sum([X|Xs]) = X + sum(Xs).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Verify that the facts are parsed correctly
@@ -146,7 +146,7 @@ class PicatParserTest : BasePlatformTestCase() {
                 end.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Verify that the rules are parsed correctly
@@ -165,7 +165,7 @@ class PicatParserTest : BasePlatformTestCase() {
             factorial(N) = N * factorial(N-1) => N > 0.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Verify that at least the second fact is parsed correctly

@@ -19,7 +19,7 @@ class PicatRuleTest : BasePlatformTestCase() {
             factorial(N) = N * factorial(N-1) => N > 0.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all rules in the file
@@ -48,7 +48,7 @@ class PicatRuleTest : BasePlatformTestCase() {
             append([H|T], L) = [H|append(T, L)] => true.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all rules in the file
@@ -77,7 +77,7 @@ class PicatRuleTest : BasePlatformTestCase() {
             factorial(N) = F => N > 0, F = N * factorial(N-1).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all rules in the file
@@ -113,7 +113,7 @@ class PicatRuleTest : BasePlatformTestCase() {
             reverse(L) = R :- reverse(L, [], R).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all rules in the file
@@ -140,7 +140,7 @@ class PicatRuleTest : BasePlatformTestCase() {
             fibonacci(N) = fibonacci(N-1) + fibonacci(N-2) => N > 1.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all rules in the file

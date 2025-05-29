@@ -22,7 +22,7 @@ class PicatStructureTest : BasePlatformTestCase() {
                 println(X).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all structures in the file
@@ -61,7 +61,7 @@ class PicatStructureTest : BasePlatformTestCase() {
                 println(X).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all structures in the file
@@ -114,7 +114,7 @@ class PicatStructureTest : BasePlatformTestCase() {
                 println(Z).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all structures in the file
@@ -149,7 +149,7 @@ class PicatStructureTest : BasePlatformTestCase() {
                 println(point(1, 2)).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all structures in the file

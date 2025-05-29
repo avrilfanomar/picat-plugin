@@ -19,7 +19,7 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
             factorial(0) = 1.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all function definitions in the file
@@ -57,7 +57,7 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
             sum(1, 2, 3) = 6.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all function definitions in the file
@@ -97,7 +97,7 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
             factorial(N) = N * factorial(N-1).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all function definitions in the file
@@ -139,7 +139,7 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
             sum(X, Y) = X + Y.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all function definitions in the file

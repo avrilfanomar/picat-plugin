@@ -390,7 +390,7 @@ literals_example =>
         val code = "main=>X=10,Y=20."
 
         // Format the code
-        myFixture.configureByText(code, "simple.pi")
+        myFixture.configureByText("simple.pi", code)
         WriteCommandAction.runWriteCommandAction(project) {
             val file = myFixture.file
             val textRange = file.textRange
@@ -472,7 +472,7 @@ complex_example =>
         """
 
         // Format it once
-        myFixture.configureByText(code, "complex.pi")
+        myFixture.configureByText("complex.pi", code)
         WriteCommandAction.runWriteCommandAction(project) {
             val file = myFixture.file
             val textRange = file.textRange

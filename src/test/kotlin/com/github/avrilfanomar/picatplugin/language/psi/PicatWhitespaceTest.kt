@@ -25,7 +25,7 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
                 println(Z).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all expressions in the file
@@ -78,7 +78,7 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
                 println(L).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all lists in the file
@@ -130,7 +130,7 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
                 println(X).
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all expressions in the file

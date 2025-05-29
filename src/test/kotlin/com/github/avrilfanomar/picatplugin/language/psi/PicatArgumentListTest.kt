@@ -19,7 +19,7 @@ class PicatArgumentListTest : BasePlatformTestCase() {
             factorial(0) = 1.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all facts in the file
@@ -60,7 +60,7 @@ class PicatArgumentListTest : BasePlatformTestCase() {
             sum(1, 2, 3) = 6.
         """.trimIndent()
 
-        myFixture.configureByText(code, "test.pi")
+        myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
         // Find all facts in the file
