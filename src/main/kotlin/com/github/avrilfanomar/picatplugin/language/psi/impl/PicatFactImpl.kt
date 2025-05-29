@@ -13,6 +13,8 @@ class PicatFactImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatFact {
      * Returns the head of the fact.
      */
     override fun getHead(): PsiElement? {
-        return findChildByType(PicatTokenTypes.HEAD) ?: findChildByType(PicatTokenTypes.STRUCTURE) ?: findChildByType(PicatTokenTypes.ATOM_NO_ARGS)
+        return findChildByType(PicatTokenTypes.HEAD) 
+            ?: findChildByType(PicatTokenTypes.STRUCTURE) 
+            ?: findChildByType(PicatTokenTypes.ATOM_NO_ARGS)
     }
 }

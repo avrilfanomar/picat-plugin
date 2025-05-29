@@ -16,26 +16,26 @@ class WhitespaceRecognizerTest {
     @Test
     fun testCanRecognizeWhitespace() {
         // Test with various whitespace characters
-        assertTrue(recognizer.canRecognize(0, 1, " "))
-        assertTrue(recognizer.canRecognize(0, 1, "\t"))
-        assertTrue(recognizer.canRecognize(0, 1, "\n"))
-        assertTrue(recognizer.canRecognize(0, 1, "\r"))
-        assertTrue(recognizer.canRecognize(0, 4, " \t\n\r"))
+        assertTrue(recognizer.canRecognize(" ", 0, 1))
+        assertTrue(recognizer.canRecognize("\t", 0, 1))
+        assertTrue(recognizer.canRecognize("\n", 0, 1))
+        assertTrue(recognizer.canRecognize("\r", 0, 1))
+        assertTrue(recognizer.canRecognize(" \t\n\r", 0, 4))
     }
 
     @Test
     fun testCannotRecognizeNonWhitespace() {
         // Test with non-whitespace characters
-        assertFalse(recognizer.canRecognize(0, 1, "a"))
-        assertFalse(recognizer.canRecognize(0, 1, "1"))
-        assertFalse(recognizer.canRecognize(0, 1, "_"))
+        assertFalse(recognizer.canRecognize("a", 0, 1))
+        assertFalse(recognizer.canRecognize("1", 0, 1))
+        assertFalse(recognizer.canRecognize("_", 0, 1))
         assertFalse(recognizer.canRecognize("", 0, 0)) // Empty string
     }
 
     @Test
     fun testRecognizeSingleWhitespace() {
         // Test recognizing a single whitespace character
-        val (tokenType, endPos) = recognizer.recognize(0, 1, " ")
+        val (tokenType, endPos) = recognizer.recognize(" ", 0, 1)
         assertEquals(PicatTokenTypes.WHITE_SPACE, tokenType)
         assertEquals(1, endPos)
     }
@@ -43,7 +43,7 @@ class WhitespaceRecognizerTest {
     @Test
     fun testRecognizeMultipleWhitespace() {
         // Test recognizing multiple consecutive whitespace characters
-        val (tokenType, endPos) = recognizer.recognize(0, 5, "   \t\n")
+        val (tokenType, endPos) = recognizer.recognize("   \t\n", 0, 5)
         assertEquals(PicatTokenTypes.WHITE_SPACE, tokenType)
         assertEquals(5, endPos)
     }

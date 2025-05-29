@@ -72,8 +72,8 @@ class IdentifierRecognizerTest {
 
         for ((keyword, expectedType) in keywordTests) {
             val (tokenType, endPos) = recognizer.recognize(keyword, 0, keyword.length)
-            assertEquals("Keyword '$keyword' should be recognized as ${expectedType.toString()}", 
-                expectedType, tokenType)
+            assertEquals(expectedType, tokenType,
+                "Keyword '$keyword' should be recognized as ${expectedType.toString()}")
             assertEquals(keyword.length, endPos)
         }
     }
@@ -85,8 +85,8 @@ class IdentifierRecognizerTest {
 
         for (func in basicFunctions) {
             val (tokenType, endPos) = recognizer.recognize(func, 0, func.length)
-            assertEquals("Function '$func' should be recognized as BASIC_MODULE_FUNCTION", 
-                PicatTokenTypes.BASIC_MODULE_FUNCTION, tokenType)
+            assertEquals(PicatTokenTypes.BASIC_MODULE_FUNCTION, tokenType,
+                "Function '$func' should be recognized as BASIC_MODULE_FUNCTION")
             assertEquals(func.length, endPos)
         }
     }
@@ -98,8 +98,8 @@ class IdentifierRecognizerTest {
 
         for (id in identifiers) {
             val (tokenType, endPos) = recognizer.recognize(id, 0, id.length)
-            assertEquals("Identifier '$id' should be recognized as IDENTIFIER", 
-                PicatTokenTypes.IDENTIFIER, tokenType)
+            assertEquals(PicatTokenTypes.IDENTIFIER, tokenType,
+                "Identifier '$id' should be recognized as IDENTIFIER")
             assertEquals(id.length, endPos)
         }
     }

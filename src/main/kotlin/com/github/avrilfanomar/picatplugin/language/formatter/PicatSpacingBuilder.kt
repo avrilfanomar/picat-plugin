@@ -30,7 +30,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
                     PicatTokenTypes.ASSIGN_ONCE
                 )
             )
-            .spaceIf(picatSettings.SPACE_AROUND_ASSIGNMENT_OPERATORS)
+            .spaceIf(picatSettings.spaceAroundAssignmentOperators)
 
             // Logical operators (&&, ||, !)
             .around(
@@ -40,7 +40,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
                     PicatTokenTypes.NOT
                 )
             )
-            .spaceIf(picatSettings.SPACE_AROUND_LOGICAL_OPERATORS)
+            .spaceIf(picatSettings.spaceAroundLogicalOperators)
 
             // Equality operators (==, !=, ===, !==)
             .around(
@@ -51,7 +51,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
                     PicatTokenTypes.NOT_IDENTICAL
                 )
             )
-            .spaceIf(picatSettings.SPACE_AROUND_EQUALITY_OPERATORS)
+            .spaceIf(picatSettings.spaceAroundEqualityOperators)
 
             // Relational operators (<, >, <=, >=)
             .around(
@@ -63,7 +63,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
                     PicatTokenTypes.GREATER_EQUAL
                 )
             )
-            .spaceIf(picatSettings.SPACE_AROUND_RELATIONAL_OPERATORS)
+            .spaceIf(picatSettings.spaceAroundRelationalOperators)
 
             // Additive operators (+, -)
             .around(
@@ -72,7 +72,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
                     PicatTokenTypes.MINUS
                 )
             )
-            .spaceIf(picatSettings.SPACE_AROUND_ADDITIVE_OPERATORS)
+            .spaceIf(picatSettings.spaceAroundAdditiveOperators)
 
             // Multiplicative operators (*, /, //, mod)
             .around(
@@ -83,13 +83,13 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
                     PicatTokenTypes.MODULO
                 )
             )
-            .spaceIf(picatSettings.SPACE_AROUND_MULTIPLICATIVE_OPERATORS)
+            .spaceIf(picatSettings.spaceAroundMultiplicativeOperators)
 
             // Rule operators (=>, ?=>)
             .before(ruleOperators)
-            .spaceIf(picatSettings.SPACE_BEFORE_RULE_OPERATORS)
+            .spaceIf(picatSettings.spaceBeforeRuleOperators)
             .after(ruleOperators)
-            .spacing(0, 0, 1, picatSettings.KEEP_LINE_BREAK_AFTER_RULE_OPERATORS, 1)
+            .spacing(0, 0, 1, picatSettings.keepLineBreakAfterRuleOperators, 1)
 
             // Add indentation for the rule body (between rule operator and end dot)
             .between(ruleOperators, PicatTokenTypes.DOT)
@@ -111,7 +111,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
                     PicatTokenTypes.CONSTRAINT_XOR
                 )
             )
-            .spaceIf(picatSettings.SPACE_AROUND_CONSTRAINT_OPERATORS)
+            .spaceIf(picatSettings.spaceAroundConstraintOperators)
 
             // Constraint rule operators (#=>, #<=>)
             .around(
@@ -120,7 +120,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
                     PicatTokenTypes.CONSTRAINT_EQUIV
                 )
             )
-            .spaceIf(picatSettings.SPACE_AROUND_CONSTRAINT_OPERATORS)
+            .spaceIf(picatSettings.spaceAroundConstraintOperators)
             .after(
                 TokenSet.create(
                     PicatTokenTypes.CONSTRAINT_IMPL,
@@ -139,15 +139,15 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
                     PicatTokenTypes.TERM_GE
                 )
             )
-            .spaceIf(picatSettings.SPACE_AROUND_TERM_COMPARISON_OPERATORS)
+            .spaceIf(picatSettings.spaceAroundTermComparisonOperators)
 
             // Range operator (..)
             .around(PicatTokenTypes.RANGE)
-            .spaceIf(picatSettings.SPACE_AROUND_RANGE_OPERATOR)
+            .spaceIf(picatSettings.spaceAroundRangeOperator)
 
             // Type constraint operator (::)
             .around(PicatTokenTypes.TYPE_CONSTRAINT)
-            .spaceIf(picatSettings.SPACE_AROUND_TYPE_CONSTRAINT_OPERATOR)
+            .spaceIf(picatSettings.spaceAroundTypeConstraintOperator)
 
             // Bitwise operators (/\, \/, <<, >>)
             .around(
@@ -158,15 +158,15 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
                     PicatTokenTypes.SHIFT_RIGHT
                 )
             )
-            .spaceIf(picatSettings.SPACE_AROUND_BITWISE_OPERATORS)
+            .spaceIf(picatSettings.spaceAroundBitwiseOperators)
 
             // Punctuation
             .before(PicatTokenTypes.COMMA)
-            .spaceIf(picatSettings.SPACE_BEFORE_COMMA)
+            .spaceIf(picatSettings.spaceBeforeComma)
             .after(PicatTokenTypes.COMMA)
             .spacing(
-                if (picatSettings.SPACE_AFTER_COMMA) 0 else 0,
-                if (picatSettings.SPACE_AFTER_COMMA) 1 else 0,
+                if (picatSettings.spaceAfterComma) 0 else 0,
+                if (picatSettings.spaceAfterComma) 1 else 0,
                 0,  // minLineFeeds
                 true,  // keepLineBreaks
                 0  // keepBlankLines
@@ -184,7 +184,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .spaces(0)
 
             .around(PicatTokenTypes.COLON)
-            .spaceIf(picatSettings.SPACE_AROUND_COLON)
+            .spaceIf(picatSettings.spaceAroundColon)
 
             // Parentheses, brackets, braces
             .withinPair(PicatTokenTypes.LPAR, PicatTokenTypes.RPAR)

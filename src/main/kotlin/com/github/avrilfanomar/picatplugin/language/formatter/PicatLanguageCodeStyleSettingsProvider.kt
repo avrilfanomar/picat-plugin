@@ -10,7 +10,6 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
 import com.intellij.psi.codeStyle.CustomCodeStyleSettings
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
-import com.intellij.psi.codeStyle.SettingsType
 
 /**
  * Provides code style settings for Picat language to the IDE.

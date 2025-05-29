@@ -1,6 +1,9 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
+import com.github.avrilfanomar.picatplugin.language.psi.PicatExportStatement
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
+import com.github.avrilfanomar.picatplugin.language.psi.PicatModuleDeclaration
+import com.github.avrilfanomar.picatplugin.language.psi.PicatRule
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Test
 
@@ -18,7 +21,7 @@ class PicatParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFile
 
         // Verify that the file is empty
-        assertEquals(0, file.children.size, "Empty file should have no children")
+        assertEquals("Empty file should have no children", 0, file.children.size)
     }
 
     @Test
@@ -36,7 +39,7 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that comments are parsed correctly
         val facts = file.getAllFacts()
-        assertEquals(1, facts.size, "Should have one fact")
+        assertEquals("Should have one fact", 1, facts.size)
     }
 
     @Test
@@ -56,20 +59,20 @@ class PicatParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFile
 
         // Verify that the module declaration is parsed correctly
-        val moduleDeclarations = file.findChildrenByClass(com.github.avrilfanomar.picatplugin.language.psi.PicatModuleDeclaration::class.java)
-        assertEquals(1, moduleDeclarations.size, "Should have one module declaration")
-        assertEquals(moduleDeclarations[0].getName(, "Module name should be 'example'", "example"))
+        val moduleDeclarations = file.findChildrenByClass(PicatModuleDeclaration::class.java)
+        assertEquals("Should have one module declaration", 1, moduleDeclarations.size)
+        assertEquals("Module name should be 'example'", "example", moduleDeclarations[0].getName())
 
         // Verify that import and export statements are parsed correctly
         val importStatements = file.getImportStatements()
-        assertEquals(1, importStatements.size, "Should have one import statement")
+        assertEquals("Should have one import statement", 1, importStatements.size)
 
-        val exportStatements = file.findChildrenByClass(com.github.avrilfanomar.picatplugin.language.psi.PicatExportStatement::class.java)
-        assertEquals(1, exportStatements.size, "Should have one export statement")
+        val exportStatements = file.findChildrenByClass(PicatExportStatement::class.java)
+        assertEquals("Should have one export statement", 1, exportStatements.size)
 
         // Verify that facts are parsed correctly
         val facts = file.getAllFacts()
-        assertEquals(2, facts.size, "Should have two facts")
+        assertEquals("Should have two facts", 2, facts.size)
     }
 
     @Test
@@ -87,17 +90,17 @@ class PicatParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFile
 
         // Verify that the rule is parsed correctly
-        val rules = file.findChildrenByClass(com.github.avrilfanomar.picatplugin.language.psi.PicatRule::class.java)
-        assertEquals(1, rules.size, "Should have one rule")
+        val rules = file.findChildrenByClass(PicatRule::class.java)
+        assertEquals("Should have one rule", 1, rules.size)
 
         // Verify that the rule has the correct head
         val head = rules[0].getHead()
-        assertNotNull(head, "Rule should have a head")
-        assertEquals(head?.text, "Head should be 'main'", "main")
+        assertNotNull("Rule should have a head", head)
+        assertEquals("Head should be 'main'", "main", head?.text)
 
         // Verify that the rule has a body
         val body = rules[0].getBody()
-        assertNotNull(body, "Rule should have a body")
+        assertNotNull("Rule should have a body", body)
     }
 
     @Test
@@ -116,7 +119,7 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that the facts are parsed correctly
         val facts = file.getAllFacts()
-        assertEquals(4, facts.size, "Should have four facts")
+        assertEquals("Should have four facts", 4, facts.size)
     }
 
     @Test
@@ -147,8 +150,8 @@ class PicatParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFile
 
         // Verify that the rules are parsed correctly
-        val rules = file.findChildrenByClass(com.github.avrilfanomar.picatplugin.language.psi.PicatRule::class.java)
-        assertEquals(3, rules.size, "Should have three rules")
+        val rules = file.findChildrenByClass(PicatRule::class.java)
+        assertEquals("Should have three rules", 3, rules.size)
     }
 
     @Test
@@ -167,6 +170,6 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that at least the second fact is parsed correctly
         val facts = file.getAllFacts()
-        assertTrue(facts.size >= 1, "Should have at least one fact")
+        assertTrue("Should have at least one fact", facts.size >= 1)
     }
 }

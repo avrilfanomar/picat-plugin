@@ -1,9 +1,18 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.intellij.psi.PsiElement
-
 /**
  * Interface for Picat operator PSI elements.
+ * An operator in Picat is a symbol that performs an operation on one or more operands.
  */
-interface PicatOperator : PsiElement {
+interface PicatOperator : PicatPsiElement {
+    /**
+     * Returns the text of the operator.
+     */
+    fun getOperatorText(): String
+
+    /**
+     * Returns the precedence of the operator.
+     * Higher precedence operators are evaluated before lower precedence operators.
+     */
+    fun getPrecedence(): Int
 }

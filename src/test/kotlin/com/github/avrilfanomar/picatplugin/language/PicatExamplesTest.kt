@@ -53,7 +53,9 @@ class PicatExamplesTest : LexerTestCase() {
             }
 
             // Only check for data constructors in non-comment tokens
-            if (tokenText.contains("$") && tokenType != PicatTokenTypes.DATA_CONSTRUCTOR && tokenType != PicatTokenTypes.COMMENT) {
+            if (tokenText.contains("$") && 
+                tokenType != PicatTokenTypes.DATA_CONSTRUCTOR && 
+                tokenType != PicatTokenTypes.COMMENT) {
                 // Skip checking for data constructors in comments or strings
                 if (tokenType != PicatTokenTypes.STRING) {
                     issues.add("Data constructor not recognized: '$tokenText' at position ${lexer.tokenStart}")

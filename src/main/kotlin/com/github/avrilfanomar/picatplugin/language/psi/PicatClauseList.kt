@@ -1,9 +1,12 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.intellij.psi.PsiElement
-
 /**
  * Interface for Picat clause list PSI elements.
+ * A clause list in Picat is a collection of related clauses.
  */
-interface PicatClauseList : PsiElement {
+interface PicatClauseList : PicatPsiElement {
+    /**
+     * Returns the clauses in this list.
+     */
+    fun getClauses(): List<PicatClause>
 }

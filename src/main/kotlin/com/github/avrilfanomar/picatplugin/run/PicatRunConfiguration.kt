@@ -45,7 +45,9 @@ class PicatRunConfiguration(
     override fun checkConfiguration() {
         val settings = PicatSettings.getInstance(project)
         if (settings.picatExecutablePath.isBlank()) {
-            throw RuntimeConfigurationError("Picat executable path is not set. Please configure it in Settings -> Tools -> Picat.")
+            throw RuntimeConfigurationError(
+                "Picat executable path is not set. Please configure it in Settings -> Tools -> Picat."
+            )
         }
 
         val picatExecutable = File(settings.picatExecutablePath)

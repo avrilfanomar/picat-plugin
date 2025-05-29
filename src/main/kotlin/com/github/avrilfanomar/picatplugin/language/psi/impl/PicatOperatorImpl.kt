@@ -13,4 +13,20 @@ class PicatOperatorImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatOperato
     fun getOperatorType(): String {
         return node.text
     }
+
+    /**
+     * Returns the text of the operator.
+     */
+    override fun getOperatorText(): String {
+        return node.text
+    }
+
+    /**
+     * Returns the precedence of the operator.
+     * Higher precedence operators are evaluated before lower precedence operators.
+     * Default implementation returns 0.
+     */
+    override fun getPrecedence(): Int {
+        return 0
+    }
 }

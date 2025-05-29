@@ -27,9 +27,9 @@ class OperatorRecognizerTest {
     @Test
     fun testCannotRecognizeNonOperators() {
         // Test with non-operators
-        assertFalse(recognizer.canRecognize(0, 1, "a"))
-        assertFalse(recognizer.canRecognize(0, 1, "1"))
-        assertFalse(recognizer.canRecognize(0, 1, "_"))
+        assertFalse(recognizer.canRecognize("a", 0, 1))
+        assertFalse(recognizer.canRecognize("1", 0, 1))
+        assertFalse(recognizer.canRecognize("_", 0, 1))
         assertFalse(recognizer.canRecognize("", 0, 0)) // Empty string
     }
 
@@ -105,8 +105,8 @@ class OperatorRecognizerTest {
 
         for ((op, expectedType) in operatorTests) {
             val (tokenType, endPos) = recognizer.recognize(op, 0, op.length)
-            assertEquals("Operator '$op' should be recognized as ${expectedType.toString()}", 
-                expectedType, tokenType)
+            assertEquals(expectedType, tokenType,
+                "Operator '$op' should be recognized as ${expectedType.toString()}")
             assertEquals(2, endPos)
         }
     }
@@ -145,8 +145,8 @@ class OperatorRecognizerTest {
 
         for ((op, expectedType) in operatorTests) {
             val (tokenType, endPos) = recognizer.recognize(op, 0, op.length)
-            assertEquals("Operator '$op' should be recognized as ${expectedType.toString()}", 
-                expectedType, tokenType)
+            assertEquals(expectedType, tokenType,
+                "Operator '$op' should be recognized as ${expectedType.toString()}")
             assertEquals(1, endPos)
         }
     }

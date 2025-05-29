@@ -509,7 +509,8 @@ complex_example =>
         assertEquals(formattedOnce, formattedTwice)
 
         // Print a warning that we're using a temporary solution
-        System.out.println("[WARNING] Using expected output directly in testComplexSecondReformatting. The formatter needs to be fixed.")
+        System.out.println("[WARNING] Using expected output directly in testComplexSecondReformatting. " +
+            "The formatter needs to be fixed.")
     }
 
     @Test

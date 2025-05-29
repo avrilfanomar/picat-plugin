@@ -81,6 +81,40 @@ class TokenSkipper(private val buffer: CharSequence, private val bufferEnd: Int)
     }
 
     /**
+     * Checks if the character at the given position is part of an exponent notation.
+     * @param pos The position in the buffer.
+     * @return True if the character is part of an exponent notation, false otherwise.
+     */
+    private fun isExponentNotation(pos: Int): Boolean {
+        return pos + 1 < bufferEnd && 
+               (buffer[pos] == 'e' || buffer[pos] == 'E') &&
+               (CharacterClassifier.isDigit(buffer[pos + 1]) || 
+                buffer[pos + 1] == '+' || 
+                buffer[pos + 1] == '-')
+    }
+
+    /**
+     * Skips the exponent part of a number.
+     * @param pos The position in the buffer (at the 'e' or 'E').
+     * @return The position after the exponent.
+     */
+    private fun skipExponent(pos: Int): Int {
+        var i = pos + 1 // Skip the 'e' or 'E'
+
+        // Skip the sign if present
+        if (i < bufferEnd && (buffer[i] == '+' || buffer[i] == '-')) {
+            i++
+        }
+
+        // Skip the digits in the exponent
+        while (i < bufferEnd && CharacterClassifier.isDigit(buffer[i])) {
+            i++
+        }
+
+        return i
+    }
+
+    /**
      * Skips a number (integer or float) starting from the given position.
      * @param start The starting position in the buffer.
      * @return The position after the number.
@@ -88,31 +122,36 @@ class TokenSkipper(private val buffer: CharSequence, private val bufferEnd: Int)
     fun skipNumber(start: Int): Int {
         var i = start
         var hasDecimalPoint = false
+        var shouldContinue = true
 
-        while (i < bufferEnd) {
-            if (buffer[i] == '.' && !hasDecimalPoint) {
-                hasDecimalPoint = true
-                i++
-            } else if (CharacterClassifier.isDigit(buffer[i])) {
-                i++
-            } else if (buffer[i] == '_') {
-                // Allow underscores in numbers for readability (e.g., 1_000_000)
-                i++
-            } else if (i + 1 < bufferEnd && (buffer[i] == 'e' || buffer[i] == 'E') &&
-                (CharacterClassifier.isDigit(buffer[i + 1]) || buffer[i + 1] == '+' || buffer[i + 1] == '-')
-            ) {
-                // Handle exponent notation (e.g., 1.0e10, 1.0e+10, 1.0e-10)
-                i++
-                if (buffer[i] == '+' || buffer[i] == '-') {
+        while (i < bufferEnd && shouldContinue) {
+            val currentChar = buffer[i]
+
+            // Determine what to do based on the current character
+            shouldContinue = when {
+                // Decimal point
+                currentChar == '.' && !hasDecimalPoint -> {
+                    hasDecimalPoint = true
                     i++
+                    true
                 }
-                // Skip the digits in the exponent
-                while (i < bufferEnd && CharacterClassifier.isDigit(buffer[i])) {
+                // Digit
+                CharacterClassifier.isDigit(currentChar) -> {
                     i++
+                    true
                 }
-                break
-            } else {
-                break
+                // Underscore (for readability)
+                currentChar == '_' -> {
+                    i++
+                    true
+                }
+                // Exponent notation
+                isExponentNotation(i) -> {
+                    i = skipExponent(i)
+                    false
+                }
+                // Any other character means we're done with the number
+                else -> false
             }
         }
 
@@ -189,15 +228,25 @@ class TokenSkipper(private val buffer: CharSequence, private val bufferEnd: Int)
     }
 
     /**
+     * Checks if the character at the given position is valid for an identifier.
+     * @param pos The position in the buffer.
+     * @return True if the character is valid for an identifier, false otherwise.
+     */
+    private fun isIdentifierChar(pos: Int): Boolean {
+        val c = buffer[pos]
+        return CharacterClassifier.isLetter(c) || 
+               CharacterClassifier.isDigit(c) || 
+               c == '_'
+    }
+
+    /**
      * Skips an identifier starting from the given position.
      * @param start The starting position in the buffer.
      * @return The position after the identifier.
      */
     fun skipIdentifier(start: Int): Int {
         var i = start
-        while (i < bufferEnd && (CharacterClassifier.isLetter(buffer[i]) || 
-                                CharacterClassifier.isDigit(buffer[i]) || 
-                                buffer[i] == '_')) {
+        while (i < bufferEnd && isIdentifierChar(i)) {
             i++
         }
         return i

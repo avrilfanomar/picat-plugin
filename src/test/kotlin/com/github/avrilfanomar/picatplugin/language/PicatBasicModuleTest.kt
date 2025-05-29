@@ -84,7 +84,8 @@ class PicatBasicModuleTest : LexerTestCase() {
                 "flatten", "new_map", "put", "get", "keys", "values"
             )
 
-            if (expectedBasicModuleFunctions.contains(tokenText) && tokenType != PicatTokenTypes.BASIC_MODULE_FUNCTION) {
+            if (expectedBasicModuleFunctions.contains(tokenText) && 
+                tokenType != PicatTokenTypes.BASIC_MODULE_FUNCTION) {
                 issues.add("Basic module function not recognized: '$tokenText' at position ${lexer.tokenStart}")
             }
 

@@ -24,17 +24,17 @@ class StringRecognizerTest {
     @Test
     fun testCanRecognizeQuotedAtom() {
         // Test with single-quoted atoms
-        assertTrue(recognizer.canRecognize(0, 1, "'"))
-        assertTrue(recognizer.canRecognize(0, 6, "'atom'"))
-        assertTrue(recognizer.canRecognize(5, 11, "code 'atom' code"))
+        assertTrue(recognizer.canRecognize("'", 0, 1))
+        assertTrue(recognizer.canRecognize("'atom'", 0, 6))
+        assertTrue(recognizer.canRecognize("code 'atom' code", 5, 11))
     }
 
     @Test
     fun testCannotRecognizeNonString() {
         // Test with non-string characters
-        assertFalse(recognizer.canRecognize(0, 1, "a"))
-        assertFalse(recognizer.canRecognize(0, 1, "1"))
-        assertFalse(recognizer.canRecognize(0, 1, "_"))
+        assertFalse(recognizer.canRecognize("a", 0, 1))
+        assertFalse(recognizer.canRecognize("1", 0, 1))
+        assertFalse(recognizer.canRecognize("_", 0, 1))
         assertFalse(recognizer.canRecognize("", 0, 0)) // Empty string
     }
 
