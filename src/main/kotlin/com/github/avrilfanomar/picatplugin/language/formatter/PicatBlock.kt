@@ -1,12 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.formatter
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
-import com.intellij.formatting.Block
-import com.intellij.formatting.Wrap
-import com.intellij.formatting.Alignment
-import com.intellij.formatting.Spacing
-import com.intellij.formatting.SpacingBuilder
-import com.intellij.formatting.Indent
+import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.formatter.common.AbstractBlock
@@ -28,31 +23,7 @@ class PicatBlock(
      * Builds child blocks for this block.
      */
     override fun buildChildren(): List<Block> {
-        // If we have a block factory, use it to create child blocks
-        if (blockFactory != null) {
-            return blockFactory.createChildBlocks(myNode)
-        }
-
-        // Otherwise, create child blocks manually
-        val blocks = mutableListOf<Block>()
-        var child = myNode.firstChildNode
-
-        while (child != null) {
-            // Create a block for each child node
-            val childBlock = PicatBlock(
-                child,
-                null,
-                null,
-                settings,
-                spacingBuilder,
-                this.blockFactory
-            )
-            blocks.add(childBlock)
-
-            child = child.treeNext
-        }
-
-        return blocks
+        return blockFactory?.createChildBlocks(myNode) ?: emptyList()
     }
 
     /**
@@ -63,151 +34,6 @@ class PicatBlock(
     }
 
     /**
-     * Checks if the given type is a block statement type.
-     */
-    private fun isBlockStatementType(type: Any?): Boolean {
-        return type == PicatTokenTypes.IF_THEN_ELSE || 
-               type == PicatTokenTypes.FOREACH_LOOP ||
-               type == PicatTokenTypes.WHILE_LOOP || 
-               type == PicatTokenTypes.FOR_LOOP ||
-               type == PicatTokenTypes.TRY_CATCH
-    }
-
-    /**
-     * Checks if the given type is a rule body type.
-     */
-    private fun isRuleBodyType(type: Any?): Boolean {
-        return type == PicatTokenTypes.BODY || 
-               type == PicatTokenTypes.RULE || 
-               type == PicatTokenTypes.RULE_BODY
-    }
-
-    /**
-     * Checks if the given type is a statement or expression type.
-     */
-    private fun isStatementOrExpression(type: Any?): Boolean {
-        return type == PicatTokenTypes.STATEMENT || 
-               type == PicatTokenTypes.EXPRESSION
-    }
-
-    /**
-     * Determines indentation for whitespace nodes.
-     */
-    private fun getWhitespaceIndent(
-        elementType: Any?,
-        parentType: Any?,
-        grandParentType: Any?
-    ): Indent? {
-        if (elementType != PicatTokenTypes.WHITE_SPACE) {
-            return null
-        }
-
-        // If the parent is a rule or a block statement, indent the whitespace
-        if (isRuleBodyType(parentType) || 
-            isBlockStatementType(parentType) ||
-            // Also indent whitespace in statements within rule bodies or block statements
-            (parentType == PicatTokenTypes.STATEMENT &&
-                    (isRuleBodyType(grandParentType) || 
-                     isBlockStatementType(grandParentType)))) {
-            return Indent.getNormalIndent()
-        }
-        return Indent.getNoneIndent()
-    }
-
-    /**
-     * Determines indentation for rule bodies and statements.
-     */
-    private fun getRuleBodyIndent(
-        elementType: Any?,
-        parentType: Any?,
-        picatSettings: PicatCodeStyleSettings
-    ): Indent? {
-        // Handle rule body indentation
-        if (elementType == PicatTokenTypes.BODY && 
-            parentType == PicatTokenTypes.RULE && 
-            picatSettings.indentRuleBody) {
-            return Indent.getNormalIndent()
-        }
-
-        // Handle rule body statements indentation
-        if (elementType == PicatTokenTypes.STATEMENT && 
-            isRuleBodyType(parentType) && 
-            picatSettings.indentRuleBody) {
-            return Indent.getNormalIndent()
-        }
-
-        return null
-    }
-
-    /**
-     * Determines indentation for block statements and list comprehensions.
-     */
-    private fun getBlockIndent(
-        elementType: Any?,
-        parentType: Any?,
-        picatSettings: PicatCodeStyleSettings
-    ): Indent? {
-        // Handle block statement indentation
-        if (isStatementOrExpression(elementType) && 
-            isBlockStatementType(parentType) && 
-            picatSettings.indentBlockStatements) {
-            return Indent.getNormalIndent()
-        }
-
-        // Handle list comprehension indentation
-        if (isStatementOrExpression(elementType) && 
-            parentType == PicatTokenTypes.LIST_COMPREHENSION && 
-            picatSettings.indentListComprehension) {
-            return Indent.getNormalIndent()
-        }
-
-        return null
-    }
-
-    /**
-     * Determines indentation for expressions in parentheses.
-     */
-    private fun getParenthesizedExpressionIndent(
-        elementType: Any?,
-        parentType: Any?
-    ): Indent? {
-        // Handle indentation for expressions in parentheses
-        // Note: We check for expressions that are children of terms with parentheses
-        if (elementType == PicatTokenTypes.EXPRESSION && 
-            parentType == PicatTokenTypes.TERM && 
-            myNode.treeParent?.findChildByType(PicatTokenTypes.LPAR) != null) {
-            return Indent.getNormalIndent()
-        }
-
-        return null
-    }
-
-    /**
-     * Determines indentation for arguments and list elements.
-     */
-    private fun getArgumentIndent(
-        elementType: Any?,
-        parentType: Any?
-    ): Indent? {
-        // Handle indentation for arguments in function calls
-        if (elementType == PicatTokenTypes.ARGUMENT && parentType == PicatTokenTypes.ARGUMENT_LIST) {
-            return Indent.getContinuationIndent()
-        }
-
-        // Handle indentation for elements in lists
-        if (elementType == PicatTokenTypes.EXPRESSION && parentType == PicatTokenTypes.LIST_ELEMENTS) {
-            return Indent.getContinuationIndent()
-        }
-
-        // Handle indentation for elements in structures
-        if (elementType == PicatTokenTypes.ARGUMENT && parentType == PicatTokenTypes.STRUCTURE) {
-            return Indent.getContinuationIndent()
-        }
-
-        return null
-    }
-
-    /**
      * Determines the indentation for this block.
      */
     override fun getIndent(): Indent? {
@@ -215,104 +41,138 @@ class PicatBlock(
         val parentType = myNode.treeParent?.elementType
         val elementType = myNode.elementType
         val grandParentType = myNode.treeParent?.treeParent?.elementType
+        val greatGrandParentType = myNode.treeParent?.treeParent?.treeParent?.elementType
 
-        // Try each indentation strategy in order
-        return getWhitespaceIndent(elementType, parentType, grandParentType)
-            ?: getRuleBodyIndent(elementType, parentType, picatSettings)
-            ?: getBlockIndent(elementType, parentType, picatSettings)
-            ?: getParenthesizedExpressionIndent(elementType, parentType)
-            ?: getArgumentIndent(elementType, parentType)
-            ?: Indent.getNoneIndent() // Default: no indentation
-    }
+        // Handle whitespace nodes
+        if (elementType == PicatTokenTypes.WHITE_SPACE) {
+            // If the parent is a rule or a block statement, indent the whitespace
+            if ((parentType == PicatTokenTypes.BODY || parentType == PicatTokenTypes.RULE || parentType == PicatTokenTypes.RULE_BODY ||
+                        parentType == PicatTokenTypes.IF_THEN_ELSE || parentType == PicatTokenTypes.FOREACH_LOOP ||
+                        parentType == PicatTokenTypes.WHILE_LOOP || parentType == PicatTokenTypes.FOR_LOOP ||
+                        parentType == PicatTokenTypes.TRY_CATCH) &&
+                picatSettings.indentRuleBody
+            ) {
+                return Indent.getNormalIndent()
+            }
+            return Indent.getNoneIndent()
+        }
 
-    /**
-     * Determines indentation for rule body child blocks.
-     */
-    private fun getChildRuleBodyIndent(
-        elementType: Any?,
-        picatSettings: PicatCodeStyleSettings
-    ): Indent? {
-        // For rule bodies, indent child blocks
-        if (elementType == PicatTokenTypes.RULE && picatSettings.indentRuleBody) {
+        // Indent rule body with refined rules
+        if ((parentType == PicatTokenTypes.BODY || parentType == PicatTokenTypes.RULE) && picatSettings.indentRuleBody) {
             return Indent.getNormalIndent()
         }
 
-        // For rule bodies, indent child blocks
-        if ((elementType == PicatTokenTypes.BODY || elementType == PicatTokenTypes.RULE_BODY) && 
-            picatSettings.indentRuleBody) {
+        // Enhanced indentation for statements after rule operators
+        if (parentType == PicatTokenTypes.RULE_BODY ||
+            (parentType == PicatTokenTypes.STATEMENT && (grandParentType == PicatTokenTypes.RULE_BODY || grandParentType == PicatTokenTypes.RULE)) ||
+            (elementType == PicatTokenTypes.STATEMENT && parentType == PicatTokenTypes.RULE) ||
+            // Handle nested statements in rule bodies
+            (parentType == PicatTokenTypes.STATEMENT && grandParentType == PicatTokenTypes.STATEMENT &&
+                    (greatGrandParentType == PicatTokenTypes.RULE_BODY || greatGrandParentType == PicatTokenTypes.RULE))
+        ) {
             return Indent.getNormalIndent()
         }
 
-        return null
-    }
-
-    /**
-     * Determines indentation for block statement child blocks.
-     */
-    private fun getChildBlockIndent(
-        elementType: Any?,
-        picatSettings: PicatCodeStyleSettings
-    ): Indent? {
-        // For block statements, indent child blocks
-        if (isBlockStatementType(elementType) && picatSettings.indentBlockStatements) {
+        // Improved indentation for block statements
+        if ((parentType == PicatTokenTypes.IF_THEN_ELSE || parentType == PicatTokenTypes.FOREACH_LOOP ||
+                    parentType == PicatTokenTypes.WHILE_LOOP || parentType == PicatTokenTypes.FOR_LOOP ||
+                    parentType == PicatTokenTypes.TRY_CATCH) &&
+            // Don't indent keywords
+            elementType != PicatTokenTypes.IF_KEYWORD &&
+            elementType != PicatTokenTypes.THEN_KEYWORD &&
+            elementType != PicatTokenTypes.ELSE_KEYWORD &&
+            elementType != PicatTokenTypes.ELSEIF_KEYWORD &&
+            elementType != PicatTokenTypes.FOREACH_KEYWORD &&
+            elementType != PicatTokenTypes.WHILE_KEYWORD &&
+            elementType != PicatTokenTypes.FOR_KEYWORD &&
+            elementType != PicatTokenTypes.DO_KEYWORD &&
+            elementType != PicatTokenTypes.TRY_KEYWORD &&
+            elementType != PicatTokenTypes.CATCH_KEYWORD &&
+            elementType != PicatTokenTypes.END_KEYWORD &&
+            picatSettings.indentBlockStatements) {
             return Indent.getNormalIndent()
         }
 
-        // For list comprehensions, indent child blocks
-        if (elementType == PicatTokenTypes.LIST_COMPREHENSION && picatSettings.indentListComprehension) {
+        // Enhanced indentation for list comprehension
+        if (parentType == PicatTokenTypes.LIST_COMPREHENSION &&
+            elementType != PicatTokenTypes.LBRACKET &&
+            elementType != PicatTokenTypes.RBRACKET &&
+            elementType != PicatTokenTypes.PIPE &&
+            picatSettings.indentListComprehension) {
             return Indent.getNormalIndent()
         }
 
-        return null
-    }
-
-    /**
-     * Determines indentation for parenthesized expression child blocks.
-     */
-    private fun getChildParenthesizedExpressionIndent(elementType: Any?): Indent? {
-        // For terms with parentheses, indent child blocks
-        if (elementType == PicatTokenTypes.TERM && 
-            myNode.findChildByType(PicatTokenTypes.LPAR) != null) {
-            return Indent.getNormalIndent()
-        }
-
-        return null
-    }
-
-    /**
-     * Determines indentation for argument and list element child blocks.
-     */
-    private fun getChildArgumentIndent(elementType: Any?): Indent? {
-        // For argument lists, indent child blocks
-        if (elementType == PicatTokenTypes.ARGUMENT_LIST) {
+        // Special indentation for function arguments
+        if (parentType == PicatTokenTypes.FUNCTION_CALL &&
+            elementType != PicatTokenTypes.LPAR &&
+            elementType != PicatTokenTypes.RPAR
+        ) {
             return Indent.getContinuationIndent()
         }
 
-        // For list elements, indent child blocks
-        if (elementType == PicatTokenTypes.LIST_ELEMENTS) {
+        // Special indentation for list elements
+        if (parentType == PicatTokenTypes.LIST &&
+            elementType != PicatTokenTypes.LBRACKET &&
+            elementType != PicatTokenTypes.RBRACKET
+        ) {
             return Indent.getContinuationIndent()
         }
 
-        return null
+        // Special indentation for nested expressions
+        if (parentType == PicatTokenTypes.EXPRESSION && grandParentType == PicatTokenTypes.EXPRESSION) {
+            return Indent.getContinuationIndent()
+        }
+
+        return Indent.getNoneIndent()
     }
 
     /**
      * Determines the indentation for child blocks.
      */
     override fun getChildIndent(): Indent? {
-        val picatSettings = settings.getCustomSettings(PicatCodeStyleSettings::class.java)
         val elementType = myNode.elementType
 
-        // Try each indentation strategy in order
-        return getChildRuleBodyIndent(elementType, picatSettings)
-            ?: getChildBlockIndent(elementType, picatSettings)
-            ?: getChildParenthesizedExpressionIndent(elementType)
-            ?: getChildArgumentIndent(elementType)
-            ?: Indent.getNoneIndent() // Default: no indentation for child blocks
+        // Always indent rule bodies and statements
+        if (elementType == PicatTokenTypes.BODY || elementType == PicatTokenTypes.RULE || elementType == PicatTokenTypes.RULE_BODY ||
+            elementType == PicatTokenTypes.STATEMENT || elementType == PicatTokenTypes.PROGRAM
+        ) {
+            return Indent.getNormalIndent()
+        }
+
+        // Improved indentation for block statements
+        if (elementType == PicatTokenTypes.IF_THEN_ELSE || elementType == PicatTokenTypes.FOREACH_LOOP ||
+            elementType == PicatTokenTypes.WHILE_LOOP || elementType == PicatTokenTypes.FOR_LOOP ||
+            elementType == PicatTokenTypes.TRY_CATCH
+        ) {
+            return Indent.getNormalIndent()
+        }
+
+        // Enhanced indentation for list comprehension
+        if (elementType == PicatTokenTypes.LIST_COMPREHENSION) {
+            return Indent.getNormalIndent()
+        }
+
+        // Special indentation for function calls
+        if (elementType == PicatTokenTypes.FUNCTION_CALL) {
+            return Indent.getContinuationIndent()
+        }
+
+        // Special indentation for lists
+        if (elementType == PicatTokenTypes.LIST) {
+            return Indent.getContinuationIndent()
+        }
+
+        // Special indentation for expressions
+        if (elementType == PicatTokenTypes.EXPRESSION) {
+            return Indent.getContinuationIndent()
+        }
+
+        // Default to no indent for all other elements, consistent with getIndent()
+        return Indent.getNoneIndent()
     }
 
     /**
-     * Determines if this block is a leaf block (has no children).
+     * Determines if this block is a leaf block.
      */
     override fun isLeaf(): Boolean {
         return myNode.firstChildNode == null
