@@ -29,6 +29,7 @@ import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatLiteralImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatVariableImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPredicateBodyImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatOperatorImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatModuleDeclarationImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPsiElementImpl
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
@@ -88,6 +89,7 @@ class PicatParserDefinition : ParserDefinition {
             PicatTokenTypes.VARIABLE -> PicatVariableImpl(node)
             PicatTokenTypes.PREDICATE_BODY -> PicatPredicateBodyImpl(node)
             PicatTokenTypes.OPERATOR -> PicatOperatorImpl(node)
+            PicatTokenTypes.MODULE_DECLARATION -> PicatModuleDeclarationImpl(node)
             else -> PicatPsiElementImpl(node)
         }
     }
