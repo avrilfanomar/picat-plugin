@@ -143,7 +143,16 @@ export_spec ::= predicate_indicator | atom
 file_spec ::= STRING | atom
 
 // Facts and Rules
-fact ::= head ["=" function_body] "." { pin=1 }
+fact ::= head ["=" function_body] "." { 
+  pin=1 
+  elementType = FACT
+  implements=[
+    "com.github.avrilfanomar.picatplugin.language.psi.PicatFact"
+    "com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition"
+  ]
+  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFunctionDefinitionImpl"
+}
+
 function_body ::= expression {
   elementType = FUNCTION_BODY
   implements="com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionBody"
@@ -243,7 +252,9 @@ argument_list ::= expression ("," expression)*
 // Expressions
 expression ::= conditional_expression {
   elementType = EXPRESSION
+  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatExpression"
   methods=[getTerms getOperators]
+  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExpressionImpl"
 }
 conditional_expression ::= logical_or_expression ["?" expression ":" expression]
 logical_or_expression ::= logical_and_expression ("or" logical_and_expression)*
@@ -268,18 +279,24 @@ builtin_name ::= "call" | "apply" | "new_struct" | "new_map"
 // Lists
 list ::= "[" [list_items] "]" | "[]" {
   elementType = LIST
+  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatList"
   methods=[getListElements]
+  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListImpl"
 }
 list_items ::= expression (("," | ";") expression)* ["|" expression] {
   elementType = LIST_ELEMENTS
+  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatListElements"
   methods=[getExpressions getTailExpression]
+  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListElementsImpl"
 }
 
 // Operators
 operator ::= "+" | "-" | "*" | "/" | "mod" | "**" | "<<" | ">>" | "\\" | "//" |
            "and" | "or" | "^" | "&" | "|" | "is" {
   elementType = OPERATOR
-  methods=[getOperatorType]
+  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatOperator"
+  methods=[getOperatorText getPrecedence]
+  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatOperatorImpl"
 }
 
 // Maps
