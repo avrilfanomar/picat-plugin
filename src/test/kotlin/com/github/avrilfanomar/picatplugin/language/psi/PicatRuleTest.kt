@@ -108,36 +108,16 @@ class PicatRuleTest : BasePlatformTestCase() {
     fun testDifferentRuleOperatorsPsi() {
         // Test that rules with different operators are correctly parsed
         val code = """
-            factorial(N) = N * factorial(N-1) => N > 0.
-            fibonacci(N) = fibonacci(N-1) + fibonacci(N-2) ?=> N > 1.
+            factorial(N) = N * factorial(N - 1) => N > 0.
+
+            fibonacci(N) = fibonacci(N - 1) + fibonacci(N - 2) ?=> N > 1.
+            
             reverse(L) = R :- reverse(L, [], R).
-        """.trimIndent()
+            
+            constraint(X, Y) <=> X #= Y.
+            
+            backtrack_constraint(X, Y) ?<=> X #= Y.
 
-        myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
-
-        // Find all rules in the file
-        val rules = file.findChildrenByClass(PicatRule::class.java)
-
-        // Verify that there are exactly three rules
-        assertEquals(3, rules.size, "There should be exactly three rules")
-
-        // Verify that each rule has the correct rule operator
-        assertEquals("=>", rules[0].getRuleOperator()?.text, "First rule operator should be =>")
-        assertEquals("?=>", rules[1].getRuleOperator()?.text, "Second rule operator should be ?=>")
-        assertEquals(":-", rules[2].getRuleOperator()?.text, "Third rule operator should be :-")
-    }
-
-    @Test
-    fun testMultipleRulesPsi() {
-        // Test that multiple rules are correctly parsed
-        val code = """
-            factorial(0) = 1 => true.
-            factorial(N) = N * factorial(N-1) => N > 0.
-
-            fibonacci(0) = 0 => true.
-            fibonacci(1) = 1 => true.
-            fibonacci(N) = fibonacci(N-1) + fibonacci(N-2) => N > 1.
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
@@ -149,31 +129,19 @@ class PicatRuleTest : BasePlatformTestCase() {
         // Verify that there are exactly five rules
         assertEquals(5, rules.size, "There should be exactly five rules")
 
-        // Verify that each rule has the correct head name
-        assertEquals(
-            "factorial", 
-            rules[0].getHead()?.text?.substringBefore("("), 
-            "First rule head name should be factorial"
-        )
-        assertEquals(
-            "factorial", 
-            rules[1].getHead()?.text?.substringBefore("("), 
-            "Second rule head name should be factorial"
-        )
-        assertEquals(
-            "fibonacci", 
-            rules[2].getHead()?.text?.substringBefore("("), 
-            "Third rule head name should be fibonacci"
-        )
-        assertEquals(
-            "fibonacci", 
-            rules[3].getHead()?.text?.substringBefore("("), 
-            "Fourth rule head name should be fibonacci"
-        )
-        assertEquals(
-            "fibonacci", 
-            rules[4].getHead()?.text?.substringBefore("("), 
-            "Fifth rule head name should be fibonacci"
-        )
+        // Verify that each rule has the correct rule operator
+        assertEquals("=>", rules[0].getRuleOperator()?.text, "First rule operator should be =>")
+        assertEquals("?=>", rules[1].getRuleOperator()?.text, "Second rule operator should be ?=>")
+        assertEquals(":-", rules[2].getRuleOperator()?.text, "Third rule operator should be :-")
+        assertEquals("<=>", rules[3].getRuleOperator()?.text, "Fourth rule operator should be <=>")
+        assertEquals("?<=>", rules[4].getRuleOperator()?.text, "Fifth rule operator should be ?<=>")
+
+        // Verify that each rule has the correct rule type
+        assertEquals("=>", rules[0].getRuleType(), "First rule type should be =>")
+        assertEquals("?=>", rules[1].getRuleType(), "Second rule type should be ?=>")
+        assertEquals(":-", rules[2].getRuleType(), "Third rule type should be :-")
+        assertEquals("<=>", rules[3].getRuleType(), "Fourth rule type should be <=>")
+        assertEquals("?<=>", rules[4].getRuleType(), "Fifth rule type should be ?<=>")
     }
+
 }

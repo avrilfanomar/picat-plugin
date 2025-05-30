@@ -27,6 +27,19 @@ class PicatRuleImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatRule {
      * Returns the rule operator.
      */
     override fun getRuleOperator(): PsiElement? {
-        return findChildByType(PicatTokenTypes.ARROW_OP) ?: findChildByType(PicatTokenTypes.BACKTRACKABLE_ARROW_OP)
+        return findChildByType(PicatTokenTypes.ARROW_OP) 
+            ?: findChildByType(PicatTokenTypes.BACKTRACKABLE_ARROW_OP)
+            ?: findChildByType(PicatTokenTypes.BICONDITIONAL_OP)
+            ?: findChildByType(PicatTokenTypes.BACKTRACKABLE_BICONDITIONAL_OP)
+            ?: findChildByType(PicatTokenTypes.RULE_OP)
+    }
+
+    /**
+     * Returns the rule type as a string.
+     * Possible values are "=>", "?=>", "<=>", "?<=>", or ":-".
+     */
+    override fun getRuleType(): String? {
+        val ruleOperator = getRuleOperator() ?: return null
+        return ruleOperator.text
     }
 }
