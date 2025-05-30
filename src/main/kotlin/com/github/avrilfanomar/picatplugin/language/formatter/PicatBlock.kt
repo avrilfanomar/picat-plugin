@@ -15,7 +15,11 @@ import com.intellij.psi.tree.IElementType
 /**
  * Configuration class for PicatBlock.
  */
-class PicatBlockConfig(val settings: CodeStyleSettings, val spacingBuilder: SpacingBuilder? = null, val blockFactory: PicatBlockFactory? = null)
+class PicatBlockConfig(
+    val settings: CodeStyleSettings,
+    val spacingBuilder: SpacingBuilder? = null,
+    val blockFactory: PicatBlockFactory? = null
+)
 
 /**
  * Core formatter component for Picat language.
@@ -32,7 +36,7 @@ class PicatBlock(
     private val helper = PicatBlockHelper()
 
     override fun buildChildren(): List<Block> {
-        return config.blockFactory?.createBlocks(myNode, config) ?: emptyList()
+        return config.blockFactory?.createBlocks(myNode) ?: emptyList()
     }
 
     override fun getSpacing(child1: Block?, child2: Block): Spacing? {
@@ -56,61 +60,67 @@ class PicatBlock(
         greatGrandParentType: IElementType?,
         picatSettings: PicatCodeStyleSettings
     ): Indent? {
+        // Use a variable to store the indent
+        var indent: Indent? = null
+
         // Handle whitespace indentation
         if (elementType == PicatTokenTypes.WHITE_SPACE) {
-            return getIndentForWhitespace(parentType, picatSettings)
+            indent = getIndentForWhitespace(parentType, picatSettings)
         }
-
         // Handle rule body indentation
-        if (helper.shouldIndentRuleBody(parentType, picatSettings)) {
-            return Indent.getNormalIndent()
+        else if (helper.shouldIndentRuleBody(parentType, picatSettings)) {
+            indent = Indent.getNormalIndent()
         }
-
         // Handle statement indentation
-        if (helper.shouldIndentStatements(elementType, parentType, grandParentType, greatGrandParentType)) {
-            return Indent.getNormalIndent()
+        else if (helper.shouldIndentStatements(parentType, grandParentType, greatGrandParentType)) {
+            indent = Indent.getNormalIndent()
         }
-
         // Handle block statement indentation
-        if (helper.shouldIndentBlockStatements(elementType, parentType, picatSettings)) {
-            return Indent.getNormalIndent()
+        else if (helper.shouldIndentBlockStatements(elementType, parentType, picatSettings)) {
+            indent = Indent.getNormalIndent()
         }
-
         // Handle list comprehension indentation
-        if (helper.shouldIndentListComprehension(parentType, elementType, picatSettings)) {
-            return Indent.getNormalIndent()
+        else if (helper.shouldIndentListComprehension(parentType, elementType, picatSettings)) {
+            indent = Indent.getNormalIndent()
         }
-
         // Handle function arguments indentation
-        if (helper.shouldIndentFunctionArguments(elementType, parentType)) {
-            return Indent.getNormalIndent()
+        else if (helper.shouldIndentFunctionArguments(elementType, parentType)) {
+            indent = Indent.getNormalIndent()
         }
-
         // Handle list elements indentation
-        if (helper.shouldIndentListElements(elementType, parentType)) {
-            return Indent.getNormalIndent()
+        else if (helper.shouldIndentListElements(elementType, parentType)) {
+            indent = Indent.getNormalIndent()
         }
-
         // Handle nested expressions indentation
-        if (helper.shouldIndentNestedExpressions(parentType, grandParentType)) {
-            return Indent.getNormalIndent()
+        else if (helper.shouldIndentNestedExpressions(parentType, grandParentType)) {
+            indent = Indent.getNormalIndent()
+        }
+        // Default to no indentation
+        else {
+            indent = Indent.getNoneIndent()
         }
 
-        return Indent.getNoneIndent()
+        return indent
     }
 
     private fun getIndentForWhitespace(parentType: IElementType?, picatSettings: PicatCodeStyleSettings): Indent? {
+        // Use a variable to store the indent
+        var indent: Indent? = null
+
         // Indent whitespace in rule bodies
         if (helper.isRuleBodyOrStatementType(parentType) && picatSettings.indentRuleBody) {
-            return Indent.getNormalIndent()
+            indent = Indent.getNormalIndent()
         }
-
         // Indent whitespace in block statements
-        if (helper.isBlockStatementType(parentType) && picatSettings.indentBlockStatements) {
-            return Indent.getNormalIndent()
+        else if (helper.isBlockStatementType(parentType) && picatSettings.indentBlockStatements) {
+            indent = Indent.getNormalIndent()
+        }
+        // Default to no indentation
+        else {
+            indent = Indent.getNoneIndent()
         }
 
-        return Indent.getNoneIndent()
+        return indent
     }
 
     private fun shouldIndentRuleBody(parentType: IElementType?, picatSettings: PicatCodeStyleSettings): Boolean {
@@ -118,22 +128,23 @@ class PicatBlock(
     }
 
     private fun shouldIndentStatements(
-        elementType: IElementType?,
         parentType: IElementType?,
         grandParentType: IElementType?,
         greatGrandParentType: IElementType?
     ): Boolean {
+        // Use a variable to store the result
+        var shouldIndent = false
+
         // Indent statements in rule bodies
         if (helper.isRuleBodyOrStatement(parentType, grandParentType)) {
-            return true
+            shouldIndent = true
         }
-
         // Indent nested statements
-        if (helper.isNestedStatementInRuleBody(parentType, grandParentType, greatGrandParentType)) {
-            return true
+        else if (helper.isNestedStatementInRuleBody(parentType, grandParentType, greatGrandParentType)) {
+            shouldIndent = true
         }
 
-        return false
+        return shouldIndent
     }
 
     private fun shouldIndentBlockStatements(
@@ -155,7 +166,8 @@ class PicatBlock(
         picatSettings: PicatCodeStyleSettings
     ): Boolean {
         // Indent list comprehension elements
-        if (helper.isListComprehensionNonBracketOrPipe(parentType, elementType) && picatSettings.indentListComprehension) {
+        if (helper.isListComprehensionNonBracketOrPipe(parentType, elementType) && 
+            picatSettings.indentListComprehension) {
             return true
         }
 

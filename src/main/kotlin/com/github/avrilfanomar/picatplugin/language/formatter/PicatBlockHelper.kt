@@ -109,7 +109,8 @@ class PicatBlockHelper {
      * Checks if a rule body should be indented based on settings.
      */
     fun shouldIndentRuleBody(parentType: IElementType?, picatSettings: Any): Boolean {
-        return isRuleBodyOrStatementType(parentType) && (picatSettings as? PicatCodeStyleSettings)?.indentRuleBody == true
+        return isRuleBodyOrStatementType(parentType) && 
+               (picatSettings as? PicatCodeStyleSettings)?.indentRuleBody == true
     }
 
     /**
@@ -133,7 +134,8 @@ class PicatBlockHelper {
         picatSettings: Any
     ): Boolean {
         // Indent statements in block statements
-        if (isBlockStatementType(parentType) && (picatSettings as? PicatCodeStyleSettings)?.indentBlockStatements == true) {
+        if (isBlockStatementType(parentType) && 
+            (picatSettings as? PicatCodeStyleSettings)?.indentBlockStatements == true) {
             return !isBlockKeywordType(elementType)
         }
 
@@ -144,21 +146,22 @@ class PicatBlockHelper {
      * Checks if statements should be indented based on their context.
      */
     fun shouldIndentStatements(
-        elementType: IElementType?,
         parentType: IElementType?,
         grandParentType: IElementType?,
         greatGrandParentType: IElementType?
     ): Boolean {
+        // Use a variable to store the result
+        var shouldIndent = false
+
         // Indent statements in rule bodies
         if (isRuleBodyOrStatement(parentType, grandParentType)) {
-            return true
+            shouldIndent = true
         }
-
         // Indent nested statements
-        if (isNestedStatementInRuleBody(parentType, grandParentType, greatGrandParentType)) {
-            return true
+        else if (isNestedStatementInRuleBody(parentType, grandParentType, greatGrandParentType)) {
+            shouldIndent = true
         }
 
-        return false
+        return shouldIndent
     }
 }

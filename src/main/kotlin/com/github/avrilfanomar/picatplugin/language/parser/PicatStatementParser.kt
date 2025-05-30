@@ -15,141 +15,135 @@ class PicatStatementParser : PicatBaseParser() {
     fun parseGoal(builder: PsiBuilder) {
         val marker = builder.mark()
 
-        when {
-            isControlFlowStatement(builder) -> parseControlFlowStatement(builder)
-            isLogicalStatement(builder) -> parseLogicalStatement(builder)
-            isFlowControlStatement(builder) -> parseFlowControlStatement(builder)
-            isAssignment(builder) -> parseAssignment(builder)
-            else -> expressionParser.parseExpression(builder)
+        if (!checkAndParseSpecialStatement(builder)) {
+            if (isAssignment(builder)) {
+                parseAssignment(builder)
+            } else {
+                expressionParser.parseExpression(builder)
+            }
         }
 
         marker.done(PicatTokenTypes.GOAL)
     }
 
     /**
-     * Checks if the current token is a control flow statement.
+     * Checks if the current token is a special statement and parses it.
+     * Returns true if a special statement was parsed, false otherwise.
      */
-    private fun isControlFlowStatement(builder: PsiBuilder): Boolean {
+    private fun checkAndParseSpecialStatement(builder: PsiBuilder): Boolean {
         val tokenType = builder.tokenType
-        return tokenType == PicatTokenTypes.IF_KEYWORD ||
-               tokenType == PicatTokenTypes.FOREACH_KEYWORD ||
-               tokenType == PicatTokenTypes.WHILE_KEYWORD ||
-               tokenType == PicatTokenTypes.CASE_KEYWORD ||
-               tokenType == PicatTokenTypes.TRY_KEYWORD
-    }
 
-    /**
-     * Parses a control flow statement.
-     */
-    private fun parseControlFlowStatement(builder: PsiBuilder) {
-        when (builder.tokenType) {
-            PicatTokenTypes.IF_KEYWORD -> parseIfThenElse(builder)
-            PicatTokenTypes.FOREACH_KEYWORD -> parseForeachLoop(builder)
-            PicatTokenTypes.WHILE_KEYWORD -> parseWhileLoop(builder)
-            PicatTokenTypes.CASE_KEYWORD -> parseCaseExpression(builder)
-            PicatTokenTypes.TRY_KEYWORD -> parseTryCatch(builder)
-        }
-    }
+        // Control flow statements
+        when (tokenType) {
+            PicatTokenTypes.IF_KEYWORD -> {
+                parseIfThenElse(builder)
+                return true
+            }
+            PicatTokenTypes.FOREACH_KEYWORD -> {
+                parseForeachLoop(builder)
+                return true
+            }
+            PicatTokenTypes.WHILE_KEYWORD -> {
+                parseWhileLoop(builder)
+                return true
+            }
+            PicatTokenTypes.CASE_KEYWORD -> {
+                parseCaseExpression(builder)
+                return true
+            }
+            PicatTokenTypes.TRY_KEYWORD -> {
+                parseTryCatch(builder)
+                return true
+            }
 
-    /**
-     * Checks if the current token is a logical statement.
-     */
-    private fun isLogicalStatement(builder: PsiBuilder): Boolean {
-        val tokenType = builder.tokenType
-        return tokenType == PicatTokenTypes.NOT_KEYWORD ||
-               tokenType == PicatTokenTypes.FAIL_KEYWORD ||
-               tokenType == PicatTokenTypes.TRUE_KEYWORD ||
-               tokenType == PicatTokenTypes.FALSE_KEYWORD ||
-               tokenType == PicatTokenTypes.CUT
-    }
-
-    /**
-     * Parses a logical statement.
-     */
-    private fun parseLogicalStatement(builder: PsiBuilder) {
-        when (builder.tokenType) {
-            PicatTokenTypes.NOT_KEYWORD -> 
-                parseExpressionStatement(
+            // Logical statements
+            PicatTokenTypes.NOT_KEYWORD -> {
+                parseStatement(
                     builder, 
                     PicatTokenTypes.NOT_KEYWORD, 
                     "Expected 'not'", 
-                    PicatTokenTypes.NEGATION
+                    PicatTokenTypes.NEGATION,
+                    true // Parse expression
                 )
-            PicatTokenTypes.FAIL_KEYWORD -> 
-                parseSimpleStatement(
+                return true
+            }
+            PicatTokenTypes.FAIL_KEYWORD -> {
+                parseStatement(
                     builder, 
                     PicatTokenTypes.FAIL_KEYWORD, 
                     "Expected 'fail'", 
                     PicatTokenTypes.FAIL_STATEMENT
                 )
-            PicatTokenTypes.TRUE_KEYWORD -> 
-                parseSimpleStatement(
+                return true
+            }
+            PicatTokenTypes.TRUE_KEYWORD -> {
+                parseStatement(
                     builder, 
                     PicatTokenTypes.TRUE_KEYWORD, 
                     "Expected 'true'", 
                     PicatTokenTypes.TRUE_STATEMENT
                 )
-            PicatTokenTypes.FALSE_KEYWORD -> 
-                parseSimpleStatement(
+                return true
+            }
+            PicatTokenTypes.FALSE_KEYWORD -> {
+                parseStatement(
                     builder, 
                     PicatTokenTypes.FALSE_KEYWORD, 
                     "Expected 'false'", 
                     PicatTokenTypes.FALSE_STATEMENT
                 )
-            PicatTokenTypes.CUT -> 
-                parseSimpleStatement(
+                return true
+            }
+            PicatTokenTypes.CUT -> {
+                parseStatement(
                     builder, 
                     PicatTokenTypes.CUT, 
                     "Expected '!'", 
                     PicatTokenTypes.CUT_STATEMENT
                 )
-        }
-    }
+                return true
+            }
 
-    /**
-     * Checks if the current token is a flow control statement.
-     */
-    private fun isFlowControlStatement(builder: PsiBuilder): Boolean {
-        val tokenType = builder.tokenType
-        return tokenType == PicatTokenTypes.RETURN_KEYWORD ||
-               tokenType == PicatTokenTypes.CONTINUE_KEYWORD ||
-               tokenType == PicatTokenTypes.BREAK_KEYWORD ||
-               tokenType == PicatTokenTypes.THROW_KEYWORD
-    }
-
-    /**
-     * Parses a flow control statement.
-     */
-    private fun parseFlowControlStatement(builder: PsiBuilder) {
-        when (builder.tokenType) {
-            PicatTokenTypes.RETURN_KEYWORD -> 
-                parseExpressionStatement(
+            // Flow control statements
+            PicatTokenTypes.RETURN_KEYWORD -> {
+                parseStatement(
                     builder, 
                     PicatTokenTypes.RETURN_KEYWORD, 
                     "Expected 'return'", 
-                    PicatTokenTypes.RETURN_STATEMENT
+                    PicatTokenTypes.RETURN_STATEMENT,
+                    true // Parse expression
                 )
-            PicatTokenTypes.CONTINUE_KEYWORD -> 
-                parseSimpleStatement(
+                return true
+            }
+            PicatTokenTypes.CONTINUE_KEYWORD -> {
+                parseStatement(
                     builder, 
                     PicatTokenTypes.CONTINUE_KEYWORD, 
                     "Expected 'continue'", 
                     PicatTokenTypes.CONTINUE_STATEMENT
                 )
-            PicatTokenTypes.BREAK_KEYWORD -> 
-                parseSimpleStatement(
+                return true
+            }
+            PicatTokenTypes.BREAK_KEYWORD -> {
+                parseStatement(
                     builder, 
                     PicatTokenTypes.BREAK_KEYWORD, 
                     "Expected 'break'", 
                     PicatTokenTypes.BREAK_STATEMENT
                 )
-            PicatTokenTypes.THROW_KEYWORD -> 
-                parseExpressionStatement(
+                return true
+            }
+            PicatTokenTypes.THROW_KEYWORD -> {
+                parseStatement(
                     builder, 
                     PicatTokenTypes.THROW_KEYWORD, 
                     "Expected 'throw'", 
-                    PicatTokenTypes.THROW_STATEMENT
+                    PicatTokenTypes.THROW_STATEMENT,
+                    true // Parse expression
                 )
+                return true
+            }
+            else -> return false
         }
     }
 
@@ -430,49 +424,37 @@ class PicatStatementParser : PicatBaseParser() {
     }
 
     /**
-     * Parses a simple statement that consists of just a keyword.
+     * Parses a statement that consists of a keyword, optionally followed by an expression.
      * 
      * @param builder The PSI builder
      * @param keyword The keyword token type to expect
      * @param errorMessage The error message if the keyword is not found
      * @param resultType The token type to mark the statement as
+     * @param parseExpression Whether to parse an expression after the keyword
      */
-    private fun parseSimpleStatement(
+    private fun parseStatement(
         builder: PsiBuilder, 
         keyword: IElementType, 
         errorMessage: String,
-        resultType: IElementType
+        resultType: IElementType,
+        parseExpression: Boolean = false
     ) {
         val marker = builder.mark()
+
+        // Handle special case for cut operator
         if (keyword == PicatTokenTypes.CUT) {
             PicatParserUtil.expectToken(builder, keyword, errorMessage)
         } else {
             PicatParserUtil.expectKeyword(builder, keyword, errorMessage)
         }
-        marker.done(resultType)
-    }
 
-    /**
-     * Parses a statement that consists of a keyword followed by an expression.
-     * 
-     * @param builder The PSI builder
-     * @param keyword The keyword token type to expect
-     * @param errorMessage The error message if the keyword is not found
-     * @param resultType The token type to mark the statement as
-     */
-    private fun parseExpressionStatement(
-        builder: PsiBuilder, 
-        keyword: IElementType, 
-        errorMessage: String,
-        resultType: IElementType
-    ) {
-        val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, keyword, errorMessage)
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
+        // Parse expression if needed
+        if (parseExpression) {
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
+            expressionParser.parseExpression(builder)
         }
-
-        expressionParser.parseExpression(builder)
 
         marker.done(resultType)
     }

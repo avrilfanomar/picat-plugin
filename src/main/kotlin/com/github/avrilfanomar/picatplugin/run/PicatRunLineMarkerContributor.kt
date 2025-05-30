@@ -12,21 +12,19 @@ import com.intellij.psi.PsiElement
  */
 class PicatRunLineMarkerContributor : RunLineMarkerContributor() {
     override fun getInfo(element: PsiElement): Info? {
-        val file = element.containingFile ?: return null
+        val file = element.containingFile
 
-        // Only add run marker to Picat files
-        if (file.fileType != PicatFileType.Companion.INSTANCE) {
-            return null
+        // Only add run marker to the first element in Picat files
+        if (file != null && 
+            file.fileType == PicatFileType.Companion.INSTANCE && 
+            element.textOffset == 0) {
+
+            return Info(
+                AllIcons.RunConfigurations.TestState.Run,
+                ExecutorAction.getActions(1)
+            ) { "Run Picat program" }
         }
 
-        // Only add a run marker to the first element in the file
-        if (element.textOffset > 0) {
-            return null
-        }
-
-        return Info(
-            AllIcons.RunConfigurations.TestState.Run,
-            ExecutorAction.getActions(1)
-        ) { "Run Picat program" }
+        return null
     }
 }

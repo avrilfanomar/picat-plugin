@@ -21,33 +21,44 @@ class PicatRunConfigurationProducer : LazyRunConfigurationProducer<PicatRunConfi
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>
     ): Boolean {
-        val psiFile = context.psiLocation?.containingFile ?: return false
+        // Use a variable to store the result
+        var isSetupSuccessful = false
 
-        // Only handle Picat files
-        if (psiFile.fileType != PicatFileType.Companion.INSTANCE) {
-            return false
+        val psiFile = context.psiLocation?.containingFile
+
+        // Only proceed if we have a valid Picat file
+        if (psiFile != null && psiFile.fileType == PicatFileType.Companion.INSTANCE) {
+            val virtualFile = psiFile.virtualFile
+
+            if (virtualFile != null) {
+                // Set the configuration properties
+                configuration.picatFilePath = virtualFile.path
+                configuration.name = virtualFile.nameWithoutExtension
+                isSetupSuccessful = true
+            }
         }
 
-        // Set the configuration properties
-        val virtualFile = psiFile.virtualFile ?: return false
-        configuration.picatFilePath = virtualFile.path
-        configuration.name = virtualFile.nameWithoutExtension
-
-        return true
+        return isSetupSuccessful
     }
 
     override fun isConfigurationFromContext(
         configuration: PicatRunConfiguration,
         context: ConfigurationContext
     ): Boolean {
-        val psiFile = context.psiLocation?.containingFile ?: return false
+        // Use a variable to store the result
+        var isFromContext = false
 
-        // Only handle Picat files
-        if (psiFile.fileType != PicatFileType.Companion.INSTANCE) {
-            return false
+        val psiFile = context.psiLocation?.containingFile
+
+        // Only proceed if we have a valid Picat file
+        if (psiFile != null && psiFile.fileType == PicatFileType.Companion.INSTANCE) {
+            val virtualFile = psiFile.virtualFile
+
+            if (virtualFile != null) {
+                isFromContext = configuration.picatFilePath == virtualFile.path
+            }
         }
 
-        val virtualFile = psiFile.virtualFile ?: return false
-        return configuration.picatFilePath == virtualFile.path
+        return isFromContext
     }
 }
