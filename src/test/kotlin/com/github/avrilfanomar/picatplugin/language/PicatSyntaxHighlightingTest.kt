@@ -17,7 +17,21 @@ class PicatSyntaxHighlightingTest : LexerTestCase() {
         val highlighter = PicatSyntaxHighlighter()
         val lexer = highlighter.highlightingLexer
 
-        val text = """
+        val text = getSamplePicatProgram()
+        lexer.start(text)
+
+        // Map to store token text to expected attribute
+        val expectedHighlights = getExpectedHighlights()
+
+        // Verify that tokens are correctly identified and highlighted
+        verifyTokenHighlights(lexer, text, highlighter, expectedHighlights)
+    }
+
+    /**
+     * Returns a sample Picat program for testing.
+     */
+    private fun getSamplePicatProgram(): String {
+        return """
             % This is a sample Picat program
 
             import util.
@@ -44,11 +58,13 @@ class PicatSyntaxHighlightingTest : LexerTestCase() {
             fibonacci(1) = 1.
             fibonacci(N) = fibonacci(N-1) + fibonacci(N-2) => N > 1.
         """.trimIndent()
+    }
 
-        lexer.start(text)
-
-        // Map to store token text to expected attribute
-        val expectedHighlights = mapOf(
+    /**
+     * Returns a map of expected token text to highlight attributes.
+     */
+    private fun getExpectedHighlights(): Map<String, String> {
+        return mapOf(
             "%" to "PICAT_COMMENT",
             "import" to "PICAT_KEYWORD",
             "util" to "PICAT_IDENTIFIER",
@@ -79,8 +95,17 @@ class PicatSyntaxHighlightingTest : LexerTestCase() {
             "-" to "PICAT_OPERATOR",
             "fibonacci" to "PICAT_IDENTIFIER"
         )
+    }
 
-        // Verify that tokens are correctly identified and highlighted
+    /**
+     * Verifies that tokens are correctly identified and highlighted.
+     */
+    private fun verifyTokenHighlights(
+        lexer: Lexer, 
+        text: String, 
+        highlighter: PicatSyntaxHighlighter, 
+        expectedHighlights: Map<String, String>
+    ) {
         while (lexer.tokenType != null) {
             val tokenType = lexer.tokenType
             val tokenText = text.substring(lexer.tokenStart, lexer.tokenEnd)

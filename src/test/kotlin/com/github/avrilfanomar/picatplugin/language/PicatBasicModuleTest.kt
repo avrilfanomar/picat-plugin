@@ -18,7 +18,30 @@ class PicatBasicModuleTest : LexerTestCase() {
         val highlighter = PicatSyntaxHighlighter()
         val lexer = highlighter.highlightingLexer
 
-        val text = """
+        val text = getBasicModuleFunctionsTestText()
+        lexer.start(text)
+
+        // Track basic module functions found and issues
+        val basicModuleFunctionsFound = mutableListOf<String>()
+        val issues = mutableListOf<String>()
+
+        // Process tokens
+        processTokens(lexer, text, basicModuleFunctionsFound, issues)
+
+        // Report issues
+        if (issues.isNotEmpty()) {
+            // Fail the test with a detailed message
+            fail("Found ${issues.size} issues in basic module test:\n${issues.joinToString("\n")}")
+        }
+
+        // Basic module functions found (not logged, but kept for test functionality)
+    }
+
+    /**
+     * Returns the test text for basic module functions.
+     */
+    private fun getBasicModuleFunctionsTestText(): String {
+        return """
             % This is a test for basic module functions
 
             main => 
@@ -61,14 +84,22 @@ class PicatBasicModuleTest : LexerTestCase() {
                 values(M) = Vals,
                 println(Vals).
         """.trimIndent()
+    }
 
-        lexer.start(text)
+    /**
+     * Processes tokens from the lexer and checks for basic module functions.
+     */
+    private fun processTokens(
+        lexer: Lexer, 
+        text: String, 
+        basicModuleFunctionsFound: MutableList<String>, 
+        issues: MutableList<String>
+    ) {
+        val expectedBasicModuleFunctions = listOf(
+            "length", "append", "sort", "member", "max", "min", "reverse",
+            "flatten", "new_map", "put", "get", "keys", "values"
+        )
 
-        // Track basic module functions found
-        val basicModuleFunctionsFound = mutableListOf<String>()
-        val issues = mutableListOf<String>()
-
-        // Verify that tokens are correctly identified and highlighted
         while (lexer.tokenType != null) {
             val tokenType = lexer.tokenType
             val tokenText = text.substring(lexer.tokenStart, lexer.tokenEnd)
@@ -79,11 +110,6 @@ class PicatBasicModuleTest : LexerTestCase() {
             }
 
             // Check for expected basic module functions that are not recognized
-            val expectedBasicModuleFunctions = listOf(
-                "length", "append", "sort", "member", "max", "min", "reverse",
-                "flatten", "new_map", "put", "get", "keys", "values"
-            )
-
             if (expectedBasicModuleFunctions.contains(tokenText) && 
                 tokenType != PicatTokenTypes.BASIC_MODULE_FUNCTION) {
                 issues.add("Basic module function not recognized: '$tokenText' at position ${lexer.tokenStart}")
@@ -91,14 +117,6 @@ class PicatBasicModuleTest : LexerTestCase() {
 
             lexer.advance()
         }
-
-        // Report issues
-        if (issues.isNotEmpty()) {
-            // Fail the test with a detailed message
-            fail("Found ${issues.size} issues in basic module test:\n${issues.joinToString("\n")}")
-        }
-
-        // Basic module functions found (not logged, but kept for test functionality)
     }
 
 

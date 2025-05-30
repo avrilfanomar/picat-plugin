@@ -96,10 +96,17 @@ class PicatExamplesTest : LexerTestCase() {
         position: Int, 
         issues: MutableList<String>
     ) {
-        if (tokenText.contains("$") && 
-            tokenType != PicatTokenTypes.DATA_CONSTRUCTOR && 
-            tokenType != PicatTokenTypes.COMMENT &&
-            tokenType != PicatTokenTypes.STRING) {
+        // Skip checking if token doesn't contain '$'
+        if (!tokenText.contains("$")) {
+            return
+        }
+
+        // Skip checking for known token types that can contain '$'
+        val isAllowedTokenType = tokenType == PicatTokenTypes.DATA_CONSTRUCTOR || 
+                                 tokenType == PicatTokenTypes.COMMENT ||
+                                 tokenType == PicatTokenTypes.STRING
+
+        if (!isAllowedTokenType) {
             issues.add("Data constructor not recognized: '$tokenText' at position $position")
         }
     }
