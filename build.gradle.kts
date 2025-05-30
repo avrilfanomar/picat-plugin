@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
     id("io.gitlab.arturbosch.detekt") version "1.23.4" // Detekt for static code analysis
+    id("info.solidsoft.pitest") version "1.15.0"
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -139,6 +140,31 @@ detekt {
     }
 }
 
+// Configure Pitest for mutation testing - read more: https://pitest.org/
+pitest {
+    junit5PluginVersion = "1.2.0"
+    targetClasses = listOf("com.github.avrilfanomar.picatplugin.*")
+    excludedClasses = listOf(
+        // Exclude generated files and UI-related classes that are hard to test
+        "com.github.avrilfanomar.picatplugin.language.psi.impl.*",
+        "com.github.avrilfanomar.picatplugin.language.PicatParserDefinition",
+        "com.github.avrilfanomar.picatplugin.language.PicatLanguage"
+    )
+    threads = Runtime.getRuntime().availableProcessors()
+    outputFormats = listOf("HTML", "XML")
+    timestampedReports = false
+    mutators = listOf(
+        "STRONGER", // Use stronger mutation operators
+        "DEFAULTS"  // Plus the defaults
+    )
+    avoidCallsTo = listOf(
+        "kotlin.jvm.internal",
+        "kotlin.collections.CollectionsKt"
+    )
+    verbose = true
+    testPlugin = "junit5"
+}
+
 tasks {
     wrapper {
         gradleVersion = providers.gradleProperty("gradleVersion").get()
@@ -146,6 +172,18 @@ tasks {
 
     publishPlugin {
         dependsOn(patchChangelog)
+    }
+
+    // Register a task to run Pitest mutation testing
+    register<DefaultTask>("runMutationTests") {
+        group = "verification"
+        description = "Runs Pitest mutation tests"
+
+        dependsOn("pitest")
+
+        doLast {
+            println("Mutation testing completed. Reports can be found in build/reports/pitest")
+        }
     }
 }
 
