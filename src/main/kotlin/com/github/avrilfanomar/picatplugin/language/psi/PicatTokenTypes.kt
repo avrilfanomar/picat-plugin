@@ -288,4 +288,15 @@ object PicatTokenTypes {
     val CATCH_CLAUSE = PicatElementType("CATCH_CLAUSE")
     val ELSEIF_CLAUSE = PicatElementType("ELSEIF_CLAUSE")
     val MODULE_SPEC = PicatElementType("MODULE_SPEC")
+
+    // Statement types
+    val NEGATION = PicatElementType("NEGATION")
+    val FAIL_STATEMENT = PicatElementType("FAIL_STATEMENT")
+    val TRUE_STATEMENT = PicatElementType("TRUE_STATEMENT")
+    val FALSE_STATEMENT = PicatElementType("FALSE_STATEMENT")
+    val CUT_STATEMENT = PicatElementType("CUT_STATEMENT")
+    val RETURN_STATEMENT = PicatElementType("RETURN_STATEMENT")
+    val CONTINUE_STATEMENT = PicatElementType("CONTINUE_STATEMENT")
+    val BREAK_STATEMENT = PicatElementType("BREAK_STATEMENT")
+    val ASSIGNMENT = PicatElementType("ASSIGNMENT")
 }

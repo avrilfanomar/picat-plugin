@@ -20,45 +20,64 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
     }
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
-        if (tokenType == TokenType.BAD_CHARACTER || tokenType == PicatTokenTypes.BAD_CHARACTER) {
+        // Check for bad characters first
+        if (isBadCharacter(tokenType)) {
             return pack(BAD_CHARACTER)
         }
 
-        // Handle different token types
-        return when (tokenType) {
-            // Keywords
-            in PicatTokenTypes.KEYWORDS -> pack(KEYWORD)
-
-            // Comments
-            PicatTokenTypes.COMMENT -> pack(COMMENT)
-
-            // Strings
-            PicatTokenTypes.STRING -> pack(STRING)
-
-            // Numbers
-            PicatTokenTypes.INTEGER, PicatTokenTypes.FLOAT -> pack(NUMBER)
-
-            // Operators
-            in PicatTokenTypes.OPERATORS -> pack(OPERATOR)
-
-            // Parentheses, braces, brackets
-            PicatTokenTypes.LPAR, PicatTokenTypes.RPAR -> pack(PARENTHESES)
-            PicatTokenTypes.LBRACE, PicatTokenTypes.RBRACE -> pack(BRACES)
-            PicatTokenTypes.LBRACKET, PicatTokenTypes.RBRACKET -> pack(BRACKETS)
-
-            // Variables
-            PicatTokenTypes.VARIABLE -> pack(VARIABLE)
-
-            // Basic module functions and operators
-            PicatTokenTypes.BASIC_MODULE_FUNCTION -> pack(BASIC_MODULE_FUNCTION)
-
-            // Identifiers (including predicates)
-            PicatTokenTypes.IDENTIFIER -> pack(IDENTIFIER)
-
-            // Default case
+        // Check token categories in order
+        return when {
+            isKeyword(tokenType) -> pack(KEYWORD)
+            isComment(tokenType) -> pack(COMMENT)
+            isString(tokenType) -> pack(STRING)
+            isNumber(tokenType) -> pack(NUMBER)
+            isOperator(tokenType) -> pack(OPERATOR)
+            isParenthesis(tokenType) -> pack(PARENTHESES)
+            isBrace(tokenType) -> pack(BRACES)
+            isBracket(tokenType) -> pack(BRACKETS)
+            isVariable(tokenType) -> pack(VARIABLE)
+            isBasicModuleFunction(tokenType) -> pack(BASIC_MODULE_FUNCTION)
+            isIdentifier(tokenType) -> pack(IDENTIFIER)
             else -> TextAttributesKey.EMPTY_ARRAY
         }
     }
+
+    // Helper methods to categorize token types
+    private fun isBadCharacter(tokenType: IElementType): Boolean =
+        tokenType == TokenType.BAD_CHARACTER || tokenType == PicatTokenTypes.BAD_CHARACTER
+
+    private fun isKeyword(tokenType: IElementType): Boolean =
+        tokenType in PicatTokenTypes.KEYWORDS
+
+    private fun isComment(tokenType: IElementType): Boolean =
+        tokenType == PicatTokenTypes.COMMENT
+
+    private fun isString(tokenType: IElementType): Boolean =
+        tokenType == PicatTokenTypes.STRING
+
+    private fun isNumber(tokenType: IElementType): Boolean =
+        tokenType == PicatTokenTypes.INTEGER || tokenType == PicatTokenTypes.FLOAT
+
+    private fun isOperator(tokenType: IElementType): Boolean =
+        tokenType in PicatTokenTypes.OPERATORS
+
+    private fun isParenthesis(tokenType: IElementType): Boolean =
+        tokenType == PicatTokenTypes.LPAR || tokenType == PicatTokenTypes.RPAR
+
+    private fun isBrace(tokenType: IElementType): Boolean =
+        tokenType == PicatTokenTypes.LBRACE || tokenType == PicatTokenTypes.RBRACE
+
+    private fun isBracket(tokenType: IElementType): Boolean =
+        tokenType == PicatTokenTypes.LBRACKET || tokenType == PicatTokenTypes.RBRACKET
+
+    private fun isVariable(tokenType: IElementType): Boolean =
+        tokenType == PicatTokenTypes.VARIABLE
+
+    private fun isBasicModuleFunction(tokenType: IElementType): Boolean =
+        tokenType == PicatTokenTypes.BASIC_MODULE_FUNCTION
+
+    private fun isIdentifier(tokenType: IElementType): Boolean =
+        tokenType == PicatTokenTypes.IDENTIFIER
 
     companion object {
         // Define text attribute keys for different token types

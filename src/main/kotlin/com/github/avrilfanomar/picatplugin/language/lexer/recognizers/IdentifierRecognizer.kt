@@ -39,6 +39,52 @@ class IdentifierRecognizer : TokenRecognizer {
             "to_radix_string", "to_real", "to_string", "to_uppercase", "true", "uppercase",
             "values", "var", "variant", "vars", "zip"
         )
+        
+        // Map of keywords to their token types
+        private val KEYWORD_MAP = mapOf(
+            // Module-related keywords
+            "import" to PicatTokenTypes.IMPORT_KEYWORD,
+            "export" to PicatTokenTypes.EXPORT_KEYWORD,
+            "include" to PicatTokenTypes.INCLUDE_KEYWORD,
+            "module" to PicatTokenTypes.MODULE_KEYWORD,
+            
+            // Legacy keywords
+            "index" to PicatTokenTypes.INDEX_KEYWORD,
+            "private" to PicatTokenTypes.PRIVATE_KEYWORD,
+            "public" to PicatTokenTypes.PUBLIC_KEYWORD,
+            "table" to PicatTokenTypes.TABLE_KEYWORD,
+            
+            // Control flow keywords
+            "end" to PicatTokenTypes.END_KEYWORD,
+            "if" to PicatTokenTypes.IF_KEYWORD,
+            "then" to PicatTokenTypes.THEN_KEYWORD,
+            "else" to PicatTokenTypes.ELSE_KEYWORD,
+            "elseif" to PicatTokenTypes.ELSEIF_KEYWORD,
+            "while" to PicatTokenTypes.WHILE_KEYWORD,
+            "do" to PicatTokenTypes.DO_KEYWORD,
+            "foreach" to PicatTokenTypes.FOREACH_KEYWORD,
+            "for" to PicatTokenTypes.FOR_KEYWORD,
+            "return" to PicatTokenTypes.RETURN_KEYWORD,
+            "throw" to PicatTokenTypes.THROW_KEYWORD,
+            "try" to PicatTokenTypes.TRY_KEYWORD,
+            "catch" to PicatTokenTypes.CATCH_KEYWORD,
+            
+            // Logical and arithmetic keywords
+            "not" to PicatTokenTypes.NOT_KEYWORD,
+            "once" to PicatTokenTypes.ONCE_KEYWORD,
+            "div" to PicatTokenTypes.DIV_KEYWORD,
+            "mod" to PicatTokenTypes.MOD_KEYWORD,
+            "rem" to PicatTokenTypes.REM_KEYWORD,
+            "in" to PicatTokenTypes.IN_KEYWORD,
+            "notin" to PicatTokenTypes.NOTIN_KEYWORD,
+            
+            // Other keywords
+            "writef" to PicatTokenTypes.WRITEF_KEYWORD,
+            "true" to PicatTokenTypes.TRUE_KEYWORD,
+            "false" to PicatTokenTypes.FALSE_KEYWORD,
+            "fail" to PicatTokenTypes.FAIL_KEYWORD,
+            "repeat" to PicatTokenTypes.REPEAT_KEYWORD
+        )
     }
 
     override fun canRecognize(buffer: CharSequence, startOffset: Int, endOffset: Int): Boolean {
@@ -47,12 +93,12 @@ class IdentifierRecognizer : TokenRecognizer {
         }
 
         val c = buffer[startOffset]
-        
+
         // Check for variables (start with uppercase letter or underscore)
         if (CharacterClassifier.isUpperCase(c) || c == '_') {
             return true
         }
-        
+
         // Check for identifiers and keywords (start with lowercase letter)
         return CharacterClassifier.isLetter(c)
     }
@@ -60,62 +106,36 @@ class IdentifierRecognizer : TokenRecognizer {
     override fun recognize(buffer: CharSequence, startOffset: Int, endOffset: Int): Pair<IElementType, Int> {
         val skipper = TokenSkipper(buffer, endOffset)
         val c = buffer[startOffset]
-        
+
         // Handle variables (start with uppercase letter or underscore)
         if (CharacterClassifier.isUpperCase(c) || c == '_') {
             val endPos = skipper.skipIdentifier(startOffset)
             return Pair(PicatTokenTypes.VARIABLE, endPos)
         }
-        
+
         // Handle identifiers and keywords
         val endPos = skipper.skipIdentifier(startOffset)
         val text = buffer.substring(startOffset, endPos)
-        
-        // Check for keywords
-        val tokenType = when (text) {
-            "import" -> PicatTokenTypes.IMPORT_KEYWORD
-            "export" -> PicatTokenTypes.EXPORT_KEYWORD
-            "include" -> PicatTokenTypes.INCLUDE_KEYWORD
-            "module" -> PicatTokenTypes.MODULE_KEYWORD
-            "index" -> PicatTokenTypes.INDEX_KEYWORD
-            "private" -> PicatTokenTypes.PRIVATE_KEYWORD
-            "public" -> PicatTokenTypes.PUBLIC_KEYWORD
-            "table" -> PicatTokenTypes.TABLE_KEYWORD
-            "end" -> PicatTokenTypes.END_KEYWORD
-            "if" -> PicatTokenTypes.IF_KEYWORD
-            "then" -> PicatTokenTypes.THEN_KEYWORD
-            "else" -> PicatTokenTypes.ELSE_KEYWORD
-            "elseif" -> PicatTokenTypes.ELSEIF_KEYWORD
-            "while" -> PicatTokenTypes.WHILE_KEYWORD
-            "do" -> PicatTokenTypes.DO_KEYWORD
-            "foreach" -> PicatTokenTypes.FOREACH_KEYWORD
-            "for" -> PicatTokenTypes.FOR_KEYWORD
-            "return" -> PicatTokenTypes.RETURN_KEYWORD
-            "throw" -> PicatTokenTypes.THROW_KEYWORD
-            "try" -> PicatTokenTypes.TRY_KEYWORD
-            "catch" -> PicatTokenTypes.CATCH_KEYWORD
-            "not" -> PicatTokenTypes.NOT_KEYWORD
-            "once" -> PicatTokenTypes.ONCE_KEYWORD
-            "div" -> PicatTokenTypes.DIV_KEYWORD
-            "mod" -> PicatTokenTypes.MOD_KEYWORD
-            "rem" -> PicatTokenTypes.REM_KEYWORD
-            "in" -> PicatTokenTypes.IN_KEYWORD
-            "notin" -> PicatTokenTypes.NOTIN_KEYWORD
-            "writef" -> PicatTokenTypes.WRITEF_KEYWORD
-            "true" -> PicatTokenTypes.TRUE_KEYWORD
-            "false" -> PicatTokenTypes.FALSE_KEYWORD
-            "fail" -> PicatTokenTypes.FAIL_KEYWORD
-            "repeat" -> PicatTokenTypes.REPEAT_KEYWORD
-            else -> {
-                // Check if the identifier is a 'basic' module function or operator
-                if (BASIC_MODULE_FUNCTIONS.contains(text)) {
-                    PicatTokenTypes.BASIC_MODULE_FUNCTION
-                } else {
-                    PicatTokenTypes.IDENTIFIER
-                }
-            }
-        }
-        
+
+        // Get token type for the text
+        val tokenType = getTokenTypeForText(text)
+
         return Pair(tokenType, endPos)
+    }
+
+    /**
+     * Determines the token type for a given text.
+     */
+    private fun getTokenTypeForText(text: String): IElementType {
+        // Check if it's a keyword
+        KEYWORD_MAP[text]?.let { return it }
+
+        // Check if it's a basic module function
+        if (BASIC_MODULE_FUNCTIONS.contains(text)) {
+            return PicatTokenTypes.BASIC_MODULE_FUNCTION
+        }
+
+        // Default to identifier
+        return PicatTokenTypes.IDENTIFIER
     }
 }

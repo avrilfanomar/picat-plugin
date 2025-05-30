@@ -125,7 +125,7 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         // Verify that the function definition has a body
         val body = functionDef.getBody()
         assertNotNull(body, "Function should have a body")
-        
+
         // The body should be a complex expression, so we just check that it's not empty
         assertTrue(body?.text?.isNotEmpty() ?: false, "Function body should not be empty")
     }

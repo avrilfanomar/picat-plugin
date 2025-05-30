@@ -14,31 +14,88 @@ class PicatStatementParser : PicatBaseParser() {
     fun parseGoal(builder: PsiBuilder) {
         val marker = builder.mark()
 
+        when {
+            isControlFlowStatement(builder) -> parseControlFlowStatement(builder)
+            isLogicalStatement(builder) -> parseLogicalStatement(builder)
+            isFlowControlStatement(builder) -> parseFlowControlStatement(builder)
+            isAssignment(builder) -> parseAssignment(builder)
+            else -> expressionParser.parseExpression(builder)
+        }
+
+        marker.done(PicatTokenTypes.GOAL)
+    }
+    
+    /**
+     * Checks if the current token is a control flow statement.
+     */
+    private fun isControlFlowStatement(builder: PsiBuilder): Boolean {
+        val tokenType = builder.tokenType
+        return tokenType == PicatTokenTypes.IF_KEYWORD ||
+               tokenType == PicatTokenTypes.FOREACH_KEYWORD ||
+               tokenType == PicatTokenTypes.WHILE_KEYWORD ||
+               tokenType == PicatTokenTypes.CASE_KEYWORD ||
+               tokenType == PicatTokenTypes.TRY_KEYWORD
+    }
+    
+    /**
+     * Parses a control flow statement.
+     */
+    private fun parseControlFlowStatement(builder: PsiBuilder) {
         when (builder.tokenType) {
             PicatTokenTypes.IF_KEYWORD -> parseIfThenElse(builder)
             PicatTokenTypes.FOREACH_KEYWORD -> parseForeachLoop(builder)
             PicatTokenTypes.WHILE_KEYWORD -> parseWhileLoop(builder)
             PicatTokenTypes.CASE_KEYWORD -> parseCaseExpression(builder)
             PicatTokenTypes.TRY_KEYWORD -> parseTryCatch(builder)
+        }
+    }
+    
+    /**
+     * Checks if the current token is a logical statement.
+     */
+    private fun isLogicalStatement(builder: PsiBuilder): Boolean {
+        val tokenType = builder.tokenType
+        return tokenType == PicatTokenTypes.NOT_KEYWORD ||
+               tokenType == PicatTokenTypes.FAIL_KEYWORD ||
+               tokenType == PicatTokenTypes.TRUE_KEYWORD ||
+               tokenType == PicatTokenTypes.FALSE_KEYWORD ||
+               tokenType == PicatTokenTypes.CUT
+    }
+    
+    /**
+     * Parses a logical statement.
+     */
+    private fun parseLogicalStatement(builder: PsiBuilder) {
+        when (builder.tokenType) {
             PicatTokenTypes.NOT_KEYWORD -> parseNegation(builder)
             PicatTokenTypes.FAIL_KEYWORD -> parseFail(builder)
             PicatTokenTypes.TRUE_KEYWORD -> parseTrue(builder)
             PicatTokenTypes.FALSE_KEYWORD -> parseFalse(builder)
             PicatTokenTypes.CUT -> parseCut(builder)
+        }
+    }
+    
+    /**
+     * Checks if the current token is a flow control statement.
+     */
+    private fun isFlowControlStatement(builder: PsiBuilder): Boolean {
+        val tokenType = builder.tokenType
+        return tokenType == PicatTokenTypes.RETURN_KEYWORD ||
+               tokenType == PicatTokenTypes.CONTINUE_KEYWORD ||
+               tokenType == PicatTokenTypes.BREAK_KEYWORD ||
+               tokenType == PicatTokenTypes.THROW_KEYWORD
+    }
+    
+    /**
+     * Parses a flow control statement.
+     */
+    private fun parseFlowControlStatement(builder: PsiBuilder) {
+        when (builder.tokenType) {
             PicatTokenTypes.RETURN_KEYWORD -> parseReturn(builder)
             PicatTokenTypes.CONTINUE_KEYWORD -> parseContinue(builder)
             PicatTokenTypes.BREAK_KEYWORD -> parseBreak(builder)
             PicatTokenTypes.THROW_KEYWORD -> parseThrow(builder)
-            else -> {
-                if (isAssignment(builder)) {
-                    parseAssignment(builder)
-                } else {
-                    expressionParser.parseExpression(builder)
-                }
-            }
         }
-
-        marker.done(PicatTokenTypes.GOAL)
     }
 
     /**
@@ -127,12 +184,12 @@ class PicatStatementParser : PicatBaseParser() {
     }
 
     /**
-     * Parses foreach generators.
+     * Parses foreach generators (var in expr, var in expr, ...).
      */
     private fun parseForeachGenerators(builder: PsiBuilder) {
         val marker = builder.mark()
-        parseForeachGenerator(builder)
 
+        parseForeachGenerator(builder)
         while (builder.tokenType == PicatTokenTypes.COMMA) {
             builder.advanceLexer()
             while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
@@ -145,27 +202,30 @@ class PicatStatementParser : PicatBaseParser() {
     }
 
     /**
-     * Parses a single foreach generator.
+     * Parses a single foreach generator (var in expr).
      */
     private fun parseForeachGenerator(builder: PsiBuilder) {
         val marker = builder.mark()
-        parseVariable(builder)
 
-        if (builder.tokenType == PicatTokenTypes.IN_KEYWORD) {
+        // Parse variable or pattern
+        if (builder.tokenType == PicatTokenTypes.VARIABLE) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
-            expressionParser.parseExpression(builder)
-        } else if (builder.tokenType == PicatTokenTypes.EQUAL) {
-            builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
-            expressionParser.parseExpression(builder)
         } else {
-            builder.error("Expected 'in' or '='")
+            expressionParser.parsePattern(builder)
         }
+
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
+
+        // Expect 'in' keyword
+        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.IN_KEYWORD, "Expected 'in'")
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
+
+        // Parse expression
+        expressionParser.parseExpression(builder)
 
         marker.done(PicatTokenTypes.FOREACH_GENERATOR)
     }
@@ -180,8 +240,12 @@ class PicatStatementParser : PicatBaseParser() {
             builder.advanceLexer()
         }
 
+        PicatParserUtil.expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
         expressionParser.parseExpression(builder)
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.DO_KEYWORD, "Expected 'do'")
+        PicatParserUtil.expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
         while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
             builder.advanceLexer()
         }
@@ -202,6 +266,10 @@ class PicatStatementParser : PicatBaseParser() {
         }
 
         expressionParser.parseExpression(builder)
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
+
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.OF_KEYWORD, "Expected 'of'")
         while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
             builder.advanceLexer()
@@ -217,10 +285,13 @@ class PicatStatementParser : PicatBaseParser() {
      */
     private fun parseCaseArms(builder: PsiBuilder) {
         val marker = builder.mark()
-        parseCaseArm(builder)
 
+        parseCaseArm(builder)
         while (builder.tokenType == PicatTokenTypes.SEMICOLON) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseCaseArm(builder)
         }
 
@@ -232,12 +303,15 @@ class PicatStatementParser : PicatBaseParser() {
      */
     private fun parseCaseArm(builder: PsiBuilder) {
         val marker = builder.mark()
-        patternParser.parsePattern(builder)
+
+        expressionParser.parsePattern(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.ARROW_OP, "Expected '=>'")
         while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
             builder.advanceLexer()
         }
+
         parseBody(builder)
+
         marker.done(PicatTokenTypes.CASE_ARM)
     }
 
@@ -252,21 +326,14 @@ class PicatStatementParser : PicatBaseParser() {
         }
 
         parseBody(builder)
+
+        // Parse catch clauses
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.CATCH_KEYWORD, "Expected 'catch'")
         while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
             builder.advanceLexer()
         }
 
         parseCatchClauses(builder)
-
-        // Optional finally clause
-        if (builder.tokenType == PicatTokenTypes.FINALLY_KEYWORD) {
-            builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
-            parseBody(builder)
-        }
 
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
         marker.done(PicatTokenTypes.TRY_CATCH)
@@ -277,10 +344,13 @@ class PicatStatementParser : PicatBaseParser() {
      */
     private fun parseCatchClauses(builder: PsiBuilder) {
         val marker = builder.mark()
-        parseCatchClause(builder)
 
+        parseCatchClause(builder)
         while (builder.tokenType == PicatTokenTypes.SEMICOLON) {
             builder.advanceLexer()
+            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                builder.advanceLexer()
+            }
             parseCatchClause(builder)
         }
 
@@ -292,17 +362,20 @@ class PicatStatementParser : PicatBaseParser() {
      */
     private fun parseCatchClause(builder: PsiBuilder) {
         val marker = builder.mark()
-        patternParser.parsePattern(builder)
+
+        expressionParser.parsePattern(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.ARROW_OP, "Expected '=>'")
         while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
             builder.advanceLexer()
         }
+
         parseBody(builder)
+
         marker.done(PicatTokenTypes.CATCH_CLAUSE)
     }
 
     /**
-     * Parses a negation statement.
+     * Parses a negation (not) expression.
      */
     private fun parseNegation(builder: PsiBuilder) {
         val marker = builder.mark()
@@ -310,8 +383,10 @@ class PicatStatementParser : PicatBaseParser() {
         while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
             builder.advanceLexer()
         }
-        parseGoal(builder)
-        marker.done(PicatTokenTypes.GOAL)
+
+        expressionParser.parseExpression(builder)
+
+        marker.done(PicatTokenTypes.NEGATION)
     }
 
     /**
@@ -320,7 +395,7 @@ class PicatStatementParser : PicatBaseParser() {
     private fun parseFail(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.FAIL_KEYWORD, "Expected 'fail'")
-        marker.done(PicatTokenTypes.GOAL)
+        marker.done(PicatTokenTypes.FAIL_STATEMENT)
     }
 
     /**
@@ -329,7 +404,7 @@ class PicatStatementParser : PicatBaseParser() {
     private fun parseTrue(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.TRUE_KEYWORD, "Expected 'true'")
-        marker.done(PicatTokenTypes.GOAL)
+        marker.done(PicatTokenTypes.TRUE_STATEMENT)
     }
 
     /**
@@ -338,16 +413,16 @@ class PicatStatementParser : PicatBaseParser() {
     private fun parseFalse(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.FALSE_KEYWORD, "Expected 'false'")
-        marker.done(PicatTokenTypes.GOAL)
+        marker.done(PicatTokenTypes.FALSE_STATEMENT)
     }
 
     /**
-     * Parses a cut statement.
+     * Parses a cut (!) statement.
      */
     private fun parseCut(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectToken(builder, PicatTokenTypes.CUT, "Expected '!'")
-        marker.done(PicatTokenTypes.GOAL)
+        marker.done(PicatTokenTypes.CUT_STATEMENT)
     }
 
     /**
@@ -359,8 +434,10 @@ class PicatStatementParser : PicatBaseParser() {
         while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
             builder.advanceLexer()
         }
+
         expressionParser.parseExpression(builder)
-        marker.done(PicatTokenTypes.GOAL)
+
+        marker.done(PicatTokenTypes.RETURN_STATEMENT)
     }
 
     /**
@@ -369,7 +446,7 @@ class PicatStatementParser : PicatBaseParser() {
     private fun parseContinue(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.CONTINUE_KEYWORD, "Expected 'continue'")
-        marker.done(PicatTokenTypes.GOAL)
+        marker.done(PicatTokenTypes.CONTINUE_STATEMENT)
     }
 
     /**
@@ -378,7 +455,7 @@ class PicatStatementParser : PicatBaseParser() {
     private fun parseBreak(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.BREAK_KEYWORD, "Expected 'break'")
-        marker.done(PicatTokenTypes.GOAL)
+        marker.done(PicatTokenTypes.BREAK_STATEMENT)
     }
 
     /**
@@ -387,7 +464,12 @@ class PicatStatementParser : PicatBaseParser() {
     private fun parseThrow(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.THROW_KEYWORD, "Expected 'throw'")
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
+
         expressionParser.parseExpression(builder)
+
         marker.done(PicatTokenTypes.THROW_STATEMENT)
     }
 
@@ -396,12 +478,19 @@ class PicatStatementParser : PicatBaseParser() {
      */
     private fun parseAssignment(builder: PsiBuilder) {
         val marker = builder.mark()
-        parseVariable(builder)
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.ASSIGN_OP, "Expected ':='")
+
+        // Parse left-hand side (variable or pattern)
+        expressionParser.parsePattern(builder)
+
+        // Parse assignment operator
+        PicatParserUtil.expectToken(builder, PicatTokenTypes.ASSIGN_OP, "Expected '='")
         while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
             builder.advanceLexer()
         }
+
+        // Parse right-hand side (expression)
         expressionParser.parseExpression(builder)
-        marker.done(PicatTokenTypes.GOAL)
+
+        marker.done(PicatTokenTypes.ASSIGNMENT)
     }
 }

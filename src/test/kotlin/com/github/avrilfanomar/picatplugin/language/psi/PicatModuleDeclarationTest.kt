@@ -35,7 +35,7 @@ class PicatModuleDeclarationTest : BasePlatformTestCase() {
         // Test that a module declaration with import and export statements is correctly parsed
         val code = """
             module example.
-            
+
             import util.
             export factorial/1, fibonacci/1.
         """.trimIndent()

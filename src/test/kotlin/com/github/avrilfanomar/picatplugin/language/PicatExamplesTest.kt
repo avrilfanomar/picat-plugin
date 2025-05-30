@@ -4,6 +4,7 @@ import com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHigh
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.psi.tree.IElementType
 import com.intellij.testFramework.LexerTestCase
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -39,37 +40,13 @@ class PicatExamplesTest : LexerTestCase() {
         while (lexer.tokenType != null) {
             val tokenType = lexer.tokenType
             val tokenText = sampleText.substring(lexer.tokenStart, lexer.tokenEnd)
+            val position = lexer.tokenStart
 
-            // Check for BAD_CHARACTER tokens
-            if (tokenType == PicatTokenTypes.BAD_CHARACTER) {
-                issues.add("Bad character: '$tokenText' at position ${lexer.tokenStart}")
-            }
-
-            // Check for unrecognized syntax
-            if (tokenText.contains("/*") || tokenText.contains("*/")) {
-                if (tokenType != PicatTokenTypes.COMMENT) {
-                    issues.add("Multi-line comment not recognized: '$tokenText' at position ${lexer.tokenStart}")
-                }
-            }
-
-            // Only check for data constructors in non-comment tokens
-            if (tokenText.contains("$") && 
-                tokenType != PicatTokenTypes.DATA_CONSTRUCTOR && 
-                tokenType != PicatTokenTypes.COMMENT) {
-                // Skip checking for data constructors in comments or strings
-                if (tokenType != PicatTokenTypes.STRING) {
-                    issues.add("Data constructor not recognized: '$tokenText' at position ${lexer.tokenStart}")
-                }
-            }
-
-            if (tokenText.contains("?=>") && tokenType == PicatTokenTypes.BAD_CHARACTER) {
-                issues.add("Backtrackable rule operator not recognized: '$tokenText' at position ${lexer.tokenStart}")
-            }
-
-            if (tokenText.contains("@") && tokenType == PicatTokenTypes.BAD_CHARACTER) {
-                issues.add("As-pattern operator not recognized: '$tokenText' at position ${lexer.tokenStart}")
-            }
-
+            checkForBadCharacters(tokenType, tokenText, position, issues)
+            checkForComments(tokenType, tokenText, position, issues)
+            checkForDataConstructors(tokenType, tokenText, position, issues)
+            checkForBacktrackableRuleOperator(tokenType, tokenText, position, issues)
+            checkForAsPatternOperator(tokenType, tokenText, position, issues)
 
             lexer.advance()
         }
@@ -78,6 +55,80 @@ class PicatExamplesTest : LexerTestCase() {
         if (issues.isNotEmpty()) {
             // Fail the test with a detailed message
             fail("Found ${issues.size} issues in examples.pi:\n${issues.joinToString("\n")}")
+        }
+    }
+
+    /**
+     * Checks for BAD_CHARACTER tokens.
+     */
+    private fun checkForBadCharacters(
+        tokenType: IElementType?, 
+        tokenText: String, 
+        position: Int, 
+        issues: MutableList<String>
+    ) {
+        if (tokenType == PicatTokenTypes.BAD_CHARACTER) {
+            issues.add("Bad character: '$tokenText' at position $position")
+        }
+    }
+
+    /**
+     * Checks for unrecognized comments.
+     */
+    private fun checkForComments(
+        tokenType: IElementType?, 
+        tokenText: String, 
+        position: Int, 
+        issues: MutableList<String>
+    ) {
+        if ((tokenText.contains("/*") || tokenText.contains("*/")) && 
+            tokenType != PicatTokenTypes.COMMENT) {
+            issues.add("Multi-line comment not recognized: '$tokenText' at position $position")
+        }
+    }
+
+    /**
+     * Checks for unrecognized data constructors.
+     */
+    private fun checkForDataConstructors(
+        tokenType: IElementType?, 
+        tokenText: String, 
+        position: Int, 
+        issues: MutableList<String>
+    ) {
+        if (tokenText.contains("$") && 
+            tokenType != PicatTokenTypes.DATA_CONSTRUCTOR && 
+            tokenType != PicatTokenTypes.COMMENT &&
+            tokenType != PicatTokenTypes.STRING) {
+            issues.add("Data constructor not recognized: '$tokenText' at position $position")
+        }
+    }
+
+    /**
+     * Checks for unrecognized backtrackable rule operators.
+     */
+    private fun checkForBacktrackableRuleOperator(
+        tokenType: IElementType?, 
+        tokenText: String, 
+        position: Int, 
+        issues: MutableList<String>
+    ) {
+        if (tokenText.contains("?=>") && tokenType == PicatTokenTypes.BAD_CHARACTER) {
+            issues.add("Backtrackable rule operator not recognized: '$tokenText' at position $position")
+        }
+    }
+
+    /**
+     * Checks for unrecognized as-pattern operators.
+     */
+    private fun checkForAsPatternOperator(
+        tokenType: IElementType?, 
+        tokenText: String, 
+        position: Int, 
+        issues: MutableList<String>
+    ) {
+        if (tokenText.contains("@") && tokenType == PicatTokenTypes.BAD_CHARACTER) {
+            issues.add("As-pattern operator not recognized: '$tokenText' at position $position")
         }
     }
 

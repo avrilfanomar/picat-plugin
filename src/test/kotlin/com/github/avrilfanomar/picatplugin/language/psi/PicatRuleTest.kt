@@ -36,7 +36,7 @@ class PicatRuleTest : BasePlatformTestCase() {
         assertNotNull(body, "Rule should have a body")
         val ruleOperator = rule.getRuleOperator()
         assertNotNull(ruleOperator, "Rule should have a rule operator")
-        
+
         // Verify that the rule operator is =>
         assertEquals("=>", ruleOperator?.text, "Rule operator should be =>")
     }
@@ -65,7 +65,7 @@ class PicatRuleTest : BasePlatformTestCase() {
         assertNotNull(body, "Rule should have a body")
         val ruleOperator = rule.getRuleOperator()
         assertNotNull(ruleOperator, "Rule should have a rule operator")
-        
+
         // Verify that the rule operator is =>
         assertEquals("=>", ruleOperator?.text, "Rule operator should be =>")
     }
@@ -94,10 +94,10 @@ class PicatRuleTest : BasePlatformTestCase() {
         assertNotNull(body, "Rule should have a body")
         val ruleOperator = rule.getRuleOperator()
         assertNotNull(ruleOperator, "Rule should have a rule operator")
-        
+
         // Verify that the rule operator is =>
         assertEquals("=>", ruleOperator?.text, "Rule operator should be =>")
-        
+
         // Verify that the body contains multiple goals
         val goals = body?.text?.split(",")
         assertNotNull(goals, "Body should have goals")
@@ -134,7 +134,7 @@ class PicatRuleTest : BasePlatformTestCase() {
         val code = """
             factorial(0) = 1 => true.
             factorial(N) = N * factorial(N-1) => N > 0.
-            
+
             fibonacci(0) = 0 => true.
             fibonacci(1) = 1 => true.
             fibonacci(N) = fibonacci(N-1) + fibonacci(N-2) => N > 1.
@@ -150,10 +150,30 @@ class PicatRuleTest : BasePlatformTestCase() {
         assertEquals(5, rules.size, "There should be exactly five rules")
 
         // Verify that each rule has the correct head name
-        assertEquals("factorial", rules[0].getHead()?.text?.substringBefore("("), "First rule head name should be factorial")
-        assertEquals("factorial", rules[1].getHead()?.text?.substringBefore("("), "Second rule head name should be factorial")
-        assertEquals("fibonacci", rules[2].getHead()?.text?.substringBefore("("), "Third rule head name should be fibonacci")
-        assertEquals("fibonacci", rules[3].getHead()?.text?.substringBefore("("), "Fourth rule head name should be fibonacci")
-        assertEquals("fibonacci", rules[4].getHead()?.text?.substringBefore("("), "Fifth rule head name should be fibonacci")
+        assertEquals(
+            "factorial", 
+            rules[0].getHead()?.text?.substringBefore("("), 
+            "First rule head name should be factorial"
+        )
+        assertEquals(
+            "factorial", 
+            rules[1].getHead()?.text?.substringBefore("("), 
+            "Second rule head name should be factorial"
+        )
+        assertEquals(
+            "fibonacci", 
+            rules[2].getHead()?.text?.substringBefore("("), 
+            "Third rule head name should be fibonacci"
+        )
+        assertEquals(
+            "fibonacci", 
+            rules[3].getHead()?.text?.substringBefore("("), 
+            "Fourth rule head name should be fibonacci"
+        )
+        assertEquals(
+            "fibonacci", 
+            rules[4].getHead()?.text?.substringBefore("("), 
+            "Fifth rule head name should be fibonacci"
+        )
     }
 }

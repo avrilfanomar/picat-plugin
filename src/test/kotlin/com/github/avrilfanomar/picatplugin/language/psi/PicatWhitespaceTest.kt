@@ -62,7 +62,6 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
      * Helper method to print the PSI tree.
      */
     private fun printPsiTree(element: PsiElement, level: Int) {
-        val indent = "  ".repeat(level)
         element.children.forEach { child ->
             printPsiTree(child, level + 1)
         }
@@ -163,7 +162,10 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
                     val closeParenIndex = termText.indexOf(")")
                     if (closeParenIndex > 0) {
                         val hasWhitespaceBeforeCloseParen = termText[closeParenIndex - 1].isWhitespace()
-                        assertTrue(hasWhitespaceBeforeCloseParen, "Term should have whitespace before closing parenthesis")
+                        assertTrue(
+                            hasWhitespaceBeforeCloseParen, 
+                            "Term should have whitespace before closing parenthesis"
+                        )
                     }
                 }
             }

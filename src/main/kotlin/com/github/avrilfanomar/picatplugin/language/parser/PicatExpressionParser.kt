@@ -9,6 +9,14 @@ import com.intellij.lang.PsiBuilder
 class PicatExpressionParser : PicatBaseParser() {
 
     /**
+     * Parses a Picat pattern.
+     * Delegates to the pattern parser for actual pattern parsing.
+     */
+    fun parsePattern(builder: PsiBuilder) {
+        patternParser.parsePattern(builder)
+    }
+
+    /**
      * Parses a Picat expression.
      */
     fun parseExpression(builder: PsiBuilder) {
