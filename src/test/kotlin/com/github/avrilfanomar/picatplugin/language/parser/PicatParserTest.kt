@@ -25,7 +25,7 @@ class PicatParserTest : BasePlatformTestCase() {
     }
 
     @Test
-    fun testComments() {
+    fun testFunctionWithComments() {
         // Test parsing comments
         val code = """
             % This is a line comment
@@ -38,8 +38,8 @@ class PicatParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFile
 
         // Verify that comments are parsed correctly
-        val facts = file.getAllFacts()
-        assertEquals("Should have one fact", 1, facts.size)
+        val functionDefinitions = file.getFunctions()
+        assertEquals("Should have one function", 1, functionDefinitions.size)
     }
 
     @Test
@@ -71,8 +71,8 @@ class PicatParserTest : BasePlatformTestCase() {
         assertEquals("Should have one export statement", 1, exportStatements.size)
 
         // Verify that facts are parsed correctly
-        val facts = file.getAllFacts()
-        assertEquals("Should have two facts", 2, facts.size)
+        val functionDefinitions = file.getFunctions()
+        assertEquals("Should have two functions", 2, functionDefinitions.size)
     }
 
     @Test

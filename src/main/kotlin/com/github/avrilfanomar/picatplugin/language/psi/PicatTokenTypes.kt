@@ -235,7 +235,6 @@ object PicatTokenTypes {
     val IS = PicatElementType("IS")
     val BODY = PicatElementType("BODY")
     val RULE = PicatElementType("RULE")
-    val RULE_BODY = PicatElementType("RULE_BODY")
     val STATEMENT = PicatElementType("STATEMENT")
     val PROGRAM = PicatElementType("PROGRAM")
     val IF_THEN_ELSE = PicatElementType("IF_THEN_ELSE")

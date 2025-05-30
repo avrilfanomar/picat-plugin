@@ -16,7 +16,7 @@ class PicatPsiTest : BasePlatformTestCase() {
     fun testFactPsi() {
         // Test that a fact is correctly parsed into a PicatFact PSI element
         val code = """
-            factorial(0) = 1.
+            factorial(0).
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
@@ -38,7 +38,7 @@ class PicatPsiTest : BasePlatformTestCase() {
     fun testFactWithMultipleArgumentsPsi() {
         // Test that a fact with multiple arguments is correctly parsed
         val code = """
-            sum(1, 2, 3) = 6.
+            sum(1, 2, 3).
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
@@ -173,6 +173,9 @@ class PicatPsiTest : BasePlatformTestCase() {
             fibonacci(0) = 0.
             fibonacci(1) = 1.
             fibonacci(N) = fibonacci(N-1) + fibonacci(N-2) => N > 1.
+
+            % A simple fact without equals sign or body
+            is_fibonacci(0).
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
@@ -192,7 +195,11 @@ class PicatPsiTest : BasePlatformTestCase() {
 
         // Find all facts in the file
         val facts = file.getAllFacts()
-        assertEquals(3, facts.size, "There should be exactly 3 facts")
+        assertEquals(1, facts.size, "There should be exactly one fact")
+
+        // Find all function definitions in the file
+        val functionDefinitions = file.findChildrenByClass(PicatFunctionDefinition::class.java)
+        assertEquals(5, functionDefinitions.size, "There should be exactly 5 function definitions")
 
         // Find all rules in the file
         val rules = file.findChildrenByClass(PicatRule::class.java)

@@ -138,19 +138,17 @@ rename_list ::= rename_spec ("," rename_spec)*
 rename_spec ::= atom ["=>" atom]
 
 export_list ::= export_spec ("," export_spec)*
-export_spec ::= predicate_indicator | atom
+export_spec ::= rule | atom
 
 file_spec ::= STRING | atom
 
-// Facts and Rules
-fact ::= head ["=" function_body] "." { 
+fact ::= head "." {
   pin=1 
   elementType = FACT
   implements="com.github.avrilfanomar.picatplugin.language.psi.PicatFact"
   extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFactImpl"
 }
 
-// Function definitions (a special kind of fact)
 function_definition ::= head "=" function_body "." {
   pin=2
   elementType = FUNCTION_DEFINITION
@@ -166,7 +164,7 @@ function_body ::= expression {
 }
 rule ::= head rule_operator body "." { pin=2 }
 
-rule_operator ::= "=>" | "?=>" | "<=>" | "?<=>" | ":-" | "?->"
+rule_operator ::= "=>" | "?=>" | "<=>" | "?<=>" | ":-"
 
 // Heads
 head ::= atom_no_args | structure | qualified_atom
