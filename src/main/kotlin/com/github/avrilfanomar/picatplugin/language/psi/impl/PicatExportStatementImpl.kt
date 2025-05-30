@@ -22,11 +22,13 @@ class PicatExportStatementImpl(node: ASTNode) : PicatPsiElementImpl(node), Picat
 
         // If no direct children, search recursively
         val exportList = getExportList()
-        if (exportList != null) {
-            return PsiTreeUtil.findChildrenOfType(exportList, PicatPredicateIndicator::class.java).toList()
-        }
 
-        return emptyList()
+        // Return predicate indicators from export list or empty list if not found
+        return if (exportList != null) {
+            PsiTreeUtil.findChildrenOfType(exportList, PicatPredicateIndicator::class.java).toList()
+        } else {
+            emptyList()
+        }
     }
 
     /**

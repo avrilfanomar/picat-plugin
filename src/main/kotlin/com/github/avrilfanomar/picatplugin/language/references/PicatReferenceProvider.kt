@@ -16,14 +16,13 @@ import com.intellij.util.ProcessingContext
  */
 class PicatReferenceProvider : PsiReferenceProvider() {
     override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
-        // Only handle structure references (predicate/function calls)
-        if (element !is PicatStructure) {
+        // Only handle structure references (predicate/function calls) with valid identifiers
+        if (element !is PicatStructure || element.getIdentifier() == null) {
             return PsiReference.EMPTY_ARRAY
         }
 
-        val identifier = element.getIdentifier() ?: return PsiReference.EMPTY_ARRAY
-
         // Create a reference for the structure
+        val identifier = element.getIdentifier()!!
         val range = TextRange(0, identifier.textLength)
         return arrayOf(PicatReference(identifier, range, element.getArity()))
     }

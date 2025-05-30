@@ -19,19 +19,13 @@ class PicatHeadImpl(node: ASTNode) : ASTWrapperPsiElement(node), PicatHead {
      */
     override fun getName(): String? {
         val atomNoArgs = getAtomNoArgs()
-        if (atomNoArgs != null) {
-            val atom = atomNoArgs.getAtom()
-            if (atom != null) {
-                return atom.text
-            }
-        }
-
         val structure = getStructure()
-        if (structure != null) {
-            return structure.getName()
-        }
 
-        return null
+        return when {
+            atomNoArgs?.getAtom() != null -> atomNoArgs.getAtom()?.text
+            structure != null -> structure.getName()
+            else -> null
+        }
     }
 
     /**

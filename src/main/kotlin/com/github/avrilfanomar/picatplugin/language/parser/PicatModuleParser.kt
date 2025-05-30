@@ -268,26 +268,14 @@ class PicatModuleParser : PicatBaseParser() {
     }
 
     /**
-     * Parses a rename list.
+     * Parses a rename list with one or more rename specifications.
+     * Each rename specification is an atom optionally followed by an arrow and another atom.
      */
     private fun parseRenameList(builder: PsiBuilder) {
         val marker = builder.mark()
-        parseRenameSpec(builder)
 
-        while (builder.tokenType == PicatTokenTypes.COMMA) {
-            builder.advanceLexer()
-            parseRenameSpec(builder)
-        }
-
-        marker.done(PicatTokenTypes.RENAME_LIST)
-    }
-
-    /**
-     * Parses a rename specification.
-     */
-    private fun parseRenameSpec(builder: PsiBuilder) {
+        // Parse first rename spec
         parseAtom(builder)
-
         if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
             builder.advanceLexer()
             while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
@@ -295,5 +283,21 @@ class PicatModuleParser : PicatBaseParser() {
             }
             parseAtom(builder)
         }
+
+        // Parse additional rename specs
+        while (builder.tokenType == PicatTokenTypes.COMMA) {
+            builder.advanceLexer()
+
+            parseAtom(builder)
+            if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
+                builder.advanceLexer()
+                while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+                    builder.advanceLexer()
+                }
+                parseAtom(builder)
+            }
+        }
+
+        marker.done(PicatTokenTypes.RENAME_LIST)
     }
 }

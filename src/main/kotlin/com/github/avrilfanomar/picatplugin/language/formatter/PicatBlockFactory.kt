@@ -27,6 +27,14 @@ class PicatBlockFactory(
     }
 
     /**
+     * Creates blocks for the given node and configuration.
+     * This method is called from PicatBlock.buildChildren().
+     */
+    fun createBlocks(node: ASTNode, config: PicatBlockConfig): List<Block> {
+        return createChildBlocks(node)
+    }
+
+    /**
      * Creates child blocks for the given parent node.
      */
     fun createChildBlocks(node: ASTNode): List<Block> {

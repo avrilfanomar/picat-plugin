@@ -35,113 +35,116 @@ class PicatLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
 
     override fun customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: SettingsType) {
         when (settingsType) {
-            SettingsType.SPACING_SETTINGS -> {
-                consumer.showStandardOptions(
-                    "SPACE_AROUND_ASSIGNMENT_OPERATORS",
-                    "SPACE_AROUND_LOGICAL_OPERATORS",
-                    "SPACE_AROUND_EQUALITY_OPERATORS",
-                    "SPACE_AROUND_RELATIONAL_OPERATORS",
-                    "SPACE_AROUND_ADDITIVE_OPERATORS",
-                    "SPACE_AROUND_MULTIPLICATIVE_OPERATORS",
-                    "SPACE_BEFORE_COMMA",
-                    "SPACE_AFTER_COMMA"
-                )
-
-                // Picat-specific operators
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "spaceBeforeRuleOperators",
-                    "Around rule operators (=>, ?=>)",
-                    "Operators"
-                )
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "spaceAroundConstraintOperators",
-                    "Around constraint operators (#=, #!=, etc.)",
-                    "Operators"
-                )
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "spaceAroundTermComparisonOperators",
-                    "Around term comparison operators (@<, @=<, etc.)",
-                    "Operators"
-                )
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "spaceAroundRangeOperator",
-                    "Around range operator (..)",
-                    "Operators"
-                )
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "spaceAroundTypeConstraintOperator",
-                    "Around type constraint operator (::)",
-                    "Operators"
-                )
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "spaceAroundBitwiseOperators",
-                    "Around bitwise operators (/\\, \\/, <<, >>)",
-                    "Operators"
-                )
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "spaceAroundColon",
-                    "Around colon (:)",
-                    "Punctuation"
-                )
-            }
-
-            SettingsType.WRAPPING_AND_BRACES_SETTINGS -> {
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "keepLineBreakAfterRuleOperators",
-                    "After rule operators (=> and ?=>)",
-                    "Line Breaks"
-                )
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "lineBreakAfterBlockKeywords",
-                    "After block keywords (then, else)",
-                    "Line Breaks"
-                )
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "lineBreakAfterDot",
-                    "After dot (.)",
-                    "Line Breaks"
-                )
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "lineBreakAfterEndKeyword",
-                    "After end keyword",
-                    "Line Breaks"
-                )
-            }
-
-            SettingsType.INDENT_SETTINGS -> {
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "indentRuleBody",
-                    "Indent rule body",
-                    "Indentation"
-                )
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "indentBlockStatements",
-                    "Indent block statements",
-                    "Indentation"
-                )
-                consumer.showCustomOption(
-                    PicatCodeStyleSettings::class.java,
-                    "indentListComprehension",
-                    "Indent list comprehension",
-                    "Indentation"
-                )
-            }
-
+            SettingsType.SPACING_SETTINGS -> customizeSpacingSettings(consumer)
+            SettingsType.WRAPPING_AND_BRACES_SETTINGS -> customizeWrappingAndBracesSettings(consumer)
+            SettingsType.INDENT_SETTINGS -> customizeIndentSettings(consumer)
             else -> {}
         }
+    }
+
+    private fun customizeSpacingSettings(consumer: CodeStyleSettingsCustomizable) {
+        consumer.showStandardOptions(
+            "SPACE_AROUND_ASSIGNMENT_OPERATORS",
+            "SPACE_AROUND_LOGICAL_OPERATORS",
+            "SPACE_AROUND_EQUALITY_OPERATORS",
+            "SPACE_AROUND_RELATIONAL_OPERATORS",
+            "SPACE_AROUND_ADDITIVE_OPERATORS",
+            "SPACE_AROUND_MULTIPLICATIVE_OPERATORS",
+            "SPACE_BEFORE_COMMA",
+            "SPACE_AFTER_COMMA"
+        )
+
+        // Picat-specific operators
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "spaceBeforeRuleOperators",
+            "Around rule operators (=>, ?=>)",
+            "Operators"
+        )
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "spaceAroundConstraintOperators",
+            "Around constraint operators (#=, #!=, etc.)",
+            "Operators"
+        )
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "spaceAroundTermComparisonOperators",
+            "Around term comparison operators (@<, @=<, etc.)",
+            "Operators"
+        )
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "spaceAroundRangeOperator",
+            "Around range operator (..)",
+            "Operators"
+        )
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "spaceAroundTypeConstraintOperator",
+            "Around type constraint operator (::)",
+            "Operators"
+        )
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "spaceAroundBitwiseOperators",
+            "Around bitwise operators (/\\, \\/, <<, >>)",
+            "Operators"
+        )
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "spaceAroundColon",
+            "Around colon (:)",
+            "Punctuation"
+        )
+    }
+
+    private fun customizeWrappingAndBracesSettings(consumer: CodeStyleSettingsCustomizable) {
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "keepLineBreakAfterRuleOperators",
+            "After rule operators (=> and ?=>)",
+            "Line Breaks"
+        )
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "lineBreakAfterBlockKeywords",
+            "After block keywords (then, else)",
+            "Line Breaks"
+        )
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "lineBreakAfterDot",
+            "After dot (.)",
+            "Line Breaks"
+        )
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "lineBreakAfterEndKeyword",
+            "After end keyword",
+            "Line Breaks"
+        )
+    }
+
+    private fun customizeIndentSettings(consumer: CodeStyleSettingsCustomizable) {
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "indentRuleBody",
+            "Indent rule body",
+            "Indentation"
+        )
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "indentBlockStatements",
+            "Indent block statements",
+            "Indentation"
+        )
+        consumer.showCustomOption(
+            PicatCodeStyleSettings::class.java,
+            "indentListComprehension",
+            "Indent list comprehension",
+            "Indentation"
+        )
     }
 
     override fun getCodeSample(settingsType: SettingsType): String {

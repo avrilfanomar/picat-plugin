@@ -14,13 +14,15 @@ class PicatGoalImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatGoal {
      * Returns the type of the goal.
      */
     override fun getType(): String {
-        if (getCall() != null) return "call"
-        if (getIfThenElse() != null) return "if_then_else"
-        if (getAssignment() != null) return "assignment"
-        if (getUnification() != null) return "unification"
-        if (getComparison() != null) return "comparison"
-        if (getNegation() != null) return "negation"
-        return "unknown"
+        return when {
+            getCall() != null -> "call"
+            getIfThenElse() != null -> "if_then_else"
+            getAssignment() != null -> "assignment"
+            getUnification() != null -> "unification"
+            getComparison() != null -> "comparison"
+            getNegation() != null -> "negation"
+            else -> "unknown"
+        }
     }
 
     /**

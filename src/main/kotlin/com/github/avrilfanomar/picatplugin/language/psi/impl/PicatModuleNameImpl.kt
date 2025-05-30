@@ -24,20 +24,16 @@ class PicatModuleNameImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatModul
      */
     override fun getName(): String? {
         // According to the grammar, a module name is an atom
-        val atom = PsiTreeUtil.getChildOfType(this, PicatAtom::class.java)
+        val atom = PsiTreeUtil.getChildOfType(this, PicatAtom::class.java) ?: return null
 
-        // If the atom has an identifier, use its name
-        atom?.getIdentifier()?.getName()?.let { return it }
-
-        // If the atom has a quoted atom, remove the quotes and return the text
-        atom?.getQuotedAtom()?.let { 
-            val text = it.text
-            if (text.length >= 2) {
-                return text.substring(1, text.length - 1)
+        // Try to get the name in order of preference
+        return when {
+            atom.getIdentifier()?.getName() != null -> atom.getIdentifier()?.getName()
+            atom.getQuotedAtom() != null -> {
+                val text = atom.getQuotedAtom()?.text ?: ""
+                if (text.length >= 2) text.substring(1, text.length - 1) else text
             }
+            else -> atom.text
         }
-
-        // If all else fails, return the atom's text
-        return atom?.text
     }
 }

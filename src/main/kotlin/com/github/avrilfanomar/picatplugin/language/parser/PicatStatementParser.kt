@@ -2,6 +2,7 @@ package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.PsiBuilder
+import com.intellij.psi.tree.IElementType
 
 /**
  * Parser component responsible for parsing Picat statements and control structures.
@@ -67,11 +68,41 @@ class PicatStatementParser : PicatBaseParser() {
      */
     private fun parseLogicalStatement(builder: PsiBuilder) {
         when (builder.tokenType) {
-            PicatTokenTypes.NOT_KEYWORD -> parseNegation(builder)
-            PicatTokenTypes.FAIL_KEYWORD -> parseFail(builder)
-            PicatTokenTypes.TRUE_KEYWORD -> parseTrue(builder)
-            PicatTokenTypes.FALSE_KEYWORD -> parseFalse(builder)
-            PicatTokenTypes.CUT -> parseCut(builder)
+            PicatTokenTypes.NOT_KEYWORD -> 
+                parseExpressionStatement(
+                    builder, 
+                    PicatTokenTypes.NOT_KEYWORD, 
+                    "Expected 'not'", 
+                    PicatTokenTypes.NEGATION
+                )
+            PicatTokenTypes.FAIL_KEYWORD -> 
+                parseSimpleStatement(
+                    builder, 
+                    PicatTokenTypes.FAIL_KEYWORD, 
+                    "Expected 'fail'", 
+                    PicatTokenTypes.FAIL_STATEMENT
+                )
+            PicatTokenTypes.TRUE_KEYWORD -> 
+                parseSimpleStatement(
+                    builder, 
+                    PicatTokenTypes.TRUE_KEYWORD, 
+                    "Expected 'true'", 
+                    PicatTokenTypes.TRUE_STATEMENT
+                )
+            PicatTokenTypes.FALSE_KEYWORD -> 
+                parseSimpleStatement(
+                    builder, 
+                    PicatTokenTypes.FALSE_KEYWORD, 
+                    "Expected 'false'", 
+                    PicatTokenTypes.FALSE_STATEMENT
+                )
+            PicatTokenTypes.CUT -> 
+                parseSimpleStatement(
+                    builder, 
+                    PicatTokenTypes.CUT, 
+                    "Expected '!'", 
+                    PicatTokenTypes.CUT_STATEMENT
+                )
         }
     }
 
@@ -91,10 +122,34 @@ class PicatStatementParser : PicatBaseParser() {
      */
     private fun parseFlowControlStatement(builder: PsiBuilder) {
         when (builder.tokenType) {
-            PicatTokenTypes.RETURN_KEYWORD -> parseReturn(builder)
-            PicatTokenTypes.CONTINUE_KEYWORD -> parseContinue(builder)
-            PicatTokenTypes.BREAK_KEYWORD -> parseBreak(builder)
-            PicatTokenTypes.THROW_KEYWORD -> parseThrow(builder)
+            PicatTokenTypes.RETURN_KEYWORD -> 
+                parseExpressionStatement(
+                    builder, 
+                    PicatTokenTypes.RETURN_KEYWORD, 
+                    "Expected 'return'", 
+                    PicatTokenTypes.RETURN_STATEMENT
+                )
+            PicatTokenTypes.CONTINUE_KEYWORD -> 
+                parseSimpleStatement(
+                    builder, 
+                    PicatTokenTypes.CONTINUE_KEYWORD, 
+                    "Expected 'continue'", 
+                    PicatTokenTypes.CONTINUE_STATEMENT
+                )
+            PicatTokenTypes.BREAK_KEYWORD -> 
+                parseSimpleStatement(
+                    builder, 
+                    PicatTokenTypes.BREAK_KEYWORD, 
+                    "Expected 'break'", 
+                    PicatTokenTypes.BREAK_STATEMENT
+                )
+            PicatTokenTypes.THROW_KEYWORD -> 
+                parseExpressionStatement(
+                    builder, 
+                    PicatTokenTypes.THROW_KEYWORD, 
+                    "Expected 'throw'", 
+                    PicatTokenTypes.THROW_STATEMENT
+                )
         }
     }
 
@@ -375,103 +430,53 @@ class PicatStatementParser : PicatBaseParser() {
     }
 
     /**
-     * Parses a negation (not) expression.
+     * Parses a simple statement that consists of just a keyword.
+     * 
+     * @param builder The PSI builder
+     * @param keyword The keyword token type to expect
+     * @param errorMessage The error message if the keyword is not found
+     * @param resultType The token type to mark the statement as
      */
-    private fun parseNegation(builder: PsiBuilder) {
+    private fun parseSimpleStatement(
+        builder: PsiBuilder, 
+        keyword: IElementType, 
+        errorMessage: String,
+        resultType: IElementType
+    ) {
         val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.NOT_KEYWORD, "Expected 'not'")
+        if (keyword == PicatTokenTypes.CUT) {
+            PicatParserUtil.expectToken(builder, keyword, errorMessage)
+        } else {
+            PicatParserUtil.expectKeyword(builder, keyword, errorMessage)
+        }
+        marker.done(resultType)
+    }
+
+    /**
+     * Parses a statement that consists of a keyword followed by an expression.
+     * 
+     * @param builder The PSI builder
+     * @param keyword The keyword token type to expect
+     * @param errorMessage The error message if the keyword is not found
+     * @param resultType The token type to mark the statement as
+     */
+    private fun parseExpressionStatement(
+        builder: PsiBuilder, 
+        keyword: IElementType, 
+        errorMessage: String,
+        resultType: IElementType
+    ) {
+        val marker = builder.mark()
+        PicatParserUtil.expectKeyword(builder, keyword, errorMessage)
         while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
             builder.advanceLexer()
         }
 
         expressionParser.parseExpression(builder)
 
-        marker.done(PicatTokenTypes.NEGATION)
+        marker.done(resultType)
     }
 
-    /**
-     * Parses a fail statement.
-     */
-    private fun parseFail(builder: PsiBuilder) {
-        val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.FAIL_KEYWORD, "Expected 'fail'")
-        marker.done(PicatTokenTypes.FAIL_STATEMENT)
-    }
-
-    /**
-     * Parses a true statement.
-     */
-    private fun parseTrue(builder: PsiBuilder) {
-        val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.TRUE_KEYWORD, "Expected 'true'")
-        marker.done(PicatTokenTypes.TRUE_STATEMENT)
-    }
-
-    /**
-     * Parses a false statement.
-     */
-    private fun parseFalse(builder: PsiBuilder) {
-        val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.FALSE_KEYWORD, "Expected 'false'")
-        marker.done(PicatTokenTypes.FALSE_STATEMENT)
-    }
-
-    /**
-     * Parses a cut (!) statement.
-     */
-    private fun parseCut(builder: PsiBuilder) {
-        val marker = builder.mark()
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.CUT, "Expected '!'")
-        marker.done(PicatTokenTypes.CUT_STATEMENT)
-    }
-
-    /**
-     * Parses a return statement.
-     */
-    private fun parseReturn(builder: PsiBuilder) {
-        val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.RETURN_KEYWORD, "Expected 'return'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
-
-        expressionParser.parseExpression(builder)
-
-        marker.done(PicatTokenTypes.RETURN_STATEMENT)
-    }
-
-    /**
-     * Parses a continue statement.
-     */
-    private fun parseContinue(builder: PsiBuilder) {
-        val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.CONTINUE_KEYWORD, "Expected 'continue'")
-        marker.done(PicatTokenTypes.CONTINUE_STATEMENT)
-    }
-
-    /**
-     * Parses a break statement.
-     */
-    private fun parseBreak(builder: PsiBuilder) {
-        val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.BREAK_KEYWORD, "Expected 'break'")
-        marker.done(PicatTokenTypes.BREAK_STATEMENT)
-    }
-
-    /**
-     * Parses a throw statement.
-     */
-    private fun parseThrow(builder: PsiBuilder) {
-        val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.THROW_KEYWORD, "Expected 'throw'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
-
-        expressionParser.parseExpression(builder)
-
-        marker.done(PicatTokenTypes.THROW_STATEMENT)
-    }
 
     /**
      * Parses an assignment statement.

@@ -50,22 +50,25 @@ class NumberRecognizer : TokenRecognizer {
         endOffset: Int,
         skipper: TokenSkipper
     ): Pair<IElementType, Int>? {
+        var result: Pair<IElementType, Int>? = null
+
         if (startOffset + 2 < endOffset && buffer[startOffset] == '0') {
             when (buffer[startOffset + 1]) {
                 'x', 'X' -> {
                     val endPos = skipper.skipHexNumber(startOffset)
-                    return Pair(PicatTokenTypes.HEX_INTEGER, endPos)
+                    result = Pair(PicatTokenTypes.HEX_INTEGER, endPos)
                 }
                 'o', 'O' -> {
                     val endPos = skipper.skipOctalNumber(startOffset)
-                    return Pair(PicatTokenTypes.OCTAL_INTEGER, endPos)
+                    result = Pair(PicatTokenTypes.OCTAL_INTEGER, endPos)
                 }
                 'b', 'B' -> {
                     val endPos = skipper.skipBinaryNumber(startOffset)
-                    return Pair(PicatTokenTypes.BINARY_INTEGER, endPos)
+                    result = Pair(PicatTokenTypes.BINARY_INTEGER, endPos)
                 }
             }
         }
-        return null
+
+        return result
     }
 }

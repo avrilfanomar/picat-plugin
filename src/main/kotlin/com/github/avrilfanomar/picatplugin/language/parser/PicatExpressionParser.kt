@@ -7,6 +7,8 @@ import com.intellij.lang.PsiBuilder
  * Parser component responsible for parsing Picat expressions.
  */
 class PicatExpressionParser : PicatBaseParser() {
+    // Helper for parsing complex data structures
+    private val helper = PicatExpressionParserHelper()
 
     /**
      * Parses a Picat pattern.
@@ -187,83 +189,12 @@ class PicatExpressionParser : PicatBaseParser() {
                 parseExpression(builder)
                 PicatParserUtil.expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
             }
-            builder.tokenType == PicatTokenTypes.LBRACKET -> parseList(builder)
-            builder.tokenType == PicatTokenTypes.LBRACE -> parseMap(builder)
+            builder.tokenType == PicatTokenTypes.LBRACKET -> helper.parseList(builder)
+            builder.tokenType == PicatTokenTypes.LBRACE -> helper.parseMap(builder)
             else -> {
                 builder.error("Expected primary expression")
                 builder.advanceLexer()
             }
         }
-    }
-
-    private fun parseList(builder: PsiBuilder) {
-        val marker = builder.mark()
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.LBRACKET, "Expected '['")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
-
-        if (builder.tokenType != PicatTokenTypes.RBRACKET) {
-            parseListItems(builder)
-        }
-
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.RBRACKET, "Expected ']'")
-        marker.done(PicatTokenTypes.LIST)
-    }
-
-    private fun parseListItems(builder: PsiBuilder) {
-        parseExpression(builder)
-
-        while (builder.tokenType == PicatTokenTypes.COMMA || builder.tokenType == PicatTokenTypes.SEMICOLON) {
-            builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
-            parseExpression(builder)
-        }
-
-        if (builder.tokenType == PicatTokenTypes.PIPE) {
-            builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
-            parseExpression(builder)
-        }
-    }
-
-    private fun parseMap(builder: PsiBuilder) {
-        val marker = builder.mark()
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.LBRACE, "Expected '{'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
-
-        if (builder.tokenType != PicatTokenTypes.RBRACE) {
-            parseMapEntries(builder)
-        }
-
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.RBRACE, "Expected '}'")
-        marker.done(PicatTokenTypes.MAP)
-    }
-
-    private fun parseMapEntries(builder: PsiBuilder) {
-        parseMapEntry(builder)
-
-        while (builder.tokenType == PicatTokenTypes.COMMA) {
-            builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
-            parseMapEntry(builder)
-        }
-    }
-
-    private fun parseMapEntry(builder: PsiBuilder) {
-        parseExpression(builder)
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.COLON, "Expected ':'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
-        parseExpression(builder)
     }
 }

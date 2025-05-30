@@ -36,12 +36,6 @@ class PicatIncludeStatementImpl(node: ASTNode) : PicatPsiElementImpl(node), Pica
         }
 
         // If not found directly, try to find it in all children
-        for (child in children) {
-            if (child.node.elementType == PicatTokenTypes.STRING) {
-                return child
-            }
-        }
-
-        return null
+        return children.find { it.node.elementType == PicatTokenTypes.STRING }
     }
 }

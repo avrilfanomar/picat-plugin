@@ -102,12 +102,12 @@ class OperatorRecognizer : TokenRecognizer {
 
     override fun recognize(buffer: CharSequence, startOffset: Int, endOffset: Int): Pair<IElementType, Int> {
         // Try to recognize operators in order of length (longest first)
-        recognizeFourCharOperator(buffer, startOffset, endOffset)?.let { return it }
-        recognizeThreeCharOperator(buffer, startOffset, endOffset)?.let { return it }
-        recognizeTwoCharOperator(buffer, startOffset, endOffset)?.let { return it }
+        val fourCharResult = recognizeFourCharOperator(buffer, startOffset, endOffset)
+        val threeCharResult = if (fourCharResult == null) recognizeThreeCharOperator(buffer, startOffset, endOffset) else null
+        val twoCharResult = if (threeCharResult == null) recognizeTwoCharOperator(buffer, startOffset, endOffset) else null
 
-        // If no multi-character operator is found, recognize single character
-        return recognizeSingleCharOperator(buffer, startOffset)
+        // Return the first non-null result, or fall back to single character
+        return fourCharResult ?: threeCharResult ?: twoCharResult ?: recognizeSingleCharOperator(buffer, startOffset)
     }
 
     /**
