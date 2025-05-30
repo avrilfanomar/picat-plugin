@@ -27,10 +27,11 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .around(
                 TokenSet.create(
                     PicatTokenTypes.ASSIGN_OP,
-                    PicatTokenTypes.ASSIGN_ONCE
+                    PicatTokenTypes.ASSIGN_ONCE,
+                    PicatTokenTypes.EQUAL
                 )
             )
-            .spaceIf(picatSettings.spaceAroundAssignmentOperators)
+            .spaces(1)
 
             // Logical operators (&&, ||, !)
             .around(
@@ -86,13 +87,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .spaceIf(picatSettings.spaceAroundMultiplicativeOperators)
 
             // Rule operators (=>, ?=>)
-            .before(PicatTokenTypes.ARROW_OP)
-            .spaces(1)
-            .before(PicatTokenTypes.BACKTRACKABLE_ARROW_OP)
-            .spaces(1)
-            .after(PicatTokenTypes.ARROW_OP)
-            .spaces(1)
-            .after(PicatTokenTypes.BACKTRACKABLE_ARROW_OP)
+            .around(ruleOperators)
             .spaces(1)
 
             // Add indentation for the rule body (between rule operator and end dot)
