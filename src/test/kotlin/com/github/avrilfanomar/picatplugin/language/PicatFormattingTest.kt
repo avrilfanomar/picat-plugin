@@ -388,6 +388,7 @@ literals_example =>
     fun testSimpleFormatting() {
         // A very simple test to see what the formatter does
         val code = "main=>X=10,Y=20."
+        val expected = "main => X = 10, Y = 20."
 
         // Format the code
         myFixture.configureByText("simple.pi", code)
@@ -401,13 +402,8 @@ literals_example =>
         // Get the formatted text
         val formatted = myFixture.editor.document.text
 
-        // Print the formatted text
-        System.out.println("Original code: $code")
-        System.out.println("Formatted code: $formatted")
-
-        // This test is just for debugging purposes, so we don't need to verify anything
-        // Just make it pass
-        assertTrue(true)
+        // Assert that the formatted code matches the expected output
+        assertEquals("Formatting should match expected output", expected, formatted)
     }
 
     @Test

@@ -108,9 +108,9 @@ class PicatBlockHelper {
     /**
      * Checks if a rule body should be indented based on settings.
      */
-    fun shouldIndentRuleBody(parentType: IElementType?, picatSettings: Any): Boolean {
+    fun shouldIndentRuleBody(parentType: IElementType?, picatSettings: PicatCodeStyleSettings): Boolean {
         return isRuleBodyOrStatementType(parentType) && 
-               (picatSettings as? PicatCodeStyleSettings)?.indentRuleBody == true
+               picatSettings.indentRuleBody
     }
 
     /**
@@ -119,10 +119,10 @@ class PicatBlockHelper {
     fun shouldIndentListComprehension(
         parentType: IElementType?,
         elementType: IElementType?,
-        picatSettings: Any
+        picatSettings: PicatCodeStyleSettings
     ): Boolean {
         return isListComprehensionNonBracketOrPipe(parentType, elementType) && 
-               (picatSettings as? PicatCodeStyleSettings)?.indentListComprehension == true
+               picatSettings.indentListComprehension
     }
 
     /**
@@ -131,11 +131,11 @@ class PicatBlockHelper {
     fun shouldIndentBlockStatements(
         elementType: IElementType?,
         parentType: IElementType?,
-        picatSettings: Any
+        picatSettings: PicatCodeStyleSettings
     ): Boolean {
         // Indent statements in block statements
         if (isBlockStatementType(parentType) && 
-            (picatSettings as? PicatCodeStyleSettings)?.indentBlockStatements == true) {
+            picatSettings.indentBlockStatements) {
             return !isBlockKeywordType(elementType)
         }
 
