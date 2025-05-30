@@ -1,9 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 /**
@@ -157,5 +155,33 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         assertEquals(1, functionDefinitions[0].getArity(), "First function arity should be 1")
         assertEquals(1, functionDefinitions[1].getArity(), "Second function arity should be 1")
         assertEquals(2, functionDefinitions[2].getArity(), "Third function arity should be 2")
+    }
+
+    @Test
+    fun testFunctionBodyPsi() {
+        // Test that the function body is correctly marked with the FUNCTION_BODY token type
+        val code = """
+            factorial(A) = 1.
+        """.trimIndent()
+
+        myFixture.configureByText("test.pi", code)
+        val file = myFixture.file as PicatFile
+
+        // Find all function definitions in the file
+        val functionDefinitions = file.findChildrenByClass(PicatFunctionDefinition::class.java)
+        assertEquals(1, functionDefinitions.size, "There should be exactly one function definition")
+
+        // Get the function definition
+        val functionDef = functionDefinitions[0]
+
+        // Verify that the function definition has a body
+        val body = functionDef.getBody()
+        assertNotNull(body, "Function should have a body")
+
+        // Verify that the function body has the correct text
+        assertEquals("1", body?.text, "Function body should be '1'")
+
+        // Verify that the function body is of the correct type
+        assertTrue(body is PicatFunctionBody, "Function body should be a PicatFunctionBody")
     }
 }

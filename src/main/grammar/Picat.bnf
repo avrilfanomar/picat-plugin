@@ -144,6 +144,12 @@ file_spec ::= STRING | atom
 
 // Facts and Rules
 fact ::= head ["=" function_body] "." { pin=1 }
+function_body ::= expression {
+  elementType = FUNCTION_BODY
+  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionBody"
+  methods=[getReturnExpression getStatements]
+  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFunctionBodyImpl"
+}
 rule ::= head rule_operator body "." { pin=2 }
 
 rule_operator ::= "=>" | "?=>" | "<=>" | "?<=>" | ":-" | "?->"
