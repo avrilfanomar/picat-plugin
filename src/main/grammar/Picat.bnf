@@ -114,7 +114,7 @@ picatFile ::= program
 
 program ::= item_*
 
-private item_ ::= (module_decl | directive | fact | rule | statement | COMMENT | MULTI_LINE_COMMENT)
+private item_ ::= (module_decl | directive | fact | function_definition | rule | statement | COMMENT | MULTI_LINE_COMMENT)
 
 // Module declaration
 module_decl ::= module_declaration end_module_declaration?
@@ -146,10 +146,15 @@ file_spec ::= STRING | atom
 fact ::= head ["=" function_body] "." { 
   pin=1 
   elementType = FACT
-  implements=[
-    "com.github.avrilfanomar.picatplugin.language.psi.PicatFact"
-    "com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition"
-  ]
+  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatFact"
+  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFactImpl"
+}
+
+// Function definitions (a special kind of fact)
+function_definition ::= head "=" function_body "." {
+  pin=2
+  elementType = FUNCTION_DEFINITION
+  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition"
   extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFunctionDefinitionImpl"
 }
 
@@ -244,7 +249,12 @@ pattern_list ::= pattern ("," pattern)*
 atom ::= IDENTIFIER | QUOTED_ATOM
 variable ::= VARIABLE | ANONYMOUS_VARIABLE
 number ::= INTEGER | FLOAT | HEX_INTEGER | OCTAL_INTEGER | BINARY_INTEGER
-structure ::= atom "(" [argument_list] ")"
+structure ::= atom "(" [argument_list] ")" {
+  elementType = STRUCTURE
+  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatStructure"
+  methods=[getIdentifier getArgumentList getName getArity]
+  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatStructureImpl"
+}
 tuple ::= "{" [tuple_items] "}"
 tuple_items ::= expression ("," expression)*
 argument_list ::= expression ("," expression)*
