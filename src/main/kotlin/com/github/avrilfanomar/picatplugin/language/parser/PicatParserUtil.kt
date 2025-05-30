@@ -31,6 +31,16 @@ object PicatParserUtil {
     }
 
     /**
+     * Skips whitespace tokens in the builder.
+     * This is a common operation in the parser, so it's extracted to a utility method.
+     */
+    fun skipWhitespace(builder: PsiBuilder) {
+        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
+            builder.advanceLexer()
+        }
+    }
+
+    /**
      * Checks if the token type is an atom.
      */
     fun isAtom(type: IElementType?): Boolean =

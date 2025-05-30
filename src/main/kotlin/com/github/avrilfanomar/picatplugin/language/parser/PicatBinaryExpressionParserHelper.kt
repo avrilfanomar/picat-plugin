@@ -15,9 +15,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseLogicalAndExpression(builder)
         while (builder.tokenType == PicatTokenTypes.OR_KEYWORD) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseLogicalAndExpression(builder)
         }
     }
@@ -29,9 +27,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseBitwiseOrExpression(builder)
         while (builder.tokenType == PicatTokenTypes.AND_KEYWORD) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseBitwiseOrExpression(builder)
         }
     }
@@ -43,9 +39,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseBitwiseXorExpression(builder)
         while (builder.tokenType == PicatTokenTypes.PIPE) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseBitwiseXorExpression(builder)
         }
     }
@@ -57,9 +51,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseBitwiseAndExpression(builder)
         while (builder.tokenType == PicatTokenTypes.XOR_KEYWORD || builder.tokenType == PicatTokenTypes.CARET) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseBitwiseAndExpression(builder)
         }
     }
@@ -71,9 +63,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseEqualityExpression(builder)
         while (builder.tokenType == PicatTokenTypes.AMPERSAND) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseEqualityExpression(builder)
         }
     }
@@ -85,9 +75,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseRelationalExpression(builder)
         while (builder.tokenType == PicatTokenTypes.IDENTICAL || builder.tokenType == PicatTokenTypes.NOT_IDENTICAL) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseRelationalExpression(builder)
         }
     }
@@ -99,9 +87,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseShiftExpression(builder)
         while (PicatParserUtil.isRelationalOperator(builder.tokenType)) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseShiftExpression(builder)
         }
     }
@@ -113,9 +99,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseAdditiveExpression(builder)
         while (builder.tokenType == PicatTokenTypes.SHIFT_LEFT || builder.tokenType == PicatTokenTypes.SHIFT_RIGHT) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseAdditiveExpression(builder)
         }
     }
@@ -127,9 +111,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseMultiplicativeExpression(builder)
         while (builder.tokenType == PicatTokenTypes.PLUS || builder.tokenType == PicatTokenTypes.MINUS) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseMultiplicativeExpression(builder)
         }
     }
@@ -141,9 +123,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parsePowerExpression(builder)
         while (PicatParserUtil.isMultiplicativeOperator(builder.tokenType)) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parsePowerExpression(builder)
         }
     }
@@ -155,9 +135,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseUnaryExpression(builder)
         while (builder.tokenType == PicatTokenTypes.POWER) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseUnaryExpression(builder)
         }
     }

@@ -8,7 +8,7 @@ import com.intellij.lang.PsiBuilder
  */
 class PicatExpressionParser : PicatBaseParser() {
     // Helper for parsing complex data structures
-    private val helper = PicatExpressionParserHelper()
+    private lateinit var helper: PicatExpressionParserHelper
     // Helper for parsing binary expressions
     private lateinit var binaryHelper: PicatBinaryExpressionParserHelper
 
@@ -17,6 +17,7 @@ class PicatExpressionParser : PicatBaseParser() {
      */
     override fun initialize(parserContext: PicatParserContext) {
         super.initialize(parserContext)
+        helper = PicatExpressionParserHelper()
         helper.initialize(parserContext)
         binaryHelper = PicatBinaryExpressionParserHelper()
         binaryHelper.initialize(parserContext)
@@ -41,14 +42,10 @@ class PicatExpressionParser : PicatBaseParser() {
         // Ternary operator
         if (builder.tokenType == PicatTokenTypes.QUESTION) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseExpression(builder)
             PicatParserUtil.expectToken(builder, PicatTokenTypes.COLON, "Expected ':' in ternary operator")
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseExpression(builder)
         }
 
@@ -64,9 +61,7 @@ class PicatExpressionParser : PicatBaseParser() {
             builder.tokenType == PicatTokenTypes.STRING -> parseString(builder)
             builder.tokenType == PicatTokenTypes.LPAR -> {
                 builder.advanceLexer()
-                while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                    builder.advanceLexer()
-                }
+                PicatParserUtil.skipWhitespace(builder)
                 parseExpression(builder)
                 PicatParserUtil.expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
             }
