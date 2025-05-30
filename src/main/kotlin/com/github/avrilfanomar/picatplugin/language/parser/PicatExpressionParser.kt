@@ -10,7 +10,16 @@ class PicatExpressionParser : PicatBaseParser() {
     // Helper for parsing complex data structures
     private val helper = PicatExpressionParserHelper()
     // Helper for parsing binary expressions
-    private val binaryHelper = PicatBinaryExpressionParserHelper()
+    private lateinit var binaryHelper: PicatBinaryExpressionParserHelper
+
+    /**
+     * Initialize this parser with references to other parser components.
+     */
+    override fun initialize(parserContext: PicatParserContext) {
+        super.initialize(parserContext)
+        binaryHelper = PicatBinaryExpressionParserHelper()
+        binaryHelper.initialize(parserContext)
+    }
 
     /**
      * Parses a Picat pattern.

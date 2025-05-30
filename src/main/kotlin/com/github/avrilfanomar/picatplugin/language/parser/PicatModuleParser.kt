@@ -8,7 +8,16 @@ import com.intellij.lang.PsiBuilder
  */
 class PicatModuleParser : PicatBaseParser() {
     // Helper for parsing import/export related constructs
-    private val helper = PicatModuleParserHelper()
+    private lateinit var helper: PicatModuleParserHelper
+
+    /**
+     * Initialize this parser with references to other parser components.
+     */
+    override fun initialize(parserContext: PicatParserContext) {
+        super.initialize(parserContext)
+        helper = PicatModuleParserHelper()
+        helper.initialize(parserContext)
+    }
 
     /**
      * Parses a module declaration.

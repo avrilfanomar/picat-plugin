@@ -9,7 +9,16 @@ import com.intellij.psi.tree.IElementType
  */
 class PicatStatementParser : PicatBaseParser() {
     // Helper for parsing specific statement types
-    private val helper = PicatStatementParserHelper()
+    private lateinit var helper: PicatStatementParserHelper
+
+    /**
+     * Initialize this parser with references to other parser components.
+     */
+    override fun initialize(parserContext: PicatParserContext) {
+        super.initialize(parserContext)
+        helper = PicatStatementParserHelper()
+        helper.initialize(parserContext)
+    }
 
     /**
      * Parses a Picat goal (statement).
