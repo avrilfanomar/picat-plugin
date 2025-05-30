@@ -86,10 +86,14 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .spaceIf(picatSettings.spaceAroundMultiplicativeOperators)
 
             // Rule operators (=>, ?=>)
-            .before(ruleOperators)
-            .spaceIf(picatSettings.spaceBeforeRuleOperators)
-            .after(ruleOperators)
-            .spacing(0, 0, 1, picatSettings.keepLineBreakAfterRuleOperators, 1)
+            .before(PicatTokenTypes.ARROW_OP)
+            .spaces(1)
+            .before(PicatTokenTypes.BACKTRACKABLE_ARROW_OP)
+            .spaces(1)
+            .after(PicatTokenTypes.ARROW_OP)
+            .spaces(1)
+            .after(PicatTokenTypes.BACKTRACKABLE_ARROW_OP)
+            .spaces(1)
 
             // Add indentation for the rule body (between rule operator and end dot)
             .between(ruleOperators, PicatTokenTypes.DOT)
@@ -164,13 +168,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .before(PicatTokenTypes.COMMA)
             .spaceIf(picatSettings.spaceBeforeComma)
             .after(PicatTokenTypes.COMMA)
-            .spacing(
-                if (picatSettings.spaceAfterComma) 0 else 0,
-                if (picatSettings.spaceAfterComma) 1 else 0,
-                0,  // minLineFeeds
-                true,  // keepLineBreaks
-                0  // keepBlankLines
-            )
+            .spaces(1)
 
             // No space after comma when followed by closing brackets/parentheses/braces
             .between(
