@@ -15,26 +15,22 @@ class CommentRecognizer : TokenRecognizer {
             return false
         }
 
-        // Check for line comment (%)
-        if (buffer[startOffset] == '%') {
-            return true
-        }
-
-        // Check for multi-line comment (/* ... */)
-        return startOffset + 1 < endOffset && 
-               buffer[startOffset] == '/' && 
-               buffer[startOffset + 1] == '*'
+        // Check for line comment (%) or multi-line comment (/* ... */)
+        return buffer[startOffset] == '%' || 
+               (startOffset + 1 < endOffset && 
+                buffer[startOffset] == '/' && 
+                buffer[startOffset + 1] == '*')
     }
 
     override fun recognize(buffer: CharSequence, startOffset: Int, endOffset: Int): Pair<IElementType, Int> {
         val skipper = TokenSkipper(buffer, endOffset)
-        
+
         // Handle line comment (%)
         if (buffer[startOffset] == '%') {
             val endPos = skipper.skipLineComment(startOffset)
             return Pair(PicatTokenTypes.COMMENT, endPos)
         }
-        
+
         // Handle multi-line comment (/* ... */)
         val endPos = skipper.skipMultiLineComment(startOffset)
         return Pair(PicatTokenTypes.COMMENT, endPos)

@@ -22,8 +22,34 @@ class NumberRecognizer : TokenRecognizer {
 
     override fun recognize(buffer: CharSequence, startOffset: Int, endOffset: Int): Pair<IElementType, Int> {
         val skipper = TokenSkipper(buffer, endOffset)
-        
-        // Check for hex, octal, or binary numbers
+
+        // Check for special number formats (hex, octal, binary)
+        val specialFormat = recognizeSpecialNumberFormat(buffer, startOffset, endOffset, skipper)
+        if (specialFormat != null) {
+            return specialFormat
+        }
+
+        // Handle regular numbers (integer or float)
+        val endPos = skipper.skipNumber(startOffset)
+        val tokenText = buffer.substring(startOffset, endPos)
+
+        return if (tokenText.contains('.')) {
+            Pair(PicatTokenTypes.FLOAT, endPos)
+        } else {
+            Pair(PicatTokenTypes.INTEGER, endPos)
+        }
+    }
+
+    /**
+     * Recognizes special number formats (hex, octal, binary).
+     * Returns null if the number is not in a special format.
+     */
+    private fun recognizeSpecialNumberFormat(
+        buffer: CharSequence, 
+        startOffset: Int, 
+        endOffset: Int,
+        skipper: TokenSkipper
+    ): Pair<IElementType, Int>? {
         if (startOffset + 2 < endOffset && buffer[startOffset] == '0') {
             when (buffer[startOffset + 1]) {
                 'x', 'X' -> {
@@ -40,15 +66,6 @@ class NumberRecognizer : TokenRecognizer {
                 }
             }
         }
-
-        // Handle regular numbers (integer or float)
-        val endPos = skipper.skipNumber(startOffset)
-        val tokenText = buffer.substring(startOffset, endPos)
-        
-        return if (tokenText.contains('.')) {
-            Pair(PicatTokenTypes.FLOAT, endPos)
-        } else {
-            Pair(PicatTokenTypes.INTEGER, endPos)
-        }
+        return null
     }
 }

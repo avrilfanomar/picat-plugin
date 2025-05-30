@@ -15,24 +15,19 @@ class StringRecognizer : TokenRecognizer {
             return false
         }
 
-        // Check for string literal (")
-        if (buffer[startOffset] == '"') {
-            return true
-        }
-
-        // Check for quoted atom (')
-        return buffer[startOffset] == '\''
+        // Check for string literal (") or quoted atom (')
+        return buffer[startOffset] == '"' || buffer[startOffset] == '\''
     }
 
     override fun recognize(buffer: CharSequence, startOffset: Int, endOffset: Int): Pair<IElementType, Int> {
         val skipper = TokenSkipper(buffer, endOffset)
-        
+
         // Handle string literal (")
         if (buffer[startOffset] == '"') {
             val endPos = skipper.skipString(startOffset)
             return Pair(PicatTokenTypes.STRING, endPos)
         }
-        
+
         // Handle quoted atom (')
         val endPos = skipper.skipQuotedAtom(startOffset)
         return Pair(PicatTokenTypes.QUOTED_ATOM, endPos)

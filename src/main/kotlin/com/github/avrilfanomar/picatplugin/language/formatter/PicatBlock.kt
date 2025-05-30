@@ -13,6 +13,15 @@ import com.intellij.psi.formatter.common.AbstractBlock
 import com.intellij.psi.tree.IElementType
 
 /**
+ * Configuration class for PicatBlock to reduce constructor parameter count.
+ */
+data class PicatBlockConfig(
+    val settings: CodeStyleSettings,
+    val spacingBuilder: SpacingBuilder? = null,
+    val blockFactory: PicatBlockFactory? = null
+)
+
+/**
  * Core formatter component for Picat language.
  * This class is responsible for determining indentation, spacing, and child block creation.
  */
@@ -20,10 +29,11 @@ class PicatBlock(
     node: ASTNode,
     wrap: Wrap?,
     alignment: Alignment?,
-    private val settings: CodeStyleSettings,
-    private val spacingBuilder: SpacingBuilder? = null,
-    private val blockFactory: PicatBlockFactory? = null
+    config: PicatBlockConfig
 ) : AbstractBlock(node, wrap, alignment) {
+    private val settings: CodeStyleSettings = config.settings
+    private val spacingBuilder: SpacingBuilder? = config.spacingBuilder
+    private val blockFactory: PicatBlockFactory? = config.blockFactory
 
     /**
      * Builds child blocks for this block.

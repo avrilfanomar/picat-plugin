@@ -24,7 +24,7 @@ class PicatStatementParser : PicatBaseParser() {
 
         marker.done(PicatTokenTypes.GOAL)
     }
-    
+
     /**
      * Checks if the current token is a control flow statement.
      */
@@ -36,7 +36,7 @@ class PicatStatementParser : PicatBaseParser() {
                tokenType == PicatTokenTypes.CASE_KEYWORD ||
                tokenType == PicatTokenTypes.TRY_KEYWORD
     }
-    
+
     /**
      * Parses a control flow statement.
      */
@@ -49,7 +49,7 @@ class PicatStatementParser : PicatBaseParser() {
             PicatTokenTypes.TRY_KEYWORD -> parseTryCatch(builder)
         }
     }
-    
+
     /**
      * Checks if the current token is a logical statement.
      */
@@ -61,7 +61,7 @@ class PicatStatementParser : PicatBaseParser() {
                tokenType == PicatTokenTypes.FALSE_KEYWORD ||
                tokenType == PicatTokenTypes.CUT
     }
-    
+
     /**
      * Parses a logical statement.
      */
@@ -74,7 +74,7 @@ class PicatStatementParser : PicatBaseParser() {
             PicatTokenTypes.CUT -> parseCut(builder)
         }
     }
-    
+
     /**
      * Checks if the current token is a flow control statement.
      */
@@ -85,7 +85,7 @@ class PicatStatementParser : PicatBaseParser() {
                tokenType == PicatTokenTypes.BREAK_KEYWORD ||
                tokenType == PicatTokenTypes.THROW_KEYWORD
     }
-    
+
     /**
      * Parses a flow control statement.
      */

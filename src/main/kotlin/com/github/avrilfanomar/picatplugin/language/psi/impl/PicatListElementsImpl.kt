@@ -23,22 +23,38 @@ class PicatListElementsImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatLis
      */
     override fun getTailExpression(): PicatExpression? {
         // Check if there's a pipe token in the list
-        val pipeElement = node.findChildByType(PicatTokenTypes.PIPE)
-        if (pipeElement != null) {
-            // The tail expression is the expression after the pipe
-            // Find the expression that comes after the pipe in the AST
-            val pipeIndex = node.getChildren(null).indexOf(pipeElement)
-            if (pipeIndex >= 0 && pipeIndex < node.getChildren(null).size - 1) {
-                // Find the next expression after the pipe
-                for (i in pipeIndex + 1 until node.getChildren(null).size) {
-                    val child = node.getChildren(null)[i]
-                    if (child.psi is PicatExpression) {
-                        return child.psi as PicatExpression
-                    }
-                }
-            }
+        val pipeElement = node.findChildByType(PicatTokenTypes.PIPE) ?: return null
+
+        // Find the expression that comes after the pipe in the AST
+        return findExpressionAfterPipe(pipeElement)
+    }
+
+    /**
+     * Finds the first expression after the pipe element.
+     */
+    private fun findExpressionAfterPipe(pipeElement: ASTNode): PicatExpression? {
+        val children = node.getChildren(null)
+        val pipeIndex = children.indexOf(pipeElement)
+
+        // Check if pipe is found and not the last element
+        if (pipeIndex < 0 || pipeIndex >= children.size - 1) {
+            return null
         }
 
+        // Find the next expression after the pipe
+        return findFirstExpressionInRange(children, pipeIndex + 1)
+    }
+
+    /**
+     * Finds the first PicatExpression in the given range of children.
+     */
+    private fun findFirstExpressionInRange(children: Array<ASTNode>, startIndex: Int): PicatExpression? {
+        for (i in startIndex until children.size) {
+            val child = children[i]
+            if (child.psi is PicatExpression) {
+                return child.psi as PicatExpression
+            }
+        }
         return null
     }
 }

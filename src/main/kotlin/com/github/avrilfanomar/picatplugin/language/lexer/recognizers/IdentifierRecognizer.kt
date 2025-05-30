@@ -39,7 +39,7 @@ class IdentifierRecognizer : TokenRecognizer {
             "to_radix_string", "to_real", "to_string", "to_uppercase", "true", "uppercase",
             "values", "var", "variant", "vars", "zip"
         )
-        
+
         // Map of keywords to their token types
         private val KEYWORD_MAP = mapOf(
             // Module-related keywords
@@ -47,13 +47,13 @@ class IdentifierRecognizer : TokenRecognizer {
             "export" to PicatTokenTypes.EXPORT_KEYWORD,
             "include" to PicatTokenTypes.INCLUDE_KEYWORD,
             "module" to PicatTokenTypes.MODULE_KEYWORD,
-            
+
             // Legacy keywords
             "index" to PicatTokenTypes.INDEX_KEYWORD,
             "private" to PicatTokenTypes.PRIVATE_KEYWORD,
             "public" to PicatTokenTypes.PUBLIC_KEYWORD,
             "table" to PicatTokenTypes.TABLE_KEYWORD,
-            
+
             // Control flow keywords
             "end" to PicatTokenTypes.END_KEYWORD,
             "if" to PicatTokenTypes.IF_KEYWORD,
@@ -68,7 +68,7 @@ class IdentifierRecognizer : TokenRecognizer {
             "throw" to PicatTokenTypes.THROW_KEYWORD,
             "try" to PicatTokenTypes.TRY_KEYWORD,
             "catch" to PicatTokenTypes.CATCH_KEYWORD,
-            
+
             // Logical and arithmetic keywords
             "not" to PicatTokenTypes.NOT_KEYWORD,
             "once" to PicatTokenTypes.ONCE_KEYWORD,
@@ -77,7 +77,7 @@ class IdentifierRecognizer : TokenRecognizer {
             "rem" to PicatTokenTypes.REM_KEYWORD,
             "in" to PicatTokenTypes.IN_KEYWORD,
             "notin" to PicatTokenTypes.NOTIN_KEYWORD,
-            
+
             // Other keywords
             "writef" to PicatTokenTypes.WRITEF_KEYWORD,
             "true" to PicatTokenTypes.TRUE_KEYWORD,
@@ -94,13 +94,8 @@ class IdentifierRecognizer : TokenRecognizer {
 
         val c = buffer[startOffset]
 
-        // Check for variables (start with uppercase letter or underscore)
-        if (CharacterClassifier.isUpperCase(c) || c == '_') {
-            return true
-        }
-
-        // Check for identifiers and keywords (start with lowercase letter)
-        return CharacterClassifier.isLetter(c)
+        // Check for variables (start with uppercase letter or underscore) or identifiers/keywords (start with letter)
+        return CharacterClassifier.isUpperCase(c) || c == '_' || CharacterClassifier.isLetter(c)
     }
 
     override fun recognize(buffer: CharSequence, startOffset: Int, endOffset: Int): Pair<IElementType, Int> {
@@ -128,14 +123,16 @@ class IdentifierRecognizer : TokenRecognizer {
      */
     private fun getTokenTypeForText(text: String): IElementType {
         // Check if it's a keyword
-        KEYWORD_MAP[text]?.let { return it }
-
-        // Check if it's a basic module function
-        if (BASIC_MODULE_FUNCTIONS.contains(text)) {
-            return PicatTokenTypes.BASIC_MODULE_FUNCTION
+        val keywordType = KEYWORD_MAP[text]
+        if (keywordType != null) {
+            return keywordType
         }
 
-        // Default to identifier
-        return PicatTokenTypes.IDENTIFIER
+        // Check if it's a basic module function or default to identifier
+        return if (BASIC_MODULE_FUNCTIONS.contains(text)) {
+            PicatTokenTypes.BASIC_MODULE_FUNCTION
+        } else {
+            PicatTokenTypes.IDENTIFIER
+        }
     }
 }

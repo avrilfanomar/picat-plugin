@@ -22,7 +22,8 @@ class PicatBlockFactory(
      * Creates a PicatBlock for the given node.
      */
     fun createBlock(node: ASTNode, wrap: Wrap? = null, alignment: Alignment? = null): PicatBlock {
-        return PicatBlock(node, wrap, alignment, settings, spacingBuilder, this)
+        val config = PicatBlockConfig(settings, spacingBuilder, this)
+        return PicatBlock(node, wrap, alignment, config)
     }
 
     /**
