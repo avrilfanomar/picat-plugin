@@ -7,6 +7,8 @@ import com.intellij.lang.PsiBuilder
  * Parser component responsible for parsing Picat module-related constructs.
  */
 class PicatModuleParser : PicatBaseParser() {
+    // Helper for parsing import/export related constructs
+    private val helper = PicatModuleParserHelper()
 
     /**
      * Parses a module declaration.
@@ -22,12 +24,12 @@ class PicatModuleParser : PicatBaseParser() {
 
         // Optional export clause
         if (builder.tokenType == PicatTokenTypes.EXPORT_KEYWORD) {
-            parseExportClause(builder)
+            helper.parseExportClause(builder)
         }
 
         // Optional import clause
         if (builder.tokenType == PicatTokenTypes.IMPORT_KEYWORD) {
-            parseImportClause(builder)
+            helper.parseImportClause(builder)
         }
 
         PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after module declaration")
@@ -80,7 +82,7 @@ class PicatModuleParser : PicatBaseParser() {
         while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
             builder.advanceLexer()
         }
-        parseImportList(builder)
+        helper.parseImportList(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after import statement")
         marker.done(PicatTokenTypes.IMPORT_STATEMENT)
     }
@@ -94,7 +96,7 @@ class PicatModuleParser : PicatBaseParser() {
         while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
             builder.advanceLexer()
         }
-        parseExportList(builder)
+        helper.parseExportList(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after export statement")
         marker.done(PicatTokenTypes.EXPORT_STATEMENT)
     }
@@ -143,161 +145,11 @@ class PicatModuleParser : PicatBaseParser() {
             while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
                 builder.advanceLexer()
             }
-            parseRenameList(builder)
+            helper.parseRenameList(builder)
         }
 
         PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after using statement")
         marker.done(PicatTokenTypes.USING_STATEMENT)
     }
 
-    /**
-     * Parses an export clause in a module declaration.
-     */
-    private fun parseExportClause(builder: PsiBuilder) {
-        val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.EXPORT_KEYWORD, "Expected 'export'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
-        parseExportList(builder)
-        marker.done(PicatTokenTypes.EXPORT_CLAUSE)
-    }
-
-    /**
-     * Parses an import clause in a module declaration.
-     */
-    private fun parseImportClause(builder: PsiBuilder) {
-        val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.IMPORT_KEYWORD, "Expected 'import'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
-        parseImportList(builder)
-        marker.done(PicatTokenTypes.IMPORT_CLAUSE)
-    }
-
-    /**
-     * Parses an export list.
-     */
-    private fun parseExportList(builder: PsiBuilder) {
-        val marker = builder.mark()
-        parseExportSpec(builder)
-
-        while (builder.tokenType == PicatTokenTypes.COMMA) {
-            builder.advanceLexer()
-            parseExportSpec(builder)
-        }
-
-        marker.done(PicatTokenTypes.EXPORT_LIST)
-    }
-
-    /**
-     * Parses an export specification.
-     */
-    private fun parseExportSpec(builder: PsiBuilder) {
-        if (builder.lookAhead(1) == PicatTokenTypes.DIVIDE || builder.lookAhead(1) == PicatTokenTypes.INTEGER) {
-            parsePredicateIndicator(builder)
-        } else {
-            parseAtom(builder)
-        }
-    }
-
-    /**
-     * Parses a predicate indicator (name/arity).
-     */
-    private fun parsePredicateIndicator(builder: PsiBuilder) {
-        val marker = builder.mark()
-
-        // Parse the predicate name (atom)
-        if (PicatParserUtil.isAtom(builder.tokenType)) {
-            val atomMarker = builder.mark()
-            builder.advanceLexer()
-            atomMarker.done(PicatTokenTypes.ATOM)
-        } else {
-            builder.error("Expected atom")
-            builder.advanceLexer()
-        }
-
-        // Parse the '/' separator
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.DIVIDE, "Expected '/'")
-
-        // Parse the arity (integer)
-        if (builder.tokenType == PicatTokenTypes.INTEGER) {
-            builder.advanceLexer()
-        } else {
-            builder.error("Expected integer")
-        }
-
-        marker.done(PicatTokenTypes.PREDICATE_INDICATOR)
-    }
-
-    /**
-     * Parses an import list.
-     */
-    private fun parseImportList(builder: PsiBuilder) {
-        val marker = builder.mark()
-        parseModuleSpec(builder)
-
-        while (builder.tokenType == PicatTokenTypes.COMMA) {
-            builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
-            parseModuleSpec(builder)
-        }
-
-        marker.done(PicatTokenTypes.IMPORT_LIST)
-    }
-
-    /**
-     * Parses a module specification.
-     */
-    private fun parseModuleSpec(builder: PsiBuilder) {
-        val marker = builder.mark()
-        parseModuleName(builder)
-
-        if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
-            builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
-            parseRenameList(builder)
-        }
-
-        marker.done(PicatTokenTypes.MODULE_SPEC)
-    }
-
-    /**
-     * Parses a rename list with one or more rename specifications.
-     * Each rename specification is an atom optionally followed by an arrow and another atom.
-     */
-    private fun parseRenameList(builder: PsiBuilder) {
-        val marker = builder.mark()
-
-        // Parse first rename spec
-        parseAtom(builder)
-        if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
-            builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
-            parseAtom(builder)
-        }
-
-        // Parse additional rename specs
-        while (builder.tokenType == PicatTokenTypes.COMMA) {
-            builder.advanceLexer()
-
-            parseAtom(builder)
-            if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
-                builder.advanceLexer()
-                while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                    builder.advanceLexer()
-                }
-                parseAtom(builder)
-            }
-        }
-
-        marker.done(PicatTokenTypes.RENAME_LIST)
-    }
 }
