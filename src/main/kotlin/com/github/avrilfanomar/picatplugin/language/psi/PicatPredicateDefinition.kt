@@ -26,12 +26,6 @@ interface PicatPredicateDefinition : PsiElement {
      */
     fun getArgumentList(): PicatArgumentList?
 
-    /**
-     * Returns the head of the predicate.
-     * @deprecated The predicate_head rule has been removed from the grammar.
-     */
-    @Deprecated("The predicate_head rule has been removed from the grammar")
-    fun getHead(): PicatPredicateHead?
 
     /**
      * Returns the body of the predicate.

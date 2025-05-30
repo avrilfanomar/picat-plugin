@@ -22,7 +22,7 @@ class PicatHeadImpl(node: ASTNode) : ASTWrapperPsiElement(node), PicatHead {
         val structure = getStructure()
 
         return when {
-            atomNoArgs?.getAtom() != null -> atomNoArgs.getAtom()?.text
+            atomNoArgs != null && atomNoArgs.getAtom() != null -> atomNoArgs.getAtom()?.text
             structure != null -> structure.getName()
             else -> null
         }

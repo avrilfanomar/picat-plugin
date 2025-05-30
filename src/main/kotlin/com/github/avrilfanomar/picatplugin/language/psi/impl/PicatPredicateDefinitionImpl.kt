@@ -42,14 +42,6 @@ class PicatPredicateDefinitionImpl(node: ASTNode) : PicatPsiElementImpl(node), P
         return PsiTreeUtil.getChildOfType(this, PicatArgumentList::class.java)
     }
 
-    /**
-     * Returns the head of the predicate.
-     * @deprecated The predicate_head rule has been removed from the grammar.
-     */
-    @Deprecated("The predicate_head rule has been removed from the grammar")
-    override fun getHead(): PicatPredicateHead? {
-        return PsiTreeUtil.getChildOfType(this, PicatPredicateHead::class.java)
-    }
 
     /**
      * Returns the body of the predicate.

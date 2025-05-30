@@ -198,9 +198,7 @@ class PicatStatementParser : PicatBaseParser() {
 
         // Parse assignment operator
         PicatParserUtil.expectToken(builder, PicatTokenTypes.ASSIGN_OP, "Expected '='")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
+        PicatParserUtil.skipWhitespace(builder)
 
         // Parse right-hand side (expression)
         expressionParser.parseExpression(builder)
