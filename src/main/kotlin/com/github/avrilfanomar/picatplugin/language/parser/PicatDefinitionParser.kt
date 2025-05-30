@@ -1,6 +1,8 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.expectToken
 import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isAtom
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isRuleOperator
 import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.skipWhitespace
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.PsiBuilder
@@ -53,11 +55,11 @@ class PicatDefinitionParser : PicatBaseParser() {
         parseHead(builder)
 
         skipWhitespace(builder)
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.EQUAL, "Expected '=' in function definition")
+        expectToken(builder, PicatTokenTypes.EQUAL, "Expected '=' in function definition")
         skipWhitespace(builder)
 
         expressionParser.parseExpression(builder)
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after function definition")
+        expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after function definition")
         // Mark as both a function definition and a fact
         val factMarker = marker.precede()
         marker.done(PicatTokenTypes.FUNCTION_DEFINITION)
@@ -73,7 +75,7 @@ class PicatDefinitionParser : PicatBaseParser() {
 
         // Parse rule operator (=>, ?=>, <=>, ?<=>, :-)
         val opMarker = builder.mark()
-        if (PicatParserUtil.isRuleOperator(builder.tokenType)) {
+        if (isRuleOperator(builder.tokenType)) {
             builder.advanceLexer()
             skipWhitespace(builder)
             opMarker.done(PicatTokenTypes.RULE_OPERATOR)
@@ -83,7 +85,7 @@ class PicatDefinitionParser : PicatBaseParser() {
         }
 
         statementParser.parseBody(builder)
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after rule definition")
+        expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after rule definition")
         marker.done(PicatTokenTypes.RULE)
     }
 
@@ -110,7 +112,7 @@ class PicatDefinitionParser : PicatBaseParser() {
             }
         }
 
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after predicate definition")
+        expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after predicate definition")
 
         // If this is a function definition, mark it as both a function definition and a fact
         if (isFunction) {
@@ -136,7 +138,7 @@ class PicatDefinitionParser : PicatBaseParser() {
             expressionParser.parseExpression(builder)
         }
 
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after fact")
+        expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after fact")
         marker.done(PicatTokenTypes.FACT)
     }
 
@@ -184,7 +186,7 @@ class PicatDefinitionParser : PicatBaseParser() {
 
         parseHead(builder)
         skipWhitespace(builder)
-        val result = PicatParserUtil.isRuleOperator(builder.tokenType)
+        val result = isRuleOperator(builder.tokenType)
         marker.rollbackTo()
 
         return result

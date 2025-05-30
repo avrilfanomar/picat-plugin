@@ -1,5 +1,9 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.expectKeyword
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.expectToken
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isAtom
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.skipWhitespace
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.PsiBuilder
 
@@ -13,8 +17,8 @@ class PicatModuleParserHelper : PicatBaseParser() {
      */
     fun parseExportClause(builder: PsiBuilder) {
         val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.EXPORT_KEYWORD, "Expected 'export'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectKeyword(builder, PicatTokenTypes.EXPORT_KEYWORD, "Expected 'export'")
+        skipWhitespace(builder)
         parseExportList(builder)
         marker.done(PicatTokenTypes.EXPORT_CLAUSE)
     }
@@ -24,8 +28,8 @@ class PicatModuleParserHelper : PicatBaseParser() {
      */
     fun parseImportClause(builder: PsiBuilder) {
         val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.IMPORT_KEYWORD, "Expected 'import'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectKeyword(builder, PicatTokenTypes.IMPORT_KEYWORD, "Expected 'import'")
+        skipWhitespace(builder)
         parseImportList(builder)
         marker.done(PicatTokenTypes.IMPORT_CLAUSE)
     }
@@ -63,7 +67,7 @@ class PicatModuleParserHelper : PicatBaseParser() {
         val marker = builder.mark()
 
         // Parse the predicate name (atom)
-        if (PicatParserUtil.isAtom(builder.tokenType)) {
+        if (isAtom(builder.tokenType)) {
             val atomMarker = builder.mark()
             builder.advanceLexer()
             atomMarker.done(PicatTokenTypes.ATOM)
@@ -73,7 +77,7 @@ class PicatModuleParserHelper : PicatBaseParser() {
         }
 
         // Parse the '/' separator
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.DIVIDE, "Expected '/'")
+        expectToken(builder, PicatTokenTypes.DIVIDE, "Expected '/'")
 
         // Parse the arity (integer)
         if (builder.tokenType == PicatTokenTypes.INTEGER) {
@@ -94,7 +98,7 @@ class PicatModuleParserHelper : PicatBaseParser() {
 
         while (builder.tokenType == PicatTokenTypes.COMMA) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseModuleSpec(builder)
         }
 
@@ -110,7 +114,7 @@ class PicatModuleParserHelper : PicatBaseParser() {
 
         if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseRenameList(builder)
         }
 
@@ -128,7 +132,7 @@ class PicatModuleParserHelper : PicatBaseParser() {
         parseAtom(builder)
         if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
             builder.advanceLexer()
-PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseAtom(builder)
         }
 
@@ -139,7 +143,7 @@ PicatParserUtil.skipWhitespace(builder)
             parseAtom(builder)
             if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
                 builder.advanceLexer()
-                PicatParserUtil.skipWhitespace(builder)
+                skipWhitespace(builder)
                 parseAtom(builder)
             }
         }

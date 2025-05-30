@@ -1,5 +1,9 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isMultiplicativeOperator
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isRelationalOperator
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isUnaryOperator
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.skipWhitespace
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.PsiBuilder
 
@@ -15,7 +19,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseLogicalAndExpression(builder)
         while (builder.tokenType == PicatTokenTypes.OR_KEYWORD) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseLogicalAndExpression(builder)
         }
     }
@@ -27,7 +31,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseBitwiseOrExpression(builder)
         while (builder.tokenType == PicatTokenTypes.AND_KEYWORD) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseBitwiseOrExpression(builder)
         }
     }
@@ -39,7 +43,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseBitwiseXorExpression(builder)
         while (builder.tokenType == PicatTokenTypes.PIPE) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseBitwiseXorExpression(builder)
         }
     }
@@ -51,7 +55,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseBitwiseAndExpression(builder)
         while (builder.tokenType == PicatTokenTypes.XOR_KEYWORD || builder.tokenType == PicatTokenTypes.CARET) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseBitwiseAndExpression(builder)
         }
     }
@@ -63,7 +67,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseEqualityExpression(builder)
         while (builder.tokenType == PicatTokenTypes.AMPERSAND) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseEqualityExpression(builder)
         }
     }
@@ -75,7 +79,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseRelationalExpression(builder)
         while (builder.tokenType == PicatTokenTypes.IDENTICAL || builder.tokenType == PicatTokenTypes.NOT_IDENTICAL) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseRelationalExpression(builder)
         }
     }
@@ -85,9 +89,9 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
      */
     fun parseRelationalExpression(builder: PsiBuilder) {
         parseShiftExpression(builder)
-        while (PicatParserUtil.isRelationalOperator(builder.tokenType)) {
+        while (isRelationalOperator(builder.tokenType)) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseShiftExpression(builder)
         }
     }
@@ -99,7 +103,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseAdditiveExpression(builder)
         while (builder.tokenType == PicatTokenTypes.SHIFT_LEFT || builder.tokenType == PicatTokenTypes.SHIFT_RIGHT) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseAdditiveExpression(builder)
         }
     }
@@ -111,7 +115,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseMultiplicativeExpression(builder)
         while (builder.tokenType == PicatTokenTypes.PLUS || builder.tokenType == PicatTokenTypes.MINUS) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseMultiplicativeExpression(builder)
         }
     }
@@ -121,9 +125,9 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
      */
     fun parseMultiplicativeExpression(builder: PsiBuilder) {
         parsePowerExpression(builder)
-        while (PicatParserUtil.isMultiplicativeOperator(builder.tokenType)) {
+        while (isMultiplicativeOperator(builder.tokenType)) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parsePowerExpression(builder)
         }
     }
@@ -135,7 +139,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
         parseUnaryExpression(builder)
         while (builder.tokenType == PicatTokenTypes.POWER) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseUnaryExpression(builder)
         }
     }
@@ -146,7 +150,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
     private fun parseUnaryExpression(builder: PsiBuilder) {
         val marker = builder.mark()
 
-        if (PicatParserUtil.isUnaryOperator(builder.tokenType)) {
+        if (isUnaryOperator(builder.tokenType)) {
             builder.advanceLexer()
         }
 

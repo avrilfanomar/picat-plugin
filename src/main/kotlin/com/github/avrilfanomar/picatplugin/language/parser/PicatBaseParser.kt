@@ -1,6 +1,9 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.expectToken
 import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isAtom
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isNumber
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isVariable
 import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.skipWhitespace
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.PsiBuilder
@@ -49,28 +52,28 @@ abstract class PicatBaseParser : PicatParserComponent {
             parseAtom(builder)
         }
         skipWhitespace(builder)
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
+        expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
         skipWhitespace(builder)
 
         if (builder.tokenType != PicatTokenTypes.RPAR) {
             parseArgumentList(builder)
         }
 
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
+        expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
         marker.done(PicatTokenTypes.STRUCTURE)
     }
 
     protected fun parseQualifiedAtom(builder: PsiBuilder) {
         val marker = builder.mark()
         parseAtom(builder)
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.'")
+        expectToken(builder, PicatTokenTypes.DOT, "Expected '.'")
         skipWhitespace(builder)
         parseAtom(builder)
         marker.done(PicatTokenTypes.ATOM_NO_ARGS)
     }
 
     protected fun parseVariable(builder: PsiBuilder) {
-        if (PicatParserUtil.isVariable(builder.tokenType)) {
+        if (isVariable(builder.tokenType)) {
             builder.advanceLexer()
         } else {
             builder.error("Expected variable")
@@ -78,7 +81,7 @@ abstract class PicatBaseParser : PicatParserComponent {
     }
 
     protected fun parseNumber(builder: PsiBuilder) {
-        if (PicatParserUtil.isNumber(builder.tokenType)) {
+        if (isNumber(builder.tokenType)) {
             builder.advanceLexer()
         } else {
             builder.error("Expected number")

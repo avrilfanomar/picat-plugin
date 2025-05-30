@@ -1,5 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.skipWhitespace
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.PsiBuilder
 
@@ -48,14 +49,14 @@ class PicatExpressionParserHelper : PicatBaseParser() {
                 PicatTokenTypes.PIPE -> {
                     // List tail (e.g., [1, 2 | Rest])
                     builder.advanceLexer()
-                    PicatParserUtil.skipWhitespace(builder)
+                    skipWhitespace(builder)
                     expressionParser.parseExpression(builder)
                     shouldContinue = false
                 }
                 PicatTokenTypes.COMMA -> {
                     // Another list item
                     builder.advanceLexer()
-                    PicatParserUtil.skipWhitespace(builder)
+                    skipWhitespace(builder)
                     expressionParser.parseExpression(builder)
                 }
                 else -> {
@@ -104,7 +105,7 @@ class PicatExpressionParserHelper : PicatBaseParser() {
         // Parse additional key-value pairs
         while (builder.tokenType == PicatTokenTypes.COMMA) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseMapEntry(builder)
         }
 
@@ -123,7 +124,7 @@ class PicatExpressionParserHelper : PicatBaseParser() {
         // Expect the map association operator
         if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
         } else {
             builder.error("Expected '=>'")
         }

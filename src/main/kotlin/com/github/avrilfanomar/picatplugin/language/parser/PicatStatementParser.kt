@@ -1,5 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.expectToken
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.skipWhitespace
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.PsiBuilder
 import com.intellij.psi.tree.IElementType
@@ -46,8 +48,8 @@ class PicatStatementParser : PicatBaseParser() {
 
         // Check each category of statements
         return checkAndParseControlFlowStatement(builder, tokenType) ||
-               checkAndParseLogicalStatement(builder, tokenType) ||
-               checkAndParseFlowControlStatement(builder, tokenType)
+                checkAndParseLogicalStatement(builder, tokenType) ||
+                checkAndParseFlowControlStatement(builder, tokenType)
     }
 
     /**
@@ -79,45 +81,50 @@ class PicatStatementParser : PicatBaseParser() {
         when (tokenType) {
             PicatTokenTypes.NOT_KEYWORD -> {
                 helper.parseStatement(
-                    builder, 
-                    PicatTokenTypes.NOT_KEYWORD, 
-                    "Expected 'not'", 
+                    builder,
+                    PicatTokenTypes.NOT_KEYWORD,
+                    "Expected 'not'",
                     PicatTokenTypes.NEGATION,
                     true // Parse expression
                 )
             }
+
             PicatTokenTypes.FAIL_KEYWORD -> {
                 helper.parseStatement(
-                    builder, 
-                    PicatTokenTypes.FAIL_KEYWORD, 
-                    "Expected 'fail'", 
+                    builder,
+                    PicatTokenTypes.FAIL_KEYWORD,
+                    "Expected 'fail'",
                     PicatTokenTypes.FAIL_STATEMENT
                 )
             }
+
             PicatTokenTypes.TRUE_KEYWORD -> {
                 helper.parseStatement(
-                    builder, 
-                    PicatTokenTypes.TRUE_KEYWORD, 
-                    "Expected 'true'", 
+                    builder,
+                    PicatTokenTypes.TRUE_KEYWORD,
+                    "Expected 'true'",
                     PicatTokenTypes.TRUE_STATEMENT
                 )
             }
+
             PicatTokenTypes.FALSE_KEYWORD -> {
                 helper.parseStatement(
-                    builder, 
-                    PicatTokenTypes.FALSE_KEYWORD, 
-                    "Expected 'false'", 
+                    builder,
+                    PicatTokenTypes.FALSE_KEYWORD,
+                    "Expected 'false'",
                     PicatTokenTypes.FALSE_STATEMENT
                 )
             }
+
             PicatTokenTypes.CUT -> {
                 helper.parseStatement(
-                    builder, 
-                    PicatTokenTypes.CUT, 
-                    "Expected '!'", 
+                    builder,
+                    PicatTokenTypes.CUT,
+                    "Expected '!'",
                     PicatTokenTypes.CUT_STATEMENT
                 )
             }
+
             else -> parsed = false
         }
 
@@ -134,38 +141,42 @@ class PicatStatementParser : PicatBaseParser() {
         when (tokenType) {
             PicatTokenTypes.RETURN_KEYWORD -> {
                 helper.parseStatement(
-                    builder, 
-                    PicatTokenTypes.RETURN_KEYWORD, 
-                    "Expected 'return'", 
+                    builder,
+                    PicatTokenTypes.RETURN_KEYWORD,
+                    "Expected 'return'",
                     PicatTokenTypes.RETURN_STATEMENT,
                     true // Parse expression
                 )
             }
+
             PicatTokenTypes.CONTINUE_KEYWORD -> {
                 helper.parseStatement(
-                    builder, 
-                    PicatTokenTypes.CONTINUE_KEYWORD, 
-                    "Expected 'continue'", 
+                    builder,
+                    PicatTokenTypes.CONTINUE_KEYWORD,
+                    "Expected 'continue'",
                     PicatTokenTypes.CONTINUE_STATEMENT
                 )
             }
+
             PicatTokenTypes.BREAK_KEYWORD -> {
                 helper.parseStatement(
-                    builder, 
-                    PicatTokenTypes.BREAK_KEYWORD, 
-                    "Expected 'break'", 
+                    builder,
+                    PicatTokenTypes.BREAK_KEYWORD,
+                    "Expected 'break'",
                     PicatTokenTypes.BREAK_STATEMENT
                 )
             }
+
             PicatTokenTypes.THROW_KEYWORD -> {
                 helper.parseStatement(
-                    builder, 
-                    PicatTokenTypes.THROW_KEYWORD, 
-                    "Expected 'throw'", 
+                    builder,
+                    PicatTokenTypes.THROW_KEYWORD,
+                    "Expected 'throw'",
                     PicatTokenTypes.THROW_STATEMENT,
                     true // Parse expression
                 )
             }
+
             else -> parsed = false
         }
 
@@ -197,8 +208,8 @@ class PicatStatementParser : PicatBaseParser() {
         expressionParser.parsePattern(builder)
 
         // Parse assignment operator
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.ASSIGN_OP, "Expected '='")
-        PicatParserUtil.skipWhitespace(builder)
+        expectToken(builder, PicatTokenTypes.ASSIGN_OP, "Expected '='")
+        skipWhitespace(builder)
 
         // Parse right-hand side (expression)
         expressionParser.parseExpression(builder)
