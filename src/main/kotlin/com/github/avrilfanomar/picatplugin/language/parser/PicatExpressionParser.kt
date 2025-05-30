@@ -1,5 +1,10 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.expectToken
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isAtom
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isNumber
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isVariable
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.skipWhitespace
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.PsiBuilder
 
@@ -38,14 +43,15 @@ class PicatExpressionParser : PicatBaseParser() {
         val marker = builder.mark()
 
         binaryHelper.parseLogicalOrExpression(builder)
-
+        skipWhitespace(builder)
         // Ternary operator
         if (builder.tokenType == PicatTokenTypes.QUESTION) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseExpression(builder)
-            PicatParserUtil.expectToken(builder, PicatTokenTypes.COLON, "Expected ':' in ternary operator")
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
+            expectToken(builder, PicatTokenTypes.COLON, "Expected ':' in ternary operator")
+            skipWhitespace(builder)
             parseExpression(builder)
         }
 
@@ -55,15 +61,15 @@ class PicatExpressionParser : PicatBaseParser() {
 
     fun parsePrimaryExpression(builder: PsiBuilder) {
         when {
-            PicatParserUtil.isAtom(builder.tokenType) -> parseAtom(builder)
-            PicatParserUtil.isVariable(builder.tokenType) -> parseVariable(builder)
-            PicatParserUtil.isNumber(builder.tokenType) -> parseNumber(builder)
+            isAtom(builder.tokenType) -> parseAtom(builder)
+            isVariable(builder.tokenType) -> parseVariable(builder)
+            isNumber(builder.tokenType) -> parseNumber(builder)
             builder.tokenType == PicatTokenTypes.STRING -> parseString(builder)
             builder.tokenType == PicatTokenTypes.LPAR -> {
                 builder.advanceLexer()
-                PicatParserUtil.skipWhitespace(builder)
+                skipWhitespace(builder)
                 parseExpression(builder)
-                PicatParserUtil.expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
+                expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
             }
             builder.tokenType == PicatTokenTypes.LBRACKET -> helper.parseList(builder)
             builder.tokenType == PicatTokenTypes.LBRACE -> helper.parseMap(builder)

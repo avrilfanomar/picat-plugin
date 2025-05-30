@@ -1,5 +1,8 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.expectKeyword
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.expectToken
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.skipWhitespace
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.PsiBuilder
 import com.intellij.psi.tree.IElementType
@@ -14,33 +17,33 @@ class PicatStatementParserHelper : PicatBaseParser() {
      */
     fun parseIfThenElse(builder: PsiBuilder) {
         val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.IF_KEYWORD, "Expected 'if'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectKeyword(builder, PicatTokenTypes.IF_KEYWORD, "Expected 'if'")
+        skipWhitespace(builder)
 
         expressionParser.parseExpression(builder)
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.THEN_KEYWORD, "Expected 'then'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectKeyword(builder, PicatTokenTypes.THEN_KEYWORD, "Expected 'then'")
+        skipWhitespace(builder)
 
         statementParser.parseBody(builder)
 
         // Optional elseif clauses
         while (builder.tokenType == PicatTokenTypes.ELSEIF_KEYWORD) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             expressionParser.parseExpression(builder)
-            PicatParserUtil.expectKeyword(builder, PicatTokenTypes.THEN_KEYWORD, "Expected 'then'")
-            PicatParserUtil.skipWhitespace(builder)
+            expectKeyword(builder, PicatTokenTypes.THEN_KEYWORD, "Expected 'then'")
+            skipWhitespace(builder)
             statementParser.parseBody(builder)
         }
 
         // Optional else clause
         if (builder.tokenType == PicatTokenTypes.ELSE_KEYWORD) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             statementParser.parseBody(builder)
         }
 
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
+        expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
         marker.done(PicatTokenTypes.IF_THEN_ELSE)
     }
 
@@ -49,17 +52,17 @@ class PicatStatementParserHelper : PicatBaseParser() {
      */
     fun parseForeachLoop(builder: PsiBuilder) {
         val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.FOREACH_KEYWORD, "Expected 'foreach'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectKeyword(builder, PicatTokenTypes.FOREACH_KEYWORD, "Expected 'foreach'")
+        skipWhitespace(builder)
 
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
-        PicatParserUtil.skipWhitespace(builder)
+        expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
+        skipWhitespace(builder)
         parseForeachGenerators(builder)
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
+        skipWhitespace(builder)
 
         statementParser.parseBody(builder)
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
+        expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
         marker.done(PicatTokenTypes.FOREACH_LOOP)
     }
 
@@ -72,7 +75,7 @@ class PicatStatementParserHelper : PicatBaseParser() {
         parseForeachGenerator(builder)
         while (builder.tokenType == PicatTokenTypes.COMMA) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseForeachGenerator(builder)
         }
 
@@ -92,11 +95,11 @@ class PicatStatementParserHelper : PicatBaseParser() {
             expressionParser.parsePattern(builder)
         }
 
-        PicatParserUtil.skipWhitespace(builder)
+        skipWhitespace(builder)
 
         // Expect 'in' keyword
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.IN_KEYWORD, "Expected 'in'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectKeyword(builder, PicatTokenTypes.IN_KEYWORD, "Expected 'in'")
+        skipWhitespace(builder)
 
         // Parse expression
         expressionParser.parseExpression(builder)
@@ -109,17 +112,17 @@ class PicatStatementParserHelper : PicatBaseParser() {
      */
     fun parseWhileLoop(builder: PsiBuilder) {
         val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.WHILE_KEYWORD, "Expected 'while'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectKeyword(builder, PicatTokenTypes.WHILE_KEYWORD, "Expected 'while'")
+        skipWhitespace(builder)
 
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
-        PicatParserUtil.skipWhitespace(builder)
+        expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
+        skipWhitespace(builder)
         expressionParser.parseExpression(builder)
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
+        skipWhitespace(builder)
 
         statementParser.parseBody(builder)
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
+        expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
         marker.done(PicatTokenTypes.WHILE_LOOP)
     }
 
@@ -128,17 +131,17 @@ class PicatStatementParserHelper : PicatBaseParser() {
      */
     fun parseCaseExpression(builder: PsiBuilder) {
         val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.CASE_KEYWORD, "Expected 'case'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectKeyword(builder, PicatTokenTypes.CASE_KEYWORD, "Expected 'case'")
+        skipWhitespace(builder)
 
         expressionParser.parseExpression(builder)
-        PicatParserUtil.skipWhitespace(builder)
+        skipWhitespace(builder)
 
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.OF_KEYWORD, "Expected 'of'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectKeyword(builder, PicatTokenTypes.OF_KEYWORD, "Expected 'of'")
+        skipWhitespace(builder)
 
         parseCaseArms(builder)
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
+        expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
         marker.done(PicatTokenTypes.CASE_EXPRESSION)
     }
 
@@ -151,7 +154,7 @@ class PicatStatementParserHelper : PicatBaseParser() {
         parseCaseArm(builder)
         while (builder.tokenType == PicatTokenTypes.SEMICOLON) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseCaseArm(builder)
         }
 
@@ -165,8 +168,8 @@ class PicatStatementParserHelper : PicatBaseParser() {
         val marker = builder.mark()
 
         expressionParser.parsePattern(builder)
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.ARROW_OP, "Expected '=>'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectToken(builder, PicatTokenTypes.ARROW_OP, "Expected '=>'")
+        skipWhitespace(builder)
 
         statementParser.parseBody(builder)
 
@@ -178,18 +181,18 @@ class PicatStatementParserHelper : PicatBaseParser() {
      */
     fun parseTryCatch(builder: PsiBuilder) {
         val marker = builder.mark()
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.TRY_KEYWORD, "Expected 'try'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectKeyword(builder, PicatTokenTypes.TRY_KEYWORD, "Expected 'try'")
+        skipWhitespace(builder)
 
         statementParser.parseBody(builder)
 
         // Parse catch clauses
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.CATCH_KEYWORD, "Expected 'catch'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectKeyword(builder, PicatTokenTypes.CATCH_KEYWORD, "Expected 'catch'")
+        skipWhitespace(builder)
 
         parseCatchClauses(builder)
 
-        PicatParserUtil.expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
+        expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
         marker.done(PicatTokenTypes.TRY_CATCH)
     }
 
@@ -202,7 +205,7 @@ class PicatStatementParserHelper : PicatBaseParser() {
         parseCatchClause(builder)
         while (builder.tokenType == PicatTokenTypes.SEMICOLON) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             parseCatchClause(builder)
         }
 
@@ -216,8 +219,8 @@ class PicatStatementParserHelper : PicatBaseParser() {
         val marker = builder.mark()
 
         expressionParser.parsePattern(builder)
-        PicatParserUtil.expectToken(builder, PicatTokenTypes.ARROW_OP, "Expected '=>'")
-        PicatParserUtil.skipWhitespace(builder)
+        expectToken(builder, PicatTokenTypes.ARROW_OP, "Expected '=>'")
+        skipWhitespace(builder)
 
         statementParser.parseBody(builder)
 
@@ -238,14 +241,14 @@ class PicatStatementParserHelper : PicatBaseParser() {
 
         // Handle special case for cut operator
         if (keyword == PicatTokenTypes.CUT) {
-            PicatParserUtil.expectToken(builder, keyword, errorMessage)
+            expectToken(builder, keyword, errorMessage)
         } else {
-            PicatParserUtil.expectKeyword(builder, keyword, errorMessage)
+            expectKeyword(builder, keyword, errorMessage)
         }
 
         // Parse expression if needed
         if (parseExpression) {
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             expressionParser.parseExpression(builder)
         }
 

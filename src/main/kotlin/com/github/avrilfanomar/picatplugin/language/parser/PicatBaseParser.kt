@@ -1,8 +1,9 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isAtom
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.skipWhitespace
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.PsiBuilder
-import com.intellij.psi.tree.IElementType
 
 /**
  * Base class for all Picat parser components.
@@ -31,15 +32,8 @@ abstract class PicatBaseParser : PicatParserComponent {
         this.context = parserContext
     }
 
-    // Basic parsing methods
-    protected open fun parseComment(builder: PsiBuilder) {
-        val marker = builder.mark()
-        builder.advanceLexer()
-        marker.done(PicatTokenTypes.COMMENT)
-    }
-
     protected fun parseAtom(builder: PsiBuilder) {
-        if (PicatParserUtil.isAtom(builder.tokenType)) {
+        if (isAtom(builder.tokenType)) {
             builder.advanceLexer()
         } else {
             builder.error("Expected atom")
@@ -48,9 +42,15 @@ abstract class PicatBaseParser : PicatParserComponent {
 
     protected fun parseStructure(builder: PsiBuilder) {
         val marker = builder.mark()
-        parseAtom(builder)
+        if (isQualifiedAtom(builder)) {
+            parseQualifiedAtom(builder)
+        }
+        if (isAtom(builder.tokenType)) {
+            parseAtom(builder)
+        }
+        skipWhitespace(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
-        PicatParserUtil.skipWhitespace(builder)
+        skipWhitespace(builder)
 
         if (builder.tokenType != PicatTokenTypes.RPAR) {
             parseArgumentList(builder)
@@ -64,7 +64,7 @@ abstract class PicatBaseParser : PicatParserComponent {
         val marker = builder.mark()
         parseAtom(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.'")
-        PicatParserUtil.skipWhitespace(builder)
+        skipWhitespace(builder)
         parseAtom(builder)
         marker.done(PicatTokenTypes.ATOM_NO_ARGS)
     }
@@ -96,10 +96,11 @@ abstract class PicatBaseParser : PicatParserComponent {
     protected fun parseArgumentList(builder: PsiBuilder) {
         val marker = builder.mark()
         expressionParser.parseExpression(builder)
+        skipWhitespace(builder)
 
         while (builder.tokenType == PicatTokenTypes.COMMA) {
             builder.advanceLexer()
-            PicatParserUtil.skipWhitespace(builder)
+            skipWhitespace(builder)
             expressionParser.parseExpression(builder)
         }
 
@@ -111,7 +112,7 @@ abstract class PicatBaseParser : PicatParserComponent {
         val marker = builder.mark()
         var result = false
 
-        if (PicatParserUtil.isAtom(builder.tokenType)) {
+        if (isAtom(builder.tokenType)) {
             builder.advanceLexer()
             result = builder.tokenType == PicatTokenTypes.LPAR
         }
@@ -124,11 +125,11 @@ abstract class PicatBaseParser : PicatParserComponent {
         val marker = builder.mark()
         var result = false
 
-        if (PicatParserUtil.isAtom(builder.tokenType)) {
+        if (isAtom(builder.tokenType)) {
             builder.advanceLexer()
             if (builder.tokenType == PicatTokenTypes.DOT) {
                 builder.advanceLexer()
-                result = PicatParserUtil.isAtom(builder.tokenType)
+                result = isAtom(builder.tokenType)
             }
         }
 
