@@ -102,6 +102,11 @@ class OperatorRecognizer : TokenRecognizer {
     }
 
     override fun recognize(buffer: CharSequence, startOffset: Int, endOffset: Int): Pair<IElementType, Int> {
+        // Special case for slash followed by space
+        if (buffer[startOffset] == '/' && startOffset + 1 < endOffset && buffer[startOffset + 1] == ' ') {
+            return Pair(PicatTokenTypes.DIVIDE, startOffset + 1)
+        }
+
         // Try to recognize operators in order of length (longest first)
         val fourCharResult = recognizeFourCharOperator(buffer, startOffset, endOffset)
         val threeCharResult = if (fourCharResult == null) 

@@ -36,6 +36,7 @@ object PicatTokenTypes {
     val USING_KEYWORD = PicatTokenType("USING_KEYWORD")
     val WHILE_KEYWORD = PicatTokenType("WHILE_KEYWORD")
     val DO_KEYWORD = PicatTokenType("DO_KEYWORD")
+    val PASS_KEYWORD = PicatTokenType("PASS_KEYWORD")
 
     // Legacy keywords (not in current BNF but kept for backward compatibility)
     val INDEX_KEYWORD = PicatTokenType("INDEX_KEYWORD")
@@ -175,7 +176,7 @@ object PicatTokenTypes {
         FOREACH_KEYWORD, IN_KEYWORD, RETURN_KEYWORD, CONTINUE_KEYWORD, BREAK_KEYWORD,
         NOT_KEYWORD, FAIL_KEYWORD, TRUE_KEYWORD, FALSE_KEYWORD, CASE_KEYWORD, OF_KEYWORD,
         TRY_KEYWORD, CATCH_KEYWORD, FINALLY_KEYWORD, THROW_KEYWORD, USING_KEYWORD,
-        WHILE_KEYWORD, DO_KEYWORD, MOD_KEYWORD, AND_KEYWORD, OR_KEYWORD, XOR_KEYWORD, IS_KEYWORD,
+        WHILE_KEYWORD, DO_KEYWORD, PASS_KEYWORD, MOD_KEYWORD, AND_KEYWORD, OR_KEYWORD, XOR_KEYWORD, IS_KEYWORD,
 
         // Legacy keywords (kept for backward compatibility)
         INDEX_KEYWORD, PRIVATE_KEYWORD, PUBLIC_KEYWORD, TABLE_KEYWORD, FOR_KEYWORD,
@@ -291,6 +292,7 @@ object PicatTokenTypes {
     // Statement types
     val NEGATION = PicatElementType("NEGATION")
     val FAIL_STATEMENT = PicatElementType("FAIL_STATEMENT")
+    val PASS_STATEMENT = PicatElementType("PASS_STATEMENT")
     val TRUE_STATEMENT = PicatElementType("TRUE_STATEMENT")
     val FALSE_STATEMENT = PicatElementType("FALSE_STATEMENT")
     val CUT_STATEMENT = PicatElementType("CUT_STATEMENT")

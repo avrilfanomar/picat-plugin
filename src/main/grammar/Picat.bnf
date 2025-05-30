@@ -41,6 +41,7 @@
     USING_KEYWORD="using"
     WHILE_KEYWORD="while"
     DO_KEYWORD="do"
+    PASS_KEYWORD="pass"
 
     // Operators
     ARROW_OP="=>"
@@ -186,6 +187,7 @@ goal ::= call
        | arithmetic_comparison
        | negation
        | fail
+       | pass
        | true_goal
        | false_goal
        | not_goal
@@ -211,6 +213,7 @@ arithmetic_comparison ::= expression arithmetic_comparison_operator expression
 arithmetic_comparison_operator ::= "=:=" | "=\\="
 negation ::= NOT_KEYWORD goal
 fail ::= FAIL_KEYWORD
+pass ::= PASS_KEYWORD
 true_goal ::= TRUE_KEYWORD
 false_goal ::= FALSE_KEYWORD
 not_goal ::= negation
