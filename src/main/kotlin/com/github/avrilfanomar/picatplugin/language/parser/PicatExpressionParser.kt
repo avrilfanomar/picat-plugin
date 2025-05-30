@@ -17,6 +17,7 @@ class PicatExpressionParser : PicatBaseParser() {
      */
     override fun initialize(parserContext: PicatParserContext) {
         super.initialize(parserContext)
+        helper.initialize(parserContext)
         binaryHelper = PicatBinaryExpressionParserHelper()
         binaryHelper.initialize(parserContext)
     }

@@ -7,7 +7,7 @@ import com.intellij.lang.PsiBuilder
  * Helper class for PicatExpressionParser.
  * Contains methods for parsing specific expression types.
  */
-class PicatExpressionParserHelper {
+class PicatExpressionParserHelper : PicatBaseParser() {
     /**
      * Parses a list in Picat syntax.
      */
@@ -39,7 +39,7 @@ class PicatExpressionParserHelper {
         val listItemsMarker = builder.mark()
 
         // Parse the first expression
-        PicatExpressionParser().parseExpression(builder)
+        expressionParser.parseExpression(builder)
 
         // Parse additional expressions or list tail
         var shouldContinue = true
@@ -48,13 +48,13 @@ class PicatExpressionParserHelper {
                 PicatTokenTypes.PIPE -> {
                     // List tail (e.g., [1, 2 | Rest])
                     builder.advanceLexer()
-                    PicatExpressionParser().parseExpression(builder)
+                    expressionParser.parseExpression(builder)
                     shouldContinue = false
                 }
                 PicatTokenTypes.COMMA -> {
                     // Another list item
                     builder.advanceLexer()
-                    PicatExpressionParser().parseExpression(builder)
+                    expressionParser.parseExpression(builder)
                 }
                 else -> {
                     builder.error("Expected ',' or '|' or ']'")
@@ -115,7 +115,7 @@ class PicatExpressionParserHelper {
         val entryMarker = builder.mark()
 
         // Parse the key
-        PicatExpressionParser().parseExpression(builder)
+        expressionParser.parseExpression(builder)
 
         // Expect the map association operator
         if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
@@ -125,7 +125,7 @@ class PicatExpressionParserHelper {
         }
 
         // Parse the value
-        PicatExpressionParser().parseExpression(builder)
+        expressionParser.parseExpression(builder)
 
         entryMarker.done(PicatTokenTypes.MAP_ENTRY)
     }
