@@ -217,9 +217,7 @@ class PicatStatementParserHelper : PicatBaseParser() {
 
         expressionParser.parsePattern(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.ARROW_OP, "Expected '=>'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
+        PicatParserUtil.skipWhitespace(builder)
 
         statementParser.parseBody(builder)
 
@@ -247,9 +245,7 @@ class PicatStatementParserHelper : PicatBaseParser() {
 
         // Parse expression if needed
         if (parseExpression) {
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             expressionParser.parseExpression(builder)
         }
 

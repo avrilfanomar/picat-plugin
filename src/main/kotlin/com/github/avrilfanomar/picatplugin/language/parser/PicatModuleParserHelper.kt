@@ -14,9 +14,7 @@ class PicatModuleParserHelper : PicatBaseParser() {
     fun parseExportClause(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.EXPORT_KEYWORD, "Expected 'export'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
+        PicatParserUtil.skipWhitespace(builder)
         parseExportList(builder)
         marker.done(PicatTokenTypes.EXPORT_CLAUSE)
     }
@@ -27,9 +25,7 @@ class PicatModuleParserHelper : PicatBaseParser() {
     fun parseImportClause(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.IMPORT_KEYWORD, "Expected 'import'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
+        PicatParserUtil.skipWhitespace(builder)
         parseImportList(builder)
         marker.done(PicatTokenTypes.IMPORT_CLAUSE)
     }
@@ -98,9 +94,7 @@ class PicatModuleParserHelper : PicatBaseParser() {
 
         while (builder.tokenType == PicatTokenTypes.COMMA) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseModuleSpec(builder)
         }
 
@@ -116,9 +110,7 @@ class PicatModuleParserHelper : PicatBaseParser() {
 
         if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             parseRenameList(builder)
         }
 
@@ -136,9 +128,7 @@ class PicatModuleParserHelper : PicatBaseParser() {
         parseAtom(builder)
         if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+PicatParserUtil.skipWhitespace(builder)
             parseAtom(builder)
         }
 
@@ -149,9 +139,7 @@ class PicatModuleParserHelper : PicatBaseParser() {
             parseAtom(builder)
             if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
                 builder.advanceLexer()
-                while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                    builder.advanceLexer()
-                }
+                PicatParserUtil.skipWhitespace(builder)
                 parseAtom(builder)
             }
         }

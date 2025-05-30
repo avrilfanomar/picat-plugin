@@ -25,9 +25,7 @@ class PicatModuleParser : PicatBaseParser() {
     fun parseModuleDeclaration(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.MODULE_KEYWORD, "Expected 'module'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
+        PicatParserUtil.skipWhitespace(builder)
 
         parseModuleName(builder)
 
@@ -51,9 +49,7 @@ class PicatModuleParser : PicatBaseParser() {
     fun parseEndModuleDeclaration(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.END_MODULE_KEYWORD, "Expected 'end_module'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
+        PicatParserUtil.skipWhitespace(builder)
 
         // Optional module name
         if (builder.tokenType == PicatTokenTypes.IDENTIFIER) {
@@ -88,9 +84,7 @@ class PicatModuleParser : PicatBaseParser() {
     fun parseImportStatement(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.IMPORT_KEYWORD, "Expected 'import'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
+        PicatParserUtil.skipWhitespace(builder)
         helper.parseImportList(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after import statement")
         marker.done(PicatTokenTypes.IMPORT_STATEMENT)
@@ -102,9 +96,7 @@ class PicatModuleParser : PicatBaseParser() {
     fun parseExportStatement(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.EXPORT_KEYWORD, "Expected 'export'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
+        PicatParserUtil.skipWhitespace(builder)
         helper.parseExportList(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after export statement")
         marker.done(PicatTokenTypes.EXPORT_STATEMENT)
@@ -116,9 +108,7 @@ class PicatModuleParser : PicatBaseParser() {
     fun parseIncludeStatement(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.INCLUDE_KEYWORD, "Expected 'include'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
+        PicatParserUtil.skipWhitespace(builder)
 
         // Parse file_spec (STRING or atom)
         if (builder.tokenType == PicatTokenTypes.STRING) {
@@ -142,18 +132,14 @@ class PicatModuleParser : PicatBaseParser() {
     fun parseUsingStatement(builder: PsiBuilder) {
         val marker = builder.mark()
         PicatParserUtil.expectKeyword(builder, PicatTokenTypes.USING_KEYWORD, "Expected 'using'")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
+        PicatParserUtil.skipWhitespace(builder)
 
         parseModuleName(builder)
 
         // Optional rename list
         if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             helper.parseRenameList(builder)
         }
 

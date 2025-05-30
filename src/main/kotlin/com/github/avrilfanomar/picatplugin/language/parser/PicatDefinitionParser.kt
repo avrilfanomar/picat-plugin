@@ -51,9 +51,7 @@ class PicatDefinitionParser : PicatBaseParser() {
         parseHead(builder)
 
         PicatParserUtil.expectToken(builder, PicatTokenTypes.EQUAL, "Expected '=' in function definition")
-        while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-            builder.advanceLexer()
-        }
+        PicatParserUtil.skipWhitespace(builder)
 
         expressionParser.parseExpression(builder)
         PicatParserUtil.expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after function definition")
@@ -74,9 +72,7 @@ class PicatDefinitionParser : PicatBaseParser() {
         val opMarker = builder.mark()
         if (PicatParserUtil.isRuleOperator(builder.tokenType)) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             opMarker.done(PicatTokenTypes.RULE_OPERATOR)
         } else {
             opMarker.drop()
@@ -102,9 +98,7 @@ class PicatDefinitionParser : PicatBaseParser() {
         if (builder.tokenType != PicatTokenTypes.DOT) {
             if (isFunction) {
                 builder.advanceLexer() // Skip the equals sign
-                while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                    builder.advanceLexer()
-                }
+                PicatParserUtil.skipWhitespace(builder)
                 expressionParser.parseExpression(builder) // Parse the expression
             } else {
                 statementParser.parseBody(builder)
@@ -133,9 +127,7 @@ class PicatDefinitionParser : PicatBaseParser() {
         // Optional function body
         if (builder.tokenType == PicatTokenTypes.EQUAL) {
             builder.advanceLexer()
-            while (builder.tokenType == PicatTokenTypes.WHITE_SPACE) {
-                builder.advanceLexer()
-            }
+            PicatParserUtil.skipWhitespace(builder)
             expressionParser.parseExpression(builder)
         }
 
@@ -170,10 +162,9 @@ class PicatDefinitionParser : PicatBaseParser() {
     fun isFunctionDefinition(builder: PsiBuilder): Boolean {
         // Look ahead to see if this is a function definition
         val marker = builder.mark()
-        var result = false
 
         parseHead(builder)
-        result = builder.tokenType == PicatTokenTypes.EQUAL
+        val result = builder.tokenType == PicatTokenTypes.EQUAL
         marker.rollbackTo()
 
         return result
@@ -184,10 +175,9 @@ class PicatDefinitionParser : PicatBaseParser() {
      */
     fun isRuleDefinition(builder: PsiBuilder): Boolean {
         val marker = builder.mark()
-        var result = false
 
         parseHead(builder)
-        result = PicatParserUtil.isRuleOperator(builder.tokenType)
+        val result = PicatParserUtil.isRuleOperator(builder.tokenType)
         marker.rollbackTo()
 
         return result
@@ -198,12 +188,11 @@ class PicatDefinitionParser : PicatBaseParser() {
      */
     fun isPredicateDefinition(builder: PsiBuilder): Boolean {
         val marker = builder.mark()
-        var result = false
 
         parseHead(builder)
         // A predicate definition has a body (not just a dot)
         // and doesn't have an equals sign (which would make it a function definition)
-        result = builder.tokenType != PicatTokenTypes.DOT && builder.tokenType != PicatTokenTypes.EQUAL
+        val result = builder.tokenType != PicatTokenTypes.DOT && builder.tokenType != PicatTokenTypes.EQUAL
         marker.rollbackTo()
 
         return result
