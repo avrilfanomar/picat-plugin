@@ -28,7 +28,8 @@ class OperatorRecognizer : TokenRecognizer {
 
         private val TWO_CHAR_OPERATORS = mapOf(
             "=>" to PicatTokenTypes.ARROW_OP,
-            "==" to PicatTokenTypes.EQUAL,
+            ":=" to PicatTokenTypes.ASSIGN_OP,
+            "==" to PicatTokenTypes.EQUAL_EQUAL,
             "!=" to PicatTokenTypes.NOT_EQUAL,
             "<=" to PicatTokenTypes.LESS_EQUAL,
             "=<" to PicatTokenTypes.LESS_EQUAL_ALT,
@@ -58,7 +59,7 @@ class OperatorRecognizer : TokenRecognizer {
         )
 
         private val SINGLE_CHAR_OPERATORS = mapOf(
-            '=' to PicatTokenTypes.ASSIGN_OP,
+            '=' to PicatTokenTypes.EQUAL,
             '+' to PicatTokenTypes.PLUS,
             '-' to PicatTokenTypes.MINUS,
             '*' to PicatTokenTypes.MULTIPLY,
