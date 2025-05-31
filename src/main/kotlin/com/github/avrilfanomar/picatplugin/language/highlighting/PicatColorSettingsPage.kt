@@ -23,7 +23,6 @@ class PicatColorSettingsPage : ColorSettingsPage {
         AttributesDescriptor("Braces", PicatSyntaxHighlighter.BRACES),
         AttributesDescriptor("Brackets", PicatSyntaxHighlighter.BRACKETS),
         AttributesDescriptor("Identifier", PicatSyntaxHighlighter.IDENTIFIER),
-        AttributesDescriptor("Predicate", PicatSyntaxHighlighter.PREDICATE),
         AttributesDescriptor("Variable", PicatSyntaxHighlighter.VARIABLE),
         AttributesDescriptor("Basic module function", PicatSyntaxHighlighter.BASIC_MODULE_FUNCTION),
         AttributesDescriptor("Bad character", PicatSyntaxHighlighter.BAD_CHARACTER)

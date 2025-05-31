@@ -96,10 +96,6 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             TextAttributesKey.createTextAttributesKey("PICAT_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS)
         val IDENTIFIER =
             TextAttributesKey.createTextAttributesKey("PICAT_IDENTIFIER", DefaultLanguageHighlighterColors.IDENTIFIER)
-        val PREDICATE = TextAttributesKey.createTextAttributesKey(
-            "PICAT_PREDICATE",
-            DefaultLanguageHighlighterColors.FUNCTION_DECLARATION
-        )
         val VARIABLE =
             TextAttributesKey.createTextAttributesKey("PICAT_VARIABLE", DefaultLanguageHighlighterColors.LOCAL_VARIABLE)
         val BASIC_MODULE_FUNCTION = TextAttributesKey.createTextAttributesKey(

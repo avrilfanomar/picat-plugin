@@ -35,21 +35,17 @@ abstract class PicatBaseParser : PicatParserComponent {
         this.context = parserContext
     }
 
-    protected fun parseAtom(builder: PsiBuilder) {
-        if (isAtom(builder.tokenType)) {
-            builder.advanceLexer()
-        } else {
-            builder.error("Expected atom")
-        }
-    }
-
     protected fun parseStructure(builder: PsiBuilder) {
         val marker = builder.mark()
         if (isQualifiedAtom(builder)) {
             parseQualifiedAtom(builder)
         }
         if (isAtom(builder.tokenType)) {
-            parseAtom(builder)
+            if (isAtom(builder.tokenType)) {
+                builder.advanceLexer()
+            } else {
+                builder.error("Expected atom")
+            }
         }
         skipWhitespace(builder)
         expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
@@ -65,10 +61,18 @@ abstract class PicatBaseParser : PicatParserComponent {
 
     protected fun parseQualifiedAtom(builder: PsiBuilder) {
         val marker = builder.mark()
-        parseAtom(builder)
+        if (isAtom(builder.tokenType)) {
+            builder.advanceLexer()
+        } else {
+            builder.error("Expected atom")
+        }
         expectToken(builder, PicatTokenTypes.DOT, "Expected '.'")
         skipWhitespace(builder)
-        parseAtom(builder)
+        if (isAtom(builder.tokenType)) {
+            builder.advanceLexer()
+        } else {
+            builder.error("Expected atom")
+        }
         marker.done(PicatTokenTypes.ATOM_NO_ARGS)
     }
 

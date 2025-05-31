@@ -119,15 +119,6 @@ class PicatPsiTest : BasePlatformTestCase() {
 
         // Verify that there is exactly one export statement
         assertEquals(1, exportStatements.size, "There should be exactly one export statement")
-
-        // Verify that the export statement has the correct predicate indicators
-        val exportStatement = exportStatements[0]
-        val predicateIndicators = exportStatement.getPredicateIndicators()
-        assertEquals(2, predicateIndicators.size, "Export statement should have 2 predicate indicators")
-        assertEquals("factorial", predicateIndicators[0].getName(), "First predicate indicator should be factorial/1")
-        assertEquals(1, predicateIndicators[0].getArity(), "First predicate indicator should have arity 1")
-        assertEquals("fibonacci", predicateIndicators[1].getName(), "Second predicate indicator should be fibonacci/1")
-        assertEquals(1, predicateIndicators[1].getArity(), "Second predicate indicator should have arity 1")
     }
 
     @Test

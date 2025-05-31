@@ -2,7 +2,6 @@ package com.github.avrilfanomar.picatplugin.language.structure
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition
-import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateDefinition
 import com.intellij.ide.structureView.StructureViewModel
 import com.intellij.ide.structureView.StructureViewModelBase
 import com.intellij.ide.structureView.StructureViewTreeElement
@@ -23,11 +22,10 @@ class PicatStructureViewModel(psiFile: PsiFile) :
         element.value is PicatFile
 
     override fun isAlwaysLeaf(element: StructureViewTreeElement): Boolean =
-        element.value is PicatPredicateDefinition || element.value is PicatFunctionDefinition
+        element.value is PicatFunctionDefinition
 
     override fun getSuitableClasses(): Array<Class<*>> = arrayOf(
         PicatFile::class.java,
-        PicatPredicateDefinition::class.java,
         PicatFunctionDefinition::class.java
     )
 }

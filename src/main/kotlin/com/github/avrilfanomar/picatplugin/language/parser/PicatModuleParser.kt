@@ -121,7 +121,11 @@ class PicatModuleParser : PicatBaseParser() {
             builder.advanceLexer()
             stringMarker.done(PicatTokenTypes.STRING)
         } else if (isAtom(builder.tokenType)) {
-            parseAtom(builder)
+            if (isAtom(builder.tokenType)) {
+                builder.advanceLexer()
+            } else {
+                builder.error("Expected atom")
+            }
         } else {
             builder.error("Expected file path string or atom")
         }

@@ -61,7 +61,13 @@ class PicatExpressionParser : PicatBaseParser() {
 
     fun parsePrimaryExpression(builder: PsiBuilder) {
         when {
-            isAtom(builder.tokenType) -> parseAtom(builder)
+            isAtom(builder.tokenType) -> {
+                if (isAtom(builder.tokenType)) {
+                    builder.advanceLexer()
+                } else {
+                    builder.error("Expected atom")
+                }
+            }
             isVariable(builder.tokenType) -> parseVariable(builder)
             isNumber(builder.tokenType) -> parseNumber(builder)
             builder.tokenType == PicatTokenTypes.STRING -> parseString(builder)

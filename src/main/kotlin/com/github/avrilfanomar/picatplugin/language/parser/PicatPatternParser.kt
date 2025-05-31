@@ -22,7 +22,13 @@ class PicatPatternParser : PicatBaseParser() {
 
         when {
             isVariable(builder.tokenType) -> parseVariable(builder)
-            isAtom(builder.tokenType) -> parseAtom(builder)
+            isAtom(builder.tokenType) -> {
+                if (isAtom(builder.tokenType)) {
+                    builder.advanceLexer()
+                } else {
+                    builder.error("Expected atom")
+                }
+            }
             isNumber(builder.tokenType) -> parseNumber(builder)
             builder.tokenType == PicatTokenTypes.ANONYMOUS_VARIABLE -> builder.advanceLexer()
             builder.tokenType == PicatTokenTypes.LBRACKET -> parseListPattern(builder)
@@ -42,7 +48,11 @@ class PicatPatternParser : PicatBaseParser() {
      */
     private fun parseStructurePattern(builder: PsiBuilder) {
         val marker = builder.mark()
-        parseAtom(builder)
+        if (isAtom(builder.tokenType)) {
+            builder.advanceLexer()
+        } else {
+            builder.error("Expected atom")
+        }
         expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
         skipWhitespace(builder)
 

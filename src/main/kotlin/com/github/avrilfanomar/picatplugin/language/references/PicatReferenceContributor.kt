@@ -11,7 +11,7 @@ import com.intellij.psi.PsiReferenceRegistrar
  */
 class PicatReferenceContributor : PsiReferenceContributor() {
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
-        // Register reference providers for predicate calls
+        // Register reference providers for rule calls
         registrar.registerReferenceProvider(
             PlatformPatterns.psiElement().withLanguage(PicatLanguage),
             PicatReferenceProvider()

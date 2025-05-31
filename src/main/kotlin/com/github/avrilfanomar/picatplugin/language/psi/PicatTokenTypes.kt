@@ -218,9 +218,7 @@ object PicatTokenTypes {
     val END_MODULE_DECLARATION = PicatElementType("END_MODULE_DECLARATION")
     val IMPORT_STATEMENT = PicatElementType("IMPORT_STATEMENT")
     val FUNCTION_BODY = PicatElementType("FUNCTION_BODY")
-    val PREDICATE_BODY = PicatElementType("PREDICATE_BODY")
     val FUNCTION_DEFINITION = PicatElementType("FUNCTION_DEFINITION")
-    val PREDICATE_DEFINITION = PicatElementType("PREDICATE_DEFINITION")
     val ARGUMENT_LIST = PicatElementType("ARGUMENT_LIST")
     val ARGUMENT = PicatElementType("ARGUMENT")
     val CLAUSE_LIST = PicatElementType("CLAUSE_LIST")
@@ -264,7 +262,6 @@ object PicatTokenTypes {
     // Additional PSI Element Types
     val FACT = PicatElementType("FACT")
     val EXPORT_STATEMENT = PicatElementType("EXPORT_STATEMENT")
-    val PREDICATE_INDICATOR = PicatElementType("PREDICATE_INDICATOR")
     val INCLUDE_STATEMENT = PicatElementType("INCLUDE_STATEMENT")
     val HEAD = PicatElementType("HEAD")
     val GOAL = PicatElementType("GOAL")

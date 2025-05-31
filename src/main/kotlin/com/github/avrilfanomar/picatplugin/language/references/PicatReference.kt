@@ -23,13 +23,6 @@ class PicatReference(
 
         val results = mutableListOf<ResolveResult>()
 
-        // Look for matching predicate definitions
-        file.getPredicates().forEach { predicate ->
-            if (predicate.getName() == name && predicate.getArity() == arity) {
-                results.add(PsiElementResolveResult(predicate))
-            }
-        }
-
         // Look for matching function definitions
         file.getFunctions().forEach { function ->
             if (function.getName() == name && function.getArity() == arity) {
@@ -44,9 +37,9 @@ class PicatReference(
         val file = element.containingFile as? PicatFile ?: return emptyArray()
         val variants = mutableListOf<Any>()
 
-        // Add predicate definitions as variants
-        file.getPredicates().forEach { predicate ->
-            variants.add(predicate)
+        // Add rules as variants
+        file.getRules().forEach { rule ->
+            variants.add(rule)
         }
 
         // Add function definitions as variants

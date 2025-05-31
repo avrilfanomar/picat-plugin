@@ -27,10 +27,10 @@ class PicatFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, Pica
     }
 
     /**
-     * Returns all predicate definitions in the file.
+     * Returns all rule definitions in the file.
      */
-    fun getPredicates(): List<PicatPredicateDefinition> =
-        PsiTreeUtil.findChildrenOfType(this, PicatPredicateDefinition::class.java).toList()
+    fun getRules(): List<PicatRule> =
+        PsiTreeUtil.findChildrenOfType(this, PicatRule::class.java).toList()
 
     /**
      * Returns all function definitions in the file.

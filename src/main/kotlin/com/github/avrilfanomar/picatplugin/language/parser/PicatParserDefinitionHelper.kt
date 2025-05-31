@@ -4,13 +4,11 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatRuleImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatHeadImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatBodyImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPredicateBodyImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFactImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFunctionDefinitionImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPredicateDefinitionImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExportStatementImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatImportStatementImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatIncludeStatementImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExportStatementImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatGoalImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatModuleDeclarationImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExpressionImpl
@@ -20,7 +18,6 @@ import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatArgumentImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatArgumentListImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListElementsImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPredicateIndicatorImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatOperatorImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatLiteralImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatVariableImpl
@@ -43,10 +40,8 @@ class PicatParserDefinitionHelper {
         return type == PicatTokenTypes.RULE ||
                type == PicatTokenTypes.HEAD ||
                type == PicatTokenTypes.BODY ||
-               type == PicatTokenTypes.PREDICATE_BODY ||
                type == PicatTokenTypes.FACT ||
-               type == PicatTokenTypes.FUNCTION_DEFINITION ||
-               type == PicatTokenTypes.PREDICATE_DEFINITION
+               type == PicatTokenTypes.FUNCTION_DEFINITION
     }
 
     /**
@@ -57,10 +52,8 @@ class PicatParserDefinitionHelper {
             PicatTokenTypes.RULE -> PicatRuleImpl(node)
             PicatTokenTypes.HEAD -> PicatHeadImpl(node)
             PicatTokenTypes.BODY -> PicatBodyImpl(node)
-            PicatTokenTypes.PREDICATE_BODY -> PicatPredicateBodyImpl(node)
             PicatTokenTypes.FACT -> PicatFactImpl(node)
             PicatTokenTypes.FUNCTION_DEFINITION -> PicatFunctionDefinitionImpl(node)
-            PicatTokenTypes.PREDICATE_DEFINITION -> PicatPredicateDefinitionImpl(node)
             else -> throw IllegalArgumentException("Unexpected rule element type: $type")
         }
     }
@@ -103,7 +96,6 @@ class PicatParserDefinitionHelper {
                type == PicatTokenTypes.ARGUMENT_LIST ||
                type == PicatTokenTypes.LIST ||
                type == PicatTokenTypes.LIST_ELEMENTS ||
-               type == PicatTokenTypes.PREDICATE_INDICATOR ||
                type == PicatTokenTypes.OPERATOR
     }
 
@@ -117,7 +109,6 @@ class PicatParserDefinitionHelper {
             PicatTokenTypes.ARGUMENT_LIST -> PicatArgumentListImpl(node)
             PicatTokenTypes.LIST -> PicatListImpl(node)
             PicatTokenTypes.LIST_ELEMENTS -> PicatListElementsImpl(node)
-            PicatTokenTypes.PREDICATE_INDICATOR -> PicatPredicateIndicatorImpl(node)
             PicatTokenTypes.OPERATOR -> PicatOperatorImpl(node)
             else -> throw IllegalArgumentException("Unexpected structure element type: $type")
         }
