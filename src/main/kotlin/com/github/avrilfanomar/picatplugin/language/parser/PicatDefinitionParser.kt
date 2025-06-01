@@ -20,22 +20,21 @@ class PicatDefinitionParser : PicatBaseParser() {
 
         // Check what kind of definition this is
         when {
-            isImplicitRule(builder) -> {
-                // Parse as an implicit rule
-                parseImplicitRule(builder)
-            }
-            isRuleDefinition(builder) -> {
+            isImplicitRule(builder) || isRuleDefinition(builder) -> {
                 // Parse as a rule
                 parseRuleDefinition(builder)
             }
+
             isFunctionDefinition(builder) -> {
                 // Parse as a function definition (which is also marked as a fact)
                 parseFunctionDefinition(builder)
             }
+
             isFact(builder) -> {
                 // Parse as a simple fact
                 parseFact(builder)
             }
+
             else -> {
                 // Error case
                 val errorMarker = builder.mark()
@@ -124,6 +123,7 @@ class PicatDefinitionParser : PicatBaseParser() {
                     builder.error("Expected atom")
                 }
             }
+
             else -> {
                 builder.error("Expected predicate/function head")
                 builder.advanceLexer()
@@ -178,26 +178,12 @@ class PicatDefinitionParser : PicatBaseParser() {
         // An implicit rule has a body (not just a dot)
         // and doesn't have an equals sign (which would make it a function definition)
         // and doesn't have a rule operator (which would make it an explicit rule)
-        val result = builder.tokenType != PicatTokenTypes.DOT && 
-                    builder.tokenType != PicatTokenTypes.EQUAL &&
-                    !isRuleOperator(builder.tokenType)
+        val result = builder.tokenType != PicatTokenTypes.DOT &&
+                builder.tokenType != PicatTokenTypes.EQUAL &&
+                !isRuleOperator(builder.tokenType)
         marker.rollbackTo()
 
         return result
-    }
-
-    /**
-     * Parses an implicit rule.
-     */
-    fun parseImplicitRule(builder: PsiBuilder) {
-        val marker = builder.mark()
-        parseHead(builder)
-        skipWhitespace(builder)
-
-        // Parse the body
-        statementParser.parseBody(builder)
-        expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after implicit rule")
-        marker.done(PicatTokenTypes.STATEMENT)
     }
 
     /**

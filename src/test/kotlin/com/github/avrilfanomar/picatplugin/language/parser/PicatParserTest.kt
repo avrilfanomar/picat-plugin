@@ -107,19 +107,26 @@ class PicatParserTest : BasePlatformTestCase() {
     fun testPatternMatching() {
         // Test parsing pattern matching
         val code = """
-            length([]) = 0.
-            length([_|Xs]) = 1 + length(Xs).
+            custom_length([]) = 0.
+            custom_length([_|Xs]) = 1 + custom_length(Xs).
 
-            sum([]) = 0.
-            sum([X|Xs]) = X + sum(Xs).
+            custom_sum([]) = 0.
+            custom_sum([X|Xs]) = X + custom_sum(Xs).
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFile
 
-        // Verify that the facts are parsed correctly
+        // Verify that the facts are not present
         val facts = file.getAllFacts()
-        assertEquals("Should have four facts", 4, facts.size)
+        assertEquals("Should have no facts", 0, facts.size)
+
+        // Verify that functions are parsed correctly
+        val functions = file.getFunctions()
+        assertEquals("Should have two functions", 2, functions.size)
+        assertEquals("First function should be 'custom_length'", "custom_length", functions[0].getName())
+        assertEquals("Second function should be 'custom_sum'", "custom_sum", functions[1].getName())
+
     }
 
     @Test
