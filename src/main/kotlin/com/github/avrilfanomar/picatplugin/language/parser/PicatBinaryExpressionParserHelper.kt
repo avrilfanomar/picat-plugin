@@ -36,7 +36,9 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
     fun parseLogicalAndExpression(builder: PsiBuilder) {
         parseBitwiseOrExpression(builder)
         while (builder.tokenType == PicatTokenTypes.AND_KEYWORD) {
+            val operatorMarker = builder.mark()
             builder.advanceLexer()
+            operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
             parseBitwiseOrExpression(builder)
         }
@@ -48,7 +50,9 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
     fun parseBitwiseOrExpression(builder: PsiBuilder) {
         parseBitwiseXorExpression(builder)
         while (builder.tokenType == PicatTokenTypes.PIPE) {
+            val operatorMarker = builder.mark()
             builder.advanceLexer()
+            operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
             parseBitwiseXorExpression(builder)
         }
@@ -60,7 +64,9 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
     fun parseBitwiseXorExpression(builder: PsiBuilder) {
         parseBitwiseAndExpression(builder)
         while (builder.tokenType == PicatTokenTypes.XOR_KEYWORD || builder.tokenType == PicatTokenTypes.CARET) {
+            val operatorMarker = builder.mark()
             builder.advanceLexer()
+            operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
             parseBitwiseAndExpression(builder)
         }
@@ -72,7 +78,9 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
     fun parseBitwiseAndExpression(builder: PsiBuilder) {
         parseEqualityExpression(builder)
         while (builder.tokenType == PicatTokenTypes.AMPERSAND) {
+            val operatorMarker = builder.mark()
             builder.advanceLexer()
+            operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
             parseEqualityExpression(builder)
         }
@@ -84,7 +92,9 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
     fun parseEqualityExpression(builder: PsiBuilder) {
         parseRelationalExpression(builder)
         while (builder.tokenType == PicatTokenTypes.IDENTICAL || builder.tokenType == PicatTokenTypes.NOT_IDENTICAL) {
+            val operatorMarker = builder.mark()
             builder.advanceLexer()
+            operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
             parseRelationalExpression(builder)
         }
@@ -96,7 +106,9 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
     fun parseRelationalExpression(builder: PsiBuilder) {
         parseShiftExpression(builder)
         while (isRelationalOperator(builder.tokenType)) {
+            val operatorMarker = builder.mark()
             builder.advanceLexer()
+            operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
             parseShiftExpression(builder)
         }
@@ -108,7 +120,9 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
     fun parseShiftExpression(builder: PsiBuilder) {
         parseAdditiveExpression(builder)
         while (builder.tokenType == PicatTokenTypes.SHIFT_LEFT || builder.tokenType == PicatTokenTypes.SHIFT_RIGHT) {
+            val operatorMarker = builder.mark()
             builder.advanceLexer()
+            operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
             parseAdditiveExpression(builder)
         }
@@ -158,7 +172,9 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
     fun parsePowerExpression(builder: PsiBuilder) {
         parseUnaryExpression(builder)
         while (builder.tokenType == PicatTokenTypes.POWER) {
+            val operatorMarker = builder.mark()
             builder.advanceLexer()
+            operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
             parseUnaryExpression(builder)
         }

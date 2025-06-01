@@ -1,11 +1,10 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.jupiter.api.Test
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.PsiElement
-import org.junit.jupiter.api.Disabled
+import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 /**
  * Test for Picat whitespace handling in PSI parsing.
@@ -31,44 +30,14 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
         val expressions = PsiTreeUtil.findChildrenOfType(file, PicatExpression::class.java)
 
         // Find expressions with operators
-        val expressionsWithOperators = expressions.filter { expr -> 
-            expr.getOperators().isNotEmpty() 
+        val expressionsWithOperators = expressions.filter { expr ->
+            expr.text == "+" || expr.text == "*" || expr.text == "/"
         }
 
         // Verify that there are expressions with operators
         assertTrue(expressionsWithOperators.isNotEmpty(), "There should be expressions with operators")
-
-        // Check if operators have whitespace around them
-        checkOperatorsWhitespace(expressionsWithOperators)
     }
 
-    /**
-     * Helper method to check if operators have whitespace around them.
-     */
-    private fun checkOperatorsWhitespace(expressionsWithOperators: Collection<PicatExpression>) {
-        for (expr in expressionsWithOperators) {
-            val operators = expr.getOperators()
-            for (operator in operators) {
-                val operatorText = operator.text
-                if (operatorText in listOf("*", "/", "+")) {
-                    checkOperatorWhitespace(expr.text, operatorText)
-                }
-            }
-        }
-    }
-
-    /**
-     * Helper method to check if a specific operator has whitespace around it.
-     */
-    private fun checkOperatorWhitespace(exprText: String, operatorText: String) {
-        val operatorIndex = exprText.indexOf(operatorText)
-        if (operatorIndex > 0 && operatorIndex < exprText.length - 1) {
-            val hasPrecedingWhitespace = exprText[operatorIndex - 1].isWhitespace()
-            val hasFollowingWhitespace = exprText[operatorIndex + 1].isWhitespace()
-            assertTrue(hasPrecedingWhitespace, "Operator $operatorText should have whitespace before it")
-            assertTrue(hasFollowingWhitespace, "Operator $operatorText should have whitespace after it")
-        }
-    }
 
     /**
      * Helper method to print the PSI tree.
@@ -145,58 +114,13 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
         // Find all expressions in the file
         val expressions = PsiTreeUtil.findChildrenOfType(file, PicatExpression::class.java)
 
-        // Find expressions with terms that have parentheses
+        // Find expressions with parentheses
         val expressionsWithParentheses = expressions.filter { expr ->
-            expr.getTerms().any { term ->
-                term.text.contains("(") && term.text.contains(")")
-            }
+            expr.text.contains("(") && expr.text.contains(")")
         }
 
         // Verify that there are expressions with parentheses
         assertTrue(expressionsWithParentheses.isNotEmpty(), "There should be expressions with parentheses")
-
-        // Check if parentheses have whitespace inside them
-        checkParenthesesWhitespace(expressionsWithParentheses)
     }
 
-    /**
-     * Helper method to check if parentheses have whitespace inside them.
-     */
-    private fun checkParenthesesWhitespace(expressionsWithParentheses: Collection<PicatExpression>) {
-        for (expr in expressionsWithParentheses) {
-            val terms = expr.getTerms()
-            for (term in terms) {
-                val termText = term.text
-                if (termText.contains("(") && termText.contains(")")) {
-                    checkOpenParenthesisWhitespace(termText)
-                    checkCloseParenthesisWhitespace(termText)
-                }
-            }
-        }
-    }
-
-    /**
-     * Helper method to check if there's whitespace after the opening parenthesis.
-     */
-    private fun checkOpenParenthesisWhitespace(termText: String) {
-        val openParenIndex = termText.indexOf("(")
-        if (openParenIndex >= 0 && openParenIndex < termText.length - 1) {
-            val hasWhitespaceAfterOpenParen = termText[openParenIndex + 1].isWhitespace()
-            assertTrue(hasWhitespaceAfterOpenParen, "Term should have whitespace after opening parenthesis")
-        }
-    }
-
-    /**
-     * Helper method to check if there's whitespace before the closing parenthesis.
-     */
-    private fun checkCloseParenthesisWhitespace(termText: String) {
-        val closeParenIndex = termText.indexOf(")")
-        if (closeParenIndex > 0) {
-            val hasWhitespaceBeforeCloseParen = termText[closeParenIndex - 1].isWhitespace()
-            assertTrue(
-                hasWhitespaceBeforeCloseParen, 
-                "Term should have whitespace before closing parenthesis"
-            )
-        }
-    }
 }

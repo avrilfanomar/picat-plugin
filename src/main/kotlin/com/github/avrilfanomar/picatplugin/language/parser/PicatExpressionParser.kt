@@ -75,11 +75,15 @@ class PicatExpressionParser : PicatBaseParser() {
             isNumber(builder.tokenType) -> parseNumber(builder)
             builder.tokenType == PicatTokenTypes.STRING -> parseString(builder)
             builder.tokenType == PicatTokenTypes.LPAR -> {
+                val openParenMarker = builder.mark()
                 builder.advanceLexer()
+                openParenMarker.done(PicatTokenTypes.OPERATOR)
                 skipWhitespace(builder)
                 parseExpression(builder)
                 skipWhitespace(builder)
+                val closeParenMarker = builder.mark()
                 expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
+                closeParenMarker.done(PicatTokenTypes.OPERATOR)
             }
             builder.tokenType == PicatTokenTypes.LBRACKET -> helper.parseList(builder)
             builder.tokenType == PicatTokenTypes.LBRACE -> helper.parseMap(builder)
