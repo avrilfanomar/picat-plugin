@@ -183,6 +183,18 @@ class PicatStatementParser : PicatBaseParser() {
     }
 
     /**
+     * Checks if the token type is a binary operator.
+     */
+    private fun isBinaryOperator(tokenType: IElementType?): Boolean {
+        return tokenType == PicatTokenTypes.PLUS || 
+               tokenType == PicatTokenTypes.MINUS || 
+               tokenType == PicatTokenTypes.MULTIPLY || 
+               tokenType == PicatTokenTypes.DIVIDE || 
+               tokenType == PicatTokenTypes.INT_DIVIDE || 
+               tokenType == PicatTokenTypes.POWER
+    }
+
+    /**
      * Parses a body consisting of one or more goals separated by commas or semicolons.
      */
     fun parseBody(builder: PsiBuilder) {
@@ -201,12 +213,7 @@ class PicatStatementParser : PicatBaseParser() {
         }
 
         // Check for binary operators that might be incorrectly treated as separate statements
-        if (builder.tokenType == PicatTokenTypes.PLUS || 
-            builder.tokenType == PicatTokenTypes.MINUS || 
-            builder.tokenType == PicatTokenTypes.MULTIPLY || 
-            builder.tokenType == PicatTokenTypes.DIVIDE || 
-            builder.tokenType == PicatTokenTypes.INT_DIVIDE || 
-            builder.tokenType == PicatTokenTypes.POWER) {
+        if (isBinaryOperator(builder.tokenType)) {
             // This is part of an expression, not a separate statement
             // Rollback and parse the entire body as a single expression
             marker.rollbackTo()

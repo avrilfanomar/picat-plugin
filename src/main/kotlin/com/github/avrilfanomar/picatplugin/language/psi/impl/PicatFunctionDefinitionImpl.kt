@@ -4,6 +4,8 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatArgumentList
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionBody
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition
+import com.github.avrilfanomar.picatplugin.language.psi.PicatStructure
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -39,22 +41,24 @@ class PicatFunctionDefinitionImpl(node: ASTNode) : PicatPsiElementImpl(node), Pi
         }
 
         // If not found, try to find it in the head
-        val head = getHead()
-        if (head != null) {
-            // Try to find the atom directly in the head
-            val headAtom = PsiTreeUtil.getChildOfType(head, PicatAtom::class.java)
-            if (headAtom != null) {
-                return headAtom
-            }
+        return findAtomInHead()
+    }
 
-            // If not found, try to find it in a structure in the head
-            val structure = PsiTreeUtil.getChildOfType(head, com.github.avrilfanomar.picatplugin.language.psi.PicatStructure::class.java)
-            if (structure != null) {
-                return PsiTreeUtil.getChildOfType(structure, PicatAtom::class.java)
-            }
+    /**
+     * Helper method to find atom in the head element.
+     */
+    private fun findAtomInHead(): PicatAtom? {
+        val head = getHead() ?: return null
+
+        // Try to find the atom directly in the head
+        val headAtom = PsiTreeUtil.getChildOfType(head, PicatAtom::class.java)
+        if (headAtom != null) {
+            return headAtom
         }
 
-        return null
+        // If not found, try to find it in a structure in the head
+        val structure = PsiTreeUtil.getChildOfType(head, PicatStructure::class.java)
+        return structure?.let { PsiTreeUtil.getChildOfType(it, PicatAtom::class.java) }
     }
 
     /**
@@ -68,22 +72,24 @@ class PicatFunctionDefinitionImpl(node: ASTNode) : PicatPsiElementImpl(node), Pi
         }
 
         // If not found, try to find it in the head
-        val head = getHead()
-        if (head != null) {
-            // Try to find the argument list directly in the head
-            val headArgumentList = PsiTreeUtil.getChildOfType(head, PicatArgumentList::class.java)
-            if (headArgumentList != null) {
-                return headArgumentList
-            }
+        return findArgumentListInHead()
+    }
 
-            // If not found, try to find it in a structure in the head
-            val structure = PsiTreeUtil.getChildOfType(head, com.github.avrilfanomar.picatplugin.language.psi.PicatStructure::class.java)
-            if (structure != null) {
-                return PsiTreeUtil.getChildOfType(structure, PicatArgumentList::class.java)
-            }
+    /**
+     * Helper method to find argument list in the head element.
+     */
+    private fun findArgumentListInHead(): PicatArgumentList? {
+        val head = getHead() ?: return null
+
+        // Try to find the argument list directly in the head
+        val headArgumentList = PsiTreeUtil.getChildOfType(head, PicatArgumentList::class.java)
+        if (headArgumentList != null) {
+            return headArgumentList
         }
 
-        return null
+        // If not found, try to find it in a structure in the head
+        val structure = PsiTreeUtil.getChildOfType(head, PicatStructure::class.java)
+        return structure?.let { PsiTreeUtil.getChildOfType(it, PicatArgumentList::class.java) }
     }
 
     /**
@@ -99,18 +105,20 @@ class PicatFunctionDefinitionImpl(node: ASTNode) : PicatPsiElementImpl(node), Pi
      */
     override fun getHead(): PsiElement? {
         // Look for a HEAD element first
-        val head = node.findChildByType(com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HEAD)
+        val head = node.findChildByType(PicatTokenTypes.HEAD)
         if (head != null) {
             return head.psi
         }
 
         // If no HEAD element, look for a STRUCTURE or ATOM directly
-        val structure = node.findChildByType(com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.STRUCTURE)
-        if (structure != null) {
-            return structure.psi
-        }
+        return findStructureOrAtom()
+    }
 
-        val atom = node.findChildByType(com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.ATOM)
-        return atom?.psi
+    /**
+     * Helper method to find STRUCTURE or ATOM element.
+     */
+    private fun findStructureOrAtom(): PsiElement? {
+        val structure = node.findChildByType(PicatTokenTypes.STRUCTURE)
+        return structure?.psi ?: node.findChildByType(PicatTokenTypes.ATOM)?.psi
     }
 }

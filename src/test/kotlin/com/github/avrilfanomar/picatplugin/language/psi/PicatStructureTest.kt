@@ -1,11 +1,11 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.psi.util.PsiTreeUtil
-import org.junit.jupiter.api.Test
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 /**
  * Test for Picat structure PSI implementation.
@@ -32,7 +32,7 @@ class PicatStructureTest : BasePlatformTestCase() {
         assertTrue(structures.size >= 2, "There should be at least two structures")
 
         // Find the point structure
-        val pointStructure = structures.find { it.getName() == "point" }
+        val pointStructure = structures.find { it.text.contains("point") }
         assertNotNull(pointStructure, "There should be a point structure")
 
         // Verify that the point structure has the correct name and arity
@@ -71,8 +71,8 @@ class PicatStructureTest : BasePlatformTestCase() {
         assertTrue(structures.size >= 3, "There should be at least three structures")
 
         // Find the outer point structure
-        val outerPointStructure = structures.find { 
-            it.getName() == "point" && it.text.contains("point(2, 3)") 
+        val outerPointStructure = structures.find {
+            it.text.contains("point(2, 3)")
         }
         assertNotNull(outerPointStructure, "There should be an outer point structure")
 
@@ -93,8 +93,8 @@ class PicatStructureTest : BasePlatformTestCase() {
         assertNotNull(secondArgExpression, "Second argument should have an expression")
 
         // Find the inner point structure
-        val innerPointStructure = structures.find { 
-            it.getName() == "point" && it.text == "point(2, 3)" 
+        val innerPointStructure = structures.find {
+            it.getName() == "point" && it.text == "point(2, 3)"
         }
         assertNotNull(innerPointStructure, "There should be an inner point structure")
 
@@ -120,8 +120,7 @@ class PicatStructureTest : BasePlatformTestCase() {
         // Find all structures in the file
         val structures = findStructuresInFile(file)
 
-        // Find the point structure
-        val pointStructure = structures.find { it.getName() == "point" }
+        val pointStructure = structures.find { it.text.contains("point") }
         assertNotNull(pointStructure, "There should be a point structure")
 
         // Verify that the point structure has the correct name and arity

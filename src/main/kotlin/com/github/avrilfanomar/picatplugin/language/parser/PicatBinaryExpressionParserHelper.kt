@@ -137,7 +137,6 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
 
         while (builder.tokenType == PicatTokenTypes.PLUS || builder.tokenType == PicatTokenTypes.MINUS) {
             val operatorMarker = builder.mark()
-            val operatorType = builder.tokenType
             builder.advanceLexer()
             operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
@@ -156,7 +155,6 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
 
         while (isMultiplicativeOperator(builder.tokenType)) {
             val operatorMarker = builder.mark()
-            val operatorType = builder.tokenType
             builder.advanceLexer()
             operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
