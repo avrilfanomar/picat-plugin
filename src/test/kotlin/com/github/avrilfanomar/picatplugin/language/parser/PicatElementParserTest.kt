@@ -275,13 +275,6 @@ class PicatElementParserTest : BasePlatformTestCase() {
         // Verify that the rule is parsed correctly
         val rules = file.getRules()
 
-        // Debug output
-        println("Found ${rules.size} rules:")
-        rules.forEachIndexed { index, rule ->
-            println("Rule $index: ${rule.text}")
-            println("  Parent: ${rule.parent.javaClass.simpleName}")
-        }
-
         assertEquals("Should have one rule", 1, rules.size)
 
         // Check that the rule has a body

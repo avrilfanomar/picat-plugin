@@ -158,7 +158,8 @@ abstract class PicatBaseParser : PicatParserComponent {
 
         if (builder.tokenType == PicatTokenTypes.VARIABLE) {
             builder.advanceLexer()
-            result = builder.tokenType == PicatTokenTypes.ASSIGN_OP
+            skipWhitespace(builder)
+            result = builder.tokenType == PicatTokenTypes.ASSIGN_OP || builder.tokenType == PicatTokenTypes.EQUAL
         }
 
         marker.rollbackTo()

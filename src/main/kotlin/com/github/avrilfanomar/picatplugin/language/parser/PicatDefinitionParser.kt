@@ -121,6 +121,7 @@ class PicatDefinitionParser : PicatBaseParser() {
 
         // Parse the body
         statementParser.parseBody(builder)
+        skipWhitespace(builder)
         expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after rule definition")
         marker.done(PicatTokenTypes.RULE)
     }

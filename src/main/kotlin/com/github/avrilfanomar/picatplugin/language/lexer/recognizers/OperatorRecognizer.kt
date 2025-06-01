@@ -14,6 +14,7 @@ class OperatorRecognizer : TokenRecognizer {
             "?=>" to PicatTokenTypes.BACKTRACKABLE_ARROW_OP,
             "!==" to PicatTokenTypes.NOT_IDENTICAL,
             "===" to PicatTokenTypes.IDENTICAL,
+            "<=>" to PicatTokenTypes.BICONDITIONAL_OP,
             "#=>" to PicatTokenTypes.CONSTRAINT_IMPL,
             "#/\\" to PicatTokenTypes.CONSTRAINT_AND,
             "#\\/" to PicatTokenTypes.CONSTRAINT_OR,
@@ -55,7 +56,8 @@ class OperatorRecognizer : TokenRecognizer {
             "#~" to PicatTokenTypes.CONSTRAINT_NOT,
             "#^" to PicatTokenTypes.CONSTRAINT_XOR,
             "@<" to PicatTokenTypes.TERM_LT,
-            "@>" to PicatTokenTypes.TERM_GT
+            "@>" to PicatTokenTypes.TERM_GT,
+            ":-" to PicatTokenTypes.RULE_OP
         )
 
         private val SINGLE_CHAR_OPERATORS = mapOf(
@@ -88,7 +90,8 @@ class OperatorRecognizer : TokenRecognizer {
         )
 
         private val FOUR_CHAR_OPERATORS = mapOf(
-            "#<=>" to PicatTokenTypes.CONSTRAINT_EQUIV
+            "#<=>" to PicatTokenTypes.CONSTRAINT_EQUIV,
+            "?<=>" to PicatTokenTypes.BACKTRACKABLE_BICONDITIONAL_OP
         )
     }
     override fun canRecognize(buffer: CharSequence, startOffset: Int, endOffset: Int): Boolean {

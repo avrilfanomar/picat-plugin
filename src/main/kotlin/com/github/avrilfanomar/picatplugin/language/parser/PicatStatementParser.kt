@@ -1,6 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
-import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.expectToken
 import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.skipWhitespace
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.PsiBuilder
@@ -191,6 +190,7 @@ class PicatStatementParser : PicatBaseParser() {
 
         // Parse the first goal
         parseGoal(builder)
+        skipWhitespace(builder)
 
         // Parse additional goals separated by commas or semicolons
         while (builder.tokenType == PicatTokenTypes.COMMA || builder.tokenType == PicatTokenTypes.SEMICOLON) {
@@ -210,10 +210,14 @@ class PicatStatementParser : PicatBaseParser() {
 
         // Parse left-hand side (variable or pattern)
         expressionParser.parsePattern(builder)
-
-        // Parse assignment operator
-        expectToken(builder, PicatTokenTypes.ASSIGN_OP, "Expected '='")
         skipWhitespace(builder)
+        // Parse assignment operator (= or :=)
+        if (builder.tokenType == PicatTokenTypes.ASSIGN_OP || builder.tokenType == PicatTokenTypes.EQUAL) {
+            builder.advanceLexer()
+            skipWhitespace(builder)
+        } else {
+            builder.error("Expected '=' or ':='")
+        }
 
         // Parse right-hand side (expression)
         expressionParser.parseExpression(builder)
