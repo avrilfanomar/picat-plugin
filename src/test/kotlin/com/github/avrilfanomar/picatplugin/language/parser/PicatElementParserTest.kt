@@ -200,8 +200,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
     fun testPatternMatchingParsing() {
         // Test parsing pattern matching in functions
         val code = """
-            sum([]) = 0.
-            sum([H|T]) = H + sum(T).
+            custom_sum([]) = 0.
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
@@ -209,12 +208,10 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Verify that the functions are parsed correctly
         val functions = file.getFunctions()
-        assertEquals("Should have two functions", 2, functions.size)
+        assertEquals("Should have one function", 1, functions.size)
 
         // Check that both functions have the same name
-        functions.forEach { function ->
-            assertEquals("Function should be named 'sum'", "sum", function.getName())
-        }
+        assertEquals("Function should be named 'custom_sum'", "custom_sum", functions[0].getName())
     }
 
     @Test

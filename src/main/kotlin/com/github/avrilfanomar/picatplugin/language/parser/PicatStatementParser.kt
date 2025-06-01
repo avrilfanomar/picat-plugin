@@ -189,9 +189,13 @@ class PicatStatementParser : PicatBaseParser() {
     fun parseBody(builder: PsiBuilder) {
         val marker = builder.mark()
 
+        // Parse the first goal
         parseGoal(builder)
+
+        // Parse additional goals separated by commas or semicolons
         while (builder.tokenType == PicatTokenTypes.COMMA || builder.tokenType == PicatTokenTypes.SEMICOLON) {
             builder.advanceLexer()
+            skipWhitespace(builder)
             parseGoal(builder)
         }
 

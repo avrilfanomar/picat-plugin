@@ -13,7 +13,9 @@ class PicatRuleImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatRule {
      * Returns the head of the rule.
      */
     override fun getHead(): PsiElement? {
-        return findChildByType(PicatTokenTypes.STRUCTURE) ?: findChildByType(PicatTokenTypes.ATOM)
+        return findChildByType(PicatTokenTypes.HEAD)
+            ?: findChildByType(PicatTokenTypes.STRUCTURE) 
+            ?: findChildByType(PicatTokenTypes.ATOM)
     }
 
     /**
@@ -27,7 +29,8 @@ class PicatRuleImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatRule {
      * Returns the rule operator.
      */
     override fun getRuleOperator(): PsiElement? {
-        return findChildByType(PicatTokenTypes.ARROW_OP) 
+        return findChildByType(PicatTokenTypes.RULE_OPERATOR)
+            ?: findChildByType(PicatTokenTypes.ARROW_OP) 
             ?: findChildByType(PicatTokenTypes.BACKTRACKABLE_ARROW_OP)
             ?: findChildByType(PicatTokenTypes.BICONDITIONAL_OP)
             ?: findChildByType(PicatTokenTypes.BACKTRACKABLE_BICONDITIONAL_OP)
@@ -40,6 +43,6 @@ class PicatRuleImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatRule {
      */
     override fun getRuleType(): String? {
         val ruleOperator = getRuleOperator() ?: return null
-        return ruleOperator.text
+        return ruleOperator.text.trim()
     }
 }

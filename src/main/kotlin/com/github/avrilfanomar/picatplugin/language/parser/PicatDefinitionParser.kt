@@ -20,14 +20,19 @@ class PicatDefinitionParser : PicatBaseParser() {
 
         // Check what kind of definition this is
         when {
-            isImplicitRule(builder) || isRuleDefinition(builder) -> {
+            isFunctionDefinition(builder) -> {
+                // Parse as a function definition (which is also marked as a fact)
+                parseFunctionDefinition(builder)
+            }
+
+            isRuleDefinition(builder) -> {
                 // Parse as a rule
                 parseRuleDefinition(builder)
             }
 
-            isFunctionDefinition(builder) -> {
-                // Parse as a function definition (which is also marked as a fact)
-                parseFunctionDefinition(builder)
+            isImplicitRule(builder) -> {
+                // Parse as an implicit rule
+                parseRuleDefinition(builder)
             }
 
             isFact(builder) -> {
@@ -51,13 +56,45 @@ class PicatDefinitionParser : PicatBaseParser() {
      */
     fun parseFunctionDefinition(builder: PsiBuilder) {
         val marker = builder.mark()
-        parseHead(builder)
+
+        // Parse the head, which could be a structure, atom, or pattern
+        if (isStructure(builder)) {
+            parseStructure(builder)
+        } else if (isQualifiedAtom(builder)) {
+            parseQualifiedAtom(builder)
+        } else if (builder.tokenType == PicatTokenTypes.LBRACKET) {
+            // Handle pattern matching with lists
+            expressionParser.parsePrimaryExpression(builder)
+        } else if (isAtom(builder.tokenType)) {
+            val atomMarker = builder.mark()
+            builder.advanceLexer()
+            atomMarker.done(PicatTokenTypes.ATOM)
+        } else {
+            // Error case
+            builder.error("Expected function head")
+            builder.advanceLexer()
+            marker.drop()
+            return
+        }
 
         skipWhitespace(builder)
         expectToken(builder, PicatTokenTypes.EQUAL, "Expected '=' in function definition")
         skipWhitespace(builder)
 
         expressionParser.parseExpression(builder)
+
+        // Check for a condition (=>)
+        skipWhitespace(builder)
+        if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
+            val opMarker = builder.mark()
+            builder.advanceLexer()
+            skipWhitespace(builder)
+            opMarker.done(PicatTokenTypes.RULE_OPERATOR)
+
+            // Parse the condition
+            expressionParser.parseExpression(builder)
+        }
+
         expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after function definition")
         marker.done(PicatTokenTypes.FUNCTION_DEFINITION)
     }
@@ -109,10 +146,37 @@ class PicatDefinitionParser : PicatBaseParser() {
         when {
             isStructure(builder) -> parseStructure(builder)
             isQualifiedAtom(builder) -> parseQualifiedAtom(builder)
-            isAtom(builder.tokenType) -> {
-                builder.advanceLexer()
-            }
+            builder.tokenType == PicatTokenTypes.LBRACKET -> {
+                // Handle pattern matching with lists
+                val listMarker = builder.mark()
+                builder.advanceLexer() // Consume [
 
+                // Parse list items if the list is not empty
+                if (builder.tokenType != PicatTokenTypes.RBRACKET) {
+                    expressionParser.parseExpression(builder)
+
+                    // Check for list tail
+                    if (builder.tokenType == PicatTokenTypes.PIPE) {
+                        builder.advanceLexer() // Consume |
+                        skipWhitespace(builder)
+                        expressionParser.parseExpression(builder)
+                    }
+                }
+
+                // Expect closing bracket
+                if (builder.tokenType == PicatTokenTypes.RBRACKET) {
+                    builder.advanceLexer()
+                } else {
+                    builder.error("Expected ']'")
+                }
+
+                listMarker.done(PicatTokenTypes.LIST)
+            }
+            isAtom(builder.tokenType) -> {
+                val atomMarker = builder.mark()
+                builder.advanceLexer()
+                atomMarker.done(PicatTokenTypes.ATOM)
+            }
             else -> {
                 builder.error("Expected predicate/function head")
                 builder.advanceLexer()
@@ -131,8 +195,26 @@ class PicatDefinitionParser : PicatBaseParser() {
         // Look ahead to see if this is a function definition
         val marker = builder.mark()
 
-        parseHead(builder)
+        // Try to parse the head, which could be a structure, atom, or pattern
+        if (isStructure(builder)) {
+            parseStructure(builder)
+        } else if (isQualifiedAtom(builder)) {
+            parseQualifiedAtom(builder)
+        } else if (builder.tokenType == PicatTokenTypes.LBRACKET) {
+            // Handle pattern matching with lists
+            expressionParser.parsePrimaryExpression(builder)
+        } else if (isAtom(builder.tokenType)) {
+            val atomMarker = builder.mark()
+            builder.advanceLexer()
+            atomMarker.done(PicatTokenTypes.ATOM)
+        } else {
+            marker.rollbackTo()
+            return false
+        }
+
         skipWhitespace(builder)
+        // A function definition must have an equals sign
+        // This includes pattern matching functions like sum([]) = 0
         val result = builder.tokenType == PicatTokenTypes.EQUAL
         marker.rollbackTo()
 

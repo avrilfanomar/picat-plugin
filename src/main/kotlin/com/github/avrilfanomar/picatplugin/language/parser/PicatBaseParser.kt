@@ -41,7 +41,9 @@ abstract class PicatBaseParser : PicatParserComponent {
             parseQualifiedAtom(builder)
         }
         if (isAtom(builder.tokenType)) {
+            val atomMarker = builder.mark()
             builder.advanceLexer()
+            atomMarker.done(PicatTokenTypes.ATOM)
         }
         skipWhitespace(builder)
         expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
@@ -99,13 +101,22 @@ abstract class PicatBaseParser : PicatParserComponent {
 
     protected fun parseArgumentList(builder: PsiBuilder) {
         val marker = builder.mark()
+
+        // Parse first argument
+        val argMarker = builder.mark()
         expressionParser.parseExpression(builder)
+        argMarker.done(PicatTokenTypes.ARGUMENT)
         skipWhitespace(builder)
 
+        // Parse additional arguments
         while (builder.tokenType == PicatTokenTypes.COMMA) {
             builder.advanceLexer()
             skipWhitespace(builder)
+
+            val nextArgMarker = builder.mark()
             expressionParser.parseExpression(builder)
+            nextArgMarker.done(PicatTokenTypes.ARGUMENT)
+            skipWhitespace(builder)
         }
 
         marker.done(PicatTokenTypes.ARGUMENT_LIST)
