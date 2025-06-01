@@ -96,13 +96,6 @@ class PicatDefinitionParser : PicatBaseParser() {
         val marker = builder.mark()
         parseHead(builder)
 
-        // Optional function body
-        if (builder.tokenType == PicatTokenTypes.EQUAL) {
-            builder.advanceLexer()
-            skipWhitespace(builder)
-            expressionParser.parseExpression(builder)
-        }
-
         expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after fact")
         marker.done(PicatTokenTypes.FACT)
     }
@@ -117,11 +110,7 @@ class PicatDefinitionParser : PicatBaseParser() {
             isStructure(builder) -> parseStructure(builder)
             isQualifiedAtom(builder) -> parseQualifiedAtom(builder)
             isAtom(builder.tokenType) -> {
-                if (isAtom(builder.tokenType)) {
-                    builder.advanceLexer()
-                } else {
-                    builder.error("Expected atom")
-                }
+                builder.advanceLexer()
             }
 
             else -> {

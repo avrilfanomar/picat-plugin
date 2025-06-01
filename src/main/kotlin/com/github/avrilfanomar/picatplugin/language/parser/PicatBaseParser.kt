@@ -41,11 +41,7 @@ abstract class PicatBaseParser : PicatParserComponent {
             parseQualifiedAtom(builder)
         }
         if (isAtom(builder.tokenType)) {
-            if (isAtom(builder.tokenType)) {
-                builder.advanceLexer()
-            } else {
-                builder.error("Expected atom")
-            }
+            builder.advanceLexer()
         }
         skipWhitespace(builder)
         expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
@@ -55,6 +51,7 @@ abstract class PicatBaseParser : PicatParserComponent {
             parseArgumentList(builder)
         }
 
+        skipWhitespace(builder)
         expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
         marker.done(PicatTokenTypes.STRUCTURE)
     }
