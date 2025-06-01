@@ -197,6 +197,24 @@ class PicatStatementParser : PicatBaseParser() {
             builder.advanceLexer()
             skipWhitespace(builder)
             parseGoal(builder)
+            skipWhitespace(builder)
+        }
+
+        // Check for binary operators that might be incorrectly treated as separate statements
+        if (builder.tokenType == PicatTokenTypes.PLUS || 
+            builder.tokenType == PicatTokenTypes.MINUS || 
+            builder.tokenType == PicatTokenTypes.MULTIPLY || 
+            builder.tokenType == PicatTokenTypes.DIVIDE || 
+            builder.tokenType == PicatTokenTypes.INT_DIVIDE || 
+            builder.tokenType == PicatTokenTypes.POWER) {
+            // This is part of an expression, not a separate statement
+            // Rollback and parse the entire body as a single expression
+            marker.rollbackTo()
+
+            val newMarker = builder.mark()
+            expressionParser.parseExpression(builder)
+            newMarker.done(PicatTokenTypes.BODY)
+            return
         }
 
         marker.done(PicatTokenTypes.BODY)

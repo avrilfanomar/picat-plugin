@@ -120,8 +120,21 @@ class PicatDefinitionParser : PicatBaseParser() {
         }
 
         // Parse the body
-        statementParser.parseBody(builder)
-        skipWhitespace(builder)
+        val bodyMarker = builder.mark()
+
+        // Keep parsing until we reach the end of the rule (dot)
+        while (builder.tokenType != PicatTokenTypes.DOT && !builder.eof()) {
+            if (builder.tokenType == PicatTokenTypes.COMMA || builder.tokenType == PicatTokenTypes.SEMICOLON) {
+                builder.advanceLexer()
+                skipWhitespace(builder)
+            } else {
+                statementParser.parseGoal(builder)
+                skipWhitespace(builder)
+            }
+        }
+
+        bodyMarker.done(PicatTokenTypes.BODY)
+
         expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after rule definition")
         marker.done(PicatTokenTypes.RULE)
     }

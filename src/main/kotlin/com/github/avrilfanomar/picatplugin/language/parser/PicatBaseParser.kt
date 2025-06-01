@@ -156,8 +156,15 @@ abstract class PicatBaseParser : PicatParserComponent {
         val marker = builder.mark()
         var result = false
 
-        if (builder.tokenType == PicatTokenTypes.VARIABLE) {
-            builder.advanceLexer()
+        // Check if it's a variable or a pattern
+        if (isVariable(builder.tokenType) || isAtom(builder.tokenType) || isStructure(builder)) {
+            // For variable or atom, advance lexer
+            if (isVariable(builder.tokenType) || isAtom(builder.tokenType)) {
+                builder.advanceLexer()
+            } else {
+                // For structure, parse it
+                parseStructure(builder)
+            }
             skipWhitespace(builder)
             result = builder.tokenType == PicatTokenTypes.ASSIGN_OP || builder.tokenType == PicatTokenTypes.EQUAL
         }
