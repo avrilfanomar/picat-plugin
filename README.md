@@ -46,7 +46,7 @@ To customize the formatting settings:
 2. Adjust the settings to match your preferences
 3. Click "Apply" or "OK"
 
-For detailed documentation on the code formatter, see [formatting.md](doc/formatting.md).
+For detailed documentation on the code formatter, see [formatting.md](docs/formatting.md).
 
 ### Structure View
 
