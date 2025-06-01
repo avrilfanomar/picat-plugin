@@ -6,6 +6,7 @@ import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatHeadImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatBodyImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFactImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFunctionDefinitionImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFunctionBodyImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatImportStatementImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatIncludeStatementImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExportStatementImpl
@@ -41,7 +42,8 @@ class PicatParserDefinitionHelper {
                type == PicatTokenTypes.HEAD ||
                type == PicatTokenTypes.BODY ||
                type == PicatTokenTypes.FACT ||
-               type == PicatTokenTypes.FUNCTION_DEFINITION
+               type == PicatTokenTypes.FUNCTION_DEFINITION ||
+               type == PicatTokenTypes.FUNCTION_BODY
     }
 
     /**
@@ -54,6 +56,7 @@ class PicatParserDefinitionHelper {
             PicatTokenTypes.BODY -> PicatBodyImpl(node)
             PicatTokenTypes.FACT -> PicatFactImpl(node)
             PicatTokenTypes.FUNCTION_DEFINITION -> PicatFunctionDefinitionImpl(node)
+            PicatTokenTypes.FUNCTION_BODY -> PicatFunctionBodyImpl(node)
             else -> throw IllegalArgumentException("Unexpected rule element type: $type")
         }
     }

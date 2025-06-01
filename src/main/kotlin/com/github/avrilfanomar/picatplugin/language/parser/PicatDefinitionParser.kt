@@ -81,7 +81,10 @@ class PicatDefinitionParser : PicatBaseParser() {
         expectToken(builder, PicatTokenTypes.EQUAL, "Expected '=' in function definition")
         skipWhitespace(builder)
 
+        // Mark the function body
+        val bodyMarker = builder.mark()
         expressionParser.parseExpression(builder)
+        bodyMarker.done(PicatTokenTypes.FUNCTION_BODY)
 
         // Check for a condition (=>)
         skipWhitespace(builder)

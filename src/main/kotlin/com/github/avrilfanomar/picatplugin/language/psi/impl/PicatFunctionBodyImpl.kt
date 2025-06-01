@@ -24,4 +24,16 @@ class PicatFunctionBodyImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatFun
     override fun getStatements(): List<PicatPsiElement> {
         return emptyList()
     }
+
+    /**
+     * Returns the text of the function body, excluding the trailing dot.
+     */
+    override fun getText(): String {
+        val superText = super.getText()
+        return if (superText.endsWith(".")) {
+            superText.substring(0, superText.length - 1)
+        } else {
+            superText
+        }
+    }
 }
