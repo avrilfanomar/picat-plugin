@@ -28,7 +28,20 @@ class PicatStructureImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatStruct
      * Returns the name of the structure.
      */
     override fun getName(): String? {
-        return getIdentifier()?.getName()
+        // Try to get the name from the identifier
+        val identifier = getIdentifier()
+        if (identifier != null) {
+            return identifier.getName()
+        }
+
+        // If identifier is null, try to extract the name from the text
+        val text = text
+        val openParenIndex = text.indexOf('(')
+        return if (openParenIndex > 0) {
+            text.substring(0, openParenIndex)
+        } else {
+            text
+        }
     }
 
     /**
