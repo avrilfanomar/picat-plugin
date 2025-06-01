@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 class PicatWhitespaceTest : BasePlatformTestCase() {
 
     @Test
-    @Disabled("Test is not ready to run yet")
     fun testWhitespaceBetweenOperators() {
         // Test that whitespace between operators is correctly handled
         val code = """
@@ -81,7 +80,6 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
     }
 
     @Test
-    @Disabled("Test is not ready to run yet")
     fun testWhitespaceBetweenBraces() {
         // Test that whitespace between braces is correctly handled
         val code = """
@@ -133,7 +131,6 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
     }
 
     @Test
-    @Disabled("Test is not ready to run yet")
     fun testWhitespaceBetweenParentheses() {
         // Test that whitespace between parentheses is correctly handled
         val code = """
