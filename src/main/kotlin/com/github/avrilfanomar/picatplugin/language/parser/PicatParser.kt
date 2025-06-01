@@ -45,7 +45,10 @@ class PicatParser : PsiParser {
                 PicatTokenTypes.WHITE_SPACE -> builder.advanceLexer()
                 PicatTokenTypes.COMMENT,
                 PicatTokenTypes.MULTI_LINE_COMMENT -> commentParser.parseAnyComment(builder)
-
+                PicatTokenTypes.DOT -> {
+                    // Skip dots that are not part of a definition
+                    builder.advanceLexer()
+                }
                 else -> topLevelParser.parseTopLevelItem(builder)
             }
         }

@@ -121,12 +121,12 @@ class PicatExpressionParserHelper : PicatBaseParser() {
         // Parse the key
         expressionParser.parseExpression(builder)
 
-        // Expect the map association operator
-        if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
+        // Expect the map association operator (colon)
+        if (builder.tokenType == PicatTokenTypes.COLON) {
             builder.advanceLexer()
             skipWhitespace(builder)
         } else {
-            builder.error("Expected '=>'")
+            builder.error("Expected ':'")
         }
 
         // Parse the value

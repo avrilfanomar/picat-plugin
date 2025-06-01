@@ -29,8 +29,14 @@ class PicatFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, Pica
     /**
      * Returns all rule definitions in the file.
      */
-    fun getRules(): List<PicatRule> =
-        PsiTreeUtil.findChildrenOfType(this, PicatRule::class.java).toList()
+    fun getRules(): List<PicatRule> {
+        // Get all rules in the file
+        val allRules = PsiTreeUtil.findChildrenOfType(this, PicatRule::class.java).toList()
+
+        // Filter out rules that are not direct children of the file
+        // This ensures we only get top-level rules
+        return allRules.filter { rule -> rule.parent == this }
+    }
 
     /**
      * Returns all function definitions in the file.
