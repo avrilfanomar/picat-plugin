@@ -16,6 +16,7 @@ class PicatRuleImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatRule {
         return findChildByType(PicatTokenTypes.HEAD)
             ?: findChildByType(PicatTokenTypes.STRUCTURE) 
             ?: findChildByType(PicatTokenTypes.ATOM)
+            ?: firstChild // Fallback to first child if no specific head element is found
     }
 
     /**
@@ -37,12 +38,4 @@ class PicatRuleImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatRule {
             ?: findChildByType(PicatTokenTypes.RULE_OP)
     }
 
-    /**
-     * Returns the rule type as a string.
-     * Possible values are "=>", "?=>", "<=>", "?<=>", or ":-".
-     */
-    override fun getRuleType(): String? {
-        val ruleOperator = getRuleOperator() ?: return null
-        return ruleOperator.text.trim()
-    }
 }

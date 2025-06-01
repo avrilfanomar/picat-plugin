@@ -22,9 +22,4 @@ interface PicatRule : PicatPsiElement {
      */
     fun getRuleOperator(): PsiElement?
 
-    /**
-     * Returns the rule type as a string.
-     * Possible values are "=>", "?=>", "<=>", "?<=>", or ":-".
-     */
-    fun getRuleType(): String?
 }

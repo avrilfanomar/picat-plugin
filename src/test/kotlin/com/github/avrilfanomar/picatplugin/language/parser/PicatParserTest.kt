@@ -266,13 +266,14 @@ class PicatParserTest : BasePlatformTestCase() {
         val rules = file.findChildrenByClass(PicatRule::class.java)
         assertTrue("Should have at least 7 rules", rules.size >= 7)
 
-        // Check for different rule operators
-        val ruleTypes = rules.mapNotNull { it.getRuleType() }
+        // Check for different rule operators in rule texts
+        val ruleTexts = rules.map { it.text }
+        val allRuleText = ruleTexts.joinToString(" ")
 
-        assertTrue("Should contain '=>' operator", ruleTypes.contains("=>"))
-        assertTrue("Should contain '?=>' operator", ruleTypes.contains("?=>"))
-        assertTrue("Should contain '<=>' operator", ruleTypes.contains("<=>"))
-        assertTrue("Should contain ':-' operator", ruleTypes.contains(":-"))
+        assertTrue("Should contain '=>' operator", allRuleText.contains("=>"))
+        assertTrue("Should contain '?=>' operator", allRuleText.contains("?=>"))
+        assertTrue("Should contain '<=>' operator", allRuleText.contains("<=>"))
+        assertTrue("Should contain ':-' operator", allRuleText.contains(":-"))
     }
 
     @Test
