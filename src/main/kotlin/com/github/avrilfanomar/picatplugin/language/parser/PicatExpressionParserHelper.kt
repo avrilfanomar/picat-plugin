@@ -18,10 +18,16 @@ class PicatExpressionParserHelper : PicatBaseParser() {
         // Consume the opening bracket
         builder.advanceLexer()
 
+        // Skip whitespace after opening bracket
+        skipWhitespace(builder)
+
         // Parse list items if the list is not empty
         if (builder.tokenType != PicatTokenTypes.RBRACKET) {
             parseListItems(builder)
         }
+
+        // Skip whitespace before closing bracket
+        skipWhitespace(builder)
 
         // Expect closing bracket
         if (builder.tokenType == PicatTokenTypes.RBRACKET) {

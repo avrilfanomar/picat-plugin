@@ -16,12 +16,18 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
      * Parses a logical OR expression.
      */
     fun parseLogicalOrExpression(builder: PsiBuilder) {
+        val exprMarker = builder.mark()
         parseLogicalAndExpression(builder)
+
         while (builder.tokenType == PicatTokenTypes.OR_KEYWORD) {
+            val operatorMarker = builder.mark()
             builder.advanceLexer()
+            operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
             parseLogicalAndExpression(builder)
         }
+
+        exprMarker.done(PicatTokenTypes.EXPRESSION)
     }
 
     /**
@@ -112,24 +118,38 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
      * Parses an additive expression.
      */
     fun parseAdditiveExpression(builder: PsiBuilder) {
+        val exprMarker = builder.mark()
         parseMultiplicativeExpression(builder)
+
         while (builder.tokenType == PicatTokenTypes.PLUS || builder.tokenType == PicatTokenTypes.MINUS) {
+            val operatorMarker = builder.mark()
+            val operatorType = builder.tokenType
             builder.advanceLexer()
+            operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
             parseMultiplicativeExpression(builder)
         }
+
+        exprMarker.done(PicatTokenTypes.EXPRESSION)
     }
 
     /**
      * Parses a multiplicative expression.
      */
     fun parseMultiplicativeExpression(builder: PsiBuilder) {
+        val exprMarker = builder.mark()
         parsePowerExpression(builder)
+
         while (isMultiplicativeOperator(builder.tokenType)) {
+            val operatorMarker = builder.mark()
+            val operatorType = builder.tokenType
             builder.advanceLexer()
+            operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
             parsePowerExpression(builder)
         }
+
+        exprMarker.done(PicatTokenTypes.EXPRESSION)
     }
 
     /**

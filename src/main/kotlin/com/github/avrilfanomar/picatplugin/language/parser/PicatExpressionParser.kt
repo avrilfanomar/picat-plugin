@@ -40,12 +40,14 @@ class PicatExpressionParser : PicatBaseParser() {
      * Parses a Picat expression.
      */
     fun parseExpression(builder: PsiBuilder) {
-        val marker = builder.mark()
-
+        // We don't need to create an expression marker here because
+        // the binary expression parser will create one for us
         binaryHelper.parseLogicalOrExpression(builder)
         skipWhitespace(builder)
+
         // Ternary operator
         if (builder.tokenType == PicatTokenTypes.QUESTION) {
+            val marker = builder.mark()
             builder.advanceLexer()
             skipWhitespace(builder)
             parseExpression(builder)
@@ -53,13 +55,13 @@ class PicatExpressionParser : PicatBaseParser() {
             expectToken(builder, PicatTokenTypes.COLON, "Expected ':' in ternary operator")
             skipWhitespace(builder)
             parseExpression(builder)
+            marker.done(PicatTokenTypes.EXPRESSION)
         }
-
-        marker.done(PicatTokenTypes.EXPRESSION)
     }
 
 
     fun parsePrimaryExpression(builder: PsiBuilder) {
+        val termMarker = builder.mark()
         when {
             isStructure(builder) -> parseStructure(builder)
             isAtom(builder.tokenType) -> {
@@ -76,6 +78,7 @@ class PicatExpressionParser : PicatBaseParser() {
                 builder.advanceLexer()
                 skipWhitespace(builder)
                 parseExpression(builder)
+                skipWhitespace(builder)
                 expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
             }
             builder.tokenType == PicatTokenTypes.LBRACKET -> helper.parseList(builder)
@@ -85,5 +88,6 @@ class PicatExpressionParser : PicatBaseParser() {
                 builder.advanceLexer()
             }
         }
+        termMarker.done(PicatTokenTypes.TERM)
     }
 }
