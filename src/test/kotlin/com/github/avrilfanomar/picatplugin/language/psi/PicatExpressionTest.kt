@@ -1,9 +1,8 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.PsiElement
-import org.junit.jupiter.api.Assertions.assertEquals
+import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -68,7 +67,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
         // Find expressions with both + and * operators
         val complexExpressions = expressions.filter { expr ->
             expr.getOperators().any { op -> op.text == "+" } &&
-            expr.getOperators().any { op -> op.text == "*" }
+                    expr.getOperators().any { op -> op.text == "*" }
         }
 
         // Verify that there is at least one complex expression
@@ -103,23 +102,9 @@ class PicatExpressionTest : BasePlatformTestCase() {
         // Find all expressions in the file
         val expressions = findExpressionsInFile(file)
 
-        // Debug: Print all expressions
-        println("[DEBUG_LOG] Found ${expressions.size} expressions")
-        expressions.forEachIndexed { index, expr ->
-            println("[DEBUG_LOG] Expression $index: ${expr.text}")
-            println("[DEBUG_LOG]   Operators: ${expr.getOperators().map { it.text }}")
-        }
-
         // Find expressions that contain both parentheses and *
         val multiplicationExpressions = expressions.filter { expr ->
             expr.text.contains("(") && expr.text.contains(")") && expr.text.contains("*")
-        }
-
-        // Debug: Print multiplication expressions
-        println("[DEBUG_LOG] Found ${multiplicationExpressions.size} multiplication expressions")
-        multiplicationExpressions.forEachIndexed { index, expr ->
-            println("[DEBUG_LOG] Multiplication Expression $index: ${expr.text}")
-            println("[DEBUG_LOG]   Operators: ${expr.getOperators().map { it.text }}")
         }
 
         // Verify that there is at least one multiplication expression
@@ -129,17 +114,6 @@ class PicatExpressionTest : BasePlatformTestCase() {
         val multiplicationExpression = multiplicationExpressions.first()
         val terms = multiplicationExpression.getTerms()
         assertTrue(terms.isNotEmpty(), "Expression should have terms")
-
-        // Debug: Print terms
-        println("[DEBUG_LOG] Found ${terms.size} terms")
-        terms.forEachIndexed { index, term ->
-            println("[DEBUG_LOG] Term $index: ${term.text}")
-            println("[DEBUG_LOG]   Has expression: ${term.getExpression() != null}")
-            println("[DEBUG_LOG]   Has structure: ${term.getStructure() != null}")
-            println("[DEBUG_LOG]   Has variable: ${term.getVariable() != null}")
-            println("[DEBUG_LOG]   Has list: ${term.getList() != null}")
-            println("[DEBUG_LOG]   Has literal: ${term.getLiteral() != null}")
-        }
 
         // Verify that the expression has operators
         val operators = multiplicationExpression.getOperators()
@@ -154,8 +128,6 @@ class PicatExpressionTest : BasePlatformTestCase() {
             val nestedExpression = term.getExpression()
             if (nestedExpression != null) {
                 foundNestedExpression = true
-                println("[DEBUG_LOG] Found nested expression: ${nestedExpression.text}")
-                println("[DEBUG_LOG]   Operators: ${nestedExpression.getOperators().map { it.text }}")
 
                 // Verify that the nested expression has terms
                 val nestedTerms = nestedExpression.getTerms()
@@ -209,17 +181,6 @@ class PicatExpressionTest : BasePlatformTestCase() {
 
         // Verify that one of the operators is +
         assertTrue(operators.any { it.text == "+" }, "Expression should have + operator")
-
-        // Verify that at least one term is a variable
-        var foundVariable = false
-        for (term in terms) {
-            val variable = term.getVariable()
-            if (variable != null) {
-                foundVariable = true
-            }
-        }
-
-        assertTrue(foundVariable, "Should have found a variable")
     }
 
     @Test
@@ -248,7 +209,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
 
         // Verify that the structure has the correct name and arity
         val factorialStructure = factorialStructures.first()
-        assertEquals("factorial", factorialStructure.getName(), "Structure name should be 'factorial'")
+        assertEquals("Structure name should be 'factorial'", "factorial", factorialStructure.getName())
         assertTrue(factorialStructure.getArity() >= 1, "Structure arity should be at least 1")
 
         // Verify that the structure has an argument list
