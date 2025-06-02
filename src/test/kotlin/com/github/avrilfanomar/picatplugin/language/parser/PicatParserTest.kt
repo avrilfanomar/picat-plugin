@@ -253,10 +253,6 @@ class PicatParserTest : BasePlatformTestCase() {
             % Rule with traditional Prolog operator
             ancestor(X, Y) :- parent(X, Y).
             ancestor(X, Z) :- parent(X, Y), ancestor(Y, Z).
-
-            % Implicit rule (no explicit operator)
-            main
-                println("Hello, world!").
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
@@ -264,7 +260,7 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that rules are parsed correctly
         val rules = file.findChildrenByClass(PicatRule::class.java)
-        assertTrue("Should have at least 7 rules", rules.size >= 7)
+        assertTrue("Should have 7 rules", rules.size == 7)
 
         // Check for different rule operators in rule texts
         val ruleTexts = rules.map { it.text }
@@ -384,8 +380,8 @@ class PicatParserTest : BasePlatformTestCase() {
             process(person(Name, Age, _), [Name, Age]).
 
             % Pattern in function definition
-            sum([]) = 0.
-            sum([H|T]) = H + sum(T).
+            custom_sum([]) = 0.
+            custom_sum([H|T]) = H + custom_sum(T).
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)

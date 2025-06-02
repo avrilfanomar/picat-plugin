@@ -86,18 +86,7 @@ class PicatDefinitionParser : PicatBaseParser() {
         expressionParser.parseExpression(builder)
         bodyMarker.done(PicatTokenTypes.FUNCTION_BODY)
 
-        // Check for a condition (=>)
         skipWhitespace(builder)
-        if (builder.tokenType == PicatTokenTypes.ARROW_OP) {
-            val opMarker = builder.mark()
-            builder.advanceLexer()
-            skipWhitespace(builder)
-            opMarker.done(PicatTokenTypes.RULE_OPERATOR)
-
-            // Parse the condition
-            expressionParser.parseExpression(builder)
-        }
-
         expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after function definition")
         marker.done(PicatTokenTypes.FUNCTION_DEFINITION)
     }
