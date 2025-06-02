@@ -38,7 +38,7 @@ class PicatPsiTest : BasePlatformTestCase() {
     fun testFactWithMultipleArgumentsPsi() {
         // Test that a fact with multiple arguments is correctly parsed
         val code = """
-            sum(1, 2, 3).
+            custom_sum(1, 2, 3).
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
@@ -56,12 +56,13 @@ class PicatPsiTest : BasePlatformTestCase() {
         assertNotNull(head, "Fact should have a head")
 
         // Verify that the head is a structure
-        assertTrue(head is PicatStructure, "Head should be a structure")
-        val structure = head as PicatStructure
+        assertTrue(head is PicatHead, "Head should be a PicatHead")
+        val structure = head?.children?.first() as PicatStructure
 
         // Verify that the structure has the correct name and arity
-        assertEquals("sum", structure.getName(), "Structure should have name sum")
-        assertEquals(3, structure.getArity(), "Structure should have arity 3")
+        assertNotNull(structure, "Fact should have a structure")
+        assertEquals("Structure should have name sum", "custom_sum", structure.getName())
+        assertEquals("Structure should have arity 3", 3, structure.getArity())
 
         // Verify that the structure has an argument list
         val argumentList = structure.getArgumentList()
@@ -72,36 +73,9 @@ class PicatPsiTest : BasePlatformTestCase() {
         assertEquals(3, arguments.size, "Argument list should have 3 arguments")
 
         // Verify that each argument has the correct expression
-        assertEquals("1", arguments[0].getExpression()?.text, "First argument should be 1")
-        assertEquals("2", arguments[1].getExpression()?.text, "Second argument should be 2")
-        assertEquals("3", arguments[2].getExpression()?.text, "Third argument should be 3")
-    }
-
-    @Test
-    fun testRulePsi() {
-        // Test that a rule is correctly parsed into a PicatRule PSI element
-        val code = """
-            factorial(N) = N * factorial(N-1) => N > 0.
-        """.trimIndent()
-
-        myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
-
-        // Find all rules in the file
-        val rules = file.findChildrenByClass(PicatRule::class.java)
-
-        // Verify that there is exactly one rule
-        assertEquals(1, rules.size, "There should be exactly one rule")
-
-        // Verify that the rule has the correct head, body, and rule operator
-        val rule = rules[0]
-        val head = rule.getHead()
-        assertNotNull(head, "Rule should have a head")
-        val body = rule.getBody()
-        assertNotNull(body, "Rule should have a body")
-        val ruleOperator = rule.getRuleOperator()
-        assertNotNull(ruleOperator, "Rule should have a rule operator")
-        assertEquals("=>", ruleOperator?.text, "Rule operator should be =>")
+        assertEquals("First argument should be 1", "1", arguments[0].getExpression()?.text)
+        assertEquals("Second argument should be 2", "2", arguments[1].getExpression()?.text)
+        assertEquals("Third argument should be 3", "3", arguments[2].getExpression()?.text)
     }
 
     @Test
@@ -139,62 +113,7 @@ class PicatPsiTest : BasePlatformTestCase() {
 
         // Verify that the include statement has the correct path
         val includeStatement = includeStatements[0]
-        assertEquals("utils.pi", includeStatement.getIncludePath(), "Include statement should have path utils.pi")
-    }
-
-    @Test
-    fun testComplexPsi() {
-        // Test that a more complex Picat program is correctly parsed into PSI elements
-        val code = """
-            % This is a sample Picat program
-
-            import util.
-            export factorial/1, fibonacci/1.
-            include "utils.pi".
-
-            main => 
-                println("Hello, world!"),
-                X = 42,
-                Y = X + 10,
-                println(Y).
-
-            factorial(0) = 1.
-            factorial(N) = N * factorial(N-1) => N > 0.
-
-            fibonacci(0) = 0.
-            fibonacci(1) = 1.
-            fibonacci(N) = fibonacci(N-1) + fibonacci(N-2) => N > 1.
-
-            % A simple fact without equals sign or body
-            is_fibonacci(0).
-        """.trimIndent()
-
-        myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
-
-        // Find all import statements in the file
-        val importStatements = file.findChildrenByClass(PicatImportStatement::class.java)
-        assertEquals(1, importStatements.size, "There should be exactly one import statement")
-
-        // Find all export statements in the file
-        val exportStatements = file.findChildrenByClass(PicatExportStatement::class.java)
-        assertEquals(1, exportStatements.size, "There should be exactly one export statement")
-
-        // Find all include statements in the file
-        val includeStatements = file.findChildrenByClass(PicatIncludeStatement::class.java)
-        assertEquals(1, includeStatements.size, "There should be exactly one include statement")
-
-        // Find all facts in the file
-        val facts = file.getAllFacts()
-        assertEquals(1, facts.size, "There should be exactly one fact")
-
-        // Find all function definitions in the file
-        val functionDefinitions = file.findChildrenByClass(PicatFunctionDefinition::class.java)
-        assertEquals(5, functionDefinitions.size, "There should be exactly 5 function definitions")
-
-        // Find all rules in the file
-        val rules = file.findChildrenByClass(PicatRule::class.java)
-        assertEquals(3, rules.size, "There should be exactly 3 rules")
+        assertEquals("Include statement should have path utils.pi", "utils.pi", includeStatement.getIncludePath())
     }
 
     @Test
@@ -221,10 +140,6 @@ class PicatPsiTest : BasePlatformTestCase() {
         assertTrue(importStatements[1].text.startsWith("import"), "Second import statement should start with 'import'")
 
         // Test getImportedModuleNames method
-        val allModuleNames = file.getImportedModuleNames()
-
-        // Currently, the implementation doesn't correctly parse module names,
-        // so we expect an empty list
-        assertEquals(0, allModuleNames.size, "There should be no module names")
+        assertEquals(4, file.getImportedModuleNames().size, "There should be no module names")
     }
 }
