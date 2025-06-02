@@ -20,6 +20,6 @@ interface PicatRule : PicatPsiElement {
     /**
      * Returns the rule operator.
      */
-    fun getRuleOperator(): PsiElement?
+    fun getOperator(): PsiElement?
 
 }

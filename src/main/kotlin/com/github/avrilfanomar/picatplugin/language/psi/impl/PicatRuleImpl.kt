@@ -29,7 +29,7 @@ class PicatRuleImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatRule {
     /**
      * Returns the rule operator.
      */
-    override fun getRuleOperator(): PsiElement? {
+    override fun getOperator(): PsiElement? {
         return findChildByType(PicatTokenTypes.RULE_OPERATOR)
             ?: findChildByType(PicatTokenTypes.ARROW_OP) 
             ?: findChildByType(PicatTokenTypes.BACKTRACKABLE_ARROW_OP)
