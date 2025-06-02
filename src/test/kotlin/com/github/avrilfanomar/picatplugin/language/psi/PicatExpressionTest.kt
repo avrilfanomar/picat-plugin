@@ -103,9 +103,23 @@ class PicatExpressionTest : BasePlatformTestCase() {
         // Find all expressions in the file
         val expressions = findExpressionsInFile(file)
 
-        // Find expressions with * operator
+        // Debug: Print all expressions
+        println("[DEBUG_LOG] Found ${expressions.size} expressions")
+        expressions.forEachIndexed { index, expr ->
+            println("[DEBUG_LOG] Expression $index: ${expr.text}")
+            println("[DEBUG_LOG]   Operators: ${expr.getOperators().map { it.text }}")
+        }
+
+        // Find expressions that contain both parentheses and *
         val multiplicationExpressions = expressions.filter { expr ->
-            expr.getOperators().any { op -> op.text == "*" }
+            expr.text.contains("(") && expr.text.contains(")") && expr.text.contains("*")
+        }
+
+        // Debug: Print multiplication expressions
+        println("[DEBUG_LOG] Found ${multiplicationExpressions.size} multiplication expressions")
+        multiplicationExpressions.forEachIndexed { index, expr ->
+            println("[DEBUG_LOG] Multiplication Expression $index: ${expr.text}")
+            println("[DEBUG_LOG]   Operators: ${expr.getOperators().map { it.text }}")
         }
 
         // Verify that there is at least one multiplication expression
@@ -115,6 +129,17 @@ class PicatExpressionTest : BasePlatformTestCase() {
         val multiplicationExpression = multiplicationExpressions.first()
         val terms = multiplicationExpression.getTerms()
         assertTrue(terms.isNotEmpty(), "Expression should have terms")
+
+        // Debug: Print terms
+        println("[DEBUG_LOG] Found ${terms.size} terms")
+        terms.forEachIndexed { index, term ->
+            println("[DEBUG_LOG] Term $index: ${term.text}")
+            println("[DEBUG_LOG]   Has expression: ${term.getExpression() != null}")
+            println("[DEBUG_LOG]   Has structure: ${term.getStructure() != null}")
+            println("[DEBUG_LOG]   Has variable: ${term.getVariable() != null}")
+            println("[DEBUG_LOG]   Has list: ${term.getList() != null}")
+            println("[DEBUG_LOG]   Has literal: ${term.getLiteral() != null}")
+        }
 
         // Verify that the expression has operators
         val operators = multiplicationExpression.getOperators()
@@ -129,6 +154,8 @@ class PicatExpressionTest : BasePlatformTestCase() {
             val nestedExpression = term.getExpression()
             if (nestedExpression != null) {
                 foundNestedExpression = true
+                println("[DEBUG_LOG] Found nested expression: ${nestedExpression.text}")
+                println("[DEBUG_LOG]   Operators: ${nestedExpression.getOperators().map { it.text }}")
 
                 // Verify that the nested expression has terms
                 val nestedTerms = nestedExpression.getTerms()

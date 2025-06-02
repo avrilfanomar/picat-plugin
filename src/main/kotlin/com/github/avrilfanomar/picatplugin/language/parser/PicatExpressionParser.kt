@@ -40,23 +40,96 @@ class PicatExpressionParser : PicatBaseParser() {
      * Parses a Picat expression.
      */
     fun parseExpression(builder: PsiBuilder) {
-        // We don't need to create an expression marker here because
-        // the binary expression parser will create one for us
-        binaryHelper.parseLogicalOrExpression(builder)
+        val exprMarker = builder.mark()
+
+        // Parse the first term
+        parseTerm(builder)
         skipWhitespace(builder)
+
+        // Parse binary operators and their right-hand terms
+        while (!builder.eof() && 
+               (builder.tokenType == PicatTokenTypes.PLUS || 
+                builder.tokenType == PicatTokenTypes.MINUS || 
+                builder.tokenType == PicatTokenTypes.MULTIPLY || 
+                builder.tokenType == PicatTokenTypes.DIVIDE || 
+                builder.tokenType == PicatTokenTypes.INT_DIVIDE || 
+                builder.tokenType == PicatTokenTypes.MOD_KEYWORD)) {
+
+            // Create a marker for the operator
+            val operatorMarker = builder.mark()
+            builder.advanceLexer()
+            operatorMarker.done(PicatTokenTypes.OPERATOR)
+            skipWhitespace(builder)
+
+            // Parse the right-hand term
+            parseTerm(builder)
+            skipWhitespace(builder)
+        }
 
         // Ternary operator
         if (builder.tokenType == PicatTokenTypes.QUESTION) {
-            val marker = builder.mark()
+            val operatorMarker = builder.mark()
             builder.advanceLexer()
+            operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
             parseExpression(builder)
             skipWhitespace(builder)
+            val colonMarker = builder.mark()
             expectToken(builder, PicatTokenTypes.COLON, "Expected ':' in ternary operator")
+            colonMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
             parseExpression(builder)
-            marker.done(PicatTokenTypes.EXPRESSION)
         }
+
+        exprMarker.done(PicatTokenTypes.EXPRESSION)
+    }
+
+    /**
+     * Parses a term in an expression.
+     */
+    private fun parseTerm(builder: PsiBuilder) {
+        val termMarker = builder.mark()
+        when {
+            builder.tokenType == PicatTokenTypes.LPAR -> {
+                // Parse a parenthesized expression
+                val openParenMarker = builder.mark()
+                builder.advanceLexer()
+                openParenMarker.done(PicatTokenTypes.OPERATOR)
+                skipWhitespace(builder)
+
+                // Parse the expression inside the parentheses
+                parseExpression(builder)
+
+                skipWhitespace(builder)
+                val closeParenMarker = builder.mark()
+                expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
+                closeParenMarker.done(PicatTokenTypes.OPERATOR)
+            }
+            else -> {
+                // Parse a primary expression without creating a term marker
+                // since we've already created one
+                when {
+                    isStructure(builder) -> parseStructure(builder)
+                    isAtom(builder.tokenType) -> {
+                        if (isAtom(builder.tokenType)) {
+                            builder.advanceLexer()
+                        } else {
+                            builder.error("Expected atom")
+                        }
+                    }
+                    isVariable(builder.tokenType) -> parseVariable(builder)
+                    isNumber(builder.tokenType) -> parseNumber(builder)
+                    builder.tokenType == PicatTokenTypes.STRING -> parseString(builder)
+                    builder.tokenType == PicatTokenTypes.LBRACKET -> helper.parseList(builder)
+                    builder.tokenType == PicatTokenTypes.LBRACE -> helper.parseMap(builder)
+                    else -> {
+                        builder.error("Expected primary expression")
+                        builder.advanceLexer()
+                    }
+                }
+            }
+        }
+        termMarker.done(PicatTokenTypes.TERM)
     }
 
 
@@ -75,11 +148,16 @@ class PicatExpressionParser : PicatBaseParser() {
             isNumber(builder.tokenType) -> parseNumber(builder)
             builder.tokenType == PicatTokenTypes.STRING -> parseString(builder)
             builder.tokenType == PicatTokenTypes.LPAR -> {
+                // Create a marker for the parenthesized expression
                 val openParenMarker = builder.mark()
                 builder.advanceLexer()
                 openParenMarker.done(PicatTokenTypes.OPERATOR)
                 skipWhitespace(builder)
-                parseExpression(builder)
+
+                // Parse the expression inside the parentheses
+                // This will create its own expression marker
+                binaryHelper.parseLogicalOrExpression(builder)
+
                 skipWhitespace(builder)
                 val closeParenMarker = builder.mark()
                 expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")

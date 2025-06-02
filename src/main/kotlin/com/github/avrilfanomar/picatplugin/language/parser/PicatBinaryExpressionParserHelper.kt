@@ -132,7 +132,6 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
      * Parses an additive expression.
      */
     fun parseAdditiveExpression(builder: PsiBuilder) {
-        val exprMarker = builder.mark()
         parseMultiplicativeExpression(builder)
 
         while (builder.tokenType == PicatTokenTypes.PLUS || builder.tokenType == PicatTokenTypes.MINUS) {
@@ -142,8 +141,6 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
             skipWhitespace(builder)
             parseMultiplicativeExpression(builder)
         }
-
-        exprMarker.done(PicatTokenTypes.EXPRESSION)
     }
 
     /**
@@ -155,6 +152,7 @@ class PicatBinaryExpressionParserHelper : PicatBaseParser() {
 
         while (isMultiplicativeOperator(builder.tokenType)) {
             val operatorMarker = builder.mark()
+            // Advance the lexer for any multiplicative operator
             builder.advanceLexer()
             operatorMarker.done(PicatTokenTypes.OPERATOR)
             skipWhitespace(builder)
