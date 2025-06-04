@@ -19,23 +19,29 @@ class PicatDefinitionParser : PicatBaseParser() {
         // Don't create a marker here, let the specific parse methods create their own markers
 
         // Check what kind of definition this is
+        val isFunctionDef = isFunctionDefinition(builder)
+        val isRuleDef = isRuleDefinition(builder)
+        val isImplicitRuleDef = isImplicitRule(builder)
+        val isFactDef = isFact(builder)
+
+
         when {
-            isFunctionDefinition(builder) -> {
+            isFunctionDef -> {
                 // Parse as a function definition (which is also marked as a fact)
                 parseFunctionDefinition(builder)
             }
 
-            isRuleDefinition(builder) -> {
+            isRuleDef -> {
                 // Parse as a rule
                 parseRuleDefinition(builder)
             }
 
-            isImplicitRule(builder) -> {
+            isImplicitRuleDef -> {
                 // Parse as an implicit rule
                 parseRuleDefinition(builder)
             }
 
-            isFact(builder) -> {
+            isFactDef -> {
                 // Parse as a simple fact
                 parseFact(builder)
             }
@@ -104,8 +110,8 @@ class PicatDefinitionParser : PicatBaseParser() {
         // Parse rule operator (=>, ?=>, <=>, ?<=>, :-)
         val opMarker = builder.mark()
         val ruleOpType = builder.tokenType
-        val isBiconditionalRule = ruleOpType == PicatTokenTypes.BICONDITIONAL_OP || 
-                                 ruleOpType == PicatTokenTypes.BACKTRACKABLE_BICONDITIONAL_OP
+        val isBiconditionalRule = ruleOpType == PicatTokenTypes.BICONDITIONAL_OP ||
+                ruleOpType == PicatTokenTypes.BACKTRACKABLE_BICONDITIONAL_OP
 
         if (isRuleOperator(ruleOpType)) {
             builder.advanceLexer()
@@ -188,11 +194,13 @@ class PicatDefinitionParser : PicatBaseParser() {
 
                 listMarker.done(PicatTokenTypes.LIST)
             }
+
             isAtom(builder.tokenType) -> {
                 val atomMarker = builder.mark()
                 builder.advanceLexer()
                 atomMarker.done(PicatTokenTypes.ATOM)
             }
+
             else -> {
                 builder.error("Expected predicate/function head")
                 builder.advanceLexer()
@@ -281,6 +289,7 @@ class PicatDefinitionParser : PicatBaseParser() {
         var result = false
 
         parseHead(builder)
+        skipWhitespace(builder)
         // A fact is either just a head followed by a dot,
         // or a head followed by an equals sign, an expression, and a dot
         if (builder.tokenType == PicatTokenTypes.DOT) {

@@ -42,10 +42,16 @@ class PicatParser : PsiParser {
         // Parse the entire file content
         while (!builder.eof()) {
             when (builder.tokenType) {
-                PicatTokenTypes.WHITE_SPACE -> builder.advanceLexer()
+                PicatTokenTypes.WHITE_SPACE -> {
+                    builder.advanceLexer()
+                }
                 PicatTokenTypes.COMMENT,
-                PicatTokenTypes.MULTI_LINE_COMMENT -> commentParser.parseAnyComment(builder)
-                else -> topLevelParser.parseTopLevelItem(builder)
+                PicatTokenTypes.MULTI_LINE_COMMENT -> {
+                    commentParser.parseAnyComment(builder)
+                }
+                else -> {
+                    topLevelParser.parseTopLevelItem(builder)
+                }
             }
         }
 

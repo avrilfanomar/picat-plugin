@@ -16,6 +16,7 @@ import com.intellij.lang.PsiBuilder
 class PicatExpressionParser : PicatBaseParser() {
     // Helper for parsing complex data structures
     private lateinit var helper: PicatExpressionParserHelper
+
     // Helper for parsing binary expressions
     private lateinit var binaryHelper: PicatBinaryExpressionParserHelper
 
@@ -101,11 +102,15 @@ class PicatExpressionParser : PicatBaseParser() {
                 expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
                 closeParenMarker.done(PicatTokenTypes.OPERATOR)
             }
+
             else -> {
                 // Parse a primary expression without creating a term marker
                 // since we've already created one
                 when {
-                    isStructure(builder) -> parseStructure(builder)
+                    isStructure(builder) -> {
+                        parseStructure(builder)
+                    }
+
                     isAtom(builder.tokenType) -> {
                         if (isAtom(builder.tokenType)) {
                             builder.advanceLexer()
@@ -113,11 +118,27 @@ class PicatExpressionParser : PicatBaseParser() {
                             builder.error("Expected atom")
                         }
                     }
-                    isVariable(builder.tokenType) -> parseVariable(builder)
-                    isNumber(builder.tokenType) -> parseNumber(builder)
-                    builder.tokenType == PicatTokenTypes.STRING -> parseString(builder)
-                    builder.tokenType == PicatTokenTypes.LBRACKET -> helper.parseList(builder)
-                    builder.tokenType == PicatTokenTypes.LBRACE -> helper.parseMap(builder)
+
+                    isVariable(builder.tokenType) -> {
+                        parseVariable(builder)
+                    }
+
+                    isNumber(builder.tokenType) -> {
+                        parseNumber(builder)
+                    }
+
+                    builder.tokenType == PicatTokenTypes.STRING -> {
+                        parseString(builder)
+                    }
+
+                    builder.tokenType == PicatTokenTypes.LBRACKET -> {
+                        helper.parseList(builder)
+                    }
+
+                    builder.tokenType == PicatTokenTypes.LBRACE -> {
+                        helper.parseMap(builder)
+                    }
+
                     else -> {
                         builder.error("Expected primary expression")
                         builder.advanceLexer()
@@ -140,6 +161,7 @@ class PicatExpressionParser : PicatBaseParser() {
                     builder.error("Expected atom")
                 }
             }
+
             isVariable(builder.tokenType) -> parseVariable(builder)
             isNumber(builder.tokenType) -> parseNumber(builder)
             builder.tokenType == PicatTokenTypes.STRING -> parseString(builder)
@@ -159,6 +181,7 @@ class PicatExpressionParser : PicatBaseParser() {
                 expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
                 closeParenMarker.done(PicatTokenTypes.OPERATOR)
             }
+
             builder.tokenType == PicatTokenTypes.LBRACKET -> helper.parseList(builder)
             builder.tokenType == PicatTokenTypes.LBRACE -> helper.parseMap(builder)
             else -> {

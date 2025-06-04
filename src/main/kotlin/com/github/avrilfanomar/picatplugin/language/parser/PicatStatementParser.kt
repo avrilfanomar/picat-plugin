@@ -27,7 +27,11 @@ class PicatStatementParser : PicatBaseParser() {
     fun parseGoal(builder: PsiBuilder) {
         val marker = builder.mark()
 
-        if (!checkAndParseSpecialStatement(builder)) {
+
+        // Check for foreach keyword specifically by text or token type
+        if (builder.tokenText == "foreach" || builder.tokenType == PicatTokenTypes.FOREACH_KEYWORD) {
+            helper.parseForeachLoop(builder)
+        } else if (!checkAndParseSpecialStatement(builder)) {
             if (isAssignment(builder)) {
                 parseAssignment(builder)
             } else {
@@ -60,7 +64,10 @@ class PicatStatementParser : PicatBaseParser() {
 
         when (tokenType) {
             PicatTokenTypes.IF_KEYWORD -> helper.parseIfThenElse(builder)
-            PicatTokenTypes.FOREACH_KEYWORD -> helper.parseForeachLoop(builder)
+            PicatTokenTypes.FOREACH_KEYWORD -> {
+                helper.parseForeachLoop(builder)
+            }
+
             PicatTokenTypes.WHILE_KEYWORD -> helper.parseWhileLoop(builder)
             PicatTokenTypes.CASE_KEYWORD -> helper.parseCaseExpression(builder)
             PicatTokenTypes.TRY_KEYWORD -> helper.parseTryCatch(builder)
@@ -219,27 +226,27 @@ class PicatStatementParser : PicatBaseParser() {
         val marker = builder.mark()
 
         // Parse the first goal
-        parseGoal(builder)
+        if (builder.tokenText == "foreach") {
+            helper.parseForeachLoop(builder)
+        } else {
+            parseGoal(builder)
+        }
         skipWhitespace(builder)
 
         // Parse additional goals separated by commas or semicolons
         while (builder.tokenType == PicatTokenTypes.COMMA || builder.tokenType == PicatTokenTypes.SEMICOLON) {
             builder.advanceLexer()
             skipWhitespace(builder)
-            parseGoal(builder)
+
+            // Check for foreach keyword specifically
+            if (builder.tokenText == "foreach") {
+                helper.parseForeachLoop(builder)
+            } else if (builder.tokenType == PicatTokenTypes.FOREACH_KEYWORD) {
+                helper.parseForeachLoop(builder)
+            } else {
+                parseGoal(builder)
+            }
             skipWhitespace(builder)
-        }
-
-        // Check for binary operators that might be incorrectly treated as separate statements
-        if (isBinaryOperator(builder.tokenType)) {
-            // This is part of an expression, not a separate statement
-            // Rollback and parse the entire body as a single expression
-            marker.rollbackTo()
-
-            val newMarker = builder.mark()
-            expressionParser.parseExpression(builder)
-            newMarker.done(PicatTokenTypes.BODY)
-            return
         }
 
         marker.done(PicatTokenTypes.BODY)
