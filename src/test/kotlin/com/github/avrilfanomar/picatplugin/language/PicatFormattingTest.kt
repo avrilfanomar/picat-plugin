@@ -67,7 +67,7 @@ main=>X=10,Y=20,Z=X+Y*2,println(Z).
         val expected = """
 main =>
     X = 10, Y = 20, Z = X + Y * 2, println(Z).
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
@@ -97,7 +97,7 @@ main =>
     foreach(I in 1..5)
         println(I)
     end.
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
@@ -119,7 +119,7 @@ main =>
     % This is another comment
     X = 10, % This is an inline comment
     println(X).
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
@@ -145,7 +145,7 @@ main =>
     Y = 20,
     Z = X + Y,
     println(Z).
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
@@ -207,7 +207,7 @@ solve ?=>
 
 solve =>
     println("No more solutions").
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
@@ -253,7 +253,7 @@ sudoku =>
     end,
 
     solve(Rows).
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
@@ -291,7 +291,7 @@ compare_terms =>
     elseif X @>= Y then
         println("X is greater than or equal to Y")
     end.
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
@@ -329,7 +329,7 @@ nested_example =>
     else
         println("X is not greater than 10")
     end.
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
@@ -379,7 +379,7 @@ literals_example =>
     % Anonymous variables
     _ = 42,
     println(X + Y).
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
@@ -427,7 +427,7 @@ constraint_rule_example =>
     % Constraint equivalence
     A #<=> B,
     println("Done").
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
@@ -450,21 +450,6 @@ constraint_rule_example =>
             foreach(I in 1..3)
             println(I)
             end.
-        """
-
-        // Expected formatted output
-        val expected = """
-% Complex code example
-complex_example =>
-    X = 10, Y = 20, Z = X + Y * 2,
-    if X > 5 then
-        println("X is greater than 5")
-    else
-        println("X is not greater than 5")
-    end,
-    foreach(I in 1..3)
-        println(I)
-    end.
         """
 
         // Format it once
@@ -518,7 +503,7 @@ list_comprehension_example =>
     % Nested list comprehension
     L3 = [[X, Y] : X in 1..3, Y in 1..3, X != Y],
     println(L1), println(L2), println(L3).
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
@@ -552,7 +537,7 @@ complex_function_call_example =>
     % Function call with nested function calls
     result4 = outer_function(inner_function1(10, 20), inner_function2(30, 40)),
     println(result1), println(result2), println(result3), println(result4).
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
@@ -582,7 +567,7 @@ comma_bracket_example =>
     % Function call with trailing comma
     result = function(10, 20,),
     println(L1), println(L2), println(result).
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
