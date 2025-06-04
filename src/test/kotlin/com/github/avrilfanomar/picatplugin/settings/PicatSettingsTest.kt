@@ -1,10 +1,9 @@
 package com.github.avrilfanomar.picatplugin.settings
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertSame
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 /**
  * Test for the PicatSettings class.
@@ -35,14 +34,14 @@ class PicatSettingsTest : BasePlatformTestCase() {
         settings.picatExecutablePath = testPath
 
         // Verify that the path is correctly stored
-        assertEquals(testPath, settings.picatExecutablePath, "Picat executable path should be correctly stored")
+        assertEquals("Picat executable path should be correctly stored", testPath, settings.picatExecutablePath)
 
         // Get the settings instance again and verify that the path is still there
         val settings2 = PicatSettings.getInstance(project)
         assertEquals(
-            testPath, 
-            settings2.picatExecutablePath, 
-            "Picat executable path should be preserved across instances"
+            "Picat executable path should be preserved across instances",
+            testPath,
+            settings2.picatExecutablePath
         )
     }
 
@@ -62,7 +61,7 @@ class PicatSettingsTest : BasePlatformTestCase() {
         assertSame(settings, state, "State should be the same as the settings instance")
 
         // Verify that the state has the correct Picat executable path
-        assertEquals(testPath, state.picatExecutablePath, "State should have the correct Picat executable path")
+        assertEquals("State should have the correct Picat executable path", testPath, state.picatExecutablePath)
     }
 
     @Test
@@ -79,6 +78,6 @@ class PicatSettingsTest : BasePlatformTestCase() {
         settings.loadState(newSettings)
 
         // Verify that the path is correctly loaded
-        assertEquals(testPath, settings.picatExecutablePath, "Picat executable path should be correctly loaded")
+        assertEquals("Picat executable path should be correctly loaded", testPath, settings.picatExecutablePath)
     }
 }
