@@ -8,12 +8,6 @@ import com.intellij.psi.tree.IElementType
  * Contains methods for determining indentation rules.
  */
 class PicatBlockHelper {
-    /**
-     * Checks if the given type is a rule or block statement type.
-     */
-    fun isRuleOrBlockStatementType(type: IElementType?): Boolean {
-        return isRuleBodyOrStatementType(type) || isBlockStatementType(type)
-    }
 
     /**
      * Checks if the given type is a rule body or statement type.

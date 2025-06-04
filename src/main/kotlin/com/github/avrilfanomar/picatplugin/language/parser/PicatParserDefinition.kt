@@ -3,7 +3,6 @@ package com.github.avrilfanomar.picatplugin.language.parser
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
 import com.github.avrilfanomar.picatplugin.language.lexer.PicatLexer
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPsiElementImpl
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
@@ -15,7 +14,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.tree.IElementType
 
 /**
  * Parser definition for Picat language.

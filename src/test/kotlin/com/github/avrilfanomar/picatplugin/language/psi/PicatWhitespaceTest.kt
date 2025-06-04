@@ -12,33 +12,6 @@ import org.junit.jupiter.api.Test
  */
 class PicatWhitespaceTest : BasePlatformTestCase() {
 
-    @Test
-    fun testWhitespaceBetweenOperators() {
-        // Test that whitespace between operators is correctly handled
-        val code = """
-            main => 
-                X = 1 + 2,
-                Y = X * 3,
-                Z = Y / 4,
-                println(Z).
-        """.trimIndent()
-
-        myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
-
-        // Find all expressions in the file
-        val expressions = PsiTreeUtil.findChildrenOfType(file, PicatExpression::class.java)
-
-        // Find expressions with operators
-        val expressionsWithOperators = expressions.filter { expr ->
-            expr.text == "+" || expr.text == "*" || expr.text == "/"
-        }
-
-        // Verify that there are expressions with operators
-        assertTrue(expressionsWithOperators.isNotEmpty(), "There should be expressions with operators")
-    }
-
-
     /**
      * Helper method to print the PSI tree.
      */

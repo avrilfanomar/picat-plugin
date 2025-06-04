@@ -52,13 +52,13 @@ class PicatFunctionDefinitionImpl(node: ASTNode) : PicatPsiElementImpl(node), Pi
 
         // Try to find the atom directly in the head
         val headAtom = PsiTreeUtil.getChildOfType(head, PicatAtom::class.java)
-        if (headAtom != null) {
-            return headAtom
-        }
 
-        // If not found, try to find it in a structure in the head
-        val structure = PsiTreeUtil.getChildOfType(head, PicatStructure::class.java)
-        return structure?.let { PsiTreeUtil.getChildOfType(it, PicatAtom::class.java) }
+        // If found, return it, otherwise try to find it in a structure
+        return headAtom ?: run {
+            // Try to find it in a structure in the head
+            val structure = PsiTreeUtil.getChildOfType(head, PicatStructure::class.java)
+            structure?.let { PsiTreeUtil.getChildOfType(it, PicatAtom::class.java) }
+        }
     }
 
     /**
@@ -83,13 +83,13 @@ class PicatFunctionDefinitionImpl(node: ASTNode) : PicatPsiElementImpl(node), Pi
 
         // Try to find the argument list directly in the head
         val headArgumentList = PsiTreeUtil.getChildOfType(head, PicatArgumentList::class.java)
-        if (headArgumentList != null) {
-            return headArgumentList
-        }
 
-        // If not found, try to find it in a structure in the head
-        val structure = PsiTreeUtil.getChildOfType(head, PicatStructure::class.java)
-        return structure?.let { PsiTreeUtil.getChildOfType(it, PicatArgumentList::class.java) }
+        // If found, return it, otherwise try to find it in a structure
+        return headArgumentList ?: run {
+            // Try to find it in a structure in the head
+            val structure = PsiTreeUtil.getChildOfType(head, PicatStructure::class.java)
+            structure?.let { PsiTreeUtil.getChildOfType(it, PicatArgumentList::class.java) }
+        }
     }
 
     /**
