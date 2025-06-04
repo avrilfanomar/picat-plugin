@@ -2,6 +2,7 @@ package com.github.avrilfanomar.picatplugin.language.psi.impl
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatGoal
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
+import com.github.avrilfanomar.picatplugin.language.psi.isComparisonOperator
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -91,16 +92,6 @@ class PicatGoalImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatGoal {
     private fun isComparisonExpression(children: Array<ASTNode>, i: Int): Boolean {
         return children[i].elementType == PicatTokenTypes.EXPRESSION &&
                 isComparisonOperator(children[i + 1].elementType)
-    }
-
-    /**
-     * Checks if the element type is a comparison operator.
-     */
-    private fun isComparisonOperator(elementType: com.intellij.psi.tree.IElementType): Boolean {
-        return elementType == PicatTokenTypes.LESS ||
-                elementType == PicatTokenTypes.GREATER ||
-                elementType == PicatTokenTypes.LESS_EQUAL ||
-                elementType == PicatTokenTypes.GREATER_EQUAL
     }
 
     /**

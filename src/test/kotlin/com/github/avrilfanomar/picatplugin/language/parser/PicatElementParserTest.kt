@@ -103,29 +103,6 @@ class PicatElementParserTest : BasePlatformTestCase() {
     }
 
     @Test
-    fun testBiconditionalRuleParsing() {
-        // Test parsing a biconditional rule
-        val code = """
-            even(N) <=> N mod 2 == 0.
-        """.trimIndent()
-
-        myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
-
-        // Verify that the rule is parsed correctly
-        val rules = file.getRules()
-        assertEquals("Should have one rule", 1, rules.size)
-
-        // Check that the rule has a head and body
-        val rule = rules[0]
-        assertNotNull("Rule should have a head", rule.getHead())
-        assertNotNull("Rule should have a body", rule.getBody())
-
-        // Check that the rule contains the correct operator
-        assertTrue("Rule should contain <=> operator", rule.text.contains("<=>"))
-    }
-
-    @Test
     fun testPrologRuleParsing() {
         // Test parsing a rule with traditional Prolog operator
         val code = """

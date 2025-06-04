@@ -183,15 +183,33 @@ class PicatStatementParser : PicatBaseParser() {
     }
 
     /**
+     * List of binary operators.
+     */
+    private val binaryOperators = listOf(
+        PicatTokenTypes.PLUS,
+        PicatTokenTypes.MINUS,
+        PicatTokenTypes.MULTIPLY,
+        PicatTokenTypes.DIVIDE,
+        PicatTokenTypes.INT_DIVIDE,
+        PicatTokenTypes.POWER,
+        PicatTokenTypes.EQUAL_EQUAL,
+        PicatTokenTypes.IDENTICAL,
+        PicatTokenTypes.NOT_EQUAL,
+        PicatTokenTypes.NOT_IDENTICAL,
+        PicatTokenTypes.LESS,
+        PicatTokenTypes.GREATER,
+        PicatTokenTypes.LESS_EQUAL,
+        PicatTokenTypes.GREATER_EQUAL,
+        PicatTokenTypes.AND_KEYWORD,
+        PicatTokenTypes.OR_KEYWORD,
+        PicatTokenTypes.MOD_KEYWORD
+    )
+
+    /**
      * Checks if the token type is a binary operator.
      */
     private fun isBinaryOperator(tokenType: IElementType?): Boolean {
-        return tokenType == PicatTokenTypes.PLUS || 
-               tokenType == PicatTokenTypes.MINUS || 
-               tokenType == PicatTokenTypes.MULTIPLY || 
-               tokenType == PicatTokenTypes.DIVIDE || 
-               tokenType == PicatTokenTypes.INT_DIVIDE || 
-               tokenType == PicatTokenTypes.POWER
+        return tokenType in binaryOperators
     }
 
     /**

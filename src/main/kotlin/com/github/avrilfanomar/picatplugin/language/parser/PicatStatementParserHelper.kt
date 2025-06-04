@@ -43,6 +43,7 @@ class PicatStatementParserHelper : PicatBaseParser() {
             statementParser.parseBody(builder)
         }
 
+        skipWhitespace(builder)
         expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
         marker.done(PicatTokenTypes.IF_THEN_ELSE)
     }

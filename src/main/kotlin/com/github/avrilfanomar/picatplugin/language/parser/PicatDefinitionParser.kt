@@ -94,6 +94,7 @@ class PicatDefinitionParser : PicatBaseParser() {
     /**
      * Parses a rule definition.
      * A rule must have an explicit rule operator (=>, ?=>, <=>, ?<=>, :-).
+     * Rules can also have conditions, e.g., factorial(N) => N * factorial(N-1) => N > 0.
      */
     fun parseRuleDefinition(builder: PsiBuilder) {
         val marker = builder.mark()
@@ -102,7 +103,11 @@ class PicatDefinitionParser : PicatBaseParser() {
 
         // Parse rule operator (=>, ?=>, <=>, ?<=>, :-)
         val opMarker = builder.mark()
-        if (isRuleOperator(builder.tokenType)) {
+        val ruleOpType = builder.tokenType
+        val isBiconditionalRule = ruleOpType == PicatTokenTypes.BICONDITIONAL_OP || 
+                                 ruleOpType == PicatTokenTypes.BACKTRACKABLE_BICONDITIONAL_OP
+
+        if (isRuleOperator(ruleOpType)) {
             builder.advanceLexer()
             skipWhitespace(builder)
             opMarker.done(PicatTokenTypes.RULE_OPERATOR)
@@ -111,21 +116,26 @@ class PicatDefinitionParser : PicatBaseParser() {
             builder.error("Expected rule operator (=>, ?=>, <=>, ?<=>, :-)")
         }
 
-        // Parse the body
-        val bodyMarker = builder.mark()
+        // For biconditional rules, parse the entire body as a single expression
+        if (isBiconditionalRule) {
+            val bodyMarker = builder.mark()
+            expressionParser.parseExpression(builder)
+            bodyMarker.done(PicatTokenTypes.BODY)
+        } else {
+            // Parse the body using the statement parser's parseBody method
+            statementParser.parseBody(builder)
 
-        // Keep parsing until we reach the end of the rule (dot)
-        while (builder.tokenType != PicatTokenTypes.DOT && !builder.eof()) {
-            if (builder.tokenType == PicatTokenTypes.COMMA || builder.tokenType == PicatTokenTypes.SEMICOLON) {
+            // Check for a condition (any rule operator)
+            if (isRuleOperator(builder.tokenType)) {
+                val condOpMarker = builder.mark()
                 builder.advanceLexer()
                 skipWhitespace(builder)
-            } else {
-                statementParser.parseGoal(builder)
-                skipWhitespace(builder)
+                condOpMarker.done(PicatTokenTypes.RULE_OPERATOR)
+
+                // Parse the condition using the statement parser's parseBody method
+                statementParser.parseBody(builder)
             }
         }
-
-        bodyMarker.done(PicatTokenTypes.BODY)
 
         expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after rule definition")
         marker.done(PicatTokenTypes.RULE)

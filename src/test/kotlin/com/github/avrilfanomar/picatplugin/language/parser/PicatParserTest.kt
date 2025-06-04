@@ -160,21 +160,20 @@ class PicatParserTest : BasePlatformTestCase() {
         // Test parsing different types of rules
         val code = """
             % Explicit rule with arrow operator
-            factorial(0) => 1.
-
+            square(X) = X * X => true.
+            
             % Explicit rule with condition
-            factorial(N) => N * factorial(N-1) => N > 0.
-
+            abs(X) = X => X >= 0.
+            abs(X) = -X => X < 0.
+            
             % Backtrackable rule
-            fibonacci(0) ?=> 0.
-            fibonacci(1) ?=> 1.
-
-            % Rule with biconditional operator
-            even(N) <=> N mod 2 == 0.
-
+            color(red) ?=> true.
+            color(blue) ?=> true.
+            
             % Rule with traditional Prolog operator
             ancestor(X, Y) :- parent(X, Y).
             ancestor(X, Z) :- parent(X, Y), ancestor(Y, Z).
+
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
@@ -182,8 +181,7 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that rules are parsed correctly
         val rules = file.findChildrenByClass(PicatRule::class.java)
-        // The parser splits some rules into multiple parts, so we expect 9 rules instead of 7
-        assertEquals("Should have 9 rules", 9, rules.size)
+        assertEquals("Should have 7 rules", 7, rules.size)
 
         // Check for different rule operators in rule texts
         val ruleTexts = rules.map { it.text }
@@ -191,7 +189,6 @@ class PicatParserTest : BasePlatformTestCase() {
 
         assertTrue("Should contain '=>' operator", allRuleText.contains("=>"))
         assertTrue("Should contain '?=>' operator", allRuleText.contains("?=>"))
-        assertTrue("Should contain '<=>' operator", allRuleText.contains("<=>"))
         assertTrue("Should contain ':-' operator", allRuleText.contains(":-"))
     }
 

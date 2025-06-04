@@ -6,6 +6,8 @@ import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isNum
 import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.isVariable
 import com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil.skipWhitespace
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
+import com.github.avrilfanomar.picatplugin.language.psi.isArithmeticOperator
+import com.github.avrilfanomar.picatplugin.language.psi.isComparisonOperator
 import com.intellij.lang.PsiBuilder
 
 /**
@@ -47,13 +49,7 @@ class PicatExpressionParser : PicatBaseParser() {
         skipWhitespace(builder)
 
         // Parse binary operators and their right-hand terms
-        while (!builder.eof() && 
-               (builder.tokenType == PicatTokenTypes.PLUS || 
-                builder.tokenType == PicatTokenTypes.MINUS || 
-                builder.tokenType == PicatTokenTypes.MULTIPLY || 
-                builder.tokenType == PicatTokenTypes.DIVIDE || 
-                builder.tokenType == PicatTokenTypes.INT_DIVIDE || 
-                builder.tokenType == PicatTokenTypes.MOD_KEYWORD)) {
+        while (!builder.eof() && (isArithmeticOperator(builder.tokenType) || isComparisonOperator(builder.tokenType))) {
 
             // Create a marker for the operator
             val operatorMarker = builder.mark()
