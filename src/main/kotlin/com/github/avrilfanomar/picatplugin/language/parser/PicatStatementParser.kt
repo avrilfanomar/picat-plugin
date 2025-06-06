@@ -188,36 +188,6 @@ class PicatStatementParser : PicatBaseParser() {
     }
 
     /**
-     * List of binary operators.
-     */
-    private val binaryOperators = listOf(
-        PicatTokenTypes.PLUS,
-        PicatTokenTypes.MINUS,
-        PicatTokenTypes.MULTIPLY,
-        PicatTokenTypes.DIVIDE,
-        PicatTokenTypes.INT_DIVIDE,
-        PicatTokenTypes.POWER,
-        PicatTokenTypes.EQUAL_EQUAL,
-        PicatTokenTypes.IDENTICAL,
-        PicatTokenTypes.NOT_EQUAL,
-        PicatTokenTypes.NOT_IDENTICAL,
-        PicatTokenTypes.LESS,
-        PicatTokenTypes.GREATER,
-        PicatTokenTypes.LESS_EQUAL,
-        PicatTokenTypes.GREATER_EQUAL,
-        PicatTokenTypes.AND_KEYWORD,
-        PicatTokenTypes.OR_KEYWORD,
-        PicatTokenTypes.MOD_KEYWORD
-    )
-
-    /**
-     * Checks if the token type is a binary operator.
-     */
-    private fun isBinaryOperator(tokenType: IElementType?): Boolean {
-        return tokenType in binaryOperators
-    }
-
-    /**
      * Parses a body consisting of one or more goals separated by commas or semicolons.
      */
     fun parseBody(builder: PsiBuilder) {
@@ -256,7 +226,7 @@ class PicatStatementParser : PicatBaseParser() {
     private fun parseAssignment(builder: PsiBuilder) {
         val marker = builder.mark()
 
-        // Parse left-hand side (variable or pattern)
+        // Parse the left-hand side (variable or pattern)
         expressionParser.parsePattern(builder)
         skipWhitespace(builder)
         // Parse assignment operator (= or :=)

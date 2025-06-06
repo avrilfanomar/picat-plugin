@@ -37,6 +37,9 @@ abstract class PicatBaseParser : PicatParserComponent {
 
     protected fun parseStructure(builder: PsiBuilder) {
         val marker = builder.mark()
+        if (PicatTokenTypes.DATA_CONSTRUCTOR == builder.tokenType) {
+            builder.advanceLexer()
+        }
         if (isQualifiedAtom(builder)) {
             parseQualifiedAtom(builder)
         }
