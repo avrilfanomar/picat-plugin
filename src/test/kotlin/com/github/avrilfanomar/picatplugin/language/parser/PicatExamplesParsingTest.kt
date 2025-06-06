@@ -1,8 +1,11 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatForeachLoopImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatForLoopImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatImportStatementImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatRuleImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatWhileLoopImpl
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Test
@@ -68,7 +71,7 @@ private const val KAKURO_PROGRAM = """
                   [ 5, [6,6],[6,7]],
                   [ 6, [7,1],[7,2],[7,3]],
                   [ 3, [7,6],[7,7]],
-                  
+
                   [23, [1,1],[2,1],[3,1]],
                   [30, [1,2],[2,2],[3,2],[4,2]],
                   [27, [1,5],[2,5],[3,5],[4,5],[5,5]],
@@ -98,7 +101,7 @@ private const val KAKURO_PROGRAM = """
         """
 
 private const val KNIGHT_TOUR_PROGRAM = """
-            
+
             import cp.
 
             main =>
@@ -146,7 +149,7 @@ private const val KNIGHT_TOUR_PROGRAM = """
                 R7 is R-2,  C7 is C+1,
                 R8 is R-2,  C8 is C-1,
                 addFeasiblePositions([(R1,C1),(R2,C2),(R3,C3),(R4,C4),(R5,C5),(R6,C6),(R7,C7),(R8,C8)],D,N).
-                
+
             addFeasiblePositions([],D,_N) => D=[].
             addFeasiblePositions([(R,C)|Ps],D,N),
                 (R>=1,R=<N,C>=1,C=<N) 
@@ -204,6 +207,30 @@ private const val B_QUEENS_PROGRAM = """
 
         """
 
+private const val LOOPS_PROGRAM = """
+        import util.
+
+        main => go.
+
+        go =>
+            % For loop example
+            for(I, 1, 10, 1)
+                println(I)
+            end,
+
+            % While loop example
+            J = 1,
+            while(J <= 10)
+                println(J),
+                J := J + 1
+            end,
+
+            % Foreach loop example
+            foreach(K in 1..10)
+                println(K)
+            end.
+        """
+
 /**
  * Test for the PicatParser class.
  * This test verifies that the parser correctly builds a PSI tree for various Picat code snippets.
@@ -233,10 +260,13 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         val queensBody = queensRule!!.getBody()
         assertNotNull("Queens rule should have a body", queensBody)
 
-        // Check for the presence of assignments and function calls in the body
-        val bodyText = queensBody!!.text
+        // Verify foreach loops
+        val foreachLoops = PsiTreeUtil.findChildrenOfType(queensBody!!, PicatForeachLoopImpl::class.java)
+        assertNotNull("Foreach loops should exist", foreachLoops)
+        assertEquals("Should have 5 foreach loops", 5, foreachLoops.size)
 
         // Check that the rule has a non-empty body
+        val bodyText = queensBody.text
         assertTrue("Queens rule body should not be empty", bodyText.isNotEmpty())
     }
 
@@ -305,5 +335,45 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         helperRules.forEach { rule ->
             assertNotNull("Helper rule should have a body", rule.getBody())
         }
+    }
+
+    @Test
+    fun testLoops() {
+        myFixture.configureByText("test.pi", LOOPS_PROGRAM.trimIndent())
+        val file = myFixture.file as PicatFile
+
+        // Verify import statement
+        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatementImpl::class.java)
+        assertEquals(1, importStatements.size)
+        assertEquals("import util.", importStatements.first().text)
+
+        // Verify the main rule
+        val mainRule = PsiTreeUtil.findChildrenOfType(file, PicatRuleImpl::class.java)
+            .find { it.text.startsWith("main") }
+        assertNotNull("Main rule should exist", mainRule)
+
+        // Verify the go rule
+        val goRule = PsiTreeUtil.findChildrenOfType(file, PicatRuleImpl::class.java)
+            .find { it.text.startsWith("go") }
+        assertNotNull("Go rule should exist", goRule)
+
+        // Get the body of the go rule
+        val goBody = goRule!!.getBody()
+        assertNotNull("Go rule should have a body", goBody)
+
+        // Verify for loops
+        val forLoops = PsiTreeUtil.findChildrenOfType(goBody!!, PicatForLoopImpl::class.java)
+        assertNotNull("For loops should exist", forLoops)
+        assertEquals("Should have 1 for loop", 1, forLoops.size)
+
+        // Verify while loops
+        val whileLoops = PsiTreeUtil.findChildrenOfType(goBody, PicatWhileLoopImpl::class.java)
+        assertNotNull("While loops should exist", whileLoops)
+        assertEquals("Should have 1 while loop", 1, whileLoops.size)
+
+        // Verify foreach loops
+        val foreachLoops = PsiTreeUtil.findChildrenOfType(goBody, PicatForeachLoopImpl::class.java)
+        assertNotNull("Foreach loops should exist", foreachLoops)
+        assertEquals("Should have 1 foreach loop", 1, foreachLoops.size)
     }
 }

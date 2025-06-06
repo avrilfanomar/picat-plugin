@@ -193,6 +193,7 @@ goal ::= call
        | not_goal
        | foreach_loop
        | while_loop
+       | for_loop
        | list_comprehension
        | procedure_call
        | cut
@@ -217,7 +218,11 @@ pass ::= PASS_KEYWORD
 true_goal ::= TRUE_KEYWORD
 false_goal ::= FALSE_KEYWORD
 not_goal ::= negation
-foreach_loop ::= FOREACH_KEYWORD "(" foreach_generators ")" body END_KEYWORD
+foreach_loop ::= FOREACH_KEYWORD "(" foreach_generators ")" body END_KEYWORD {
+  elementType = FOREACH_LOOP
+  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatForeachLoop"
+  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatForeachLoopImpl"
+}
 foreach_generators ::= foreach_generator ("," foreach_generator)*
 foreach_generator ::= variable "in" expression | variable "=" expression
 list_comprehension ::= "[" expression "|" foreach_generators "]"
@@ -237,7 +242,17 @@ try_catch ::= TRY_KEYWORD body CATCH_KEYWORD catch_clauses [FINALLY_KEYWORD body
 catch_clauses ::= catch_clause (";" catch_clause)*
 catch_clause ::= pattern "=>" body
 
-while_loop ::= WHILE_KEYWORD expression DO_KEYWORD body END_KEYWORD
+while_loop ::= WHILE_KEYWORD expression DO_KEYWORD body END_KEYWORD {
+  elementType = WHILE_LOOP
+  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop"
+  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatWhileLoopImpl"
+}
+
+for_loop ::= FOR_KEYWORD "(" expression "," expression "," expression ")" body END_KEYWORD {
+  elementType = FOR_LOOP
+  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatForLoop"
+  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatForLoopImpl"
+}
 
 // Patterns
 pattern ::= variable | atom | number | "_" | structure_pattern | list_pattern | tuple_pattern

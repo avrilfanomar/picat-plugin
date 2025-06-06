@@ -56,7 +56,7 @@ class PicatStatementParser : PicatBaseParser() {
     }
 
     /**
-     * Checks and parses control flow statements (if, foreach, while, case, try).
+     * Checks and parses control flow statements (if, foreach, while, for, case, try).
      * Returns true if a control flow statement was parsed, false otherwise.
      */
     private fun checkAndParseControlFlowStatement(builder: PsiBuilder, tokenType: IElementType?): Boolean {
@@ -64,11 +64,9 @@ class PicatStatementParser : PicatBaseParser() {
 
         when (tokenType) {
             PicatTokenTypes.IF_KEYWORD -> helper.parseIfThenElse(builder)
-            PicatTokenTypes.FOREACH_KEYWORD -> {
-                helper.parseForeachLoop(builder)
-            }
-
+            PicatTokenTypes.FOREACH_KEYWORD -> helper.parseForeachLoop(builder)
             PicatTokenTypes.WHILE_KEYWORD -> helper.parseWhileLoop(builder)
+            PicatTokenTypes.FOR_KEYWORD -> helper.parseForLoop(builder)
             PicatTokenTypes.CASE_KEYWORD -> helper.parseCaseExpression(builder)
             PicatTokenTypes.TRY_KEYWORD -> helper.parseTryCatch(builder)
             else -> parsed = false

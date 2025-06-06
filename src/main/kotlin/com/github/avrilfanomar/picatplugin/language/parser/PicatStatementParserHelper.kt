@@ -128,6 +128,43 @@ class PicatStatementParserHelper : PicatBaseParser() {
     }
 
     /**
+     * Parses a for loop.
+     */
+    fun parseForLoop(builder: PsiBuilder) {
+        val marker = builder.mark()
+        expectKeyword(builder, PicatTokenTypes.FOR_KEYWORD, "Expected 'for'")
+        skipWhitespace(builder)
+
+        expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
+        skipWhitespace(builder)
+
+        // Parse initialization
+        expressionParser.parseExpression(builder)
+        skipWhitespace(builder)
+
+        expectToken(builder, PicatTokenTypes.COMMA, "Expected ','")
+        skipWhitespace(builder)
+
+        // Parse condition
+        expressionParser.parseExpression(builder)
+        skipWhitespace(builder)
+
+        expectToken(builder, PicatTokenTypes.COMMA, "Expected ','")
+        skipWhitespace(builder)
+
+        // Parse increment
+        expressionParser.parseExpression(builder)
+        skipWhitespace(builder)
+
+        expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
+        skipWhitespace(builder)
+
+        statementParser.parseBody(builder)
+        expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
+        marker.done(PicatTokenTypes.FOR_LOOP)
+    }
+
+    /**
      * Parses a case expression.
      */
     fun parseCaseExpression(builder: PsiBuilder) {
