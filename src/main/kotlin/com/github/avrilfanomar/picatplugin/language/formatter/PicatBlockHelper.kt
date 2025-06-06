@@ -14,7 +14,8 @@ class PicatBlockHelper {
      */
     fun isRuleBodyOrStatementType(type: IElementType?): Boolean {
         return type == PicatTokenTypes.STATEMENT ||
-                type == PicatTokenTypes.BODY
+                type == PicatTokenTypes.BODY ||
+                type == PicatTokenTypes.COMMENT
     }
 
     /**
@@ -66,8 +67,9 @@ class PicatBlockHelper {
         greatGrandParentType: IElementType?
     ): Boolean {
         return (parentType == PicatTokenTypes.STATEMENT && 
-                (grandParentType == PicatTokenTypes.BODY) &&
-                (greatGrandParentType == PicatTokenTypes.RULE || greatGrandParentType == PicatTokenTypes.STATEMENT))
+                (grandParentType == PicatTokenTypes.BODY || grandParentType == PicatTokenTypes.RULE) &&
+                (greatGrandParentType == PicatTokenTypes.RULE || 
+                 greatGrandParentType == PicatTokenTypes.STATEMENT))
     }
 
     /**

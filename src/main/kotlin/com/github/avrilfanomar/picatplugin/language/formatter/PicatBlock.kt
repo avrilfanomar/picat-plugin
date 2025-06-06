@@ -65,11 +65,11 @@ class PicatBlock(
 
         // Handle whitespace indentation
         if (elementType == PicatTokenTypes.WHITE_SPACE) {
-            indent = getIndentForWhitespace(parentType, picatSettings)
+            indent = Indent.getNoneIndent()
         }
         // Handle rule body indentation
         else if (helper.shouldIndentRuleBody(parentType, picatSettings)) {
-            indent = Indent.getNormalIndent()
+            indent = Indent.getIndent(Indent.Type.SPACES, 4, true, false)
         }
         // Handle statement indentation
         else if (helper.shouldIndentStatements(parentType, grandParentType, greatGrandParentType)) {
@@ -95,6 +95,14 @@ class PicatBlock(
         else if (helper.shouldIndentNestedExpressions(parentType, grandParentType)) {
             indent = Indent.getNormalIndent()
         }
+        // Handle statements after rule operators
+        else if (parentType == PicatTokenTypes.STATEMENT && grandParentType == PicatTokenTypes.RULE) {
+            indent = Indent.getNormalIndent()
+        }
+        // Handle elements after rule operators
+        else if (parentType == PicatTokenTypes.RULE) {
+            indent = Indent.getNormalIndent()
+        }
         // Default to no indentation
         else {
             indent = Indent.getNoneIndent()
@@ -102,26 +110,6 @@ class PicatBlock(
 
         return indent
     }
-
-    private fun getIndentForWhitespace(parentType: IElementType?, picatSettings: PicatCodeStyleSettings): Indent? {
-
-        // Indent whitespace in rule bodies
-        // Use a variable to store the indent
-        val indent = if (helper.isRuleBodyOrStatementType(parentType) && picatSettings.indentRuleBody) {
-            Indent.getNormalIndent()
-        }
-        // Indent whitespace in block statements
-        else if (helper.isBlockStatementType(parentType) && picatSettings.indentBlockStatements) {
-            Indent.getNormalIndent()
-        }
-        // Default to no indentation
-        else {
-            Indent.getNoneIndent()
-        }
-
-        return indent
-    }
-
 
     /**
      * Determines the indentation for child blocks.
@@ -154,6 +142,10 @@ class PicatBlock(
         }
         // Appropriate indentation for expressions
         else if (elementType == PicatTokenTypes.EXPRESSION) {
+            indent = Indent.getNormalIndent()
+        }
+        // Indent rule bodies
+        else if (elementType == PicatTokenTypes.RULE) {
             indent = Indent.getNormalIndent()
         }
         // Default to no indentation

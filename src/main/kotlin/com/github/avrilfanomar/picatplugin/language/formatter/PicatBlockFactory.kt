@@ -147,7 +147,7 @@ class PicatBlockFactory(
      * Checks if the node is a statement in a rule body.
      */
     private fun isRuleBodyStatement(nodeType: IElementType, childType: IElementType): Boolean {
-        return nodeType == PicatTokenTypes.BODY &&
-                childType == PicatTokenTypes.STATEMENT
+        return (nodeType == PicatTokenTypes.BODY || nodeType == PicatTokenTypes.RULE) &&
+                (childType == PicatTokenTypes.STATEMENT || childType == PicatTokenTypes.COMMENT)
     }
 }
