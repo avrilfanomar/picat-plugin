@@ -27,11 +27,7 @@ class PicatStatementParser : PicatBaseParser() {
     fun parseGoal(builder: PsiBuilder) {
         val marker = builder.mark()
 
-
-        // Check for foreach keyword specifically by text or token type
-        if (builder.tokenText == "foreach" || builder.tokenType == PicatTokenTypes.FOREACH_KEYWORD) {
-            helper.parseForeachLoop(builder)
-        } else if (!checkAndParseSpecialStatement(builder)) {
+        if (!checkAndParseSpecialStatement(builder)) {
             if (isAssignment(builder)) {
                 parseAssignment(builder)
             } else {
@@ -192,27 +188,16 @@ class PicatStatementParser : PicatBaseParser() {
     fun parseBody(builder: PsiBuilder) {
         val marker = builder.mark()
 
+        skipWhitespace(builder)
         // Parse the first goal
-        if (builder.tokenText == "foreach") {
-            helper.parseForeachLoop(builder)
-        } else {
-            parseGoal(builder)
-        }
+        parseGoal(builder)
         skipWhitespace(builder)
 
         // Parse additional goals separated by commas or semicolons
         while (builder.tokenType == PicatTokenTypes.COMMA || builder.tokenType == PicatTokenTypes.SEMICOLON) {
             builder.advanceLexer()
             skipWhitespace(builder)
-
-            // Check for foreach keyword specifically
-            if (builder.tokenText == "foreach") {
-                helper.parseForeachLoop(builder)
-            } else if (builder.tokenType == PicatTokenTypes.FOREACH_KEYWORD) {
-                helper.parseForeachLoop(builder)
-            } else {
-                parseGoal(builder)
-            }
+            parseGoal(builder)
             skipWhitespace(builder)
         }
 

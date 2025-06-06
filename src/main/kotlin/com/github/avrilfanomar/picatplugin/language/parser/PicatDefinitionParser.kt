@@ -115,8 +115,8 @@ class PicatDefinitionParser : PicatBaseParser() {
 
         if (isRuleOperator(ruleOpType)) {
             builder.advanceLexer()
-            skipWhitespace(builder)
             opMarker.done(PicatTokenTypes.RULE_OPERATOR)
+            skipWhitespace(builder)
         } else {
             opMarker.drop()
             builder.error("Expected rule operator (=>, ?=>, <=>, ?<=>, :-)")
