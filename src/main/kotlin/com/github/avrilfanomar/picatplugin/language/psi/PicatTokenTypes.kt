@@ -43,7 +43,6 @@ object PicatTokenTypes {
     val PRIVATE_KEYWORD = PicatTokenType("PRIVATE_KEYWORD")
     val PUBLIC_KEYWORD = PicatTokenType("PUBLIC_KEYWORD")
     val TABLE_KEYWORD = PicatTokenType("TABLE_KEYWORD")
-    val FOR_KEYWORD = PicatTokenType("FOR_KEYWORD")
     val ONCE_KEYWORD = PicatTokenType("ONCE_KEYWORD")
     val DIV_KEYWORD = PicatTokenType("DIV_KEYWORD")
     val REM_KEYWORD = PicatTokenType("REM_KEYWORD")
@@ -179,7 +178,7 @@ object PicatTokenTypes {
         WHILE_KEYWORD, DO_KEYWORD, PASS_KEYWORD, MOD_KEYWORD, AND_KEYWORD, OR_KEYWORD, XOR_KEYWORD, IS_KEYWORD,
 
         // Legacy keywords (kept for backward compatibility)
-        INDEX_KEYWORD, PRIVATE_KEYWORD, PUBLIC_KEYWORD, TABLE_KEYWORD, FOR_KEYWORD,
+        INDEX_KEYWORD, PRIVATE_KEYWORD, PUBLIC_KEYWORD, TABLE_KEYWORD,
         ONCE_KEYWORD, DIV_KEYWORD, REM_KEYWORD, NOTIN_KEYWORD, WRITEF_KEYWORD, REPEAT_KEYWORD
     )
 
@@ -235,11 +234,9 @@ object PicatTokenTypes {
     val BODY = PicatElementType("BODY")
     val RULE = PicatElementType("RULE")
     val STATEMENT = PicatElementType("STATEMENT")
-    val PROGRAM = PicatElementType("PROGRAM")
     val IF_THEN_ELSE = PicatElementType("IF_THEN_ELSE")
     val FOREACH_LOOP = PicatElementType("FOREACH_LOOP")
     val WHILE_LOOP = PicatElementType("WHILE_LOOP")
-    val FOR_LOOP = PicatElementType("FOR_LOOP")
     val TRY_CATCH = PicatElementType("TRY_CATCH")
     val LIST_COMPREHENSION = PicatElementType("LIST_COMPREHENSION")
     val FUNCTION_CALL = PicatElementType("FUNCTION_CALL")

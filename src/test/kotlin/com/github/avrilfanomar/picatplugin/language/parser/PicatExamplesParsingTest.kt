@@ -2,7 +2,6 @@ package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatForeachLoopImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatForLoopImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatImportStatementImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatRuleImpl
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatWhileLoopImpl
@@ -213,10 +212,6 @@ private const val LOOPS_PROGRAM = """
         main => go.
 
         go =>
-            % For loop example
-            for(I, 1, 10, 1)
-                println(I)
-            end,
 
             % While loop example
             J = 1,
@@ -360,11 +355,6 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         // Get the body of the go rule
         val goBody = goRule!!.getBody()
         assertNotNull("Go rule should have a body", goBody)
-
-        // Verify for loops
-        val forLoops = PsiTreeUtil.findChildrenOfType(goBody!!, PicatForLoopImpl::class.java)
-        assertNotNull("For loops should exist", forLoops)
-        assertEquals("Should have 1 for loop", 1, forLoops.size)
 
         // Verify while loops
         val whileLoops = PsiTreeUtil.findChildrenOfType(goBody, PicatWhileLoopImpl::class.java)

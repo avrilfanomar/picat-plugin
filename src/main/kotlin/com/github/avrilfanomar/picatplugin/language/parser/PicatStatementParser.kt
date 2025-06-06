@@ -66,7 +66,6 @@ class PicatStatementParser : PicatBaseParser() {
             PicatTokenTypes.IF_KEYWORD -> helper.parseIfThenElse(builder)
             PicatTokenTypes.FOREACH_KEYWORD -> helper.parseForeachLoop(builder)
             PicatTokenTypes.WHILE_KEYWORD -> helper.parseWhileLoop(builder)
-            PicatTokenTypes.FOR_KEYWORD -> helper.parseForLoop(builder)
             PicatTokenTypes.CASE_KEYWORD -> helper.parseCaseExpression(builder)
             PicatTokenTypes.TRY_KEYWORD -> helper.parseTryCatch(builder)
             else -> parsed = false

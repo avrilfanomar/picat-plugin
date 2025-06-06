@@ -223,7 +223,6 @@ class IdentifierRecognizer : TokenRecognizer {
             "while" to PicatTokenTypes.WHILE_KEYWORD,
             "do" to PicatTokenTypes.DO_KEYWORD,
             "foreach" to PicatTokenTypes.FOREACH_KEYWORD,
-            "for" to PicatTokenTypes.FOR_KEYWORD,
             "return" to PicatTokenTypes.RETURN_KEYWORD,
             "throw" to PicatTokenTypes.THROW_KEYWORD,
             "try" to PicatTokenTypes.TRY_KEYWORD,

@@ -193,7 +193,6 @@ goal ::= call
        | not_goal
        | foreach_loop
        | while_loop
-       | for_loop
        | list_comprehension
        | procedure_call
        | cut
@@ -246,12 +245,6 @@ while_loop ::= WHILE_KEYWORD expression DO_KEYWORD body END_KEYWORD {
   elementType = WHILE_LOOP
   implements="com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop"
   extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatWhileLoopImpl"
-}
-
-for_loop ::= FOR_KEYWORD "(" expression "," expression "," expression ")" body END_KEYWORD {
-  elementType = FOR_LOOP
-  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatForLoop"
-  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatForLoopImpl"
 }
 
 // Patterns

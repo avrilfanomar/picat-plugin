@@ -24,7 +24,6 @@ class PicatBlockHelper {
         return type == PicatTokenTypes.IF_THEN_ELSE ||
                 type == PicatTokenTypes.FOREACH_LOOP ||
                 type == PicatTokenTypes.WHILE_LOOP ||
-                type == PicatTokenTypes.FOR_LOOP ||
                 type == PicatTokenTypes.TRY_CATCH
     }
 
@@ -37,7 +36,6 @@ class PicatBlockHelper {
                 type == PicatTokenTypes.ELSE_KEYWORD ||
                 type == PicatTokenTypes.FOREACH_KEYWORD ||
                 type == PicatTokenTypes.WHILE_KEYWORD ||
-                type == PicatTokenTypes.FOR_KEYWORD ||
                 type == PicatTokenTypes.TRY_KEYWORD ||
                 type == PicatTokenTypes.CATCH_KEYWORD
     }

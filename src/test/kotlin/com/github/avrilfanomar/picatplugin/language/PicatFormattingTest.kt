@@ -22,7 +22,7 @@ class PicatFormattingTest : BasePlatformTestCase() {
      */
     private fun doFormatTest(code: String, expected: String, filename: String = "test.pi") {
         // Normalize the input code by removing leading whitespace
-        val normalizedCode = code.trimIndent()
+        val normalizedCode = code.trim()
 
         // Configure a test file with the normalized input code
         myFixture.configureByText(filename, normalizedCode)
