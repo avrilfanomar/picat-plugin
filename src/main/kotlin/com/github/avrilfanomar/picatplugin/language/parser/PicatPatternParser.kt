@@ -21,19 +21,13 @@ class PicatPatternParser : PicatBaseParser() {
         val marker = builder.mark()
 
         when {
-            isVariable(builder.tokenType) -> parseVariable(builder)
-            isAtom(builder.tokenType) -> {
-                if (isAtom(builder.tokenType)) {
-                    builder.advanceLexer()
-                } else {
-                    builder.error("Expected atom")
-                }
-            }
-            isNumber(builder.tokenType) -> parseNumber(builder)
+            isStructure(builder) -> parseStructurePattern(builder)
             builder.tokenType == PicatTokenTypes.ANONYMOUS_VARIABLE -> builder.advanceLexer()
             builder.tokenType == PicatTokenTypes.LBRACKET -> parseListPattern(builder)
             builder.tokenType == PicatTokenTypes.LBRACE -> parseTuplePattern(builder)
-            isStructure(builder) -> parseStructurePattern(builder)
+            isVariable(builder.tokenType) -> parseVariable(builder)
+            isAtom(builder.tokenType) -> builder.advanceLexer()
+            isNumber(builder.tokenType) -> parseNumber(builder)
             else -> {
                 builder.error("Expected pattern")
                 builder.advanceLexer()
