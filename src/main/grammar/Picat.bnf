@@ -93,8 +93,8 @@
     CONCAT_OP="++"
 
     // Separators
-    DOT="." // Note: DOT_OP is for the operator, DOT is for structure access/end of statement.
-    EOR="regexp:\.\s+" // End of Rule/Statement: . followed by whitespace
+    DOT="."
+    EOR="regexp:\.\s+"
     COMMA=","
     SEMICOLON=";"
     COLON=":"
@@ -129,8 +129,6 @@ picatFile ::= program
 
 program ::= item_*
 
-// private item_ ::= (module_decl | directive | fact | function_definition | rule | statement | COMMENT | MULTI_LINE_COMMENT)
-// Updated item_ to reflect new granular definitions and actor support
 private item_ ::= (module_decl | general_directive | predicate_clause | function_clause | actor_definition | statement | COMMENT | MULTI_LINE_COMMENT)
 
 
@@ -140,21 +138,20 @@ module_declaration ::= MODULE_KEYWORD module_name [export_clause] [import_clause
 end_module_declaration ::= END_MODULE_KEYWORD [module_name] EOR { pin=1 }
 module_name ::= atom
 
-export_clause ::= EXPORT_KEYWORD export_list { pin=1 } // Assuming export list itself doesn't need EOR termination per item
-import_clause ::= IMPORT_KEYWORD import_list { pin=1 } // Assuming import list itself doesn't need EOR termination per item
+export_clause ::= EXPORT_KEYWORD export_list { pin=1 }
+import_clause ::= IMPORT_KEYWORD import_list { pin=1 }
 
 // Directives
-// Renamed 'directive' to 'general_directive' and added compilation_directive
 general_directive ::= import_statement | export_statement | include_statement | using_statement | compilation_directive {
-  elementType = DIRECTIVE // Keep a general type for all directives if useful
+  elementType = DIRECTIVE
 }
 
 compilation_directive ::= [PRIVATE_KEYWORD] (table_mode | index_mode) EOR {pin=1}
 table_mode ::= TABLE_KEYWORD head_reference_list
 index_mode ::= INDEX_KEYWORD head_reference_list [indexing_details]
 head_reference_list ::= head_reference ((COMMA | SEMICOLON) head_reference)*
-head_reference ::= atom ('/' INTEGER)? // e.g., pred/2 or func/1
-indexing_details ::= LPAR argument_list RPAR // e.g., (Arg1, _ , Arg3)
+head_reference ::= atom ('/' INTEGER)?
+indexing_details ::= LPAR argument_list RPAR
 
 
 import_statement ::= IMPORT_KEYWORD import_list EOR { pin=1 }
@@ -163,7 +160,7 @@ include_statement ::= INCLUDE_KEYWORD file_spec EOR { pin=1 }
 using_statement ::= USING_KEYWORD module_name ["=>" rename_list] EOR { pin=1 }
 
 import_list ::= import_item ("," import_item)*
-import_item ::= module_name ["=>" rename_list] // Was module_spec
+import_item ::= module_name ["=>" rename_list]
 rename_list ::= rename_spec ("," rename_spec)*
 rename_spec ::= atom ["=>" atom]
 
@@ -172,42 +169,34 @@ export_spec ::= rule | atom
 
 file_spec ::= STRING | atom
 
-// Predicate Clauses (formerly fact and rule)
-// predicate_definition is a sequence of predicate_clauses and compilation_directives
-// predicate_rule_or_fact in prompt, here represented by predicate_clause
+// Predicate Clauses
 predicate_clause ::= predicate_rule | predicate_fact
 
-private predicate_rule ::= head RULE_OP body EOR { // Renamed from 'rule'
-  pin=1 // head is usually the pinned element
-  elementType = PREDICATE_RULE // New element type
-  // Add implements/extends if a new PSI class is created
-}
-
-private predicate_fact ::= head EOR { // Renamed from 'fact'
+private predicate_rule ::= head RULE_OP body EOR {
   pin=1
-  elementType = PREDICATE_FACT // New element type
-  // Add implements/extends if a new PSI class is created
+  elementType = PREDICATE_RULE
+}
+
+private predicate_fact ::= head EOR {
+  pin=1
+  elementType = PREDICATE_FACT
 }
 
 
-// Function Clauses (formerly function_definition, plus new function_fact)
-// function_definition is a sequence of function_clauses and compilation_directives
-// function_rule_or_fact in prompt, here represented by function_clause
+// Function Clauses
 function_clause ::= function_rule | function_fact
 
-private function_rule ::= head ASSIGN_OP function_body EOR { // Renamed from 'function_definition'
-  pin=1 // head is pinned
-  elementType = FUNCTION_RULE // New element type
-  // Add implements/extends if a new PSI class is created for function_rule
-}
-
-private function_fact ::= head ASSIGN_OP expression EOR { // New rule for function facts
+private function_rule ::= head ASSIGN_OP function_body EOR {
   pin=1
-  elementType = FUNCTION_FACT // New element type
-  // Add implements/extends if a new PSI class is created
+  elementType = FUNCTION_RULE
 }
 
-function_body ::= expression { // This rule remains the same
+private function_fact ::= head ASSIGN_OP expression EOR {
+  pin=1
+  elementType = FUNCTION_FACT
+}
+
+function_body ::= expression {
   elementType = FUNCTION_BODY
   implements="com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionBody"
   methods=[getReturnExpression getStatements]
@@ -215,20 +204,17 @@ function_body ::= expression { // This rule remains the same
 }
 
 // Actor Definition
-// actor_definition as per prompt
 actor_definition ::= [PRIVATE_KEYWORD] actor_name EOR (actor_member EOR)* END_KEYWORD EOR {
     elementType = ACTOR_DEFINITION
 }
-actor_name ::= atom // Or head if actors can have arguments in their declaration
+actor_name ::= atom
 actor_member ::= action_rule | predicate_clause | function_clause | compilation_directive
-// action_rule as per prompt
-action_rule ::= head HASH_ARROW_OP body { // Using HASH_ARROW_OP (#=>) for actions
+action_rule ::= head HASH_ARROW_OP body {
     elementType = ACTION_RULE
 }
-// Note: HASH_ARROW_OP was added in the previous step's token updates.
 
 
-rule_operator ::= "=>" | "?=>" | "<=>" | "?<=>" | ":-" // Standard rule operators
+rule_operator ::= "=>" | "?=>" | "<=>" | "?<=>" | ":-"
 
 // Heads
 head ::= atom_no_args | structure | qualified_atom
@@ -236,14 +222,10 @@ qualified_atom ::= atom "." atom
 atom_no_args ::= atom !LPAR
 
 // Body
-// body rule structure seems fine for disjunctive/conjunctive goals.
-// No changes needed to 'body' structure itself based on disjunctive_goal/conjunctive_goal terms in prompt.
 body ::= goal ((";" | ",") goal)* [cut] { recoverWhile=body_recover }
 private body_recover ::= !(EOR | END_KEYWORD)
 
 // Goals
-// Added loop_while_statement to the list of possible goals.
-// negative_goal is covered by 'negation'.
 goal ::= call
        | if_then_else
        | case_expression
@@ -260,7 +242,7 @@ goal ::= call
        | not_goal
        | foreach_loop
        | while_loop
-       | loop_while_statement // Added new loop type
+       | loop_while_statement
        | list_comprehension
        | procedure_call
        | cut
@@ -270,7 +252,7 @@ goal ::= call
        | throw_stmt
 
 // Goal implementations
-call ::= atom | structure // condition rule is typically 'expression', no separate 'condition' rule needed.
+call ::= atom | structure
 if_then_else ::= IF_KEYWORD expression THEN_KEYWORD body [elseif_clause] [ELSE_KEYWORD body] END_KEYWORD
 elseif_clause ::= ELSEIF_KEYWORD expression THEN_KEYWORD body [elseif_clause]
 assignment ::= variable ":=" expression
@@ -279,16 +261,12 @@ comparison ::= expression comparison_operator expression
 comparison_operator ::= "<" | ">" | "<=" | ">="
 arithmetic_comparison ::= expression arithmetic_comparison_operator expression
 arithmetic_comparison_operator ::= "=:=" | "=\\="
-// negation rule updated to include HASH_TILDE_OP as an alternative to NOT_KEYWORD for goal negation, if appropriate.
-// However, HASH_TILDE_OP is added to unary_expression as per plan. 'negation' rule here is for NOT_KEYWORD goal.
-// If #~ p is a valid goal where p is a goal, then 'negation ::= (NOT_KEYWORD | HASH_TILDE_OP) goal' would be right.
-// For now, assuming #~ is purely for expressions as per token type and common usage.
 negation ::= NOT_KEYWORD goal
 fail ::= FAIL_KEYWORD
 pass ::= PASS_KEYWORD
 true_goal ::= TRUE_KEYWORD
 false_goal ::= FALSE_KEYWORD
-not_goal ::= negation // This is an alias, effectively.
+not_goal ::= negation
 foreach_loop ::= FOREACH_KEYWORD "(" foreach_generators ")" body END_KEYWORD {
   elementType = FOREACH_LOOP
   implements="com.github.avrilfanomar.picatplugin.language.psi.PicatForeachLoop"
@@ -311,7 +289,6 @@ case_arm ::= pattern "=>" body
 
 try_catch ::= TRY_KEYWORD body CATCH_KEYWORD catch_clauses [FINALLY_KEYWORD body] END_KEYWORD
 catch_clauses ::= catch_clause (";" catch_clause)*
-// 'pattern' in catch_clause serves as 'exception_pattern'
 catch_clause ::= pattern "=>" body
 
 while_loop ::= WHILE_KEYWORD expression DO_KEYWORD body END_KEYWORD {
@@ -320,12 +297,10 @@ while_loop ::= WHILE_KEYWORD expression DO_KEYWORD body END_KEYWORD {
   extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatWhileLoopImpl"
 }
 
-// New loop_while construct
 loop_while_statement ::= LOOP_KEYWORD body WHILE_KEYWORD expression EOR {pin=1 elementType=LOOP_WHILE_STATEMENT}
 
 
 // Patterns
-// pattern rule seems general enough for exception_pattern as well.
 pattern ::= variable | atom | number | "_" | structure_pattern | list_pattern | tuple_pattern
 structure_pattern ::= atom "(" [pattern_list] ")"
 list_pattern ::= "[" [pattern_list] ["|" pattern] "]"
@@ -347,9 +322,7 @@ tuple_items ::= expression ("," expression)*
 argument_list ::= expression ("," expression)*
 
 // Expressions
-// Expressions
-// Modified expression hierarchy to integrate new logical operators and implication/biconditional levels.
-expression ::= biconditional_expression_level { // Root of expression hierarchy changed
+expression ::= biconditional_expression_level {
   elementType = EXPRESSION
   implements="com.github.avrilfanomar.picatplugin.language.psi.PicatExpression"
   methods=[getTerms getOperators]
@@ -358,83 +331,62 @@ expression ::= biconditional_expression_level { // Root of expression hierarchy 
 
 biconditional_expression_level ::= implication_expression_level ((BICONDITIONAL_OP | HASH_BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP) implication_expression_level)*
 implication_expression_level ::= conditional_expression ((ARROW_OP | HASH_ARROW_OP | BACKTRACKABLE_ARROW_OP) conditional_expression)*
-// conditional_expression is the ternary operator ? :
-conditional_expression ::= logical_or_expression ("?" expression ":" expression)? // Changed structure slightly for ternary
+conditional_expression ::= logical_or_expression ("?" expression ":" expression)?
 
-// Logical operators with new hash alternatives
 logical_or_expression ::= logical_and_expression ((OR_KEYWORD | HASH_OR_OP) logical_and_expression)*
 logical_and_expression ::= bitwise_or_expression ((AND_KEYWORD | HASH_AND_OP) bitwise_or_expression)*
 
-// Bitwise operators with new hash alternatives (XOR_KEYWORD also added here)
-bitwise_or_expression ::= bitwise_xor_expression (PIPE bitwise_xor_expression)* // Standard bitwise OR is just PIPE
+bitwise_or_expression ::= bitwise_xor_expression (PIPE bitwise_xor_expression)*
 bitwise_xor_expression ::= bitwise_and_expression ((CARET | XOR_KEYWORD | HASH_CARET_OP) bitwise_and_expression)*
-bitwise_and_expression ::= equality_expression (AMPERSAND equality_expression)* // Standard bitwise AND is just AMPERSAND
+bitwise_and_expression ::= equality_expression (AMPERSAND equality_expression)*
 
-// Equality, Relational, Shift, Additive, Multiplicative, Power remain structurally similar
 equality_expression ::= relational_expression (("=:=" | "=\\=") relational_expression)*
 relational_expression ::= shift_expression (("<" | ">" | "<=" | ">=") shift_expression)*
-// Shift expression with new SHIFT_RIGHT_TRIPLE_OP (>>>)
 shift_expression ::= additive_expression ((SHIFT_LEFT | SHIFT_RIGHT | SHIFT_RIGHT_TRIPLE_OP) additive_expression)*
-additive_expression ::= multiplicative_expression ((PLUS | MINUS) multiplicative_expression)* // Corrected: was ("+" | "-")
-// Multiplicative expression with new DIV_KEYWORD (div) and REM_KEYWORD (rem)
+additive_expression ::= multiplicative_expression ((PLUS | MINUS) multiplicative_expression)*
 multiplicative_expression ::= power_expression ((MULTIPLY | DIVIDE | INT_DIVIDE | MOD_KEYWORD | DIV_KEYWORD | REM_KEYWORD) power_expression)*
 power_expression ::= unary_expression ("**" unary_expression)*
 
-// Unary expression with new HASH_TILDE_OP
 unary_expression ::= (PLUS | MINUS | NOT_KEYWORD | BACKSLASH | HASH_TILDE_OP) primary_expression
 
-// Primary Expressions Updated
 primary_expression ::=
     atom
   | number
   | variable
-  | list_expression // Changed from 'list' to 'list_expression' for clarity
-  | tuple // Represents array_expression with {}
-  | map // Explicit map expression
+  | list_expression
+  | tuple
+  | map
   | index_access_expression
   | as_pattern_expression
   | lambda_expression
   | term_constructor_expression
-  | list_comprehension_expression // List comprehensions as expressions
-  | dollar_term_constructor    // Added $goal$ term constructor
-  | LPAR expression RPAR         // Parenthesized expression
+  | list_comprehension_expression
+  | dollar_term_constructor
+  | LPAR expression RPAR
   | function_call
 
 // Dollar Term Constructor: $ goal $
 dollar_term_constructor ::= "$" goal "$" {elementType=DOLLAR_TERM_CONSTRUCTOR}
 
-// Definition of a 'term' as per grammar description (basic data items)
-// This rule is for semantic understanding or specific contexts where only terms are allowed.
-// It's not directly part of the main expression parsing hierarchy in this form,
-// as expression rules already correctly parse these elements.
-// If 'term' is needed for specific rules (e.g. 'variable "@" term'), 'pattern' might be more appropriate there.
-// For now, 'term' is defined for clarity but not replacing existing expression elements.
-// term ::= atom | number | variable | list_expression | tuple | structure | STRING // STRING was missing in old primary_expression options
-
-// Index Access: variable "[" argument ["," argument] "]"
 index_access_expression ::= variable LBRACKET expression (COMMA expression)? RBRACKET {elementType=INDEX_ACCESS_EXPRESSION}
 
-// As-Pattern: variable "@" term ["@"] (using pattern for term)
 as_pattern_expression ::= variable AT pattern AT? {elementType=AS_PATTERN_EXPRESSION}
 
-// Lambda Terms / Expressions
 lambda_expression ::= LBRACE variable_list? RBRACE ARROW_OP (expression | body) {elementType=LAMBDA_EXPRESSION}
 variable_list ::= variable (COMMA variable)*
 
-// Term Constructor: e.g., point{x:1, y:2}
 term_constructor_expression ::= (atom | qualified_atom) LBRACE map_entries RBRACE {elementType=TERM_CONSTRUCTOR_EXPRESSION}
 
 
-// Function Calls (no changes from previous version, seems robust)
+// Function Calls
 function_call ::= atom LPAR argument_list? RPAR | builtin_call
 builtin_call ::= builtin_name LPAR argument_list? RPAR
 builtin_name ::= "call" | "apply" | "new_struct" | "new_map"
 
 
 // List and Array Expressions
-// list_expression is the updated name for 'list'
-list_expression ::= LBRACKET list_items? RBRACKET { // made list_items optional for "[]"
-  elementType = LIST // Keeping original elementType if it aligns
+list_expression ::= LBRACKET list_items? RBRACKET {
+  elementType = LIST
   implements="com.github.avrilfanomar.picatplugin.language.psi.PicatList"
   extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListImpl"
 }
@@ -443,22 +395,15 @@ list_expression ::= LBRACKET list_items? RBRACKET { // made list_items optional 
   methods=[getListElements]
   extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListImpl"
 }
-list_items ::= expression ((COMMA | SEMICOLON) expression)* (PIPE expression)? { // Changed from ["|" expression]
+list_items ::= expression ((COMMA | SEMICOLON) expression)* (PIPE expression)? {
   elementType = LIST_ELEMENTS
   implements="com.github.avrilfanomar.picatplugin.language.psi.PicatListElements"
   methods=[getExpressions getTailExpression]
   extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListElementsImpl"
 }
-// List Comprehension as an expression
 list_comprehension_expression ::= LBRACKET expression PIPE foreach_generators RBRACKET {elementType=LIST_COMPREHENSION_EXPRESSION}
-// `foreach_generators` is already defined under goal `foreach_loop`.
 
-// `tuple` (curly braces) can serve as Picat's "array_expression"
-// `map` is for key-value stores.
-
-// Operators (General operator rule, not directly used in expression hierarchy but useful for other parser aspects)
-// This 'operator' rule is likely for defining operators in directives, not for parsing expressions themselves.
-// The expression hierarchy itself defines operator parsing.
+// Operators
 operator ::= PLUS | MINUS | MULTIPLY | DIVIDE | MOD_KEYWORD | POWER | SHIFT_LEFT | SHIFT_RIGHT | SHIFT_RIGHT_TRIPLE_OP |
              BACKSLASH | INT_DIVIDE | DIV_KEYWORD | REM_KEYWORD |
              AND_KEYWORD | OR_KEYWORD | XOR_KEYWORD | CARET | AMPERSAND | PIPE | IS_KEYWORD |
