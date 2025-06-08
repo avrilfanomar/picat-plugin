@@ -254,15 +254,15 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         // Get the body of the queens rule
         val queensBody = queensRule!!.getBody()
         assertNotNull("Queens rule should have a body", queensBody)
+        val bodyText = queensBody!!.text
+        assertTrue("Queens rule body should contain foreach", bodyText.contains("foreach"))
+        assertTrue("Queens rule body should contain solve", bodyText.contains("solve"))
 
         // Verify foreach loops
-        val foreachLoops = PsiTreeUtil.findChildrenOfType(queensBody!!, PicatForeachLoopImpl::class.java)
+        val foreachLoops = PsiTreeUtil.findChildrenOfType(queensBody, PicatForeachLoopImpl::class.java)
         assertNotNull("Foreach loops should exist", foreachLoops)
         assertEquals("Should have 5 foreach loops", 5, foreachLoops.size)
 
-        // Check that the rule has a non-empty body
-        val bodyText = queensBody.text
-        assertTrue("Queens rule body should not be empty", bodyText.isNotEmpty())
     }
 
     @Test
