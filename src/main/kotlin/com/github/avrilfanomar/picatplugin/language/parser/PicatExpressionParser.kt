@@ -45,9 +45,7 @@ class PicatExpressionParser : PicatBaseParser() {
     fun parseExpression(builder: PsiBuilder) {
         val exprMarker = builder.mark()
 
-        // Parse the first term
-        parseTerm(builder)
-        skipWhitespace(builder)
+        //TODO
 
         // Parse binary operators and their right-hand terms
         while (!builder.eof() && (isArithmeticOperator(builder.tokenType) || isComparisonOperator(builder.tokenType))) {
@@ -192,6 +190,7 @@ class PicatExpressionParser : PicatBaseParser() {
                     helper.parseList(builder) // Existing call for list_expression
                 }
             }
+
             builder.tokenType == PicatTokenTypes.LBRACE -> {
                 // Could be map, tuple, or lambda_expression
                 // This requires more sophisticated lookahead.
@@ -200,11 +199,10 @@ class PicatExpressionParser : PicatBaseParser() {
                 // This part of PicatExpressionParser might need significant refactoring for robust lookahead.
                 // Tentatively adding lambda here, assuming other LBRACE forms are handled by helper.parseMap or similar.
                 if (isLambdaExpression(builder)) { // Hypothetical lookahead
-                     parseLambdaExpression(builder, level + 1)
+                    parseLambdaExpression(builder, level + 1)
                 } else if (isTermConstructorExpression(builder)) { // Hypothetical lookahead
-                     parseTermConstructorExpression(builder, level + 1)
-                }
-                else {
+                    parseTermConstructorExpression(builder, level + 1)
+                } else {
                     helper.parseMap(builder) // Handles map and tuple via PicatExpressionParserHelper
                 }
             }
@@ -266,7 +264,7 @@ class PicatExpressionParser : PicatBaseParser() {
         // Let's assume sub-rules like parseAtom, parseNumber, parseLambdaExpression etc. will call marker.done themselves.
         // So, parsePrimaryExpression becomes a dispatcher.
         termMarker.drop() // Drop if children handle their markers. If not, this structure is flawed.
-                         // For this exercise, I will assume children create their own markers.
+        // For this exercise, I will assume children create their own markers.
     }
 
     // LAMBDA_EXPRESSION ::= LBRACE variable_list? RBRACE ARROW_OP (expression | body)
@@ -287,10 +285,18 @@ class PicatExpressionParser : PicatBaseParser() {
 
         // Choice of expression or body
         val bodyMarker = builder.mark()
-        if (expressionParser.parseExpression(builder, level + 1)) { // Assuming expressionParser has parseExpression that takes level
-             bodyMarker.drop() // Or done with specific type if expression is wrapped
-        } else if (statementParser.parseBody(builder, level + 1)) { // Assuming statementParser has parseBody that takes level
-             bodyMarker.drop() // Or done with specific type if body is wrapped
+        if (expressionParser.parseExpression(
+                builder,
+                level + 1
+            )
+        ) { // Assuming expressionParser has parseExpression that takes level
+            bodyMarker.drop() // Or done with specific type if expression is wrapped
+        } else if (statementParser.parseBody(
+                builder,
+                level + 1
+            )
+        ) { // Assuming statementParser has parseBody that takes level
+            bodyMarker.drop() // Or done with specific type if body is wrapped
         } else {
             builder.error("Expected expression or body in lambda")
             bodyMarker.drop()
@@ -505,7 +511,7 @@ class PicatExpressionParser : PicatBaseParser() {
         var isLambda = true
         if (builder.tokenType != PicatTokenTypes.RBRACE) {
             if (!parseVariableList(builder, 0)) { // level 0 for lookahead
-                 // isLambda = false // This would consume tokens, bad for lookahead
+                // isLambda = false // This would consume tokens, bad for lookahead
             }
         }
         if (builder.tokenType != PicatTokenTypes.RBRACE) isLambda = false
@@ -526,9 +532,11 @@ class PicatExpressionParser : PicatBaseParser() {
                 // parseQualifiedAtom(builder, 0) // Don't actually parse, just check
                 builder.advanceLexer() // atom
                 if (builder.tokenType == PicatTokenTypes.DOT) builder.advanceLexer()
-                if (isAtom(builder.tokenType)) builder.advanceLexer() else { marker.rollbackTo(); return false }
+                if (isAtom(builder.tokenType)) builder.advanceLexer() else {
+                    marker.rollbackTo(); return false
+                }
             } else {
-                 builder.advanceLexer() // atom
+                builder.advanceLexer() // atom
             }
             if (builder.tokenType == PicatTokenTypes.LBRACE) {
                 isTermCons = true
@@ -550,8 +558,9 @@ class PicatExpressionParser : PicatBaseParser() {
         var hasPipe = false
         var tempMarker = builder.mark()
         var i = 0
-        while(builder.tokenType != null && builder.tokenType != PicatTokenTypes.RBRACKET && i < 10) { // Limit lookahead
-            if(builder.tokenType == PicatTokenTypes.PIPE) { hasPipe = true; break; }
+        while (builder.tokenType != null && builder.tokenType != PicatTokenTypes.RBRACKET && i < 10) { // Limit lookahead
+            if (builder.tokenType == PicatTokenTypes.PIPE) {
+                hasPipe = true; break; }
             builder.advanceLexer()
             i++
         }
