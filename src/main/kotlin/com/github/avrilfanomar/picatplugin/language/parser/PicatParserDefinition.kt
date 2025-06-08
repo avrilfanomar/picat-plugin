@@ -32,6 +32,9 @@ class PicatParserDefinition : ParserDefinition {
 
     override fun getFileNodeType(): IFileElementType = FILE
 
+    // Updated to directly use PicatTokenTypes for whitespace
+    override fun getWhitespaceTokens(): TokenSet = PicatTokenTypes.WHITESPACES
+
     override fun getCommentTokens(): TokenSet = PicatTokenSets.COMMENTS
 
     override fun getStringLiteralElements(): TokenSet = PicatTokenSets.STRINGS

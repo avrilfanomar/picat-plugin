@@ -187,6 +187,17 @@ tasks {
     }
 }
 
+// Explicitly configure Grammar-Kit tasks and source sets
+tasks.withType<org.jetbrains.intellij.platform.gradle.tasks.GenerateParserTask> {
+    sourceFile.set(layout.projectDirectory.dir("src/main/grammars/Picat.bnf"))
+    // targetRootOutputDir by default is build/generated/sources/bnf (or similar based on sourceSetName)
+    // other properties like parserClass, psiPackage, etc., are taken from the BNF header.
+}
+
+kotlin {
+    sourceSets.main.get().kotlin.srcDir(layout.buildDirectory.dir("generated/sources/bnf/gen"))
+}
+
 intellijPlatformTesting {
     runIde {
         register("runIdeForUiTests") {

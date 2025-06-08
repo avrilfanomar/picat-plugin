@@ -12,151 +12,160 @@ import com.intellij.lang.PsiBuilder
  */
 class PicatDefinitionParser : PicatBaseParser() {
 
-    /**
-     * Parses a Picat definition (fact, rule, implicit rule, or function).
-     */
-    fun parseDefinition(builder: PsiBuilder) {
-        // Don't create a marker here, let the specific parse methods create their own markers
-
-        // Check what kind of definition this is
-        val isFunctionDef = isFunctionDefinition(builder)
-        val isRuleDef = isRuleDefinition(builder)
-        val isImplicitRuleDef = isImplicitRule(builder)
-        val isFactDef = isFact(builder)
-
-
-        when {
-            isFunctionDef -> {
-                // Parse as a function definition (which is also marked as a fact)
-                parseFunctionDefinition(builder)
-            }
-
-            isRuleDef -> {
-                // Parse as a rule
-                parseRuleDefinition(builder)
-            }
-
-            isImplicitRuleDef -> {
-                // Parse as an implicit rule
-                parseRuleDefinition(builder)
-            }
-
-            isFactDef -> {
-                // Parse as a simple fact
-                parseFact(builder)
-            }
-
-            else -> {
-                // Error case
-                val errorMarker = builder.mark()
-                builder.error("Unexpected definition")
-                builder.advanceLexer()
-                errorMarker.drop()
-            }
+    // Entry point for items that are predicate/function definitions
+    fun parseDefinition(builder: PsiBuilder, level: Int = 0) {
+        // Try to parse as function clause first due to common head structure.
+        // Lookahead for ASSIGN_OP might be needed for robust distinction.
+        if (isFunctionClause(builder, level + 1)) {
+            parseFunctionClause(builder, level + 1)
+        } else if (isPredicateClause(builder, level + 1)) { // isPredicateClause would check for RULE_OP or just EOR after head
+            parsePredicateClause(builder, level + 1)
+        } else {
+            val errorMarker = builder.mark()
+            builder.error("Expected predicate or function definition")
+            // Consume one token to advance past the error, but be careful not to consume too much
+            // This part of error recovery is tricky in manual parsers.
+            if (!builder.eof()) builder.advanceLexer()
+            errorMarker.drop()
         }
     }
 
-
-    /**
-     * Parses a function definition.
-     */
-    fun parseFunctionDefinition(builder: PsiBuilder) {
+    // PREDICATE_CLAUSE ::= predicate_rule | predicate_fact
+    fun parsePredicateClause(builder: PsiBuilder, level: Int): Boolean {
+        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "PredicateClause")) return false
         val marker = builder.mark()
+        var result: Boolean
 
-        // Parse the head, which could be a structure, atom, or pattern
-        if (isStructure(builder)) {
-            parseStructure(builder)
-        } else if (isQualifiedAtom(builder)) {
-            parseQualifiedAtom(builder)
-        } else if (builder.tokenType == PicatTokenTypes.LBRACKET) {
-            // Handle pattern matching with lists
-            expressionParser.parsePrimaryExpression(builder)
-        } else if (isAtom(builder.tokenType)) {
-            val atomMarker = builder.mark()
-            builder.advanceLexer()
-            atomMarker.done(PicatTokenTypes.ATOM)
+        // Lookahead for RULE_OP to distinguish between rule and fact
+        val headMarker = builder.mark()
+        parseHead(builder, level + 1) // Assuming parseHead doesn't advance past the head
+        headMarker.drop() // Head is part of rule/fact, not its own element here for clause logic
+
+        if (isRuleOperator(builder.tokenType)) {
+            result = parsePredicateRule(builder, level + 1)
+        } else if (builder.tokenType == PicatTokenTypes.EOR || builder.eof()) { // Simple fact ends with EOR
+            result = parsePredicateFact(builder, level + 1)
         } else {
-            // Error case
-            builder.error("Expected function head")
-            builder.advanceLexer()
-            marker.drop()
-            return
+            // Could be an implicit rule if body follows without RULE_OP, but BNF implies RULE_OP for rules.
+            // For now, stick to explicit fact or rule.
+            builder.error("Expected rule operator or end of fact for predicate clause")
+            marker.rollbackTo() // Rollback the clause marker
+            return false
         }
 
-        skipWhitespace(builder)
-        expectToken(builder, PicatTokenTypes.EQUAL, "Expected '=' in function definition")
-        skipWhitespace(builder)
+        if (result) {
+            marker.done(PicatTokenTypes.PREDICATE_CLAUSE)
+        } else {
+            marker.rollbackTo()
+        }
+        return result
+    }
 
-        // Mark the function body
+    // FUNCTION_CLAUSE ::= function_rule | function_fact
+    fun parseFunctionClause(builder: PsiBuilder, level: Int): Boolean {
+        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "FunctionClause")) return false
+        val marker = builder.mark()
+        var result: Boolean
+
+        // Lookahead logic: both start with head then ASSIGN_OP.
+        // The distinction is if function_body (which is an expression) is complex enough or if it's a simple expression.
+        // For now, we might not distinguish deeply here, but rely on how parseFunctionRule/Fact are called.
+        // Let's assume we try parseFunctionRule which might be more complex.
+        // A better way is to parse head, then ASSIGN_OP, then try function_body, then expression.
+        // For simplicity now, let's assume the caller (parseDefinition) makes a reasonable guess or we try both.
+
+        // This simplified logic assumes parseFunctionRule and parseFunctionFact can correctly rollback
+        // or be distinguished by more subtle lookahead.
+        if (parseFunctionRule(builder, level + 1)) { // Try rule first
+            result = true
+        } else if (parseFunctionFact(builder, level + 1)) { // Then fact
+            result = true
+        } else {
+            builder.error("Expected function rule or fact")
+            marker.rollbackTo()
+            return false
+        }
+
+        if (result) {
+            marker.done(PicatTokenTypes.FUNCTION_CLAUSE)
+        } else {
+            marker.rollbackTo()
+        }
+        return result
+    }
+
+    // PREDICATE_RULE ::= head RULE_OP body EOR
+    fun parsePredicateRule(builder: PsiBuilder, level: Int): Boolean {
+        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "PredicateRule")) return false
+
+        val marker = builder.mark()
+        var result = parseHead(builder, level + 1)
+        result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.RULE_OP, "Expected rule operator (e.g., :-, =>)")
+        result = result && statementParser.parseBody(builder, level + 1)
+        result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.EOR, "Expected EOR after predicate rule body")
+
+        if (result) {
+            marker.done(PicatTokenTypes.PREDICATE_RULE)
+        } else {
+            marker.rollbackTo()
+        }
+        return result
+    }
+
+    // PREDICATE_FACT ::= head EOR
+    fun parsePredicateFact(builder: PsiBuilder, level: Int): Boolean {
+        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "PredicateFact")) return false
+
+        val marker = builder.mark()
+        var result = parseHead(builder, level + 1)
+        result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.EOR, "Expected EOR after predicate fact")
+
+        if (result) {
+            marker.done(PicatTokenTypes.PREDICATE_FACT)
+        } else {
+            marker.rollbackTo()
+        }
+        return result
+    }
+
+    // FUNCTION_RULE ::= head ASSIGN_OP function_body EOR
+    fun parseFunctionRule(builder: PsiBuilder, level: Int): Boolean {
+        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "FunctionRule")) return false
+
+        val marker = builder.mark()
+        var result = parseHead(builder, level + 1)
+        result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.ASSIGN_OP, "Expected ':=' in function definition")
+
         val bodyMarker = builder.mark()
-        expressionParser.parseExpression(builder)
-        bodyMarker.done(PicatTokenTypes.FUNCTION_BODY)
+        result = result && expressionParser.parseExpression(builder, level + 1) // function_body is an expression
+        if(result) bodyMarker.done(PicatTokenTypes.FUNCTION_BODY) else bodyMarker.drop()
 
-        skipWhitespace(builder)
-        expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after function definition")
-        marker.done(PicatTokenTypes.FUNCTION_DEFINITION)
+        result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.EOR, "Expected EOR after function rule body")
+
+        if (result) {
+            marker.done(PicatTokenTypes.FUNCTION_RULE)
+        } else {
+            marker.rollbackTo()
+        }
+        return result
     }
 
-    /**
-     * Parses a rule definition.
-     * A rule must have an explicit rule operator (=>, ?=>, <=>, ?<=>, :-).
-     * Rules can also have conditions, e.g., factorial(N) => N * factorial(N-1) => N > 0.
-     */
-    fun parseRuleDefinition(builder: PsiBuilder) {
+    // FUNCTION_FACT ::= head ASSIGN_OP expression EOR
+    fun parseFunctionFact(builder: PsiBuilder, level: Int): Boolean {
+        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "FunctionFact")) return false
+
         val marker = builder.mark()
-        parseHead(builder)
-        skipWhitespace(builder)
+        var result = parseHead(builder, level + 1)
+        result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.ASSIGN_OP, "Expected ':=' in function fact")
+        result = result && expressionParser.parseExpression(builder, level + 1)
+        result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.EOR, "Expected EOR after function fact expression")
 
-        // Parse rule operator (=>, ?=>, <=>, ?<=>, :-)
-        val opMarker = builder.mark()
-        val ruleOpType = builder.tokenType
-        val isBiconditionalRule = ruleOpType == PicatTokenTypes.BICONDITIONAL_OP ||
-                ruleOpType == PicatTokenTypes.BACKTRACKABLE_BICONDITIONAL_OP
-
-        if (isRuleOperator(ruleOpType)) {
-            builder.advanceLexer()
-            opMarker.done(PicatTokenTypes.RULE_OPERATOR)
-            skipWhitespace(builder)
+        if (result) {
+            marker.done(PicatTokenTypes.FUNCTION_FACT)
         } else {
-            opMarker.drop()
-            builder.error("Expected rule operator (=>, ?=>, <=>, ?<=>, :-)")
+            marker.rollbackTo()
         }
-
-        // For biconditional rules, parse the entire body as a single expression
-        if (isBiconditionalRule) {
-            val bodyMarker = builder.mark()
-            expressionParser.parseExpression(builder)
-            bodyMarker.done(PicatTokenTypes.BODY)
-        } else {
-            // Parse the body using the statement parser's parseBody method
-            statementParser.parseBody(builder)
-
-            // Check for a condition (any rule operator)
-            if (isRuleOperator(builder.tokenType)) {
-                val condOpMarker = builder.mark()
-                builder.advanceLexer()
-                skipWhitespace(builder)
-                condOpMarker.done(PicatTokenTypes.RULE_OPERATOR)
-
-                // Parse the condition using the statement parser's parseBody method
-                statementParser.parseBody(builder)
-            }
-        }
-
-        expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after rule definition")
-        marker.done(PicatTokenTypes.RULE)
-    }
-
-
-    /**
-     * Parses a fact.
-     */
-    fun parseFact(builder: PsiBuilder) {
-        val marker = builder.mark()
-        parseHead(builder)
-
-        expectToken(builder, PicatTokenTypes.DOT, "Expected '.' after fact")
-        marker.done(PicatTokenTypes.FACT)
+        return result
     }
 
     /**

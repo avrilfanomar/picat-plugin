@@ -155,4 +155,139 @@ class PicatModuleParser : PicatBaseParser() {
         marker.done(PicatTokenTypes.USING_STATEMENT)
     }
 
+    // COMPILATION_DIRECTIVE ::= [PRIVATE_KEYWORD] (table_mode | index_mode) EOR
+    fun parseCompilationDirective(builder: PsiBuilder, level: Int): Boolean {
+        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "CompilationDirective")) return false
+
+        val marker = builder.mark()
+        var result = true
+        var pinned = false
+
+        if (builder.tokenType == PicatTokenTypes.PRIVATE_KEYWORD) {
+            builder.advanceLexer()
+        }
+
+        val choiceMarker = builder.mark()
+        if (builder.tokenType == PicatTokenTypes.TABLE_KEYWORD) {
+            result = parseTableMode(builder, level + 1)
+            pinned = true
+            choiceMarker.drop()
+        } else if (builder.tokenType == PicatTokenTypes.INDEX_KEYWORD) {
+            result = parseIndexMode(builder, level + 1)
+            pinned = true
+            choiceMarker.drop()
+        } else {
+            choiceMarker.drop()
+            builder.error("Expected 'table' or 'index' keyword")
+            result = false
+        }
+
+        result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.EOR, "Expected EOR after compilation directive")
+
+        if (result) {
+            marker.done(PicatTokenTypes.COMPILATION_DIRECTIVE)
+        } else {
+            // If pinned and failed, error should have been reported by sub-parser or expectToken
+            // If not pinned and failed (e.g. no table/index keyword), rollback.
+            if (!pinned) marker.rollbackTo() else marker.drop()
+        }
+        return result
+    }
+
+    // TABLE_MODE ::= TABLE_KEYWORD head_reference_list
+    fun parseTableMode(builder: PsiBuilder, level: Int): Boolean {
+        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "TableMode")) return false
+        if (builder.tokenType != PicatTokenTypes.TABLE_KEYWORD) return false
+
+        val marker = builder.mark()
+        var result = PicatParserUtil.expectKeyword(builder, PicatTokenTypes.TABLE_KEYWORD, "Expected 'table'")
+        result = result && parseHeadReferenceList(builder, level + 1)
+
+        if (result) {
+            marker.done(PicatTokenTypes.TABLE_MODE)
+        } else {
+            marker.rollbackTo()
+        }
+        return result
+    }
+
+    // INDEX_MODE ::= INDEX_KEYWORD head_reference_list [indexing_details]
+    fun parseIndexMode(builder: PsiBuilder, level: Int): Boolean {
+        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "IndexMode")) return false
+        if (builder.tokenType != PicatTokenTypes.INDEX_KEYWORD) return false
+
+        val marker = builder.mark()
+        var result = PicatParserUtil.expectKeyword(builder, PicatTokenTypes.INDEX_KEYWORD, "Expected 'index'")
+        result = result && parseHeadReferenceList(builder, level + 1)
+
+        if (builder.tokenType == PicatTokenTypes.LPAR) { // Optional indexing_details
+            result = result && parseIndexingDetails(builder, level + 1)
+        }
+
+        if (result) {
+            marker.done(PicatTokenTypes.INDEX_MODE)
+        } else {
+            marker.rollbackTo()
+        }
+        return result
+    }
+
+    // HEAD_REFERENCE_LIST ::= head_reference ((COMMA | SEMICOLON) head_reference)*
+    fun parseHeadReferenceList(builder: PsiBuilder, level: Int): Boolean {
+        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "HeadReferenceList")) return false
+
+        val marker = builder.mark()
+        var result = parseHeadReference(builder, level + 1)
+
+        while (result && (builder.tokenType == PicatTokenTypes.COMMA || builder.tokenType == PicatTokenTypes.SEMICOLON)) {
+            builder.advanceLexer() // Consume COMMA or SEMICOLON
+            result = result && parseHeadReference(builder, level + 1)
+        }
+
+        if (result) {
+            marker.done(PicatTokenTypes.HEAD_REFERENCE_LIST)
+        } else {
+            marker.rollbackTo()
+        }
+        return result
+    }
+
+    // HEAD_REFERENCE ::= atom ('/' INTEGER)?
+    fun parseHeadReference(builder: PsiBuilder, level: Int): Boolean {
+        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "HeadReference")) return false
+        if (!isAtom(builder.tokenType)) return false // Basic lookahead
+
+        val marker = builder.mark()
+        var result = expressionParser.parseAtom(builder, level + 1) // Assuming parseAtom exists in expressionParser or base
+
+        if (builder.tokenType == PicatTokenTypes.DIVIDE) { // '/'
+            builder.advanceLexer()
+            result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.INTEGER, "Expected integer for arity")
+        }
+
+        if (result) {
+            marker.done(PicatTokenTypes.HEAD_REFERENCE)
+        } else {
+            marker.rollbackTo()
+        }
+        return result
+    }
+
+    // INDEXING_DETAILS ::= LPAR argument_list RPAR
+    fun parseIndexingDetails(builder: PsiBuilder, level: Int): Boolean {
+        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "IndexingDetails")) return false
+        if (builder.tokenType != PicatTokenTypes.LPAR) return false
+
+        val marker = builder.mark()
+        var result = PicatParserUtil.expectToken(builder, PicatTokenTypes.LPAR, "Expected '(' for indexing details")
+        result = result && expressionParser.parseArgumentList(builder, level + 1) // Assuming parseArgumentList in expressionParser
+        result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.RPAR, "Expected ')' after indexing details")
+
+        if (result) {
+            marker.done(PicatTokenTypes.INDEXING_DETAILS)
+        } else {
+            marker.rollbackTo()
+        }
+        return result
+    }
 }
