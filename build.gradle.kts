@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
-    id("io.gitlab.arturbosch.detekt") version "1.23.4" // Detekt for static code analysis
+    id("io.gitlab.arturbosch.detekt") version "1.23.8" // Detekt for static code analysis
     id("info.solidsoft.pitest") version "1.15.0"
 }
 
