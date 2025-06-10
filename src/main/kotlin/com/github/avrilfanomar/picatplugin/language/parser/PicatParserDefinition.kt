@@ -1,9 +1,11 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
-import com.github.avrilfanomar.picatplugin.language.lexer.PicatLexer
+import com.github.avrilfanomar.picatplugin.language.lexer.PicatLexerAdapter // New import
+// import com.github.avrilfanomar.picatplugin.language.lexer.PicatLexer // Remove this
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPsiElementImpl
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes // Added import
+import com.github.avrilfanomar.picatplugin.language.psi.impl.* // Added import for Impl classes
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
@@ -23,10 +25,8 @@ import com.intellij.psi.tree.TokenSet
  * based on the BNF grammar file. This is a placeholder implementation.
  */
 class PicatParserDefinition : ParserDefinition {
-    // Helper for creating PSI elements
-    private val helper = PicatParserDefinitionHelper()
 
-    override fun createLexer(project: Project): Lexer = PicatLexer()
+    override fun createLexer(project: Project): Lexer = PicatLexerAdapter()
 
     override fun createParser(project: Project): PsiParser = PicatParser()
 
@@ -35,20 +35,109 @@ class PicatParserDefinition : ParserDefinition {
     // Updated to directly use PicatTokenTypes for whitespace
     override fun getWhitespaceTokens(): TokenSet = PicatTokenTypes.WHITESPACES
 
-    override fun getCommentTokens(): TokenSet = PicatTokenSets.COMMENTS
+    override fun getCommentTokens(): TokenSet = PicatTokenTypes.COMMENTS
 
-    override fun getStringLiteralElements(): TokenSet = PicatTokenSets.STRINGS
+    override fun getStringLiteralElements(): TokenSet = PicatTokenTypes.STRING_LITERALS
 
     override fun createElement(node: ASTNode): PsiElement {
         val type = node.elementType
-
-        // Group elements by category
-        return when {
-            helper.isRuleElement(type) -> helper.createRuleElement(node)
-            helper.isStatementElement(type) -> helper.createStatementElement(node)
-            helper.isStructureElement(type) -> helper.createStructureElement(node)
-            helper.isLiteralElement(type) -> helper.createLiteralElement(node)
-            else -> PicatPsiElementImpl(node)
+        return when (type) {
+            PicatTokenTypes.PICAT_FILE -> PicatFileImpl(node)
+            PicatTokenTypes.MODULE_NAME -> PicatModuleNameImpl(node)
+            PicatTokenTypes.MODULE_DECLARATION -> PicatModuleDeclarationImpl(node)
+            PicatTokenTypes.END_MODULE_DECLARATION -> PicatEndModuleDeclarationImpl(node)
+            PicatTokenTypes.IMPORT_STATEMENT -> PicatImportStatementImpl(node)
+            PicatTokenTypes.EXPORT_STATEMENT -> PicatExportStatementImpl(node)
+            PicatTokenTypes.INCLUDE_STATEMENT -> PicatIncludeStatementImpl(node)
+            PicatTokenTypes.USING_STATEMENT -> PicatUsingStatementImpl(node)
+            PicatTokenTypes.FUNCTION_BODY -> PicatFunctionBodyImpl(node)
+            PicatTokenTypes.ARGUMENT_LIST -> PicatArgumentListImpl(node)
+            PicatTokenTypes.DIRECTIVE -> PicatDirectiveImpl(node)
+            PicatTokenTypes.EXPRESSION -> PicatExpressionImpl(node)
+            PicatTokenTypes.STRUCTURE -> PicatStructureImpl(node)
+            PicatTokenTypes.LIST_EXPRESSION -> PicatListExpressionImpl(node)
+            PicatTokenTypes.LIST_ELEMENTS -> PicatListElementsImpl(node)
+            PicatTokenTypes.MAP -> PicatMapImpl(node)
+            PicatTokenTypes.MAP_ENTRIES -> PicatMapEntriesImpl(node)
+            PicatTokenTypes.MAP_ENTRY -> PicatMapEntryImpl(node)
+            PicatTokenTypes.TUPLE -> PicatTupleImpl(node)
+            PicatTokenTypes.BODY -> PicatBodyImpl(node)
+            PicatTokenTypes.STATEMENT -> PicatStatementImpl(node)
+            PicatTokenTypes.HEAD -> PicatHeadImpl(node)
+            PicatTokenTypes.GOAL -> PicatGoalImpl(node)
+            PicatTokenTypes.IF_THEN_ELSE -> PicatIfThenElseImpl(node)
+            PicatTokenTypes.FOREACH_LOOP -> PicatForeachLoopImpl(node)
+            PicatTokenTypes.WHILE_LOOP -> PicatWhileLoopImpl(node)
+            PicatTokenTypes.TRY_CATCH -> PicatTryCatchImpl(node)
+            PicatTokenTypes.CASE_EXPRESSION -> PicatCaseExpressionImpl(node)
+            PicatTokenTypes.CASE_ARMS -> PicatCaseArmsImpl(node)
+            PicatTokenTypes.CASE_ARM -> PicatCaseArmImpl(node)
+            PicatTokenTypes.CATCH_CLAUSES -> PicatCatchClausesImpl(node)
+            PicatTokenTypes.CATCH_CLAUSE -> PicatCatchClauseImpl(node)
+            PicatTokenTypes.ELSEIF_CLAUSE -> PicatElseifClauseImpl(node)
+            PicatTokenTypes.PATTERN -> PicatPatternImpl(node)
+            PicatTokenTypes.STRUCTURE_PATTERN -> PicatStructurePatternImpl(node)
+            PicatTokenTypes.LIST_PATTERN -> PicatListPatternImpl(node)
+            PicatTokenTypes.TUPLE_PATTERN -> PicatTuplePatternImpl(node)
+            PicatTokenTypes.PATTERN_LIST -> PicatPatternListImpl(node)
+            PicatTokenTypes.FUNCTION_CALL -> PicatFunctionCallImpl(node)
+            PicatTokenTypes.ATOM_NO_ARGS -> PicatAtomNoArgsImpl(node)
+            PicatTokenTypes.QUALIFIED_ATOM -> PicatQualifiedAtomImpl(node)
+            PicatTokenTypes.RULE_OPERATOR -> PicatRuleOperatorImpl(node)
+            PicatTokenTypes.UNARY_EXPRESSION -> PicatUnaryExpressionImpl(node)
+            PicatTokenTypes.EXPORT_CLAUSE -> PicatExportClauseImpl(node)
+            PicatTokenTypes.IMPORT_CLAUSE -> PicatImportClauseImpl(node)
+            PicatTokenTypes.IMPORT_LIST -> PicatImportListImpl(node)
+            PicatTokenTypes.EXPORT_LIST -> PicatExportListImpl(node)
+            PicatTokenTypes.RENAME_LIST -> PicatRenameListImpl(node)
+            PicatTokenTypes.FOREACH_GENERATORS -> PicatForeachGeneratorsImpl(node)
+            PicatTokenTypes.FOREACH_GENERATOR -> PicatForeachGeneratorImpl(node)
+            PicatTokenTypes.IMPORT_ITEM -> PicatImportItemImpl(node)
+            PicatTokenTypes.FILE_SPEC -> PicatFileSpecImpl(node)
+            PicatTokenTypes.EXPORT_SPEC -> PicatExportSpecImpl(node)
+            PicatTokenTypes.RENAME_SPEC -> PicatRenameSpecImpl(node)
+            PicatTokenTypes.TUPLE_ITEMS -> PicatTupleItemsImpl(node)
+            PicatTokenTypes.ASSIGNMENT -> PicatAssignmentImpl(node)
+            PicatTokenTypes.UNIFICATION -> PicatUnificationImpl(node)
+            PicatTokenTypes.COMPARISON -> PicatComparisonImpl(node)
+            PicatTokenTypes.ARITHMETIC_COMPARISON -> PicatArithmeticComparisonImpl(node)
+            PicatTokenTypes.NEGATION -> PicatNegationImpl(node)
+            PicatTokenTypes.FAIL_GOAL -> PicatFailGoalImpl(node)
+            PicatTokenTypes.PASS_GOAL -> PicatPassGoalImpl(node)
+            PicatTokenTypes.TRUE_GOAL -> PicatTrueGoalImpl(node)
+            PicatTokenTypes.FALSE_GOAL -> PicatFalseGoalImpl(node)
+            PicatTokenTypes.CUT_GOAL -> PicatCutGoalImpl(node)
+            PicatTokenTypes.RETURN_STMT -> PicatReturnStmtImpl(node)
+            PicatTokenTypes.CONTINUE_STMT -> PicatContinueStmtImpl(node)
+            PicatTokenTypes.BREAK_STMT -> PicatBreakStmtImpl(node)
+            PicatTokenTypes.THROW_STMT -> PicatThrowStmtImpl(node)
+            PicatTokenTypes.PROCEDURE_CALL -> PicatProcedureCallImpl(node)
+            PicatTokenTypes.LIST_COMPREHENSION_GOAL -> PicatListComprehensionGoalImpl(node)
+            PicatTokenTypes.PREDICATE_RULE -> PicatPredicateRuleImpl(node)
+            PicatTokenTypes.PREDICATE_FACT -> PicatPredicateFactImpl(node)
+            PicatTokenTypes.FUNCTION_RULE -> PicatFunctionRuleImpl(node)
+            PicatTokenTypes.FUNCTION_FACT -> PicatFunctionFactImpl(node)
+            PicatTokenTypes.ACTOR_DEFINITION -> PicatActorDefinitionImpl(node)
+            PicatTokenTypes.ACTION_RULE -> PicatActionRuleImpl(node)
+            PicatTokenTypes.LOOP_WHILE_STATEMENT -> PicatLoopWhileStatementImpl(node)
+            PicatTokenTypes.DOLLAR_TERM_CONSTRUCTOR -> PicatDollarTermConstructorImpl(node)
+            PicatTokenTypes.INDEX_ACCESS_EXPRESSION -> PicatIndexAccessExpressionImpl(node)
+            PicatTokenTypes.AS_PATTERN_EXPRESSION -> PicatAsPatternExpressionImpl(node)
+            PicatTokenTypes.LAMBDA_EXPRESSION -> PicatLambdaExpressionImpl(node)
+            PicatTokenTypes.VARIABLE_LIST -> PicatVariableListImpl(node)
+            PicatTokenTypes.TERM_CONSTRUCTOR_EXPRESSION -> PicatTermConstructorExpressionImpl(node)
+            PicatTokenTypes.LIST_COMPREHENSION_EXPRESSION -> PicatListComprehensionExpressionImpl(node)
+            PicatTokenTypes.COMPILATION_DIRECTIVE -> PicatCompilationDirectiveImpl(node)
+            PicatTokenTypes.TABLE_MODE -> PicatTableModeImpl(node)
+            PicatTokenTypes.INDEX_MODE -> PicatIndexModeImpl(node)
+            PicatTokenTypes.HEAD_REFERENCE_LIST -> PicatHeadReferenceListImpl(node)
+            PicatTokenTypes.HEAD_REFERENCE -> PicatHeadReferenceImpl(node)
+            PicatTokenTypes.INDEXING_DETAILS -> PicatIndexingDetailsImpl(node)
+            PicatTokenTypes.ACTOR_NAME -> PicatActorNameImpl(node)
+            PicatTokenTypes.ACTOR_MEMBER -> PicatActorMemberImpl(node)
+            PicatTokenTypes.PREDICATE_CLAUSE -> PicatPredicateClauseImpl(node)
+            PicatTokenTypes.FUNCTION_CLAUSE -> PicatFunctionClauseImpl(node)
+            else -> com.intellij.extapi.psi.ASTWrapperPsiElement(node)
         }
     }
 
