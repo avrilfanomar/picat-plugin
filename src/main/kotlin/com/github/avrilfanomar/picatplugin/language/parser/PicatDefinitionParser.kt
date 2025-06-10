@@ -78,80 +78,29 @@ class PicatDefinitionParser : PicatBaseParser() {
 
     // FUNCTION_CLAUSE ::= function_rule | function_fact
     fun parseFunctionClause(builder: PsiBuilder): Boolean { // Removed level
-        // if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "FunctionClause")) return false // Temp removed
-        val marker = builder.mark()
-        // A function clause must start with a head and then an assign operator
-        val headParsed = parseHead(builder) // parseHead now returns boolean
-        if (!headParsed) {
-            marker.rollbackTo()
-            return false
-        }
-        if (builder.tokenType != PicatTokenTypes.ASSIGN_OP) {
-            // This might not be a function clause after all if ASSIGN_OP is missing.
-            // This could indicate an error or that it's a different kind of construct.
-            // For robust parsing, this would require more sophisticated lookahead before even trying parseFunctionClause.
-            // For now, assume if parseHead succeeded but ASSIGN_OP is not next, it's not a function clause.
-            // However, the parser might have already committed to this path.
-            // Let's report error and fail if ASSIGN_OP is not found after a head.
-            builder.error("Expected ':=' after function head")
-            marker.rollbackTo() // Rollback the whole function_clause attempt
-            return false
+        val clauseMarker = builder.mark() // Marker for the whole FUNCTION_CLAUSE
+
+        // Try to parse as a function rule.
+        // parseFunctionRule itself will parse head, assign_op, body, eor
+        // and rollback if it's not a complete valid function rule.
+        if (parseFunctionRule(builder)) {
+            clauseMarker.done(PicatTokenTypes.FUNCTION_CLAUSE)
+            return true
         }
 
-        // At this point, we have a head and an ASSIGN_OP. Try to parse as rule or fact.
-        // The distinction between function_rule and function_fact is often just the complexity of the body/expression.
-        // Let's try parseFunctionRule, then parseFunctionFact.
-        // This implies parseFunctionRule and parseFunctionFact should not re-parse head and ASSIGN_OP.
-        // Refactoring parseFunctionRule/Fact to take a 'headAndAssignOpAlreadyParsed' flag or similar might be needed.
-        // Or, they can expect to parse from head onwards and use rollback.
-
-        // Simplified approach: Assume parseFunctionRule and parseFunctionFact handle parsing from head.
-        // This means the parseHead above was just for lookahead/validation.
-        // This is not efficient. A better way is to pass the parsed head.
-        // For now, let's assume parseFunctionRule/Fact will re-parse or that the initial parseHead was part of a broader lookahead.
-        // Given the current structure, let's re-parse head within rule/fact for simplicity of this diff.
-        // This will be undone by making parseFunctionRule/Fact expect head to be parsed.
-
-        // Revert: parseHead was already done. Now expect ASSIGN_OP and then body/expression.
-        // The previous `parseHead` call was for validation.
-        // The `parseFunctionRule` and `parseFunctionFact` will internally call `parseHead` again.
-        // This is inefficient but avoids restructuring them significantly in this step.
-
-        // Let's assume parseFunctionRule and parseFunctionFact are robust enough.
-        // The initial parseHead and ASSIGN_OP check was more of a guard for this path.
-        // The actual rule/fact parsers will consume these.
-        marker.rollbackTo() // Rollback the marker to before the initial parseHead
-        // Then re-mark and try parsing the full rule or fact.
-        val actualClauseMarker = builder.mark()
-        var result = false
-        if (parseFunctionRule(builder)) { // Removed level
-            result = true
-        } else if (parseFunctionFact(builder)) { // Removed level
-            result = true
-        } else {
-            // If neither specific function rule/fact parsed, it's an error.
-            // The error would be marked by those sub-parsers.
-            actualClauseMarker.drop() // Drop if sub-parsers failed and rolled back.
-            return false // Error already marked by sub-parsers
+        // If not a function rule, try to parse as a function fact.
+        // parseFunctionFact itself will parse head, assign_op, expression, eor
+        // and rollback if it's not a complete valid function fact.
+        if (parseFunctionFact(builder)) {
+            clauseMarker.done(PicatTokenTypes.FUNCTION_CLAUSE)
+            return true
         }
 
-        if (result) {
-            actualClauseMarker.done(PicatTokenTypes.FUNCTION_CLAUSE)
-        } else {
-            actualClauseMarker.rollbackTo() // Should not be reached if sub-parsers handle rollback
-        }
-        return result
+        // If neither parseFunctionRule nor parseFunctionFact succeeded,
+        // then this is not a function clause. Rollback the marker.
+        clauseMarker.rollbackTo()
+        return false
     }
-
-    // Helper to call parseHead and return a boolean, assuming parseHead marks errors internally.
-    // private fun parseHeadAndReturnBool(builder: PsiBuilder): Boolean { // This was a temporary helper.
-    //     val BMM = builder.mark()
-    //     parseHead(builder)
-    //     if (BMM.precede().getCurrentOffset() == builder.currentOffset && builder.tokenType != null /* not EOF */) {
-    //     }
-    //     BMM.drop()
-    //     return true // Placeholder: assume true, rely on parseHead error marking.
-    // }
 
     // PREDICATE_RULE ::= head RULE_OP body EOR
     fun parsePredicateRule(builder: PsiBuilder, level: Int): Boolean { // Keep level if sub-parsers use it
@@ -161,7 +110,13 @@ class PicatDefinitionParser : PicatBaseParser() {
         var result = parseHead(builder) // Changed to use boolean return
         result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.RULE_OP, "Expected rule operator (e.g., :-, =>)")
         result = result && statementParser.parseBody(builder, level + 1) // statementParser methods might take level
-            marker.done(PicatTokenTypes.FUNCTION_CLAUSE)
+        // NOTE: The original code had a syntax error here with marker.done/rollbackTo inside parseBody arguments.
+        // Assuming it meant to be after parseBody.
+        result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.EOR, "Expected EOR after predicate rule body")
+
+
+        if (result) {
+            marker.done(PicatTokenTypes.PREDICATE_RULE)
         } else {
             marker.rollbackTo()
         }
@@ -169,24 +124,19 @@ class PicatDefinitionParser : PicatBaseParser() {
     }
 
     // Helper to call parseHead and return a boolean, assuming parseHead marks errors internally.
+    // This helper seems to be unused or part of a previous refactoring attempt.
+    // For clarity, I'm keeping the parseHead calls directly if they return boolean.
+    // If parseHead needs a wrapper to return boolean, that should be done consistently.
+    // Given parseHead now returns Boolean, this helper parseHeadAndReturnBool is redundant.
+    // Let's assume parseHead is fine and remove/comment out parseHeadAndReturnBool if it's not used.
+    // It appears parsePredicateRule below uses it.
+    // For now, I will keep it as it might be used by other methods not in the diff.
+
     private fun parseHeadAndReturnBool(builder: PsiBuilder): Boolean {
-        val BMM = builder.mark() // Before Marker Marker, not related to BMW :)
-        parseHead(builder)
-        // If parseHead encountered an error and didn't advance, or advanced but marked error,
-        // this logic might need to be smarter, e.g. by checking if builder.currentOffset changed.
-        // For now, assume if parseHead itself marks an error, that's handled.
-        // We can check if an error was marked by parseHead, but that's complex.
-        // Simplest is to assume it works or marks error.
-        // Let's check if it advanced. If not, it's likely a failure.
-        // This is not perfectly robust. A better parseHead would return Boolean.
-        if (BMM.precede().getCurrentOffset() == builder.currentOffset && builder.tokenType != null /* not EOF */) {
-             // If parseHead didn't advance, and we are not at EOF, it might be an issue.
-             // However, parseHead might correctly parse an empty head if allowed by grammar (not typical).
-             // For now, let's assume parseHead advances or marks an error.
-             // BMM.drop() // Drop if we are not making a node from this.
-        }
-        BMM.drop() // We don't want a node from this helper call itself.
-        return true // Placeholder: assume true, rely on parseHead error marking.
+        // This function seems to be a wrapper that doesn't add much value if parseHead itself returns boolean
+        // and handles its own marking.
+        // Let's assume parseHead returns boolean and correctly marks HEAD or errors.
+        return parseHead(builder) // Directly return the result of parseHead
     }
 
     // PREDICATE_RULE ::= head RULE_OP body EOR
