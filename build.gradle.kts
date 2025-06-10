@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.kover) // Gradle Kover Plugin
     id("io.gitlab.arturbosch.detekt") version "1.23.4" // Detekt for static code analysis
     id("info.solidsoft.pitest") version "1.15.0"
+    id("org.jetbrains.grammarkit") version "2022.3.2" // Grammar-Kit plugin
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -133,7 +134,7 @@ kover {
 } // This closes kover {}
 
 // Removing the problematic Grammar-Kit configuration block again to ensure script compiles.
-/*
+
 tasks.withType<org.jetbrains.intellij.platform.gradle.tasks.GenerateParserTask> {
     sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.bnf"))
     targetRootOutputDir.set(layout.buildDirectory.dir("generated/sources/bnf"))
@@ -142,7 +143,6 @@ tasks.withType<org.jetbrains.intellij.platform.gradle.tasks.GenerateParserTask> 
 kotlin {
     sourceSets.main.get().kotlin.srcDir(layout.buildDirectory.dir("generated/sources/bnf/gen"))
 }
-*/
 
 // Configure Detekt - read more: https://detekt.dev/docs/introduction/gradle/
 detekt {
