@@ -1,5 +1,4 @@
 {
-  parserClass="com.github.avrilfanomar.picatplugin.language.parser.PicatParser"
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
   psiClassPrefix="Picat"
