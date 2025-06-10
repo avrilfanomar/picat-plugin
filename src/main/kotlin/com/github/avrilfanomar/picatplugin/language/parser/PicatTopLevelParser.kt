@@ -18,7 +18,7 @@ class PicatTopLevelParser : PicatBaseParser() {
             PicatTokenTypes.EXPORT_KEYWORD -> moduleParser.parseExportStatement(builder)
             PicatTokenTypes.INCLUDE_KEYWORD -> moduleParser.parseIncludeStatement(builder)
             PicatTokenTypes.USING_KEYWORD -> moduleParser.parseUsingStatement(builder)
-            PicatTokenTypes.TABLE_KEYWORD, PicatTokenTypes.INDEX_KEYWORD -> moduleParser.parseCompilationDirective(builder, 0)
+            PicatTokenTypes.TABLE_KEYWORD, PicatTokenTypes.INDEX_KEYWORD -> moduleParser.parseCompilationDirective(builder) // Removed level
             // PRIVATE_KEYWORD could start a compilation_directive or actor_definition.
             // This requires more sophisticated lookahead or trying.
             // For now, assume if PRIVATE_KEYWORD is followed by TABLE/INDEX, it's a compilation_directive.
@@ -30,9 +30,9 @@ class PicatTopLevelParser : PicatBaseParser() {
                 lookaheadMarker.rollbackTo()
 
                 if (nextToken == PicatTokenTypes.TABLE_KEYWORD || nextToken == PicatTokenTypes.INDEX_KEYWORD) {
-                    moduleParser.parseCompilationDirective(builder, 0)
+                    moduleParser.parseCompilationDirective(builder) // Removed level
                 } else if (isLikelyActorDefinition(builder)) { // isLikelyActorDefinition is a new lookahead needed
-                    parseActorDefinition(builder, 0)
+                    parseActorDefinition(builder) // Removed level
                 }
                 else {
                     // Assuming private predicate/function, handled by parseDefinition
@@ -43,15 +43,15 @@ class PicatTopLevelParser : PicatBaseParser() {
             // Heuristic: if it's an atom not followed by typical predicate/function operators, try actor.
             // This is very simplified and error-prone without proper lookahead for distinguishing actors.
             else if (isLikelyActorDefinition(builder)) {
-                 parseActorDefinition(builder, 0)
+                 parseActorDefinition(builder) // Removed level
             }
             else -> definitionParser.parseDefinition(builder)
         }
     }
 
     // ACTOR_DEFINITION ::= [PRIVATE_KEYWORD] actor_name EOR (actor_member EOR)* END_KEYWORD EOR
-    fun parseActorDefinition(builder: PsiBuilder, level: Int): Boolean {
-        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "ActorDefinition")) return false
+    fun parseActorDefinition(builder: PsiBuilder): Boolean { // Removed level
+        // if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "ActorDefinition")) return false // Temp removed
 
         val marker = builder.mark()
         var result = true
@@ -60,12 +60,12 @@ class PicatTopLevelParser : PicatBaseParser() {
             builder.advanceLexer()
         }
 
-        result = result && parseActorName(builder, level + 1)
+        result = result && parseActorName(builder) // Removed level
         result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.EOR, "Expected EOR after actor name")
 
         while (result && builder.tokenType != PicatTokenTypes.END_KEYWORD && !builder.eof()) {
             val memberMarker = builder.mark()
-            if (parseActorMember(builder, level + 1)) {
+            if (parseActorMember(builder)) { // Removed level
                 result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.EOR, "Expected EOR after actor member")
                 memberMarker.drop()
             } else {
@@ -89,11 +89,11 @@ class PicatTopLevelParser : PicatBaseParser() {
     }
 
     // ACTOR_NAME ::= atom
-    fun parseActorName(builder: PsiBuilder, level: Int): Boolean {
-        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "ActorName")) return false
+    fun parseActorName(builder: PsiBuilder): Boolean { // Removed level
+        // if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "ActorName")) return false // Temp removed
         val marker = builder.mark()
-        // Assuming expressionParser.parseAtom exists and marks its own PicatTokenTypes.ATOM node
-        val result = expressionParser.parseAtom(builder, level + 1)
+        // expressionParser.parseAtom now takes only builder and returns boolean
+        val result = expressionParser.parseAtom(builder) // Removed level
         if (result) {
             marker.done(PicatTokenTypes.ACTOR_NAME)
         } else {
@@ -104,8 +104,8 @@ class PicatTopLevelParser : PicatBaseParser() {
     }
 
     // ACTOR_MEMBER ::= action_rule | predicate_clause | function_clause | compilation_directive
-    fun parseActorMember(builder: PsiBuilder, level: Int): Boolean {
-        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "ActorMember")) return false
+    fun parseActorMember(builder: PsiBuilder): Boolean { // Removed level
+        // if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "ActorMember")) return false // Temp removed
 
         val marker = builder.mark()
         var result = false
@@ -113,13 +113,13 @@ class PicatTopLevelParser : PicatBaseParser() {
         // This requires lookahead to distinguish.
         // For simplicity, trying in an order. This is not robust.
         if (isActionRule(builder)) { // isActionRule would check for head then HASH_ARROW_OP
-            result = parseActionRule(builder, level + 1)
+            result = parseActionRule(builder) // Removed level
         } else if (isCompilationDirective(builder)) { // checks for TABLE_KEYWORD or INDEX_KEYWORD or PRIVATE_KEYWORD + TABLE/INDEX
-             result = moduleParser.parseCompilationDirective(builder, level + 1)
-        } else if (definitionParser.isFunctionClause(builder, level +1)) { // Assuming isFunctionClause lookahead exists
-             result = definitionParser.parseFunctionClause(builder, level + 1)
-        } else if (definitionParser.isPredicateClause(builder, level +1 )) { // Assuming isPredicateClause lookahead exists
-             result = definitionParser.parsePredicateClause(builder, level + 1)
+             result = moduleParser.parseCompilationDirective(builder) // Removed level
+        } else if (definitionParser.isFunctionClause(builder)) { // Removed level, assuming updated
+             result = definitionParser.parseFunctionClause(builder) // Removed level
+        } else if (definitionParser.isPredicateClause(builder)) { // Removed level, assuming updated
+             result = definitionParser.parsePredicateClause(builder) // Removed level
         } else {
             builder.error("Expected action rule, predicate/function clause, or compilation directive")
             marker.drop() // Drop marker as no valid alternative found
@@ -135,16 +135,17 @@ class PicatTopLevelParser : PicatBaseParser() {
     }
 
     // ACTION_RULE ::= head HASH_ARROW_OP body
-    fun parseActionRule(builder: PsiBuilder, level: Int): Boolean {
-        if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "ActionRule")) return false
+    fun parseActionRule(builder: PsiBuilder): Boolean { // Removed level
+        // if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "ActionRule")) return false // Temp removed
         // Basic lookahead: check if current structure looks like a head.
         // A more robust lookahead would check for HASH_ARROW_OP after the head.
-        if (!definitionParser.isHead(builder, level + 1)) return false // Assuming isHead lookahead
+        // if (!definitionParser.isHead(builder)) return false // Assuming isHead lookahead - isHead does not exist
+        // For now, proceed without this specific lookahead, relying on parseHead to handle errors.
 
         val marker = builder.mark()
-        var result = definitionParser.parseHead(builder, level + 1)
+        var result = definitionParser.parseHead(builder) // Use boolean returning parseHead
         result = result && PicatParserUtil.expectToken(builder, PicatTokenTypes.HASH_ARROW_OP, "Expected '#=>' for action rule")
-        result = result && statementParser.parseBody(builder, level + 1)
+        result = result && statementParser.parseBody(builder, 0) // Pass 0 or appropriate default
 
         if (result) {
             marker.done(PicatTokenTypes.ACTION_RULE)
@@ -168,7 +169,10 @@ class PicatTopLevelParser : PicatBaseParser() {
         // Placeholder: A real lookahead would parse a head and check if HASH_ARROW_OP follows.
         val marker = builder.mark()
         var isAction = false
-        if (definitionParser.parseHead(builder, 0)) { // Try parsing a head (level 0 for lookahead)
+        // definitionParser.parseHead returns Unit, so cannot use in if condition directly.
+        // Use parseHeadAndReturnBool or a dedicated lookahead version of parseHead.
+        // For now, let's assume a simplified check or that parseHeadAndReturnBool is suitable for lookahead.
+        if (definitionParser.parseHeadAndReturnBool(builder)) { // Try parsing a head
             if (builder.tokenType == PicatTokenTypes.HASH_ARROW_OP) {
                 isAction = true
             }

@@ -116,13 +116,14 @@ class PicatStatementParserHelper : PicatBaseParser() {
         expectKeyword(builder, PicatTokenTypes.WHILE_KEYWORD, "Expected 'while'")
         skipWhitespace(builder)
 
-        expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
-        skipWhitespace(builder)
-        expressionParser.parseExpression(builder)
-        expectToken(builder, PicatTokenTypes.RPAR, "Expected ')'")
+        // BNF: WHILE_KEYWORD expression DO_KEYWORD body END_KEYWORD
+        expressionParser.parseExpression(builder) // Parse the condition expression
         skipWhitespace(builder)
 
-        statementParser.parseBody(builder)
+        expectKeyword(builder, PicatTokenTypes.DO_KEYWORD, "Expected 'do'") // Expect DO_KEYWORD
+        skipWhitespace(builder)
+
+        statementParser.parseBody(builder) // Parse the loop body
         expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
         marker.done(PicatTokenTypes.WHILE_LOOP)
     }
@@ -192,6 +193,15 @@ class PicatStatementParserHelper : PicatBaseParser() {
         skipWhitespace(builder)
 
         parseCatchClauses(builder)
+        skipWhitespace(builder) // Add whitespace skip after catch_clauses
+
+        // Optional FINALLY clause
+        if (builder.tokenType == PicatTokenTypes.FINALLY_KEYWORD) {
+            expectKeyword(builder, PicatTokenTypes.FINALLY_KEYWORD, "Expected 'finally'")
+            skipWhitespace(builder)
+            statementParser.parseBody(builder) // Parse the finally body
+            skipWhitespace(builder)
+        }
 
         expectKeyword(builder, PicatTokenTypes.END_KEYWORD, "Expected 'end'")
         marker.done(PicatTokenTypes.TRY_CATCH)

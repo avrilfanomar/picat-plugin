@@ -11,9 +11,9 @@ import com.intellij.psi.util.PsiTreeUtil
  */
 class PicatStructureImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatStructure {
     /**
-     * Returns the identifier of the structure.
+     * Returns the identifier (functor) of the structure.
      */
-    override fun getIdentifier(): PicatIdentifier? {
+    override fun getFunctor(): PicatIdentifier? { // Renamed from getIdentifier
         return PsiTreeUtil.getChildOfType(this, PicatIdentifier::class.java)
     }
 
@@ -28,13 +28,13 @@ class PicatStructureImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatStruct
      * Returns the name of the structure.
      */
     override fun getName(): String? {
-        // Try to get the name from the identifier
-        val identifier = getIdentifier()
-        if (identifier != null) {
-            return identifier.getName()
+        // Try to get the name from the functor
+        val functor = getFunctor()
+        if (functor != null) {
+            return functor.name // Assuming PicatIdentifier has a 'name' property or getName()
         }
 
-        // If identifier is null, try to extract the name from the text
+        // Fallback if functor is null (should not happen in a valid structure)
         val text = text
         val openParenIndex = text.indexOf('(')
         return if (openParenIndex > 0) {

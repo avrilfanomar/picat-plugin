@@ -40,13 +40,19 @@ abstract class PicatBaseParser : PicatParserComponent {
         if (PicatTokenTypes.DATA_CONSTRUCTOR == builder.tokenType) {
             builder.advanceLexer()
         }
-        if (isQualifiedAtom(builder)) {
-            parseQualifiedAtom(builder)
-        }
-        if (isAtom(builder.tokenType)) {
+        // Functor part:
+        if (isQualifiedAtom(builder)) { // isQualifiedAtom is a lookahead method
+            parseQualifiedAtom(builder) // This internal one creates ATOM_NO_ARGS for the qualified atom.
+                                        // This is different from PicatExpressionParser's parseQualifiedAtom.
+                                        // For now, accepting this local behavior to minimize widespread changes.
+        } else if (isAtom(builder.tokenType)) { // isAtom is a lookahead
             val atomMarker = builder.mark()
-            builder.advanceLexer()
-            atomMarker.done(PicatTokenTypes.ATOM)
+            val atomType = builder.tokenType // Capture IDENTIFIER or QUOTED_ATOM
+            builder.advanceLexer()      // Consume the atom
+            atomMarker.done(atomType!!) // Mark this atom with its actual token type (IDENTIFIER or QUOTED_ATOM) - ensure non-null
+        } else {
+            // If isStructure() passed, we should have an atom or qualified_atom here.
+            builder.error("Expected atom or qualified atom for structure functor")
         }
         skipWhitespace(builder)
         expectToken(builder, PicatTokenTypes.LPAR, "Expected '('")
@@ -106,19 +112,14 @@ abstract class PicatBaseParser : PicatParserComponent {
         val marker = builder.mark()
 
         // Parse first argument
-        val argMarker = builder.mark()
-        expressionParser.parseExpression(builder)
-        argMarker.done(PicatTokenTypes.ARGUMENT)
+        expressionParser.parseExpression(builder) // Each argument is an expression
         skipWhitespace(builder)
 
         // Parse additional arguments
         while (builder.tokenType == PicatTokenTypes.COMMA) {
             builder.advanceLexer()
             skipWhitespace(builder)
-
-            val nextArgMarker = builder.mark()
-            expressionParser.parseExpression(builder)
-            nextArgMarker.done(PicatTokenTypes.ARGUMENT)
+            expressionParser.parseExpression(builder) // Each argument is an expression
             skipWhitespace(builder)
         }
 
@@ -126,32 +127,37 @@ abstract class PicatBaseParser : PicatParserComponent {
     }
 
     // Structure checking methods
+    // Checks if current position looks like 'atom LPAR'
     protected fun isStructure(builder: PsiBuilder): Boolean {
         val marker = builder.mark()
         var result = false
 
-        if (isAtom(builder.tokenType)) {
-            builder.advanceLexer()
-            result = builder.tokenType == PicatTokenTypes.LPAR
+        if (isAtom(builder.tokenType)) { // Check for atom
+            builder.advanceLexer() // Temporarily consume atom
+            skipWhitespace(builder) // Skip any whitespace
+            result = builder.tokenType == PicatTokenTypes.LPAR // Check for LPAR
         }
 
-        marker.rollbackTo()
+        marker.rollbackTo() // IMPORTANT: Rollback any consumed tokens
         return result
     }
 
+    // Checks if current position looks like 'atom DOT atom' (or DOT_OP)
+    // This should align with PicatExpressionParser's isQualifiedAtomLookahead
     protected fun isQualifiedAtom(builder: PsiBuilder): Boolean {
         val marker = builder.mark()
         var result = false
 
         if (isAtom(builder.tokenType)) {
-            builder.advanceLexer()
-            if (builder.tokenType == PicatTokenTypes.DOT) {
-                builder.advanceLexer()
-                result = isAtom(builder.tokenType)
+            builder.advanceLexer() // Temporarily consume first atom
+            skipWhitespace(builder)
+            if (builder.tokenType == PicatTokenTypes.DOT_OP) { // Should be DOT_OP
+                builder.advanceLexer() // Temporarily consume DOT_OP
+                skipWhitespace(builder)
+                result = isAtom(builder.tokenType) // Check for second atom
             }
         }
-
-        marker.rollbackTo()
+        marker.rollbackTo() // IMPORTANT: Rollback any consumed tokens
         return result
     }
 

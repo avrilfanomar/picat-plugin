@@ -1,25 +1,31 @@
 package com.github.avrilfanomar.picatplugin.language.psi.impl
 
+import com.github.avrilfanomar.picatplugin.language.psi.PicatBody
+import com.github.avrilfanomar.picatplugin.language.psi.PicatExpression
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
-/**
- * Implementation of the PicatWhileLoop interface.
- */
 class PicatWhileLoopImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatWhileLoop {
-    /**
-     * Returns the condition of the while loop.
-     */
-    override fun getCondition(): PsiElement? {
+
+    override fun getWhileKeyword(): PsiElement? {
+        return findChildByType(PicatTokenTypes.WHILE_KEYWORD)
+    }
+
+    override fun getCondition(): PicatExpression? {
         return findChildByType(PicatTokenTypes.EXPRESSION)
     }
 
-    /**
-     * Returns the body of the while loop.
-     */
-    override fun getBody(): PsiElement? {
+    override fun getDoKeyword(): PsiElement? {
+        return findChildByType(PicatTokenTypes.DO_KEYWORD)
+    }
+
+    override fun getBody(): PicatBody? {
         return findChildByType(PicatTokenTypes.BODY)
+    }
+
+    override fun getEndKeyword(): PsiElement? {
+        return findChildByType(PicatTokenTypes.END_KEYWORD)
     }
 }

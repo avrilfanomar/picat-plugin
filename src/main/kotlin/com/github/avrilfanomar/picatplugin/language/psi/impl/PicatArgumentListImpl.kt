@@ -1,7 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.psi.impl
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatArgument
 import com.github.avrilfanomar.picatplugin.language.psi.PicatArgumentList
+import com.github.avrilfanomar.picatplugin.language.psi.PicatExpression // Import PicatExpression
 import com.intellij.lang.ASTNode
 import com.intellij.psi.util.PsiTreeUtil
 
@@ -10,9 +10,10 @@ import com.intellij.psi.util.PsiTreeUtil
  */
 class PicatArgumentListImpl(node: ASTNode) : PicatPsiElementImpl(node), PicatArgumentList {
     /**
-     * Returns the arguments in the list.
+     * Returns the arguments (expressions) in the list.
      */
-    override fun getArguments(): List<PicatArgument> {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatArgument::class.java)
+    override fun getArguments(): List<PicatExpression> {
+        // The parser now makes EXPRESSION elements direct children of ARGUMENT_LIST.
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatExpression::class.java)
     }
 }

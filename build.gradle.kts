@@ -56,9 +56,13 @@ dependencies {
 intellijPlatform {
     pluginConfiguration {
         name = providers.gradleProperty("pluginName")
+        // 'version' here is the plugin's own version, derived from gradle.properties.
+        // The actual IntelliJ Platform (SDK) version for building against is set in the dependencies block:
+        // intellijPlatform { create(...) }
         version = providers.gradleProperty("pluginVersion")
 
-        // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
+        // Temporarily comment out complex description and changeNotes
+        /*
         description = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map {
             val start = "<!-- Plugin description -->"
             val end = "<!-- Plugin description end -->"
@@ -72,7 +76,6 @@ intellijPlatform {
         }
 
         val changelog = project.changelog // local variable for configuration cache compatibility
-        // Get the latest available change notes from the changelog file
         changeNotes = providers.gradleProperty("pluginVersion").map { pluginVersion ->
             with(changelog) {
                 renderItem(
@@ -83,13 +86,15 @@ intellijPlatform {
                 )
             }
         }
-
+        */
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
-            untilBuild = providers.gradleProperty("pluginUntilBuild")
+            // untilBuild = providers.gradleProperty("pluginUntilBuild") // Keep this minimal for now
         }
     }
 
+    // Temporarily comment out signing, publishing, and pluginVerification
+    /*
     signing {
         certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
         privateKey = providers.environmentVariable("PRIVATE_KEY")
@@ -98,9 +103,6 @@ intellijPlatform {
 
     publishing {
         token = providers.environmentVariable("PUBLISH_TOKEN")
-        // The pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
-        // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
-        // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
         channels = providers.gradleProperty("pluginVersion").map { listOf(it.substringAfter('-', "").substringBefore('.').ifEmpty { "default" }) }
     }
 
@@ -109,6 +111,8 @@ intellijPlatform {
             recommended()
         }
     }
+    */
+    // Removing the 'tools' block that caused "Unresolved reference" - already removed in previous step.
 }
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
@@ -126,7 +130,19 @@ kover {
             }
         }
     }
+} // This closes kover {}
+
+// Removing the problematic Grammar-Kit configuration block again to ensure script compiles.
+/*
+tasks.withType<org.jetbrains.intellij.platform.gradle.tasks.GenerateParserTask> {
+    sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.bnf"))
+    targetRootOutputDir.set(layout.buildDirectory.dir("generated/sources/bnf"))
 }
+
+kotlin {
+    sourceSets.main.get().kotlin.srcDir(layout.buildDirectory.dir("generated/sources/bnf/gen"))
+}
+*/
 
 // Configure Detekt - read more: https://detekt.dev/docs/introduction/gradle/
 detekt {

@@ -4,15 +4,12 @@ import com.intellij.psi.PsiElement
 
 /**
  * Interface for Picat while loop PSI element.
+ * Represents: WHILE_KEYWORD expression DO_KEYWORD body END_KEYWORD
  */
 interface PicatWhileLoop : PicatPsiElement {
-    /**
-     * Returns the condition of the while loop.
-     */
-    fun getCondition(): PsiElement?
-
-    /**
-     * Returns the body of the while loop.
-     */
-    fun getBody(): PsiElement?
+    fun getWhileKeyword(): PsiElement?
+    fun getCondition(): PicatExpression?
+    fun getDoKeyword(): PsiElement?
+    fun getBody(): PicatBody?
+    fun getEndKeyword(): PsiElement?
 }
