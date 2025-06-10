@@ -135,7 +135,7 @@ kover {
 
 // Removing the problematic Grammar-Kit configuration block again to ensure script compiles.
 
-tasks.withType<org.jetbrains.intellij.platform.gradle.tasks.GenerateParserTask> {
+tasks.withType<org.jetbrains.grammarkit.tasks.GenerateParserTask> {
     sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.bnf"))
     targetRootOutputDir.set(layout.buildDirectory.dir("generated/sources/bnf"))
 }
@@ -150,10 +150,6 @@ detekt {
     allRules = false // activate all available (even unstable) rules
     config.setFrom(files("$projectDir/config/detekt.yml")) // point to your custom config defining rules to run, overwriting default behavior
     baseline = file("$projectDir/config/baseline.xml") // a way of suppressing issues before introducing detekt
-
-    reports {
-        html.required.set(true) // observe findings in your browser with structure and code snippets
-    }
 }
 
 // Configure Pitest for mutation testing - read more: https://pitest.org/
