@@ -45,7 +45,8 @@ class PicatBlockHelper {
      * Checks if the element is part of a list comprehension but not a bracket or pipe.
      */
     fun isListComprehensionNonBracketOrPipe(parentType: IElementType?, elementType: IElementType?): Boolean {
-        return parentType == PicatTokenTypes.LIST_COMPREHENSION &&
+        return (parentType == PicatTokenTypes.LIST_COMPREHENSION_GOAL ||
+                parentType == PicatTokenTypes.LIST_COMPREHENSION_EXPRESSION) &&
                 elementType != PicatTokenTypes.LBRACKET &&
                 elementType != PicatTokenTypes.RBRACKET &&
                 elementType != PicatTokenTypes.PIPE
@@ -55,7 +56,8 @@ class PicatBlockHelper {
      * Checks if the element is a rule body or statement based on parent and grandparent types.
      */
     fun isRuleBodyOrStatement(parentType: IElementType?, grandParentType: IElementType?): Boolean {
-        return (parentType == PicatTokenTypes.BODY && grandParentType == PicatTokenTypes.RULE)
+        return (parentType == PicatTokenTypes.BODY &&
+                (grandParentType == PicatTokenTypes.PREDICATE_RULE || grandParentType == PicatTokenTypes.FUNCTION_RULE))
     }
 
     /**
@@ -66,10 +68,13 @@ class PicatBlockHelper {
         grandParentType: IElementType?,
         greatGrandParentType: IElementType?
     ): Boolean {
-        return (parentType == PicatTokenTypes.STATEMENT && 
-                (grandParentType == PicatTokenTypes.BODY || grandParentType == PicatTokenTypes.RULE) &&
-                (greatGrandParentType == PicatTokenTypes.RULE || 
-                 greatGrandParentType == PicatTokenTypes.STATEMENT))
+        return (parentType == PicatTokenTypes.STATEMENT &&
+                (grandParentType == PicatTokenTypes.BODY ||
+                        grandParentType == PicatTokenTypes.PREDICATE_RULE ||
+                        grandParentType == PicatTokenTypes.FUNCTION_RULE) &&
+                (greatGrandParentType == PicatTokenTypes.PREDICATE_RULE ||
+                        greatGrandParentType == PicatTokenTypes.FUNCTION_RULE ||
+                        greatGrandParentType == PicatTokenTypes.STATEMENT))
     }
 
     /**
@@ -92,7 +97,7 @@ class PicatBlockHelper {
      * Checks if the element is a list element that should be indented.
      */
     fun shouldIndentListElements(elementType: IElementType?, parentType: IElementType?): Boolean {
-        return parentType == PicatTokenTypes.LIST &&
+        return parentType == PicatTokenTypes.LIST_EXPRESSION &&
                 elementType != PicatTokenTypes.LBRACKET &&
                 elementType != PicatTokenTypes.RBRACKET
     }

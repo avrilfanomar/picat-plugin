@@ -70,7 +70,7 @@ class PicatBlockFactory(
     private fun createSharedAlignment(nodeType: IElementType): Alignment? {
         return when (nodeType) {
             PicatTokenTypes.BODY -> Alignment.createAlignment(true)
-            PicatTokenTypes.LIST,
+            PicatTokenTypes.LIST_EXPRESSION,
             PicatTokenTypes.FUNCTION_CALL -> Alignment.createAlignment(true)
 
             else -> null
@@ -82,7 +82,7 @@ class PicatBlockFactory(
      */
     private fun createSharedWrap(nodeType: IElementType): Wrap? {
         return when (nodeType) {
-            PicatTokenTypes.LIST,
+            PicatTokenTypes.LIST_EXPRESSION,
             PicatTokenTypes.FUNCTION_CALL -> Wrap.createWrap(WrapType.CHOP_DOWN_IF_LONG, true)
 
             else -> null
@@ -129,7 +129,7 @@ class PicatBlockFactory(
      * Checks if the node is a list element (not a bracket).
      */
     private fun isListElement(nodeType: IElementType, childType: IElementType): Boolean {
-        return nodeType == PicatTokenTypes.LIST &&
+        return nodeType == PicatTokenTypes.LIST_EXPRESSION &&
                 childType != PicatTokenTypes.LBRACKET &&
                 childType != PicatTokenTypes.RBRACKET
     }
@@ -147,7 +147,9 @@ class PicatBlockFactory(
      * Checks if the node is a statement in a rule body.
      */
     private fun isRuleBodyStatement(nodeType: IElementType, childType: IElementType): Boolean {
-        return (nodeType == PicatTokenTypes.BODY || nodeType == PicatTokenTypes.RULE) &&
+        return (nodeType == PicatTokenTypes.BODY ||
+                nodeType == PicatTokenTypes.PREDICATE_RULE ||
+                nodeType == PicatTokenTypes.FUNCTION_RULE) &&
                 (childType == PicatTokenTypes.STATEMENT || childType == PicatTokenTypes.COMMENT)
     }
 }

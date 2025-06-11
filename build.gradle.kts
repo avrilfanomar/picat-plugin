@@ -135,13 +135,58 @@ kover {
 
 // Removing the problematic Grammar-Kit configuration block again to ensure script compiles.
 
+/*
+tasks.withType<org.jetbrains.grammarkit.tasks.GenerateLexerTask> {
+    sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.bnf")) // Pointing to BNF, speculative
+    // Corrected property name and added targetFile
+    targetOutputDir.set(layout.buildDirectory.dir("generated/sources/bnf/gen"))
+    // Attempting to provide a File object directly
+    targetFile.set(layout.buildDirectory.file("generated/sources/bnf/gen/com/github/avrilfanomar/picatplugin/parser/_PicatLexer.java").get().asFile)
+}
+import java.io.File // Ensure File is imported
+
+// Ensure the entire tasks.withType<org.jetbrains.grammarkit.tasks.GenerateLexerTask> { ... } block is commented out or completely removed.
+/*
+tasks.withType<org.jetbrains.grammarkit.tasks.GenerateLexerTask> {
+    sourceFile.set(layout.projectDirectory.file("src/main/grammars/NonExistent.flex")) // Intentionally non-existent
+    val lexerOutputDir = layout.buildDirectory.dir("generated/sources/grammarkit/lexer")
+    targetOutputDir.set(lexerOutputDir)
+    targetFile.set(lexerOutputDir.map { it.file("_PicatLexer.java") })
+}
+*/
+
+// Ensure any global grammarkit { ... } block is completely removed or commented out.
+/*
+grammarkit {
+    // ... previous global configuration ...
+}
+*/
+
 tasks.withType<org.jetbrains.grammarkit.tasks.GenerateParserTask> {
     sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.bnf"))
-    targetRootOutputDir.set(layout.buildDirectory.dir("generated/sources/bnf"))
+
+    // Point targetRootOutputDir directly to the 'gen' directory.
+    val genDir = layout.buildDirectory.dir("generated/sources/grammarkit/gen")
+    targetRootOutputDir.set(genDir)
+
+    val basePackagePath = "com/github/avrilfanomar/picatplugin/language"
+    val relativeParserPathString = "$basePackagePath/parser/PicatParser.java"
+    val relativePsiPathString = "$basePackagePath/psi"
+
+    // These paths are relative to the 'gen' directory that GrammarKit creates within targetRootOutputDir.
+    pathToParser.set(relativeParserPathString)
+    pathToPsiRoot.set(relativePsiPathString)
+
+    // Explicitly define parserFile and psiDir by resolving from targetRootOutputDir + "gen" + relative paths.
+    // We use .map to correctly transform Provider<Directory> to Provider<RegularFile> and Provider<Directory>.
+    // 'it' inside .map { } is a org.gradle.api.file.Directory object from the genDir Provider.
+    parserFile.set(genDir.map { it.file(relativeParserPathString) })
+    psiDir.set(genDir.map { it.dir(relativePsiPathString) })
 }
 
 kotlin {
-    sourceSets.main.get().kotlin.srcDir(layout.buildDirectory.dir("generated/sources/bnf/gen"))
+    // This path must exactly match where the .kt and .java files are generated.
+    sourceSets.main.get().kotlin.srcDir(layout.buildDirectory.dir("generated/sources/grammarkit/gen"))
 }
 
 // Configure Detekt - read more: https://detekt.dev/docs/introduction/gradle/

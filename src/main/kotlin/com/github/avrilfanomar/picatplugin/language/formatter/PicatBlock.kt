@@ -96,11 +96,12 @@ class PicatBlock(
             indent = Indent.getNormalIndent()
         }
         // Handle statements after rule operators
-        else if (parentType == PicatTokenTypes.STATEMENT && grandParentType == PicatTokenTypes.RULE) {
+        else if (parentType == PicatTokenTypes.STATEMENT &&
+            (grandParentType == PicatTokenTypes.PREDICATE_RULE || grandParentType == PicatTokenTypes.FUNCTION_RULE)) {
             indent = Indent.getNormalIndent()
         }
         // Handle elements after rule operators
-        else if (parentType == PicatTokenTypes.RULE) {
+        else if (parentType == PicatTokenTypes.PREDICATE_RULE || parentType == PicatTokenTypes.FUNCTION_RULE) {
             indent = Indent.getNormalIndent()
         }
         // Default to no indentation
@@ -129,7 +130,7 @@ class PicatBlock(
             indent = Indent.getNormalIndent()
         }
         // Enhanced indentation for list comprehension
-        else if (elementType == PicatTokenTypes.LIST_COMPREHENSION) {
+        else if (elementType == PicatTokenTypes.LIST_COMPREHENSION_GOAL || elementType == PicatTokenTypes.LIST_COMPREHENSION_EXPRESSION) {
             indent = Indent.getNormalIndent()
         }
         // Proper indentation for function calls
@@ -137,7 +138,7 @@ class PicatBlock(
             indent = Indent.getNormalIndent()
         }
         // Consistent indentation for lists
-        else if (elementType == PicatTokenTypes.LIST) {
+        else if (elementType == PicatTokenTypes.LIST_EXPRESSION) {
             indent = Indent.getNormalIndent()
         }
         // Appropriate indentation for expressions
@@ -145,7 +146,7 @@ class PicatBlock(
             indent = Indent.getNormalIndent()
         }
         // Indent rule bodies
-        else if (elementType == PicatTokenTypes.RULE) {
+        else if (elementType == PicatTokenTypes.PREDICATE_RULE || elementType == PicatTokenTypes.FUNCTION_RULE) {
             indent = Indent.getNormalIndent()
         }
         // Default to no indentation

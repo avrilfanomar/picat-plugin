@@ -26,22 +26,22 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
 
         // Constraint rule operators (#=>, #<=>)
         val CONSTRAINT_RULE_OPERATORS = TokenSet.create(
-            PicatTokenTypes.CONSTRAINT_IMPL,
-            PicatTokenTypes.CONSTRAINT_EQUIV
+            PicatTokenTypes.HASH_ARROW_OP, // Replaced CONSTRAINT_IMPL
+            PicatTokenTypes.HASH_BICONDITIONAL_OP // Replaced CONSTRAINT_EQUIV
         )
 
         // Assignment operators (=, :=)
         val ASSIGNMENT_OPERATORS = TokenSet.create(
             PicatTokenTypes.ASSIGN_OP,
-            PicatTokenTypes.ASSIGN_ONCE,
+            // PicatTokenTypes.ASSIGN_ONCE, // Removed
             PicatTokenTypes.EQUAL
         )
 
         // Logical operators (&&, ||, !)
         val LOGICAL_OPERATORS = TokenSet.create(
-            PicatTokenTypes.AND,
-            PicatTokenTypes.OR,
-            PicatTokenTypes.NOT
+            PicatTokenTypes.AND_KEYWORD, // Replaced AND
+            PicatTokenTypes.OR_KEYWORD,  // Replaced OR
+            PicatTokenTypes.NOT_KEYWORD  // Replaced NOT
         )
 
         // Equality operators (==, !=, ===, !==)
@@ -57,7 +57,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             PicatTokenTypes.LESS,
             PicatTokenTypes.GREATER,
             PicatTokenTypes.LESS_EQUAL,
-            PicatTokenTypes.LESS_EQUAL_ALT,
+            // PicatTokenTypes.LESS_EQUAL_ALT, // Removed
             PicatTokenTypes.GREATER_EQUAL
         )
 
@@ -73,38 +73,28 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             PicatTokenTypes.MULTIPLY,
             PicatTokenTypes.DIVIDE,
             PicatTokenTypes.INT_DIVIDE,
-            PicatTokenTypes.MODULO,
-            PicatTokenTypes.MOD_KEYWORD
+            PicatTokenTypes.MOD_KEYWORD, // Used MOD_KEYWORD, removed MODULO
+            PicatTokenTypes.REM_KEYWORD // Added REM_KEYWORD as it's similar to mod
         )
 
         // Constraint operators (#=, #!=, etc.)
+        // Kept existing hash operators, removed others
         val CONSTRAINT_OPERATORS = TokenSet.create(
-            PicatTokenTypes.CONSTRAINT_EQ,
-            PicatTokenTypes.CONSTRAINT_NEQ,
-            PicatTokenTypes.CONSTRAINT_LT,
-            PicatTokenTypes.CONSTRAINT_LE,
-            PicatTokenTypes.CONSTRAINT_LE_ALT,
-            PicatTokenTypes.CONSTRAINT_GT,
-            PicatTokenTypes.CONSTRAINT_GE,
-            PicatTokenTypes.CONSTRAINT_NOT,
-            PicatTokenTypes.CONSTRAINT_AND,
-            PicatTokenTypes.CONSTRAINT_OR,
-            PicatTokenTypes.CONSTRAINT_XOR
+            PicatTokenTypes.HASH_AND_OP,    // Replaced CONSTRAINT_AND
+            PicatTokenTypes.HASH_OR_OP,     // Replaced CONSTRAINT_OR
+            PicatTokenTypes.HASH_CARET_OP,  // Replaced CONSTRAINT_XOR
+            PicatTokenTypes.HASH_TILDE_OP   // Replaced CONSTRAINT_NOT
+            // Removed: CONSTRAINT_EQ, CONSTRAINT_NEQ, CONSTRAINT_LT, CONSTRAINT_LE,
+            // CONSTRAINT_LE_ALT, CONSTRAINT_GT, CONSTRAINT_GE
         )
 
-        // Term comparison operators (@<, @=<, etc.)
-        val TERM_COMPARISON_OPERATORS = TokenSet.create(
-            PicatTokenTypes.TERM_LT,
-            PicatTokenTypes.TERM_LE,
-            PicatTokenTypes.TERM_LE_ALT,
-            PicatTokenTypes.TERM_GT,
-            PicatTokenTypes.TERM_GE
-        )
+        // Term comparison operators (@<, @=<, etc.) - Removed as not defined
+        val TERM_COMPARISON_OPERATORS = TokenSet.EMPTY
 
         // Bitwise operators (/\, \/, <<, >>)
         val BITWISE_OPERATORS = TokenSet.create(
-            PicatTokenTypes.BITWISE_AND,
-            PicatTokenTypes.BITWISE_OR,
+            PicatTokenTypes.AMPERSAND,    // Replaced BITWISE_AND
+            PicatTokenTypes.PIPE,         // Replaced BITWISE_OR
             PicatTokenTypes.SHIFT_LEFT,
             PicatTokenTypes.SHIFT_RIGHT
         )
@@ -155,9 +145,9 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .around(ASSIGNMENT_OPERATORS)
             .spaces(1)
 
-            // Ensure proper spacing around operators in expressions
-            .around(PicatTokenTypes.OPERATOR)
-            .spaces(1)
+            // Ensure proper spacing around operators in expressions - Removed generic OPERATOR
+            // .around(PicatTokenTypes.OPERATOR)
+            // .spaces(1)
 
             // Logical operators (&&, ||, !)
             .around(LOGICAL_OPERATORS)
@@ -198,20 +188,20 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             // Constraint rule operators (#=>, #<=>)
             .around(CONSTRAINT_RULE_OPERATORS)
             .spaces(1)
-            .after(CONSTRAINT_RULE_OPERATORS)
-            .spacing(1, 1, 0, true, 1)
+            // .after(CONSTRAINT_RULE_OPERATORS) // Removed potentially problematic spacing
+            // .spacing(1, 1, 0, true, 1)
 
-            // Term comparison operators (@<, @=<, etc.)
-            .around(TERM_COMPARISON_OPERATORS)
-            .spaces(1)
+            // Term comparison operators (@<, @=<, etc.) - Rule removed as TokenSet is empty
+            // .around(TERM_COMPARISON_OPERATORS)
+            // .spaces(1)
 
             // Range operator (..)
-            .around(PicatTokenTypes.RANGE)
+            .around(PicatTokenTypes.RANGE_OP) // Replaced RANGE
             .spaces(1)
 
             // Type constraint operator (::)
-            .around(PicatTokenTypes.TYPE_CONSTRAINT)
-            .spaces(1)
+            .around(PicatTokenTypes.COLON) // Replaced TYPE_CONSTRAINT with COLON
+            .spaces(1) // This might need adjustment if it adds too many spaces for single colon
 
             // Bitwise operators (/\, \/, <<, >>)
             .around(BITWISE_OPERATORS)
