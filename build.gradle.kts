@@ -12,7 +12,7 @@ plugins {
     alias(libs.plugins.kover) // Gradle Kover Plugin
     id("io.gitlab.arturbosch.detekt") version "1.23.4" // Detekt for static code analysis
     id("info.solidsoft.pitest") version "1.15.0"
-    id("org.jetbrains.grammarkit") version "2022.3.2" // Grammar-Kit plugin
+    id("org.jetbrains.grammarkit") version "2022.3.2.2" // Grammar-Kit plugin
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -137,13 +137,16 @@ kover {
 grammarKit {
 }
 
-val genDir = layout.buildDirectory.dir("/generated/sources/grammarkit/gen")
-val basePackagePath = "/com/github/avrilfanomar/picatplugin/language"
+val genDir = layout.buildDirectory.dir("generated/sources/grammarkit/gen")
+// Remove leading slash to make paths relative to targetRootOutputDir
+val basePackagePath = "com/github/avrilfanomar/picatplugin/language"
 
 tasks.withType<GenerateParserTask>().configureEach {
-    sourceFile.set(layout.projectDirectory.file("/src/main/grammars/Picat.bnf"))
-    targetRootOutputDir.set(genDir)
+    sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.bnf"))
+    targetRootOutputDir.set(genDir) // genDir is layout.buildDirectory.dir("/generated/sources/grammarkit/gen")
 
+    // basePackagePath is "com/github/avrilfanomar/picatplugin/language" (no leading slash)
+    // pathToParser and pathToPsiRoot are relative paths under targetRootOutputDir.
     pathToParser.set("$basePackagePath/parser/PicatParser.java")
     pathToPsiRoot.set("$basePackagePath/psi")
 }
