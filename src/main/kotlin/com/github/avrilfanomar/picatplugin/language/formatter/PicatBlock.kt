@@ -64,7 +64,7 @@ class PicatBlock(
         var indent: Indent?
 
         // Handle whitespace indentation
-        if (elementType == PicatTokenTypes.WHITE_SPACE) {
+        if (elementType == com.intellij.psi.TokenType.WHITE_SPACE) { // Use standard TokenType.WHITE_SPACE
             indent = Indent.getNoneIndent()
         }
         // Handle rule body indentation
@@ -130,7 +130,9 @@ class PicatBlock(
             indent = Indent.getNormalIndent()
         }
         // Enhanced indentation for list comprehension
-        else if (elementType == PicatTokenTypes.LIST_COMPREHENSION_GOAL || elementType == PicatTokenTypes.LIST_COMPREHENSION_EXPRESSION) {
+        else if (elementType == PicatTokenTypes.LIST_COMPREHENSION_GOAL ||
+            elementType == PicatTokenTypes.LIST_COMPREHENSION_EXPRESSION
+        ) {
             indent = Indent.getNormalIndent()
         }
         // Proper indentation for function calls
