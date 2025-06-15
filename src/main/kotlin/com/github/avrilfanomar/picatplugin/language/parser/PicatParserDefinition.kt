@@ -1,105 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
-import com.github.avrilfanomar.picatplugin.language.lexer.PicatLexerAdapter // New import
-// import com.github.avrilfanomar.picatplugin.language.lexer.PicatLexer // Remove this
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes // Added import
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatActionRuleImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatActorDefinitionImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatActorMemberImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatActorNameImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatArgumentListImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatArithmeticComparisonImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatAsPatternExpressionImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatAssignmentImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatAtomNoArgsImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatBodyImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatBreakStmtImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatCaseArmImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatCaseArmsImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatCaseExpressionImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatCatchClauseImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatCatchClausesImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatComparisonImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatCompilationDirectiveImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatContinueStmtImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatCutGoalImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatDirectiveImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatDollarTermConstructorImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatElseifClauseImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatEndModuleDeclarationImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExportClauseImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExportListImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExportSpecImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExportStatementImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExpressionImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFailGoalImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFalseGoalImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileSpecImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatForeachGeneratorImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatForeachGeneratorsImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatForeachLoopImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFunctionBodyImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFunctionCallImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFunctionClauseImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFunctionFactImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFunctionRuleImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatGoalImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatHeadImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatHeadReferenceImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatHeadReferenceListImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatIfThenElseImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatImportClauseImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatImportItemImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatImportListImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatImportStatementImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatIncludeStatementImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatIndexAccessExpressionImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatIndexModeImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatIndexingDetailsImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatLambdaExpressionImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListComprehensionExpressionImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListComprehensionGoalImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListElementsImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListExpressionImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListPatternImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatLoopWhileStatementImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatMapEntriesImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatMapEntryImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatMapImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatModuleDeclarationImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatModuleNameImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatNegationImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPassGoalImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPatternImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPatternListImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPredicateClauseImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPredicateFactImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPredicateRuleImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatProcedureCallImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatQualifiedAtomImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatRenameListImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatRenameSpecImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatReturnStmtImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatRuleOperatorImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatStatementImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatStructureImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatStructurePatternImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatTableModeImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatTermConstructorExpressionImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatThrowStmtImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatTrueGoalImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatTryCatchImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatTupleImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatTupleItemsImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatTuplePatternImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatUnaryExpressionImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatUnificationImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatUsingStatementImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatVariableListImpl
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatWhileLoopImpl
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
@@ -120,13 +22,12 @@ import com.intellij.psi.tree.TokenSet
  */
 class PicatParserDefinition : ParserDefinition {
 
-    override fun createLexer(project: Project): Lexer = PicatLexerAdapter()
+    override fun createLexer(project: Project): Lexer = PicatLexer()
 
     override fun createParser(project: Project): PsiParser = PicatParser()
 
     override fun getFileNodeType(): IFileElementType = FILE
 
-    // Updated to directly use PicatTokenTypes for whitespace
     override fun getWhitespaceTokens(): TokenSet = PicatTokenTypes.WHITESPACES
 
     override fun getCommentTokens(): TokenSet = PicatTokenTypes.COMMENTS

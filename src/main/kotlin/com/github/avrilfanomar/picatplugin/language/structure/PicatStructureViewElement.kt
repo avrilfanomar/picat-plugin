@@ -1,7 +1,8 @@
 package com.github.avrilfanomar.picatplugin.language.structure
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFileSpec
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
@@ -33,7 +34,7 @@ class PicatStructureViewElement(private val element: PsiElement) :
 
     override fun getAlphaSortKey(): String =
         when (element) {
-            is PicatFunctionDefinition -> (element.getName() ?: "") + "/" + element.getArity()
+            is PicatFunctionRule -> (element.head.structure?.getName() ?: "") + "/" + element.head.structure?.getArity()
             else -> element.toString()
         }
 
@@ -46,9 +47,9 @@ class PicatStructureViewElement(private val element: PsiElement) :
                 null
             )
 
-            is PicatFunctionDefinition -> {
-                val name = element.getName()
-                val arity = element.getArity()
+            is PicatFunctionRule -> {
+                val name = element.head.structure?.getName()
+                val arity = element.head.structure?.getArity()
                 PresentationData(
                     "$name/$arity",
                     "Function",
@@ -63,18 +64,12 @@ class PicatStructureViewElement(private val element: PsiElement) :
     }
 
     override fun getChildren(): Array<TreeElement> {
-        if (element !is PicatFile) return emptyArray()
+        if (element !is PicatFileSpec) return emptyArray()
 
         val file = element
         val result = mutableListOf<TreeElement>()
 
-        // Add rules
-        file.getRules().forEach {
-            result.add(PicatStructureViewElement(it))
-        }
-
-        // Add functions
-        file.getFunctions().forEach {
+        file.children.forEach {
             result.add(PicatStructureViewElement(it))
         }
 
