@@ -15,7 +15,6 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatGeneralDirective
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateClause
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionClause
 import com.github.avrilfanomar.picatplugin.language.psi.PicatActorDefinition
-import com.github.avrilfanomar.picatplugin.language.psi.PicatStatement
 
 // This class is the root of the PSI tree for a Picat file.
 // It implements PicatPicatFileContent, which is the interface generated from the `picat_file_content` rule in the BNF.
@@ -54,10 +53,6 @@ class PicatFileImpl(viewProvider: FileViewProvider) :
 
     fun getActorDefinitionList(): List<PicatActorDefinition> {
         return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatActorDefinition::class.java)
-    }
-
-    fun getStatementList(): List<PicatStatement> {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatStatement::class.java)
     }
 
     override fun accept(visitor: PsiElementVisitor) {
