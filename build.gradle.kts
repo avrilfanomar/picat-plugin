@@ -133,14 +133,12 @@ grammarKit {
 }
 
 // Task configuration for JFlex lexer generation
-/*
 tasks.withType<org.jetbrains.grammarkit.tasks.GenerateLexerTask>().configureEach {
     sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.flex"))
     targetOutputDir.set(layout.buildDirectory.dir("generated/sources/grammarkit/gen/com/github/avrilfanomar/picatplugin/language/lexer"))
     // className.set("_PicatLexer") // Removed this line, as class name is defined in .flex file
     // purgeOldFiles.set(true) // Optional: clean output directory before generation
 }
-*/
 
 val genDir = layout.buildDirectory.dir("generated/sources/grammarkit/gen")
 // Remove leading slash to make paths relative to targetRootOutputDir
@@ -167,7 +165,7 @@ sourceSets {
 
 tasks.named("compileKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java) {
     dependsOn(tasks.named("generateParser"))
-    // dependsOn(tasks.named("generateLexer"))
+    dependsOn(tasks.named("generateLexer"))
 }
 
 // Configure Detekt - read more: https://detekt.dev/docs/introduction/gradle/

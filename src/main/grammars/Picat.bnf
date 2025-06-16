@@ -88,7 +88,6 @@
     AMPERSAND="&"
     PIPE="|"
     IS_KEYWORD="is"
-    DOT_OP="."
     CONCAT_OP="++"
 
     // Separators
@@ -124,11 +123,11 @@
 }
 
 // Root rule
-picatFile ::= program {elementType=PICAT_FILE}
+picatFile ::= picat_file_content
 
-program ::= item_* {
-  extends="com.intellij.extapi.psi.PsiFileBase"
-  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatProgram"
+picat_file_content ::= item_* {
+  // No extends here, this rule just defines the structure for the interface
+  // The manual PicatProgramImpl will extend PsiFileBase and implement PicatFileContent
 }
 
 item_ ::= (module_decl | general_directive | predicate_clause | function_clause | actor_definition | statement | COMMENT | MULTI_LINE_COMMENT)
@@ -235,7 +234,7 @@ goal ::= call
        {elementType=GOAL}
 
 // Goal implementations
-call ::= atom | structure {elementType=PROCEDURE_CALL}
+call ::= atom | structure
 if_then_else ::= IF_KEYWORD expression THEN_KEYWORD body [elseif_clause] [ELSE_KEYWORD body] END_KEYWORD {elementType=IF_THEN_ELSE}
 elseif_clause ::= ELSEIF_KEYWORD expression THEN_KEYWORD body [elseif_clause] {elementType=ELSEIF_CLAUSE}
 assignment ::= variable ASSIGN_OP expression {elementType=ASSIGNMENT}

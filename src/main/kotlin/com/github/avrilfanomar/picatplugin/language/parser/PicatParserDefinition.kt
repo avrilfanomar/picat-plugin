@@ -1,12 +1,15 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
+import com.github.avrilfanomar.picatplugin.language.lexer._PicatLexer // Import the JFlex lexer
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatProgramImpl
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
 import com.intellij.lexer.Lexer
+import com.intellij.lexer.FlexAdapter
+import java.io.Reader
 import com.intellij.openapi.project.Project
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
@@ -15,7 +18,6 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 import generated.GeneratedParser // Corrected Parser Import
-import org.intellij.grammar.parser.BnfLexer
 
 /**
  * Parser definition for Picat language.
@@ -26,7 +28,7 @@ import org.intellij.grammar.parser.BnfLexer
  */
 class PicatParserDefinition : ParserDefinition {
 
-    override fun createLexer(project: Project): Lexer = BnfLexer() //TODO
+    override fun createLexer(project: Project): Lexer = FlexAdapter(_PicatLexer(null as Reader?))
 
     override fun createParser(project: Project): PsiParser = GeneratedParser()
 
@@ -45,7 +47,7 @@ class PicatParserDefinition : ParserDefinition {
         PicatTokenTypes.Factory.createElement(node) // Use the generated factory
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile =
-        PicatProgramImpl(viewProvider, PicatLanguage) // Instantiate Impl class, passing language
+        PicatFileImpl(viewProvider)
 }
 
 val FILE = IFileElementType(PicatLanguage)
