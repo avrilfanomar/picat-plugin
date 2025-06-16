@@ -163,11 +163,27 @@ sourceSets {
             srcDirs(layout.buildDirectory.dir("generated/sources/grammarkit/gen"))
         }
     }
+    test {
+        java {
+            srcDirs(layout.buildDirectory.dir("generated/sources/grammarkit/gen"))
+        }
+    }
+}
+
+kotlin {
+    jvmToolchain(21)
+    // Removed sourceSets.getByName("test").kotlin.srcDirs(...)
 }
 
 tasks.named("compileKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java) {
     dependsOn(tasks.named("generateParser"))
     dependsOn(tasks.named("generateLexer"))
+}
+
+tasks.named("compileTestKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java) {
+    dependsOn(tasks.named("generateParser"))
+    dependsOn(tasks.named("generateLexer"))
+    libraries.from(project.sourceSets.main.get().output.classesDirs)
 }
 
 // Configure Detekt - read more: https://detekt.dev/docs/introduction/gradle/

@@ -1,7 +1,10 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFile // Keep specific import for PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.* // Add wildcard import for PSI interfaces
+import com.github.avrilfanomar.picatplugin.language.psi.PicatImportStatement
+import com.github.avrilfanomar.picatplugin.language.psi.PicatRule
+import com.github.avrilfanomar.picatplugin.language.psi.PicatForeachLoop
+import com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop
 // Remove specific Impl imports as they will be covered by wildcard or not needed when using interfaces
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase

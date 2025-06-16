@@ -1,7 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.lexer
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
-import com.github.avrilfanomar.picatplugin.language.psi.* // Added wildcard import
 import com.intellij.lexer.FlexAdapter
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType

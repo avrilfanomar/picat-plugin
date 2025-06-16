@@ -2,7 +2,6 @@ package com.github.avrilfanomar.picatplugin.language
 
 import com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighter
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
-import com.github.avrilfanomar.picatplugin.language.psi.* // Added wildcard import
 import com.intellij.psi.TokenType // Added TokenType import
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.colors.TextAttributesKey
@@ -107,14 +106,18 @@ class PicatBasicModuleTest : LexerTestCase() {
             val tokenText = text.substring(lexer.tokenStart, lexer.tokenEnd)
 
             // Check if the token is a basic module function
-            if (tokenType == PicatTokenTypes.IDENTIFIER && expectedBasicModuleFunctions.contains(tokenText)) { // Changed here
+            val isIdentifier = tokenType == PicatTokenTypes.IDENTIFIER
+            val isExpectedFunction = expectedBasicModuleFunctions.contains(tokenText)
+            if (isIdentifier && isExpectedFunction) { // Changed here
                 basicModuleFunctionsFound.add(tokenText)
             }
 
             // Check for expected basic module functions that are not recognized
-            if (expectedBasicModuleFunctions.contains(tokenText) && 
-                tokenType != PicatTokenTypes.IDENTIFIER) { // Changed here
-                issues.add("Basic module function not recognized as IDENTIFIER: '$tokenText' at position ${lexer.tokenStart}")
+            val isNotIdentifier = tokenType != PicatTokenTypes.IDENTIFIER
+            if (isExpectedFunction && isNotIdentifier) { // Changed here
+                val errorMessage = "Basic module function not recognized as IDENTIFIER: " +
+                                   "'$tokenText' at position ${lexer.tokenStart}"
+                issues.add(errorMessage)
             }
 
             lexer.advance()

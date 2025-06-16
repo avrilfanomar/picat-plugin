@@ -1,7 +1,14 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-// Wildcard import for all PSI interfaces and classes from this package
-import com.github.avrilfanomar.picatplugin.language.psi.*
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
+import com.github.avrilfanomar.picatplugin.language.psi.PicatStructure
+import com.github.avrilfanomar.picatplugin.language.psi.PicatArgumentList
+import com.github.avrilfanomar.picatplugin.language.psi.PicatArgument
+import com.github.avrilfanomar.picatplugin.language.psi.PicatRule
+import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
+import com.github.avrilfanomar.picatplugin.language.psi.PicatBody
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition
+import com.github.avrilfanomar.picatplugin.language.psi.PicatExpression
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase

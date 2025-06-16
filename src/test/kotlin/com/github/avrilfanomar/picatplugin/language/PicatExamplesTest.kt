@@ -2,7 +2,6 @@ package com.github.avrilfanomar.picatplugin.language
 
 import com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighter
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
-import com.github.avrilfanomar.picatplugin.language.psi.* // Added wildcard import
 import com.intellij.lexer.Lexer
 import com.intellij.psi.TokenType // Keep one TokenType import
 import com.intellij.openapi.editor.colors.TextAttributesKey
