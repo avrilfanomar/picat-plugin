@@ -1,6 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFile // Keep specific for clarity, wildcard will cover others
+import com.github.avrilfanomar.picatplugin.language.psi.* // Wildcard import for all PSI interfaces
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Test
 

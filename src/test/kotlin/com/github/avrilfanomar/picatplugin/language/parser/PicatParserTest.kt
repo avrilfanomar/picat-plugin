@@ -2,6 +2,7 @@ package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
 import com.github.avrilfanomar.picatplugin.language.psi.PicatRule
+import com.github.avrilfanomar.picatplugin.language.psi.* // Added wildcard import
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Test
 

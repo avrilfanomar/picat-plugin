@@ -138,6 +138,7 @@ tasks.withType<org.jetbrains.grammarkit.tasks.GenerateLexerTask>().configureEach
     targetOutputDir.set(layout.buildDirectory.dir("generated/sources/grammarkit/gen/com/github/avrilfanomar/picatplugin/language/lexer"))
     // className.set("_PicatLexer") // Removed this line, as class name is defined in .flex file
     // purgeOldFiles.set(true) // Optional: clean output directory before generation
+    outputs.upToDateWhen { false } // Force task to always run
 }
 
 val genDir = layout.buildDirectory.dir("generated/sources/grammarkit/gen")
@@ -146,12 +147,13 @@ val basePackagePath = "com/github/avrilfanomar/picatplugin/language"
 
 tasks.withType<GenerateParserTask>().configureEach {
     // enabled = false // Ensure task is enabled
+    outputs.upToDateWhen { false } // Force task to always run
     sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.bnf"))
     targetRootOutputDir.set(genDir) // genDir is layout.buildDirectory.dir("/generated/sources/grammarkit/gen")
 
     // basePackagePath is "com/github/avrilfanomar/picatplugin/language" (no leading slash)
     // pathToParser and pathToPsiRoot are relative paths under targetRootOutputDir.
-    pathToParser.set("$basePackagePath/parser/PicatParser.java")
+    pathToParser.set("$basePackagePath/parser") // Directory for the parser class
     pathToPsiRoot.set("$basePackagePath/psi")
 }
 

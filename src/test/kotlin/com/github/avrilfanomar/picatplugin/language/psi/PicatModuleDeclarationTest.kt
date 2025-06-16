@@ -1,5 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
+// Wildcard import for all PSI interfaces and classes from this package
+import com.github.avrilfanomar.picatplugin.language.psi.*
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Test
 

@@ -17,7 +17,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
-import generated.GeneratedParser // Corrected Parser Import
+import com.github.avrilfanomar.picatplugin.language.parser.PicatParser // Corrected Parser Import
 
 /**
  * Parser definition for Picat language.
@@ -30,7 +30,7 @@ class PicatParserDefinition : ParserDefinition {
 
     override fun createLexer(project: Project): Lexer = FlexAdapter(_PicatLexer(null as Reader?))
 
-    override fun createParser(project: Project): PsiParser = GeneratedParser()
+    override fun createParser(project: Project): PsiParser = PicatParser()
 
     override fun getFileNodeType(): IFileElementType = FILE
 

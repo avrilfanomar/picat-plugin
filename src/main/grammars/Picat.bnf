@@ -1,6 +1,7 @@
 {
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
+  parserClass="com.github.avrilfanomar.picatplugin.language.parser.PicatParser"
   psiClassPrefix="Picat"
   psiImplClassSuffix="Impl"
   psiPackage="com.github.avrilfanomar.picatplugin.language.psi"

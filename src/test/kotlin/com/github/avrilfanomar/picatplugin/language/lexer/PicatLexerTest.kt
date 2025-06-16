@@ -1,9 +1,13 @@
 package com.github.avrilfanomar.picatplugin.language.lexer
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
+import com.github.avrilfanomar.picatplugin.language.psi.* // Added wildcard import
+import com.intellij.lexer.FlexAdapter
+import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
+import java.io.Reader
 import org.junit.jupiter.api.Test
 
 /**
@@ -16,7 +20,7 @@ class PicatLexerTest {
      * Helper function to tokenize a string and return the list of tokens.
      */
     private fun tokenize(text: String): List<Pair<IElementType, String>> {
-        val lexer = PicatLexer()
+        val lexer = FlexAdapter(_PicatLexer(null as Reader?))
         lexer.start(text)
 
         val tokens = mutableListOf<Pair<IElementType, String>>()
@@ -40,7 +44,7 @@ class PicatLexerTest {
     fun testWhitespace() {
         val tokens = tokenize("  \t\n")
         assertEquals(1, tokens.size, "Should have one whitespace token")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[0].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[0].first) // Changed here
         assertEquals(tokens[0].second, "  \t\n")
     }
 
@@ -50,7 +54,7 @@ class PicatLexerTest {
         assertEquals(3, tokens.size, "Should have 3 tokens (2 identifiers and 1 whitespace)")
         assertEquals(PicatTokenTypes.IDENTIFIER, tokens[0].first)
         assertEquals(tokens[0].second, "factorial")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[1].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[1].first) // Changed here
         assertEquals(tokens[1].second, " ")
         assertEquals(PicatTokenTypes.IDENTIFIER, tokens[2].first)
         assertEquals(tokens[2].second, "fibonacci")
@@ -62,11 +66,11 @@ class PicatLexerTest {
         assertEquals(5, tokens.size, "Should have 5 tokens (3 variables and 2 whitespaces)")
         assertEquals(PicatTokenTypes.VARIABLE, tokens[0].first)
         assertEquals(tokens[0].second, "X")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[1].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[1].first) // Changed here
         assertEquals(tokens[1].second, " ")
         assertEquals(PicatTokenTypes.VARIABLE, tokens[2].first)
         assertEquals(tokens[2].second, "Y")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[3].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[3].first) // Changed here
         assertEquals(tokens[3].second, " ")
         assertEquals(PicatTokenTypes.VARIABLE, tokens[4].first)
         assertEquals(tokens[4].second, "_var")
@@ -78,19 +82,19 @@ class PicatLexerTest {
         assertEquals(9, tokens.size, "Should have 9 tokens (5 keywords and 4 whitespaces)")
         assertEquals(PicatTokenTypes.IMPORT_KEYWORD, tokens[0].first)
         assertEquals(tokens[0].second, "import")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[1].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[1].first) // Changed here
         assertEquals(tokens[1].second, " ")
         assertEquals(PicatTokenTypes.MODULE_KEYWORD, tokens[2].first)
         assertEquals(tokens[2].second, "module")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[3].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[3].first) // Changed here
         assertEquals(tokens[3].second, " ")
         assertEquals(PicatTokenTypes.IF_KEYWORD, tokens[4].first)
         assertEquals(tokens[4].second, "if")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[5].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[5].first) // Changed here
         assertEquals(tokens[5].second, " ")
         assertEquals(PicatTokenTypes.THEN_KEYWORD, tokens[6].first)
         assertEquals(tokens[6].second, "then")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[7].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[7].first) // Changed here
         assertEquals(tokens[7].second, " ")
         assertEquals(PicatTokenTypes.ELSE_KEYWORD, tokens[8].first)
         assertEquals(tokens[8].second, "else")
@@ -102,19 +106,19 @@ class PicatLexerTest {
         assertEquals(9, tokens.size, "Should have 9 tokens (5 numbers and 4 whitespaces)")
         assertEquals(PicatTokenTypes.INTEGER, tokens[0].first)
         assertEquals(tokens[0].second, "123")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[1].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[1].first) // Changed here
         assertEquals(tokens[1].second, " ")
         assertEquals(PicatTokenTypes.FLOAT, tokens[2].first)
         assertEquals(tokens[2].second, "3.14")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[3].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[3].first) // Changed here
         assertEquals(tokens[3].second, " ")
         assertEquals(PicatTokenTypes.HEX_INTEGER, tokens[4].first)
         assertEquals(tokens[4].second, "0xFF")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[5].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[5].first) // Changed here
         assertEquals(tokens[5].second, " ")
         assertEquals(PicatTokenTypes.BINARY_INTEGER, tokens[6].first)
         assertEquals(tokens[6].second, "0b101")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[7].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[7].first) // Changed here
         assertEquals(tokens[7].second, " ")
         assertEquals(PicatTokenTypes.OCTAL_INTEGER, tokens[8].first)
         assertEquals(tokens[8].second, "0o777")
@@ -126,7 +130,7 @@ class PicatLexerTest {
         assertEquals(3, tokens.size, "Should have 3 tokens (2 strings and 1 whitespace)")
         assertEquals(PicatTokenTypes.STRING, tokens[0].first)
         assertEquals("\"hello\"", tokens[0].second)
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[1].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[1].first) // Changed here
         assertEquals(tokens[1].second, " ")
         assertEquals(PicatTokenTypes.QUOTED_ATOM, tokens[2].first)
         assertEquals(tokens[2].second, "'atom'")
@@ -138,19 +142,19 @@ class PicatLexerTest {
         assertEquals(9, tokens.size, "Should have 9 tokens (5 operators and 4 whitespaces)")
         assertEquals(PicatTokenTypes.PLUS, tokens[0].first)
         assertEquals(tokens[0].second, "+")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[1].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[1].first) // Changed here
         assertEquals(tokens[1].second, " ")
         assertEquals(PicatTokenTypes.MINUS, tokens[2].first)
         assertEquals(tokens[2].second, "-")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[3].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[3].first) // Changed here
         assertEquals(tokens[3].second, " ")
         assertEquals(PicatTokenTypes.MULTIPLY, tokens[4].first)
         assertEquals(tokens[4].second, "*")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[5].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[5].first) // Changed here
         assertEquals(tokens[5].second, " ")
         assertEquals(PicatTokenTypes.DIVIDE, tokens[6].first)
         assertEquals(tokens[6].second, "/")
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[7].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[7].first) // Changed here
         assertEquals(tokens[7].second, " ")
         assertEquals(PicatTokenTypes.ASSIGN_OP, tokens[8].first)
         assertEquals(tokens[8].second, "=")
@@ -167,21 +171,21 @@ class PicatLexerTest {
         assertEquals(tokens[0].second, "==")
 
         // Space
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[1].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[1].first) // Changed here
 
         // != should be tokenized as NOT_EQUAL
         assertEquals(PicatTokenTypes.NOT_EQUAL, tokens[2].first)
         assertEquals(tokens[2].second, "!=")
 
         // Space
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[3].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[3].first) // Changed here
 
         // => should be tokenized as ARROW_OP
         assertEquals(PicatTokenTypes.ARROW_OP, tokens[4].first)
         assertEquals(tokens[4].second, "=>")
 
         // Space
-        assertEquals(PicatTokenTypes.WHITE_SPACE, tokens[5].first)
+        assertEquals(TokenType.WHITE_SPACE, tokens[5].first) // Changed here
 
         // ?=> should be tokenized as BACKTRACKABLE_ARROW_OP
         assertEquals(PicatTokenTypes.BACKTRACKABLE_ARROW_OP, tokens[6].first)
