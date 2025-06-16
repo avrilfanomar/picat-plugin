@@ -1,11 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFile // Keep specific for clarity, wildcard will cover others
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFact
-import com.github.avrilfanomar.picatplugin.language.psi.PicatRule
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition
-import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
-import com.github.avrilfanomar.picatplugin.language.psi.PicatBody
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Test
 
@@ -26,7 +21,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that atoms are parsed correctly
         val facts = file.getAllFacts()
@@ -49,7 +44,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that structures are parsed correctly
         val facts = file.getAllFacts()
@@ -69,7 +64,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that the rule is parsed correctly
         val rules = file.getRules()
@@ -92,7 +87,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that the rule is parsed correctly
         val rules = file.getRules()
@@ -115,7 +110,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that the rule is parsed correctly
         val rules = file.getRules()
@@ -138,7 +133,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that the function is parsed correctly
         val functions = file.getFunctions()
@@ -160,7 +155,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that the function is parsed correctly
         val functions = file.getFunctions()
@@ -182,7 +177,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that the functions are parsed correctly
         val functions = file.getFunctions()
@@ -201,7 +196,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that the rule is parsed correctly
         val rules = file.getRules()
@@ -225,7 +220,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that the rule is parsed correctly
         val rules = file.getRules()
@@ -248,7 +243,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that the rule is parsed correctly
         val rules = file.getRules()

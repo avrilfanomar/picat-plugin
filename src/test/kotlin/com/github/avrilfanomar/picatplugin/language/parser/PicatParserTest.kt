@@ -1,11 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.PicatRule
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFact
-import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
-import com.github.avrilfanomar.picatplugin.language.psi.PicatBody
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Test
 
@@ -20,7 +15,7 @@ class PicatParserTest : BasePlatformTestCase() {
         // Test parsing an empty file
         val code = ""
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that the file is empty
         assertEquals("Empty file should have no children", 0, file.children.size)
@@ -37,7 +32,7 @@ class PicatParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that comments are parsed correctly
         val functionDefinitions = file.getFunctions()
@@ -57,7 +52,7 @@ class PicatParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that the rule is parsed correctly
         val rules = file.findChildrenByClass(PicatRule::class.java)
@@ -76,7 +71,7 @@ class PicatParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that functions are parsed correctly
         val functions = file.getFunctions()
@@ -102,7 +97,7 @@ class PicatParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that at least the second fact is parsed correctly
         val facts = file.getAllFacts()
@@ -120,7 +115,7 @@ class PicatParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that atoms are parsed correctly
         val facts = file.getAllFacts()
@@ -143,7 +138,7 @@ class PicatParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that structures are parsed correctly
         val facts = file.getAllFacts()
@@ -181,7 +176,7 @@ class PicatParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that rules are parsed correctly
         val rules = file.findChildrenByClass(PicatRule::class.java)
@@ -216,7 +211,7 @@ class PicatParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that functions are parsed correctly
         val functions = file.getFunctions()
@@ -268,7 +263,7 @@ class PicatParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that expressions are parsed correctly
         val rules = file.findChildrenByClass(PicatRule::class.java)
@@ -309,7 +304,7 @@ class PicatParserTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify that patterns are parsed correctly
         val rules = file.findChildrenByClass(PicatRule::class.java)

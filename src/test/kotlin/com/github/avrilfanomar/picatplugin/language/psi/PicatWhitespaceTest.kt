@@ -1,8 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.PicatList
-import com.github.avrilfanomar.picatplugin.language.psi.PicatExpression
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -34,7 +32,7 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all lists in the file
         val lists = PsiTreeUtil.findChildrenOfType(file, PicatList::class.java)
@@ -85,7 +83,7 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all expressions in the file
         val expressions = PsiTreeUtil.findChildrenOfType(file, PicatExpression::class.java)

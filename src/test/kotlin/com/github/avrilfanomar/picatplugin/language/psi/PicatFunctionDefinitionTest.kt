@@ -1,11 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition
-import com.github.avrilfanomar.picatplugin.language.psi.PicatArgumentList
-import com.github.avrilfanomar.picatplugin.language.psi.PicatArgument
-import com.github.avrilfanomar.picatplugin.language.psi.PicatExpression
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionBody
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Test
 
@@ -23,7 +17,7 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all function definitions in the file
         val functionDefinitions = file.findChildrenByClass(PicatFunctionDefinition::class.java)
@@ -61,7 +55,7 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all function definitions in the file
         val functionDefinitions = file.findChildrenByClass(PicatFunctionDefinition::class.java)
@@ -101,7 +95,7 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all function definitions in the file
         val functionDefinitions = file.findChildrenByClass(PicatFunctionDefinition::class.java)
@@ -143,7 +137,7 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all function definitions in the file
         val functionDefinitions = file.findChildrenByClass(PicatFunctionDefinition::class.java)
@@ -170,7 +164,7 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all function definitions in the file
         val functionDefinitions = file.findChildrenByClass(PicatFunctionDefinition::class.java)

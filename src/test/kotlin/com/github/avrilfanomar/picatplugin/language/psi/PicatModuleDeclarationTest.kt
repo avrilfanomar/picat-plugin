@@ -1,9 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.PicatModuleDeclaration
-import com.github.avrilfanomar.picatplugin.language.psi.PicatImportStatement
-import com.github.avrilfanomar.picatplugin.language.psi.PicatExportStatement
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Test
 
@@ -21,7 +18,7 @@ class PicatModuleDeclarationTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImplImpl
 
         // Find all module declarations in the file
         val moduleDeclarations = file.findChildrenByClass(PicatModuleDeclaration::class.java)
@@ -45,7 +42,7 @@ class PicatModuleDeclarationTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all module declarations in the file
         val moduleDeclarations = file.findChildrenByClass(PicatModuleDeclaration::class.java)

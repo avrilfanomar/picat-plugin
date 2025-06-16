@@ -23,7 +23,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all expressions in the file
         val expressions = findExpressionsInFile(file)
@@ -59,7 +59,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all expressions in the file
         val expressions = findExpressionsInFile(file)
@@ -97,7 +97,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all expressions in the file
         val expressions = findExpressionsInFile(file)
@@ -157,7 +157,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all expressions in the file
         val expressions = findExpressionsInFile(file)
@@ -196,7 +196,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all structures in the file (function calls are structures)
         val structures = PsiTreeUtil.findChildrenOfType(file, PicatStructure::class.java).toList()
@@ -236,7 +236,7 @@ class PicatExpressionTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all if-then-else statements in the file
         val ifThenElseStatements = PsiTreeUtil.findChildrenOfType(file, PsiElement::class.java)

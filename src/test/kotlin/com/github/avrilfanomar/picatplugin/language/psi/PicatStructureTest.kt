@@ -1,14 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.PicatStructure
-import com.github.avrilfanomar.picatplugin.language.psi.PicatArgumentList
-import com.github.avrilfanomar.picatplugin.language.psi.PicatArgument
-import com.github.avrilfanomar.picatplugin.language.psi.PicatRule
-import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
-import com.github.avrilfanomar.picatplugin.language.psi.PicatBody
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition
-import com.github.avrilfanomar.picatplugin.language.psi.PicatExpression
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -33,7 +25,7 @@ class PicatStructureTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all structures in the file
         val structures = findStructuresInFile(file)
@@ -72,7 +64,7 @@ class PicatStructureTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all structures in the file
         val structures = findStructuresInFile(file)
@@ -125,7 +117,7 @@ class PicatStructureTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all structures in the file
         val structures = findStructuresInFile(file)
@@ -159,7 +151,7 @@ class PicatStructureTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all structures in the file
         val structures = findStructuresInFile(file)

@@ -1,11 +1,10 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFile // Keep specific import for PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.PicatImportStatement
-import com.github.avrilfanomar.picatplugin.language.psi.PicatRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatForeachLoop
+import com.github.avrilfanomar.picatplugin.language.psi.PicatImportStatement
+import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop
-// Remove specific Impl imports as they will be covered by wildcard or not needed when using interfaces
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Test
@@ -236,19 +235,19 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
     @Test
     fun testBQueens() {
         myFixture.configureByText("test.pi", B_QUEENS_PROGRAM.trimIndent())
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify import statement
-        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java) // Use interface
+        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java)
         assertEquals(1, importStatements.size)
 
         // Verify the main rule
-        val mainRule = PsiTreeUtil.findChildrenOfType(file, PicatRule::class.java) // Use interface
+        val mainRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java)
             .find { it.text.startsWith("main") }
         assertNotNull("Main rule should exist", mainRule)
 
         // Verify queens rule
-        val queensRule = PsiTreeUtil.findChildrenOfType(file, PicatRule::class.java) // Use interface
+        val queensRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("queens") }
         assertNotNull("Queens rule should exist", queensRule)
 
@@ -269,7 +268,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
     @Test
     fun testKakuro() {
         myFixture.configureByText("test.pi", KAKURO_PROGRAM.trimIndent())
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify import statement
         val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java) // Use interface
@@ -277,18 +276,18 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         assertEquals("import cp.", importStatements.first().text)
 
         // Verify the main rule
-        val mainRule = PsiTreeUtil.findChildrenOfType(file, PicatRule::class.java) // Use interface
+        val mainRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("main") }
         assertNotNull("Main rule should exist", mainRule)
 
         // Verify the go rule
-        val goRule = PsiTreeUtil.findChildrenOfType(file, PicatRule::class.java) // Use interface
+        val goRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("go") }
         assertNotNull("Go rule should exist", goRule)
         assertNotNull("Go rule should have a body", goRule?.getBody())
 
         // Verify the problem rule
-        val problemRule = PsiTreeUtil.findChildrenOfType(file, PicatRule::class.java) // Use interface
+        val problemRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("problem") }
         assertNotNull("Problem rule should exist", problemRule)
         assertNotNull("Problem rule should have a body", problemRule?.getBody())
@@ -297,7 +296,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
     @Test
     fun testKnightTour() {
         myFixture.configureByText("test.pi", KNIGHT_TOUR_PROGRAM.trimIndent())
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify import statement
         val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java) // Use interface
@@ -336,7 +335,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
     @Test
     fun testLoops() {
         myFixture.configureByText("test.pi", LOOPS_PROGRAM.trimIndent())
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Verify import statement
         val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java) // Use interface

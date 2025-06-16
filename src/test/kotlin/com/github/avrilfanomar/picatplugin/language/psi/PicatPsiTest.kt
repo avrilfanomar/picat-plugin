@@ -1,15 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFact
-import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
-import com.github.avrilfanomar.picatplugin.language.psi.PicatStructure
-import com.github.avrilfanomar.picatplugin.language.psi.PicatArgumentList
-import com.github.avrilfanomar.picatplugin.language.psi.PicatArgument
-import com.github.avrilfanomar.picatplugin.language.psi.PicatExpression
-import com.github.avrilfanomar.picatplugin.language.psi.PicatExportStatement
-import com.github.avrilfanomar.picatplugin.language.psi.PicatIncludeStatement
-import com.github.avrilfanomar.picatplugin.language.psi.PicatImportStatement
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -30,7 +21,7 @@ class PicatPsiTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all facts in the file
         val facts = file.getAllFacts()
@@ -52,7 +43,7 @@ class PicatPsiTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all facts in the file
         val facts = file.getAllFacts()
@@ -96,7 +87,7 @@ class PicatPsiTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all export statements in the file
         val exportStatements = file.findChildrenByClass(PicatExportStatement::class.java)
@@ -113,7 +104,7 @@ class PicatPsiTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Find all include statements in the file
         val includeStatements = file.findChildrenByClass(PicatIncludeStatement::class.java)
@@ -139,7 +130,7 @@ class PicatPsiTest : BasePlatformTestCase() {
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFile
+        val file = myFixture.file as PicatFileImpl
 
         // Test getImportStatements method
         val importStatements = file.getImportStatements()
