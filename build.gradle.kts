@@ -1,3 +1,5 @@
+import org.jetbrains.changelog.Changelog
+import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
@@ -57,8 +59,6 @@ intellijPlatform {
         name = providers.gradleProperty("pluginName")
         version = providers.gradleProperty("pluginVersion")
 
-        // Temporarily comment out complex description and changeNotes
-        /*
         description = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map {
             val start = "<!-- Plugin description -->"
             val end = "<!-- Plugin description end -->"
@@ -82,15 +82,11 @@ intellijPlatform {
                 )
             }
         }
-        */
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
-            // untilBuild = providers.gradleProperty("pluginUntilBuild") // Keep this minimal for now
         }
     }
 
-    // Temporarily comment out signing, publishing, and pluginVerification
-    /*
     signing {
         certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
         privateKey = providers.environmentVariable("PRIVATE_KEY")
@@ -107,8 +103,6 @@ intellijPlatform {
             recommended()
         }
     }
-    */
-    // Removing the 'tools' block that caused "Unresolved reference" - already removed in previous step.
 }
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
@@ -136,23 +130,17 @@ grammarKit {
 tasks.withType<org.jetbrains.grammarkit.tasks.GenerateLexerTask>().configureEach {
     sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.flex"))
     targetOutputDir.set(layout.buildDirectory.dir("generated/sources/grammarkit/gen/com/github/avrilfanomar/picatplugin/language/lexer"))
-    // className.set("_PicatLexer") // Removed this line, as class name is defined in .flex file
-    // purgeOldFiles.set(true) // Optional: clean output directory before generation
     outputs.upToDateWhen { false } // Force task to always run
 }
 
 val genDir = layout.buildDirectory.dir("generated/sources/grammarkit/gen")
-// Remove leading slash to make paths relative to targetRootOutputDir
 val basePackagePath = "com/github/avrilfanomar/picatplugin/language"
 
 tasks.withType<GenerateParserTask>().configureEach {
-    // enabled = false // Ensure task is enabled
     outputs.upToDateWhen { false } // Force task to always run
     sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.bnf"))
     targetRootOutputDir.set(genDir) // genDir is layout.buildDirectory.dir("/generated/sources/grammarkit/gen")
 
-    // basePackagePath is "com/github/avrilfanomar/picatplugin/language" (no leading slash)
-    // pathToParser and pathToPsiRoot are relative paths under targetRootOutputDir.
     pathToParser.set("$basePackagePath/parser") // Directory for the parser class
     pathToPsiRoot.set("$basePackagePath/psi")
 }
@@ -172,7 +160,6 @@ sourceSets {
 
 kotlin {
     jvmToolchain(21)
-    // Removed sourceSets.getByName("test").kotlin.srcDirs(...)
 }
 
 tasks.named("compileKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java) {
