@@ -10,6 +10,12 @@ import com.github.avrilfanomar.picatplugin.language.PicatFileType
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPicatFileContent // Corrected interface name
 import com.github.avrilfanomar.picatplugin.language.psi.PicatItem_
 import com.github.avrilfanomar.picatplugin.language.psi.PicatVisitor
+import com.github.avrilfanomar.picatplugin.language.psi.PicatModuleDecl
+import com.github.avrilfanomar.picatplugin.language.psi.PicatGeneralDirective
+import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateClause
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionClause
+import com.github.avrilfanomar.picatplugin.language.psi.PicatActorDefinition
+import com.github.avrilfanomar.picatplugin.language.psi.PicatStatement
 
 // This class is the root of the PSI tree for a Picat file.
 // It implements PicatPicatFileContent, which is the interface generated from the `picat_file_content` rule in the BNF.
@@ -28,6 +34,30 @@ class PicatFileImpl(viewProvider: FileViewProvider) :
     // Implementation for PicatPicatFileContent interface (from 'picat_file_content ::= item_*')
     override fun getItem_List(): List<PicatItem_> {
         return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatItem_::class.java)
+    }
+
+    fun getModuleDeclList(): List<PicatModuleDecl> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatModuleDecl::class.java)
+    }
+
+    fun getGeneralDirectiveList(): List<PicatGeneralDirective> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatGeneralDirective::class.java)
+    }
+
+    fun getPredicateClauseList(): List<PicatPredicateClause> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatPredicateClause::class.java)
+    }
+
+    fun getFunctionClauseList(): List<PicatFunctionClause> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatFunctionClause::class.java)
+    }
+
+    fun getActorDefinitionList(): List<PicatActorDefinition> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatActorDefinition::class.java)
+    }
+
+    fun getStatementList(): List<PicatStatement> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatStatement::class.java)
     }
 
     override fun accept(visitor: PsiElementVisitor) {
