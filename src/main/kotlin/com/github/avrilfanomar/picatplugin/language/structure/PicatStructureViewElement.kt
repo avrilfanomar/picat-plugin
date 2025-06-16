@@ -1,6 +1,8 @@
 package com.github.avrilfanomar.picatplugin.language.structure
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
+import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom // Moved import
+import com.intellij.psi.util.PsiTreeUtil // Moved import
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
@@ -32,42 +34,53 @@ class PicatStructureViewElement(private val element: PsiElement) :
 
     override fun getAlphaSortKey(): String =
         when (element) {
-            is PicatFunctionRule -> element.head.structure?.text ?: element.toString() // Use text as fallback
+            is PicatFunctionRule -> {
+                val structure = element.head.structure
+                val atom = PsiTreeUtil.getChildOfType(structure, PicatAtom::class.java)
+                atom?.text ?: structure?.toString() ?: element.toString()
+            }
             else -> element.toString()
         }
 
     override fun getPresentation(): ItemPresentation {
         val presentation = when (element) {
             is PicatFunctionRule -> {
-                // val name = element.head.structure?.getName() // getName removed
-                // val arity = element.head.structure?.getArity() // getArity removed
-                val representation = element.head.structure?.text ?: "Function" // Use text as fallback
+                val structure = element.head.structure
+                val atom = PsiTreeUtil.getChildOfType(structure, PicatAtom::class.java)
+                val representation = atom?.text ?: structure?.toString() ?: "Function"
                 PresentationData(
-                    representation, // Simplified representation
-                    "Function",
-                    null,
+                    representation,
+                    "Function (${structure?.let { s -> PsiTreeUtil.getChildOfType(s, PicatAtom::class.java)?.text } ?: ""})", // More detailed location string
+                    null, // Icon can be set here
                     null
                 )
             }
-
-            else -> PresentationData(element.toString(), "", null, null)
+            // Potentially add cases for other element types like PicatPredicateRule
+            else -> PresentationData(element.text ?: element.toString(), null, null, null) // Use element.text if available
         }
         return presentation
     }
 
     override fun getChildren(): Array<TreeElement> {
-        val file = element
-        val result = mutableListOf<TreeElement>()
-
-        // For now, just adding all direct children as a placeholder.
-        file.children.forEach { child ->
-            // Add filtering here if necessary, e.g. only PicatFunctionRule, PicatPredicateRule instances
-            if (child is PicatFunctionRule) { // Example: only show function rules
-                 result.add(PicatStructureViewElement(child))
-            }
-            // Add other relevant types here
+        // For PicatFunctionRule, we might not want to show further children in the structure view,
+        // or we might want to show specific parts of its body if relevant.
+        // For a file root, you'd iterate through its top-level definitions.
+        if (element is PicatFunctionRule) {
+            return emptyArray() // Example: function rules are leaves in this view
         }
 
-        return result.toTypedArray()
+        // If the element is the root of the file (PicatFile), find all function rules.
+        // This part needs to be adapted based on the actual root PSI element type.
+        // For now, let's assume 'element' could be a PicatFile (or similar root)
+        // and we want to show PicatFunctionRule children.
+        val children = mutableListOf<TreeElement>()
+        element.children.forEach { child ->
+            if (child is PicatFunctionRule) {
+                children.add(PicatStructureViewElement(child))
+            }
+            // Add other top-level elements you want to see in the structure view
+            // e.g., if (child is PicatPredicateRule) { children.add(PicatStructureViewElement(child)) }
+        }
+        return children.toTypedArray()
     }
 }
