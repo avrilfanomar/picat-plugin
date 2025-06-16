@@ -1,8 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.structure
 
+import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
-import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom // Moved import
-import com.intellij.psi.util.PsiTreeUtil // Moved import
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
@@ -10,6 +9,7 @@ import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 
 /**
  * Structure view element for Picat files.
@@ -39,6 +39,7 @@ class PicatStructureViewElement(private val element: PsiElement) :
                 val atom = PsiTreeUtil.getChildOfType(structure, PicatAtom::class.java)
                 atom?.text ?: structure?.toString() ?: element.toString()
             }
+
             else -> element.toString()
         }
 
@@ -50,13 +51,25 @@ class PicatStructureViewElement(private val element: PsiElement) :
                 val representation = atom?.text ?: structure?.toString() ?: "Function"
                 PresentationData(
                     representation,
-                    "Function (${structure?.let { s -> PsiTreeUtil.getChildOfType(s, PicatAtom::class.java)?.text } ?: ""})", // More detailed location string
+                    "Function (${
+                        structure?.let { s ->
+                            PsiTreeUtil.getChildOfType(
+                                s,
+                                PicatAtom::class.java
+                            )?.text
+                        } ?: ""
+                    })", // More detailed location string
                     null, // Icon can be set here
                     null
                 )
             }
             // Potentially add cases for other element types like PicatPredicateRule
-            else -> PresentationData(element.text ?: element.toString(), null, null, null) // Use element.text if available
+            else -> PresentationData(
+                element.text ?: element.toString(),
+                null,
+                null,
+                null
+            ) // Use element.text if available
         }
         return presentation
     }

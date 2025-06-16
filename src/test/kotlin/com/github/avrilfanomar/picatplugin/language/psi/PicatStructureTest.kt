@@ -1,5 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
+import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -177,7 +178,7 @@ class PicatStructureTest : BasePlatformTestCase() {
     /**
      * Helper method to find all structures in a file.
      */
-    private fun findStructuresInFile(file: PicatFile): List<PicatStructure> {
+    private fun findStructuresInFile(file: PsiFile): List<PicatStructure> {
         // This is a recursive function to find all structures in the file
         val structures = mutableListOf<PicatStructure>()
 
