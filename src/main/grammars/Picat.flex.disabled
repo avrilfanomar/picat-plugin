@@ -1,0 +1,137 @@
+// No package or import statements at the top.
+// No %{ ... %} user code block.
+
+%class _PicatLexer // Must be one of the first things
+%public // Public class
+%type com.intellij.psi.tree.IElementType // Fully qualified type for return
+%function advance // Standard function name
+%implements com.intellij.lexer.FlexLexer // Fully qualified interface
+// %eof{ return null; %eof} // Commented out
+// %line // Commented out
+// %char // Commented out
+
+%% // Rules section marker
+
+<YYINITIAL> {
+    // Whitespace (use explicit char classes)
+    [ \t\r\n\f]+ { return com.intellij.psi.TokenType.WHITE_SPACE; }
+
+    // Comments
+    "%"[^\r\n]* { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.COMMENT; }
+    "/*"([^*]|\*+[^*/])*\*+"/" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.MULTI_LINE_COMMENT; }
+
+    // Keywords
+    "module" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.MODULE_KEYWORD; }
+    "end_module" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.END_MODULE_KEYWORD; }
+    "import" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.IMPORT_KEYWORD; }
+    "export" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.EXPORT_KEYWORD; }
+    "include" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.INCLUDE_KEYWORD; }
+    "if" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.IF_KEYWORD; }
+    "then" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.THEN_KEYWORD; }
+    "elseif" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.ELSEIF_KEYWORD; }
+    "else" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.ELSE_KEYWORD; }
+    "end" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.END_KEYWORD; }
+    "foreach" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.FOREACH_KEYWORD; }
+    "in" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.IN_KEYWORD; }
+    "loop" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.LOOP_KEYWORD; }
+    "private" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.PRIVATE_KEYWORD; }
+    "table" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.TABLE_KEYWORD; }
+    "index" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.INDEX_KEYWORD; }
+    "return" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.RETURN_KEYWORD; }
+    "continue" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.CONTINUE_KEYWORD; }
+    "break" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.BREAK_KEYWORD; }
+    "not" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.NOT_KEYWORD; }
+    "fail" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.FAIL_KEYWORD; }
+    "true" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.TRUE_KEYWORD; }
+    "false" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.FALSE_KEYWORD; }
+    "case" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.CASE_KEYWORD; }
+    "of" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.OF_KEYWORD; }
+    "try" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.TRY_KEYWORD; }
+    "catch" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.CATCH_KEYWORD; }
+    "finally" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.FINALLY_KEYWORD; }
+    "throw" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.THROW_KEYWORD; }
+    "using" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.USING_KEYWORD; }
+    "while" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.WHILE_KEYWORD; }
+    "do" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.DO_KEYWORD; }
+    "pass" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.PASS_KEYWORD; }
+    "div" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.DIV_KEYWORD; }
+    "rem" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.REM_KEYWORD; }
+    "mod" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.MOD_KEYWORD; }
+    "and" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.AND_KEYWORD; }
+    "or" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.OR_KEYWORD; }
+    "xor" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.XOR_KEYWORD; }
+    "is" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.IS_KEYWORD; }
+
+    // Operators (Longer operators first)
+    "?<=>" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.BACKTRACKABLE_BICONDITIONAL_OP; }
+    "?=>"  { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.BACKTRACKABLE_ARROW_OP; }
+    "#<=>" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HASH_BICONDITIONAL_OP; }
+    "#=>"  { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HASH_ARROW_OP; }
+    "#\\/" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HASH_OR_OP; }
+    "#^"   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HASH_CARET_OP; }
+    "#/\\" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HASH_AND_OP; }
+    "#~"   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HASH_TILDE_OP; }
+    ":-"   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.RULE_OP; }
+    ":="   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.ASSIGN_OP; }
+    ".."   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.RANGE_OP; }
+    "=>"   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.ARROW_OP; }
+    "<=>"  { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.BICONDITIONAL_OP; }
+    "!="   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.NOT_EQUAL; }
+    "<="   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.LESS_EQUAL; }
+    ">="   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.GREATER_EQUAL; }
+    "=:="  { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.IDENTICAL; }
+    "=\\=" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.NOT_IDENTICAL; }
+    "**"   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.POWER; }
+    "//"   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.INT_DIVIDE; }
+    "<<"   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.SHIFT_LEFT; }
+    ">>"   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.SHIFT_RIGHT; }
+    ">>>"  { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.SHIFT_RIGHT_TRIPLE_OP; }
+    "++"   { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.CONCAT_OP; }
+
+    // Special EOR token (dot followed by whitespace)
+    \.\s+ { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.EOR; }
+
+    // Single character operators / Separators
+    "=" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.EQUAL; }
+    "<" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.LESS; }
+    ">" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.GREATER; }
+    "+" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.PLUS; }
+    "-" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.MINUS; }
+    "*" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.MULTIPLY; }
+    "/" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.DIVIDE; }
+    "\\" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.BACKSLASH; }
+    "^" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.CARET; }
+    "&" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.AMPERSAND; }
+    "|" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.PIPE; }
+    "." { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.DOT; }
+    "," { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.COMMA; }
+    ";" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.SEMICOLON; }
+    ":" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.COLON; }
+    "(" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.LPAR; }
+    ")" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.RPAR; }
+    "[" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.LBRACKET; }
+    "]" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.RBRACKET; }
+    "{" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.LBRACE; }
+    "}" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.RBRACE; }
+    "!" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.CUT; }
+    "@" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.AT; }
+
+    // Literals (Regex-based)
+    "0"[xX][0-9a-fA-F]+ { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HEX_INTEGER; }
+    "0"[oO][0-7]+ { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.OCTAL_INTEGER; }
+    "0"[bB][01]+ { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.BINARY_INTEGER; }
+    [0-9]+\.[0-9]+([eE][+-]?[0-9]+)? { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.FLOAT; }
+    [0-9]+ { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.INTEGER; }
+
+    [a-z][a-zA-Z0-9_]* { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.IDENTIFIER; }
+    [A-Z][a-zA-Z0-9_]* { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.VARIABLE; }
+    // Simplified ANONYMOUS_VARIABLE to just "_" to avoid issues with older JFlex and complex regex.
+    // The original Picat.bnf had "regexp:_[a-zA-Z0-9_]*"
+    "_" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.ANONYMOUS_VARIABLE; }
+
+    \"([^\"\\]|\\.)*\" { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.STRING; }
+    \'([^\'\\]|\\.)*\' { return com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.QUOTED_ATOM; }
+}
+
+// Any other character
+[^] { return com.intellij.psi.TokenType.BAD_CHARACTER; }

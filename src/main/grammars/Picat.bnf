@@ -126,7 +126,10 @@
 // Root rule
 picatFile ::= program {elementType=PICAT_FILE}
 
-program ::= item_*
+program ::= item_* {
+  extends="com.intellij.extapi.psi.PsiFileBase"
+  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatProgram"
+}
 
 item_ ::= (module_decl | general_directive | predicate_clause | function_clause | actor_definition | statement | COMMENT | MULTI_LINE_COMMENT)
 
@@ -181,9 +184,9 @@ function_fact ::= head ASSIGN_OP expression EOR {pin=1 elementType = FUNCTION_FA
 
 function_body ::= expression {
   elementType = FUNCTION_BODY
-  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionBody"
-  methods=[getReturnExpression getStatements]
-  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFunctionBodyImpl"
+  // implements="com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionBody" // Removed
+  // methods=[getReturnExpression getStatements] // Removed
+  // extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFunctionBodyImpl" // Removed
 }
 
 // Actor Definition
@@ -249,8 +252,8 @@ false_goal ::= FALSE_KEYWORD {elementType=FALSE_GOAL}
 not_goal ::= negation
 foreach_loop ::= FOREACH_KEYWORD LPAR foreach_generators RPAR body END_KEYWORD {
   elementType = FOREACH_LOOP
-  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatForeachLoop"
-  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatForeachLoopImpl"
+  // implements="com.github.avrilfanomar.picatplugin.language.psi.PicatForeachLoop" // Removed
+  // extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatForeachLoopImpl" // Removed
 }
 foreach_generators ::= foreach_generator (COMMA foreach_generator)* {elementType=FOREACH_GENERATORS}
 foreach_generator ::= variable IN_KEYWORD expression | variable EQUAL expression {elementType=FOREACH_GENERATOR}
@@ -274,8 +277,8 @@ catch_clause ::= pattern ARROW_OP body {elementType=CATCH_CLAUSE}
 
 while_loop ::= WHILE_KEYWORD expression DO_KEYWORD body END_KEYWORD {
   elementType = WHILE_LOOP
-  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop"
-  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatWhileLoopImpl"
+  // implements="com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop" // Removed
+  // extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatWhileLoopImpl" // Removed
 }
 
 loop_while_statement ::= LOOP_KEYWORD body WHILE_KEYWORD expression EOR {pin=1 elementType=LOOP_WHILE_STATEMENT}
@@ -294,9 +297,9 @@ variable ::= VARIABLE | ANONYMOUS_VARIABLE
 number ::= INTEGER | FLOAT | HEX_INTEGER | OCTAL_INTEGER | BINARY_INTEGER
 structure ::= "$"? atom LPAR argument_list? RPAR {
   elementType = STRUCTURE
-  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatStructure"
-  methods=[getIdentifier getArgumentList getName getArity]
-  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatStructureImpl"
+  // implements="com.github.avrilfanomar.picatplugin.language.psi.PicatStructure" // Removed
+  // methods=[getIdentifier getArgumentList getName getArity] // Removed
+  // extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatStructureImpl" // Removed
 }
 tuple ::= LBRACE tuple_items? RBRACE {elementType=TUPLE}
 tuple_items ::= expression (COMMA expression)* {elementType=TUPLE_ITEMS}
@@ -305,9 +308,9 @@ argument_list ::= expression (COMMA expression)* {elementType=ARGUMENT_LIST}
 // Expressions
 expression ::= biconditional_expression_level {
   elementType = EXPRESSION
-  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatExpression"
-  methods=[getTerms getOperators]
-  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExpressionImpl"
+  // implements="com.github.avrilfanomar.picatplugin.language.psi.PicatExpression" // Removed
+  // methods=[getTerms getOperators] // Removed
+  // extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatExpressionImpl" // Removed
 }
 
 biconditional_expression_level ::= implication_expression_level ((BICONDITIONAL_OP | HASH_BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP) implication_expression_level)*
@@ -367,8 +370,8 @@ builtin_name ::= "call" | "apply" | "new_struct" | "new_map"
 // List and Array Expressions
 list_expression ::= LBRACKET list_items? RBRACKET {
   elementType = LIST_EXPRESSION
-  implements="com.github.avrilfanomar.picatplugin.language.psi.PicatList"
-  extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListImpl"
+  // implements="com.github.avrilfanomar.picatplugin.language.psi.PicatList" // Removed
+  // extends="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatListImpl" // Removed
 }
 list_items ::= expression ((COMMA | SEMICOLON) expression)* (PIPE expression)? {elementType = LIST_ELEMENTS}
 list_comprehension_expression ::= LBRACKET expression PIPE foreach_generators RBRACKET {elementType=LIST_COMPREHENSION_EXPRESSION}

@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        google() // In case some transitive dependencies might need it
+    }
+    dependencies {
+        classpath("de.jflex:jflex:1.9.1")
+    }
+}
+
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
@@ -135,13 +145,25 @@ kover {
 } // This closes kover {}
 
 grammarKit {
+    jflexRelease = "1.9.1" // Specify JFlex version
 }
+
+// Task configuration for JFlex lexer generation
+/*
+tasks.withType<org.jetbrains.grammarkit.tasks.GenerateLexerTask>().configureEach {
+    sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.flex"))
+    targetOutputDir.set(layout.buildDirectory.dir("generated/sources/grammarkit/gen/com/github/avrilfanomar/picatplugin/language/lexer"))
+    // className.set("_PicatLexer") // Removed this line, as class name is defined in .flex file
+    // purgeOldFiles.set(true) // Optional: clean output directory before generation
+}
+*/
 
 val genDir = layout.buildDirectory.dir("generated/sources/grammarkit/gen")
 // Remove leading slash to make paths relative to targetRootOutputDir
 val basePackagePath = "com/github/avrilfanomar/picatplugin/language"
 
 tasks.withType<GenerateParserTask>().configureEach {
+    // enabled = false // Ensure task is enabled
     sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.bnf"))
     targetRootOutputDir.set(genDir) // genDir is layout.buildDirectory.dir("/generated/sources/grammarkit/gen")
 
@@ -150,10 +172,26 @@ tasks.withType<GenerateParserTask>().configureEach {
     pathToParser.set("$basePackagePath/parser/PicatParser.java")
     pathToPsiRoot.set("$basePackagePath/psi")
 }
+// */ // This was the end of the comment block, removing it.
 
-kotlin {
-    // This path must exactly match where the .kt and .java files are generated.
-    sourceSets.main.get().kotlin.srcDir(layout.buildDirectory.dir("generated/sources/grammarkit/gen"))
+// kotlin {
+    // sourceSets.main.get().kotlin.srcDir(layout.buildDirectory.dir("generated/sources/grammarkit/gen")) // Removed
+// }
+// Configure source sets directly
+sourceSets {
+    main {
+        java {
+            srcDirs(layout.buildDirectory.dir("generated/sources/grammarkit/gen"))
+        }
+    }
+}
+
+
+// Add explicit dependencies for Kotlin compilation
+tasks.named("compileKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java) {
+    dependsOn(tasks.named("generateParser")) // Re-enable dependency
+    // dependsOn(tasks.named("generateLexer")) // Lexer task is disabled/stubbed
+    dependsOn(tasks.named("compileJava")) // Add this dependency
 }
 
 // Configure Detekt - read more: https://detekt.dev/docs/introduction/gradle/

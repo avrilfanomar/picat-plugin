@@ -17,13 +17,20 @@ import com.intellij.util.ProcessingContext
 class PicatReferenceProvider : PsiReferenceProvider() {
     override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
         // Only handle structure references (predicate/function calls) with valid identifiers
-        if (element !is PicatStructure || element.getIdentifier() == null) {
+        // Commenting out logic due to removal of getIdentifier, getArity from PicatStructure interface
+        // and change of PicatReference constructor from PicatIdentifier to PicatAtom.
+        /*
+        if (element !is PicatStructure || element.getIdentifier() == null) { // getIdentifier() is no longer available
             return PsiReference.EMPTY_ARRAY
         }
 
         // Create a reference for the structure
-        val identifier = element.getIdentifier()!!
-        val range = TextRange(0, identifier.textLength)
-        return arrayOf(PicatReference(identifier, range, element.getArity()))
+        val identifier = element.getIdentifier()!! // getIdentifier() is no longer available
+        // Assuming identifier was PicatAtom or similar, its type needs to be confirmed.
+        // For now, PicatReference expects PicatAtom.
+        // val range = TextRange(0, identifier.textLength)
+        // return arrayOf(PicatReference(identifierAsPicatAtom, range, element.getArity())) // getArity() is no longer available
+        */
+        return PsiReference.EMPTY_ARRAY // Stubbed
     }
 }

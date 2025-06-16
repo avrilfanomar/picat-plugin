@@ -1,7 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.highlighting
 
 import com.github.avrilfanomar.picatplugin.language.lexer.PicatLexerAdapter
-import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
+// import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes // Potentially ambiguous
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors
@@ -51,37 +51,38 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
         tokenType in KEYWORDS_SET
 
     private fun isComment(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.COMMENT || tokenType == PicatTokenTypes.MULTI_LINE_COMMENT
+        tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.COMMENT || tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.MULTI_LINE_COMMENT
 
     private fun isString(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.STRING
+        tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.STRING
 
     private fun isNumber(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.INTEGER || tokenType == PicatTokenTypes.FLOAT ||
-            tokenType == PicatTokenTypes.HEX_INTEGER || tokenType == PicatTokenTypes.OCTAL_INTEGER ||
-            tokenType == PicatTokenTypes.BINARY_INTEGER
+        tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.INTEGER || tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.FLOAT ||
+            tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HEX_INTEGER || tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.OCTAL_INTEGER ||
+            tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.BINARY_INTEGER
 
 
     private fun isOperator(tokenType: IElementType): Boolean =
         tokenType in OPERATORS_SET
 
     private fun isParenthesis(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.LPAR || tokenType == PicatTokenTypes.RPAR
+        tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.LPAR || tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.RPAR
 
     private fun isBrace(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.LBRACE || tokenType == PicatTokenTypes.RBRACE
+        tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.LBRACE || tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.RBRACE
 
     private fun isBracket(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.LBRACKET || tokenType == PicatTokenTypes.RBRACKET
+        tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.LBRACKET || tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.RBRACKET
 
-    private fun isVariable(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.VARIABLE || tokenType == PicatTokenTypes.ANONYMOUS_VARIABLE
+    private fun isVariable(tokenType: IElementType): Boolean = // Commenting out due to VARIABLE ambiguity for now
+        tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.VARIABLE || tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.ANONYMOUS_VARIABLE
+        // false // Temporarily disable to avoid ambiguity
 
 //    private fun isBasicModuleFunction(tokenType: IElementType): Boolean = // Removed for now
 //        tokenType == PicatTokenTypes.BASIC_MODULE_FUNCTION
 
     private fun isIdentifier(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.IDENTIFIER || tokenType == PicatTokenTypes.QUOTED_ATOM
+        tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.IDENTIFIER || tokenType == com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.QUOTED_ATOM
 
     companion object {
         // Define text attribute keys for different token types
@@ -111,36 +112,36 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             TextAttributesKey.createTextAttributesKey("PICAT_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER)
 
         val KEYWORDS_SET: TokenSet = TokenSet.create(
-            PicatTokenTypes.AND_KEYWORD, PicatTokenTypes.BREAK_KEYWORD, PicatTokenTypes.CASE_KEYWORD,
-            PicatTokenTypes.CATCH_KEYWORD, PicatTokenTypes.CONTINUE_KEYWORD, PicatTokenTypes.DIV_KEYWORD,
-            PicatTokenTypes.DO_KEYWORD, PicatTokenTypes.ELSEIF_KEYWORD, PicatTokenTypes.ELSE_KEYWORD,
-            PicatTokenTypes.END_KEYWORD, PicatTokenTypes.END_MODULE_KEYWORD, PicatTokenTypes.EXPORT_KEYWORD,
-            PicatTokenTypes.FAIL_KEYWORD, PicatTokenTypes.FALSE_KEYWORD, PicatTokenTypes.FINALLY_KEYWORD,
-            PicatTokenTypes.FOREACH_KEYWORD, PicatTokenTypes.IF_KEYWORD, PicatTokenTypes.IMPORT_KEYWORD,
-            PicatTokenTypes.INCLUDE_KEYWORD, PicatTokenTypes.INDEX_KEYWORD, PicatTokenTypes.IN_KEYWORD,
-            PicatTokenTypes.IS_KEYWORD, PicatTokenTypes.LOOP_KEYWORD, PicatTokenTypes.MODULE_KEYWORD,
-            PicatTokenTypes.MOD_KEYWORD, PicatTokenTypes.NOT_KEYWORD, PicatTokenTypes.OF_KEYWORD,
-            PicatTokenTypes.OR_KEYWORD, PicatTokenTypes.PASS_KEYWORD, PicatTokenTypes.PRIVATE_KEYWORD,
-            PicatTokenTypes.REM_KEYWORD, PicatTokenTypes.RETURN_KEYWORD, PicatTokenTypes.TABLE_KEYWORD,
-            PicatTokenTypes.THEN_KEYWORD, PicatTokenTypes.THROW_KEYWORD, PicatTokenTypes.TRUE_KEYWORD,
-            PicatTokenTypes.TRY_KEYWORD, PicatTokenTypes.USING_KEYWORD, PicatTokenTypes.WHILE_KEYWORD,
-            PicatTokenTypes.XOR_KEYWORD
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.AND_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.BREAK_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.CASE_KEYWORD,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.CATCH_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.CONTINUE_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.DIV_KEYWORD,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.DO_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.ELSEIF_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.ELSE_KEYWORD,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.END_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.END_MODULE_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.EXPORT_KEYWORD,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.FAIL_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.FALSE_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.FINALLY_KEYWORD,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.FOREACH_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.IF_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.IMPORT_KEYWORD,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.INCLUDE_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.INDEX_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.IN_KEYWORD,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.IS_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.LOOP_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.MODULE_KEYWORD,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.MOD_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.NOT_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.OF_KEYWORD,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.OR_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.PASS_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.PRIVATE_KEYWORD,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.REM_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.RETURN_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.TABLE_KEYWORD,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.THEN_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.THROW_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.TRUE_KEYWORD,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.TRY_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.USING_KEYWORD, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.WHILE_KEYWORD,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.XOR_KEYWORD
         )
 
         val OPERATORS_SET: TokenSet = TokenSet.create(
-            PicatTokenTypes.AMPERSAND, PicatTokenTypes.ARROW_OP, PicatTokenTypes.ASSIGN_OP,
-            PicatTokenTypes.AT, PicatTokenTypes.BACKSLASH, PicatTokenTypes.BACKTRACKABLE_ARROW_OP,
-            PicatTokenTypes.BACKTRACKABLE_BICONDITIONAL_OP, PicatTokenTypes.BICONDITIONAL_OP,
-            PicatTokenTypes.CARET, PicatTokenTypes.COLON, PicatTokenTypes.COMMA, PicatTokenTypes.CONCAT_OP,
-            PicatTokenTypes.CUT, PicatTokenTypes.DIVIDE, PicatTokenTypes.DOT, PicatTokenTypes.EQUAL,
-            PicatTokenTypes.GREATER, PicatTokenTypes.GREATER_EQUAL, PicatTokenTypes.HASH_AND_OP,
-            PicatTokenTypes.HASH_ARROW_OP, PicatTokenTypes.HASH_BICONDITIONAL_OP, PicatTokenTypes.HASH_CARET_OP,
-            PicatTokenTypes.HASH_OR_OP, PicatTokenTypes.HASH_TILDE_OP, PicatTokenTypes.IDENTICAL,
-            PicatTokenTypes.INT_DIVIDE, PicatTokenTypes.LESS, PicatTokenTypes.LESS_EQUAL,
-            PicatTokenTypes.MINUS, PicatTokenTypes.MULTIPLY, PicatTokenTypes.NOT_EQUAL, PicatTokenTypes.NOT_IDENTICAL,
-            PicatTokenTypes.PIPE, PicatTokenTypes.PIPE_CHOICE, PicatTokenTypes.PLUS, PicatTokenTypes.POWER,
-            PicatTokenTypes.RANGE_OP, PicatTokenTypes.RULE_OP, PicatTokenTypes.SEMICOLON,
-            PicatTokenTypes.SHIFT_LEFT, PicatTokenTypes.SHIFT_RIGHT, PicatTokenTypes.SHIFT_RIGHT_TRIPLE_OP
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.AMPERSAND, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.ARROW_OP, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.ASSIGN_OP,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.AT, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.BACKSLASH, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.BACKTRACKABLE_ARROW_OP,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.BACKTRACKABLE_BICONDITIONAL_OP, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.BICONDITIONAL_OP,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.CARET, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.COLON, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.COMMA, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.CONCAT_OP,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.CUT, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.DIVIDE, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.DOT, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.EQUAL,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.GREATER, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.GREATER_EQUAL, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HASH_AND_OP,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HASH_ARROW_OP, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HASH_BICONDITIONAL_OP, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HASH_CARET_OP,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HASH_OR_OP, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.HASH_TILDE_OP, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.IDENTICAL,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.INT_DIVIDE, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.LESS, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.LESS_EQUAL,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.MINUS, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.MULTIPLY, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.NOT_EQUAL, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.NOT_IDENTICAL,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.PIPE, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.PIPE_CHOICE, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.PLUS, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.POWER,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.RANGE_OP, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.RULE_OP, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.SEMICOLON,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.SHIFT_LEFT, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.SHIFT_RIGHT, com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.SHIFT_RIGHT_TRIPLE_OP
             // Note: LPAR, RPAR, LBRACE, RBRACE, LBRACKET, RBRACKET are handled separately
         )
     }
