@@ -24,8 +24,10 @@ class PicatColorSettingsPage : ColorSettingsPage {
         AttributesDescriptor("Brackets", PicatSyntaxHighlighter.BRACKETS),
         AttributesDescriptor("Identifier", PicatSyntaxHighlighter.IDENTIFIER),
         AttributesDescriptor("Variable", PicatSyntaxHighlighter.VARIABLE),
-        // AttributesDescriptor("Basic module function", PicatSyntaxHighlighter.BASIC_MODULE_FUNCTION), // Removed as it was removed from Highlighter
-        AttributesDescriptor("Bad character", PicatSyntaxHighlighter.BAD_CHARACTER_ATTR) // Corrected to BAD_CHARACTER_ATTR
+        AttributesDescriptor(
+            "Bad character",
+            PicatSyntaxHighlighter.BAD_CHARACTER_ATTR
+        )
     )
 
     override fun getAttributeDescriptors(): Array<AttributesDescriptor> = descriptors

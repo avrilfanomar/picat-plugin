@@ -1,15 +1,8 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
-package com.github.avrilfanomar.picatplugin.language.parser
-
-import com.github.avrilfanomar.picatplugin.language.PicatLanguage
-// It seems these specific imports might be causing ambiguity if the compiler also sees them via the 'gen' source root.
-// Relying on fully qualified names or more targeted imports if needed.
-// import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes // Potentially ambiguous
-// import com.github.avrilfanomar.picatplugin.language.psi.PicatProgram // Potentially ambiguous
-// import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatProgramImpl // Potentially ambiguous
-import com.github.avrilfanomar.picatplugin.language.lexer.PicatLexerAdapter
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatProgramImpl
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
@@ -22,6 +15,7 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 import generated.GeneratedParser // Corrected Parser Import
+import org.intellij.grammar.parser.BnfLexer
 
 /**
  * Parser definition for Picat language.
@@ -32,7 +26,7 @@ import generated.GeneratedParser // Corrected Parser Import
  */
 class PicatParserDefinition : ParserDefinition {
 
-    override fun createLexer(project: Project): Lexer = PicatLexerAdapter() // Use imported class
+    override fun createLexer(project: Project): Lexer = BnfLexer() //TODO
 
     override fun createParser(project: Project): PsiParser = GeneratedParser()
 

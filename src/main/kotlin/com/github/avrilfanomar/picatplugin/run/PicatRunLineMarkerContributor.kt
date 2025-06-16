@@ -1,6 +1,6 @@
 package com.github.avrilfanomar.picatplugin.run
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFileType
+import com.github.avrilfanomar.picatplugin.language.PicatFileType
 import com.intellij.execution.lineMarker.ExecutorAction
 import com.intellij.execution.lineMarker.RunLineMarkerContributor
 import com.intellij.icons.AllIcons
@@ -15,10 +15,7 @@ class PicatRunLineMarkerContributor : RunLineMarkerContributor() {
         val file = element.containingFile
 
         // Only add run marker to the first element in Picat files
-        if (file != null && 
-            file.fileType == PicatFileType.Companion.INSTANCE && 
-            element.textOffset == 0) {
-
+        if (file != null && file.fileType is PicatFileType && element.textOffset == 0) {
             return Info(
                 AllIcons.RunConfigurations.TestState.Run,
                 ExecutorAction.getActions(1)

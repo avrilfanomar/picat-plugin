@@ -1,15 +1,3 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        google() // In case some transitive dependencies might need it
-    }
-    dependencies {
-        classpath("de.jflex:jflex:1.9.1")
-    }
-}
-
-import org.jetbrains.changelog.Changelog
-import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
@@ -23,21 +11,20 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.23.4" // Detekt for static code analysis
     id("info.solidsoft.pitest") version "1.15.0"
     id("org.jetbrains.grammarkit") version "2022.3.2.2" // Grammar-Kit plugin
+    //TODO jflex
 }
 
 group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
 
-// Set the JVM language level used to build the project.
 kotlin {
     jvmToolchain(21)
 }
 
-// Configure project's dependencies
 repositories {
     mavenCentral()
+    google()
 
-    // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
     intellijPlatform {
         defaultRepositories()
     }
@@ -68,9 +55,6 @@ dependencies {
 intellijPlatform {
     pluginConfiguration {
         name = providers.gradleProperty("pluginName")
-        // 'version' here is the plugin's own version, derived from gradle.properties.
-        // The actual IntelliJ Platform (SDK) version for building against is set in the dependencies block:
-        // intellijPlatform { create(...) }
         version = providers.gradleProperty("pluginVersion")
 
         // Temporarily comment out complex description and changeNotes
@@ -142,7 +126,7 @@ kover {
             }
         }
     }
-} // This closes kover {}
+}
 
 grammarKit {
     jflexRelease = "1.9.1" // Specify JFlex version
@@ -172,12 +156,7 @@ tasks.withType<GenerateParserTask>().configureEach {
     pathToParser.set("$basePackagePath/parser/PicatParser.java")
     pathToPsiRoot.set("$basePackagePath/psi")
 }
-// */ // This was the end of the comment block, removing it.
 
-// kotlin {
-    // sourceSets.main.get().kotlin.srcDir(layout.buildDirectory.dir("generated/sources/grammarkit/gen")) // Removed
-// }
-// Configure source sets directly
 sourceSets {
     main {
         java {
@@ -186,12 +165,9 @@ sourceSets {
     }
 }
 
-
-// Add explicit dependencies for Kotlin compilation
 tasks.named("compileKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java) {
-    dependsOn(tasks.named("generateParser")) // Re-enable dependency
-    // dependsOn(tasks.named("generateLexer")) // Lexer task is disabled/stubbed
-    dependsOn(tasks.named("compileJava")) // Add this dependency
+    dependsOn(tasks.named("generateParser"))
+    // dependsOn(tasks.named("generateLexer"))
 }
 
 // Configure Detekt - read more: https://detekt.dev/docs/introduction/gradle/

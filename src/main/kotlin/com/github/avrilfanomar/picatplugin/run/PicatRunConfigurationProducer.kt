@@ -1,6 +1,6 @@
 package com.github.avrilfanomar.picatplugin.run
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFileType
+import com.github.avrilfanomar.picatplugin.language.PicatFileType
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.actions.LazyRunConfigurationProducer
 import com.intellij.execution.configurations.ConfigurationFactory
@@ -27,7 +27,7 @@ class PicatRunConfigurationProducer : LazyRunConfigurationProducer<PicatRunConfi
         val psiFile = context.psiLocation?.containingFile
 
         // Only proceed if we have a valid Picat file
-        if (psiFile != null && psiFile.fileType == PicatFileType.Companion.INSTANCE) {
+        if (psiFile != null && psiFile.fileType is PicatFileType) {
             val virtualFile = psiFile.virtualFile
 
             if (virtualFile != null) {
@@ -51,7 +51,7 @@ class PicatRunConfigurationProducer : LazyRunConfigurationProducer<PicatRunConfi
         val psiFile = context.psiLocation?.containingFile
 
         // Only proceed if we have a valid Picat file
-        if (psiFile != null && psiFile.fileType == PicatFileType.Companion.INSTANCE) {
+        if (psiFile != null && psiFile.fileType is PicatFileType) {
             val virtualFile = psiFile.virtualFile
 
             if (virtualFile != null) {

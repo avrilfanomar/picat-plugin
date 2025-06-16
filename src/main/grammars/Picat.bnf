@@ -293,7 +293,6 @@ pattern_list ::= pattern (COMMA pattern)* {elementType=PATTERN_LIST}
 
 // Basic elements
 atom ::= IDENTIFIER | QUOTED_ATOM
-variable ::= VARIABLE | ANONYMOUS_VARIABLE
 number ::= INTEGER | FLOAT | HEX_INTEGER | OCTAL_INTEGER | BINARY_INTEGER
 structure ::= "$"? atom LPAR argument_list? RPAR {
   elementType = STRUCTURE
