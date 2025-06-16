@@ -22,9 +22,9 @@ import com.intellij.psi.TokenType; // For BAD_CHARACTER
 // CRLF macro removed as it's unused and its components are directly in WHITE_SPACE
 WHITE_SPACE=[ \t\f\r\n]+
 COMMENT_LINE=\%.*
-IDENTIFIER_REGEX=[a-z][a-zA-Z0-9_]* // Renamed to avoid clash with IDENTIFIER token if any
-VARIABLE_REGEX=[A-Z_][a-zA-Z0-9_]* // Renamed
-ANONYMOUS_VARIABLE_REGEX=_[a-zA-Z0-9_]* // Renamed
+IDENTIFIER_REGEX=[a-z][a-zA-Z0-9_]*
+VARIABLE_REGEX=[A-Z_][a-zA-Z0-9_]*
+ANONYMOUS_VARIABLE_REGEX=_[a-zA-Z0-9_]*
 NUMBER_REGEX=[0-9]+
 HEX_NUMBER_REGEX=0[xX][0-9a-fA-F]+
 OCTAL_NUMBER_REGEX=0[oO][0-7]+
@@ -33,11 +33,10 @@ FLOAT_NUMBER_REGEX=([0-9]+)\.([0-9]+)([eE][+-]?[0-9]+)?
 
 STRING_REGEX=\"([^\"\\]|\\.)*\"
 QUOTED_ATOM_REGEX=\'([^\'\\]|\\.)*\'
-MULTI_LINE_COMMENT_REGEX=\/\*([^*]|\*+[^*/])*\*+\/ // Escaped slashes
+MULTI_LINE_COMMENT_REGEX=\/\*([^*]|\*+[^*/])*\*+\/
 
 %% // Separator 2: After options and macros
 
-// Lexical rules (restored from subtask 12 attempt)
 <YYINITIAL> {
   {WHITE_SPACE}               { return TokenType.WHITE_SPACE; }
   {COMMENT_LINE}              { return COMMENT; }
