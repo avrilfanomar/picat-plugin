@@ -104,7 +104,6 @@
     LBRACE="{"
     RBRACE="}"
     CUT="!"
-    PIPE_CHOICE="|"
     AT="@"
 
     // Literals (expanded)

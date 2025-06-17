@@ -15,7 +15,7 @@ import com.intellij.psi.TokenType; // For BAD_CHARACTER
 %type IElementType
 %eofval{
   zzAtEOF = true; // Mark EOF
-  return null; // Corrected eofval
+  return null;
 %eofval}
 
 // Macro definitions (restored from subtask 12 attempt)
@@ -119,6 +119,7 @@ MULTI_LINE_COMMENT_REGEX=\/\*([^*]|\*+[^*/])*\*+\/
   "^"                         { return CARET; }
   "&"                         { return AMPERSAND; }
   "|"                         { return PIPE; }
+  \.\s+                       { return EOR; }
   "."                         { return DOT; }
   "++"                        { return CONCAT_OP; }
 

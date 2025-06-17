@@ -13,7 +13,6 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.23.4" // Detekt for static code analysis
     id("info.solidsoft.pitest") version "1.15.0"
     id("org.jetbrains.grammarkit") version "2022.3.2.2" // Grammar-Kit plugin
-    //TODO jflex
 }
 
 group = providers.gradleProperty("pluginGroup").get()
