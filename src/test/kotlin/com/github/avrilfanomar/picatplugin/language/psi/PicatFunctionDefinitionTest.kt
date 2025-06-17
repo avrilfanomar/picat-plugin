@@ -3,15 +3,9 @@ package com.github.avrilfanomar.picatplugin.language.psi
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionClause
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionFact
-import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionBody
-// PicatExpression is likely already imported if other files use it, or might be needed.
-import com.github.avrilfanomar.picatplugin.language.psi.PicatStructure // Added import
 
 /**
  * Test for Picat function definition PSI implementation.
@@ -42,10 +36,10 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         val head = functionFact.getHead()
         assertNotNull(head, "Function clause should have a head")
 
-        val structure = head!!.getStructure() // A function head must be a structure
+        val structure = head.getStructure() // A function head must be a structure
         assertNotNull(structure, "Head should contain a structure")
 
-        assertEquals("Function name should be 'factorial'", "factorial", structure!!.getAtom()?.text)
+        assertEquals("Function name should be 'factorial'", "factorial", structure!!.getAtom().text)
         val argList = structure.getArgumentList()
         assertEquals("Function arity should be 1", 1, argList?.getExpressionList()?.size ?: 0)
 
@@ -87,10 +81,10 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         // Verify that the function definition has the correct name and arity from its head
         val head = functionFact.getHead()
         assertNotNull(head, "Function clause should have a head")
-        val structure = head!!.getStructure()
+        val structure = head.getStructure()
         assertNotNull(structure, "Head should contain a structure")
 
-        assertEquals("Function name should be 'custom_sum'", "custom_sum", structure!!.getAtom()?.text)
+        assertEquals("Function name should be 'custom_sum'", "custom_sum", structure!!.getAtom().text)
         val argList = structure.getArgumentList()
         assertEquals("Function arity should be 3", 3, argList?.getExpressionList()?.size ?: 0)
 
@@ -134,10 +128,10 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         // Verify that the function definition has the correct name and arity from its head
         val head = functionRule.getHead()
         assertNotNull(head, "Function clause should have a head")
-        val structure = head!!.getStructure()
+        val structure = head.getStructure()
         assertNotNull(structure, "Head should contain a structure")
 
-        assertEquals("Function name should be 'factorial'", "factorial", structure!!.getAtom()?.text)
+        assertEquals("Function name should be 'factorial'", "factorial", structure!!.getAtom().text)
         val argList = structure.getArgumentList()
         assertEquals("Function arity should be 1", 1, argList?.getExpressionList()?.size ?: 0)
 
@@ -224,7 +218,11 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         assertNotNull("Function rule should have a PicatFunctionBody", body)
 
         // Verify that the function body has the correct text (might be the text of the expression within FunctionBody)
-        assertEquals("Function body should be '1'", "1", body?.getExpression()?.text) // Assuming PicatFunctionBody has getExpression()
+        assertEquals(
+            "Function body should be '1'",
+            "1",
+            body?.getExpression()?.text
+        ) // Assuming PicatFunctionBody has getExpression()
 
         // Verify that the function body is of the correct type
         assertTrue("Function body should be a PicatFunctionBody", body is PicatFunctionBody)

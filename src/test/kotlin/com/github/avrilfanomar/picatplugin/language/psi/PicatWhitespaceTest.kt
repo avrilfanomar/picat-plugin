@@ -3,8 +3,6 @@ package com.github.avrilfanomar.picatplugin.language.psi
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import com.github.avrilfanomar.picatplugin.language.psi.PicatListExpression // Changed from PicatList
-import com.github.avrilfanomar.picatplugin.language.psi.PicatExpression
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -37,7 +35,8 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all lists in the file
-        val lists: Collection<PicatListExpression> = PsiTreeUtil.findChildrenOfType(file, PicatListExpression::class.java)?.toList() ?: emptyList()
+        val lists: Collection<PicatListExpression> =
+            PsiTreeUtil.findChildrenOfType(file, PicatListExpression::class.java).toList()
 
         // Verify that there are lists
         assertTrue(lists.isNotEmpty(), "There should be at least one list")
@@ -88,7 +87,8 @@ class PicatWhitespaceTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all expressions in the file
-        val expressions: Collection<PicatExpression> = PsiTreeUtil.getChildrenOfType(file, PicatExpression::class.java)?.toList() ?: emptyList()
+        val expressions: Collection<PicatExpression> =
+            PsiTreeUtil.getChildrenOfType(file, PicatExpression::class.java)?.toList() ?: emptyList()
 
         // Find expressions with parentheses
         val expressionsWithParentheses = expressions.filter { expr: PicatExpression ->

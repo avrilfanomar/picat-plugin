@@ -1,13 +1,9 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionClause // Changed import
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionFact
-import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule // Added import
-import com.intellij.psi.PsiElement // <<<< ADD THIS IMPORT
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -55,7 +51,11 @@ class PicatStructureTest : BasePlatformTestCase() {
         assertEquals(2, arguments?.size, "Argument list should have 2 arguments")
 
         // Verify that each argument has the correct expression
-        assertEquals("First argument should be 1", "1", arguments?.get(0)?.text) // Assuming argument itself is the expression, .text is fine
+        assertEquals(
+            "First argument should be 1",
+            "1",
+            arguments?.get(0)?.text
+        ) // Assuming argument itself is the expression, .text is fine
         assertEquals("Second argument should be 2", "2", arguments?.get(1)?.text)
     }
 
@@ -101,7 +101,7 @@ class PicatStructureTest : BasePlatformTestCase() {
 
         // Find the inner point structure
         val innerPointStructure = structures.find {
-            it.atom?.text == "point" && it.text == "point(2, 3)"
+            it.atom.text == "point" && it.text == "point(2, 3)"
         }
         assertNotNull(innerPointStructure, "There should be an inner point structure")
 
@@ -165,7 +165,7 @@ class PicatStructureTest : BasePlatformTestCase() {
         assertTrue(structures.size == 2, "There should be at least two structures")
 
         // Find the point structure
-        val pointStructure = structures.find { it.atom?.text == "point" }
+        val pointStructure = structures.find { it.atom.text == "point" }
         assertNotNull(pointStructure, "There should be a point structure")
 
         // Verify that the point structure has the correct name and arity
@@ -173,7 +173,7 @@ class PicatStructureTest : BasePlatformTestCase() {
         assertEquals(2, pointStructure?.argumentList?.expressionList?.size ?: 0, "Structure arity should be 2")
 
         // Find the println structure
-        val printlnStructure = structures.find { it.atom?.text == "println" }
+        val printlnStructure = structures.find { it.atom.text == "println" }
         assertNotNull(printlnStructure, "There should be a println structure")
 
         // Verify that the println structure has the correct name and arity
@@ -192,23 +192,27 @@ class PicatStructureTest : BasePlatformTestCase() {
         structures.addAll(PsiTreeUtil.getChildrenOfType(file, PicatStructure::class.java)?.toList() ?: emptyList())
 
         // Then, find all structures in rules
-        val rules: Collection<PicatPredicateRule> = PsiTreeUtil.getChildrenOfType(file, PicatPredicateRule::class.java)?.toList() ?: emptyList()
+        val rules: Collection<PicatPredicateRule> =
+            PsiTreeUtil.getChildrenOfType(file, PicatPredicateRule::class.java)?.toList() ?: emptyList()
         for (rule: PicatPredicateRule in rules) {
             // Find structures in the rule body
             val body = rule.body // property access
             if (body != null) {
-                structures.addAll(PsiTreeUtil.getChildrenOfType(body, PicatStructure::class.java)?.toList() ?: emptyList())
+                structures.addAll(
+                    PsiTreeUtil.getChildrenOfType(body, PicatStructure::class.java)?.toList() ?: emptyList()
+                )
             }
 
             // Find structures in the rule head
             val head = rule.head // property access
-            if (head != null && head is PicatStructure) {
+            if (head is PicatStructure) {
                 structures.add(head)
             }
         }
 
         // Find structures in function definitions
-        val functionDefs: Collection<PicatFunctionClause> = PsiTreeUtil.getChildrenOfType(file, PicatFunctionClause::class.java)?.toList() ?: emptyList()
+        val functionDefs: Collection<PicatFunctionClause> =
+            PsiTreeUtil.getChildrenOfType(file, PicatFunctionClause::class.java)?.toList() ?: emptyList()
         for (functionDef: PicatFunctionClause in functionDefs) {
             val bodyElement: PsiElement? = when (functionDef) {
                 is PicatFunctionRule -> functionDef.functionBody // property access
@@ -216,7 +220,9 @@ class PicatStructureTest : BasePlatformTestCase() {
                 else -> null
             }
             if (bodyElement != null) {
-                structures.addAll(PsiTreeUtil.getChildrenOfType(bodyElement, PicatStructure::class.java)?.toList() ?: emptyList())
+                structures.addAll(
+                    PsiTreeUtil.getChildrenOfType(bodyElement, PicatStructure::class.java)?.toList() ?: emptyList()
+                )
             }
         }
 
