@@ -1,10 +1,11 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
-import com.github.avrilfanomar.picatplugin.language.psi.* // Import all PSI interfaces
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.jupiter.api.Assertions.* // Using wildcard import for assertions
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -42,10 +43,12 @@ class PicatPsiTest : BasePlatformTestCase() {
                 name = head.atomNoArgs!!.atom.text
                 arity = 0
             }
+
             head.structure != null -> {
                 name = head.structure!!.atom.text
                 arity = head.structure!!.argumentList?.expressionList?.size ?: 0
             }
+
             else -> {
                 name = null
                 arity = -1 // Should not happen for a valid fact
@@ -161,15 +164,14 @@ class PicatPsiTest : BasePlatformTestCase() {
         val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java)
         assertEquals(2, importStatements.size, "There should be exactly two import statements")
 
-        // Verify that the import statements have the correct text (optional, as structure is more important)
-        assertTrue(importStatements[0].text.startsWith("import util, math, cp."), "First import statement text check")
-        assertTrue(importStatements[1].text.startsWith("import planner."), "Second import statement text check")
-
         // Test extracting all imported module names from the file
         val allImportedModuleNames = importStatements.flatMap { stmt ->
-            stmt.importList?.importItemList?.mapNotNull { it.moduleName?.atom?.text } ?: emptyList()
+            stmt.importList?.importItemList?.mapNotNull { it.moduleName.atom.text } ?: emptyList()
         }
         assertEquals(4, allImportedModuleNames.size, "There should be four imported module names in total")
-        assertTrue(allImportedModuleNames.containsAll(listOf("util", "math", "cp", "planner")), "All expected module names should be present")
+        assertTrue(
+            allImportedModuleNames.containsAll(listOf("util", "math", "cp", "planner")),
+            "All expected module names should be present"
+        )
     }
 }

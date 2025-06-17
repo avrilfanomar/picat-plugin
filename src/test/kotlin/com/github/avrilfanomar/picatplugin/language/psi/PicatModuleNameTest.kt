@@ -1,10 +1,9 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
-import com.github.avrilfanomar.picatplugin.language.psi.* // Import all PSI interfaces
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 /**
@@ -32,7 +31,7 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         // Get the module names from the import statement
         val importStatement = importStatements.first()
         val moduleNameElements = importStatement.importList?.importItemList ?: emptyList()
-        val moduleNames = moduleNameElements.mapNotNull { it.moduleName?.atom?.text }
+        val moduleNames = moduleNameElements.mapNotNull { it.moduleName.atom.text }
 
 
         // Verify that there is exactly one module name
@@ -62,7 +61,7 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         // Get the module names from the import statement
         val importStatement = importStatements.first()
         val moduleNameElements = importStatement.importList?.importItemList ?: emptyList()
-        val moduleNames = moduleNameElements.mapNotNull { it.moduleName?.atom?.text }
+        val moduleNames = moduleNameElements.mapNotNull { it.moduleName.atom.text }
 
         // Verify that there are exactly three module names
         assertEquals(3, moduleNames.size, "There should be exactly three module names")
@@ -95,10 +94,14 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         val expectedModuleNames = listOf("util", "math", "cp")
         importStatements.forEachIndexed { i, importStatement ->
             val moduleNameElements = importStatement.importList?.importItemList ?: emptyList()
-            val moduleNames = moduleNameElements.mapNotNull { it.moduleName?.atom?.text }
+            val moduleNames = moduleNameElements.mapNotNull { it.moduleName.atom.text }
 
             assertEquals(1, moduleNames.size, "Import statement ${i + 1} should have exactly one module name")
-            assertEquals(expectedModuleNames[i], moduleNames.first(), "Module name for import statement ${i + 1} should be '${expectedModuleNames[i]}'")
+            assertEquals(
+                expectedModuleNames[i],
+                moduleNames.first(),
+                "Module name for import statement ${i + 1} should be '${expectedModuleNames[i]}'"
+            )
         }
     }
 }
