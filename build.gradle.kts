@@ -151,9 +151,7 @@ sourceSets {
         }
     }
     test {
-        java {
-            srcDirs(layout.buildDirectory.dir("generated/sources/grammarkit/gen"))
-        }
+        // Generated sources should be taken from main output, not re-added here
     }
 }
 
@@ -169,6 +167,7 @@ tasks.named("compileKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompile::cl
 tasks.named("compileTestKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java) {
     dependsOn(tasks.named("generateParser"))
     dependsOn(tasks.named("generateLexer"))
+    // Ensure main output (including compiled Java PSI) is on the classpath
     libraries.from(project.sourceSets.main.get().output.classesDirs)
 }
 

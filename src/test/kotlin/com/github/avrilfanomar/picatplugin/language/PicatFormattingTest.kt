@@ -40,7 +40,7 @@ class PicatFormattingTest : BasePlatformTestCase() {
         val formattedText = myFixture.editor.document.text
 
         // Compare the formatted text with the expected output
-        Assertions.assertEquals("Formatting should match expected output", expected, formattedText)
+        Assertions.assertEquals(expected, formattedText, "Formatting should match expected output")
     }
 
     @Test
@@ -50,14 +50,14 @@ class PicatFormattingTest : BasePlatformTestCase() {
 
         // Assert that a FormattingModelBuilder is registered
         Assertions.assertNotNull(
-            "FormattingModelBuilder should be registered for Picat language",
-            formattingModelBuilder
+            formattingModelBuilder,
+            "FormattingModelBuilder should be registered for Picat language"
         )
 
         // Assert that it's an instance of PicatFormattingModelBuilder
         Assertions.assertTrue(
-            "FormattingModelBuilder should be an instance of PicatFormattingModelBuilder",
-            formattingModelBuilder is PicatFormattingModelBuilder
+            formattingModelBuilder is PicatFormattingModelBuilder,
+            "FormattingModelBuilder should be an instance of PicatFormattingModelBuilder"
         )
     }
 
@@ -407,7 +407,7 @@ literals_example =>
         val formatted = myFixture.editor.document.text
 
         // Assert that the formatted code matches the expected output
-        Assertions.assertEquals("Formatting should match expected output", expected, formatted)
+        Assertions.assertEquals(expected, formatted, "Formatting should match expected output")
     }
 
     @Test

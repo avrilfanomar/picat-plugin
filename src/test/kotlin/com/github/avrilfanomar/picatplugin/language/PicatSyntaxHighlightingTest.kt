@@ -119,8 +119,8 @@ class PicatSyntaxHighlightingTest : LexerTestCase() {
                 val attributeNames = attributesToString(attributes)
 
                 Assertions.assertTrue(
-                    "Token '$tokenText' should have attribute '$expectedAttribute' but has '$attributeNames'",
-                    attributeNames.contains(expectedAttribute ?: "")
+                    attributeNames.contains(expectedAttribute ?: ""),
+                    "Token '$tokenText' should have attribute '$expectedAttribute' but has '$attributeNames'"
                 )
             }
 
