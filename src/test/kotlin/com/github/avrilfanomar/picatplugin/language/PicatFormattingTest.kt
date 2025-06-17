@@ -1,7 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language
 
 import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder
-import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder
 import com.intellij.lang.LanguageFormatting
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -50,7 +49,10 @@ class PicatFormattingTest : BasePlatformTestCase() {
         val formattingModelBuilder = LanguageFormatting.INSTANCE.forLanguage(PicatLanguage)
 
         // Assert that a FormattingModelBuilder is registered
-        Assertions.assertNotNull("FormattingModelBuilder should be registered for Picat language", formattingModelBuilder)
+        Assertions.assertNotNull(
+            "FormattingModelBuilder should be registered for Picat language",
+            formattingModelBuilder
+        )
 
         // Assert that it's an instance of PicatFormattingModelBuilder
         Assertions.assertTrue(

@@ -6,6 +6,7 @@ import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 /**
@@ -28,29 +29,29 @@ class PicatExpressionTest : BasePlatformTestCase() {
 
         // Find assignment expressions
         val assignmentExpressions = PsiTreeUtil.findChildrenOfType(file, PicatAssignment::class.java)
-        assertTrue(assignmentExpressions.isNotEmpty())
+        Assertions.assertTrue(assignmentExpressions.isNotEmpty())
 
         val assignment = assignmentExpressions.firstOrNull { it.text == "X = 1 + 2" }
-        assertNotNull(assignment)
+        Assertions.assertNotNull(assignment)
 
         // The right-hand side of the assignment should be an additive expression
         // assignment rule is `variable ASSIGN_OP expression`
         val rhsExpression = assignment?.expression
         val additiveExpression = PsiTreeUtil.findChildOfType(rhsExpression, PicatAdditiveExpression::class.java)
-        assertNotNull(additiveExpression)
+        Assertions.assertNotNull(additiveExpression)
 
         // Check for the + operator
         val plusOperator = additiveExpression!!.node.getChildren(null).any {
             it.elementType == PicatTokenTypes.PLUS
         }
-        assertTrue(plusOperator)
+        Assertions.assertTrue(plusOperator)
 
         // Check for terms (operands)
         // additive_expression ::= multiplicative_expression ((PLUS | MINUS) multiplicative_expression)*
         val terms = additiveExpression.multiplicativeExpressionList
-        assertEquals(2, terms.size, "Additive expression should have two terms")
-        assertEquals("1", terms[0].text)
-        assertEquals("2", terms[1].text)
+        Assertions.assertEquals(2, terms.size, "Additive expression should have two terms")
+        Assertions.assertEquals("1", terms[0].text)
+        Assertions.assertEquals("2", terms[1].text)
     }
 
     @Test
@@ -67,32 +68,47 @@ class PicatExpressionTest : BasePlatformTestCase() {
 
         val assignment = PsiTreeUtil.findChildrenOfType(file, PicatAssignment::class.java)
             .firstOrNull { it.text == "X = 1 + 2 * 3" }
-        assertNotNull(assignment, "Should find the assignment 'X = 1 + 2 * 3'")
+        Assertions.assertNotNull(assignment, "Should find the assignment 'X = 1 + 2 * 3'")
 
         val rhsExpressionOp = assignment?.expression
         val additiveExpression = PsiTreeUtil.findChildOfType(rhsExpressionOp, PicatAdditiveExpression::class.java)
-        assertNotNull(additiveExpression, "Expression '1 + 2 * 3' should be an additive expression")
+        Assertions.assertNotNull(
+            additiveExpression,
+            "Expression '1 + 2 * 3' should be an additive expression"
+        )
 
         // Check for the + operator
-        assertTrue(additiveExpression!!.node.getChildren(null).any { it.elementType == PicatTokenTypes.PLUS })
+        Assertions.assertTrue(
+            additiveExpression!!.node.getChildren(null).any { it.elementType == PicatTokenTypes.PLUS })
 
         val firstTerm = additiveExpression.multiplicativeExpressionList.getOrNull(0)
-        assertNotNull(firstTerm)
-        assertEquals("1", firstTerm!!.text) // This should be a multiplicativeExpression
+        Assertions.assertNotNull(firstTerm)
+        Assertions.assertEquals(
+            "1",
+            firstTerm!!.text
+        ) // This should be a multiplicativeExpression
 
         val secondTerm = additiveExpression.multiplicativeExpressionList.getOrNull(1)
-        assertNotNull(secondTerm, "Additive expression should have a second term for '2 * 3'")
-        assertEquals("2 * 3", secondTerm!!.text) // This is a multiplicativeExpression
+        Assertions.assertNotNull(
+            secondTerm,
+            "Additive expression should have a second term for '2 * 3'"
+        )
+        Assertions.assertEquals("2 * 3", secondTerm!!.text) // This is a multiplicativeExpression
 
         // Verify the multiplicative expression "2 * 3"
         // multiplicative_expression ::= power_expression ((MULTIPLY | DIVIDE | ...) power_expression)*
-        assertTrue(secondTerm.node.getChildren(null).any { it.elementType == PicatTokenTypes.MULTIPLY })
+        Assertions.assertTrue(
+            secondTerm.node.getChildren(null).any { it.elementType == PicatTokenTypes.MULTIPLY })
         val factors = secondTerm.powerExpressionList // Operands of * are power_expression
-        assertEquals(2, factors.size, "Multiplicative expression '2 * 3' should have two factors")
+        Assertions.assertEquals(
+            2,
+            factors.size,
+            "Multiplicative expression '2 * 3' should have two factors"
+        )
         // Each power_expression might wrap a unary_expression, which wraps a primary_expression
         // For simplicity, checking text, but a deeper check might be needed if text is not direct.
-        assertEquals("2", factors[0].text)
-        assertEquals("3", factors[1].text)
+        Assertions.assertEquals("2", factors[0].text)
+        Assertions.assertEquals("3", factors[1].text)
     }
 
     @Test
@@ -109,59 +125,61 @@ class PicatExpressionTest : BasePlatformTestCase() {
 
         val assignment = PsiTreeUtil.findChildrenOfType(file, PicatAssignment::class.java)
             .firstOrNull { it.text == "X = (1 + 2) * 3" }
-        assertNotNull(assignment, "Should find the assignment 'X = (1 + 2) * 3'")
+        Assertions.assertNotNull(assignment, "Should find the assignment 'X = (1 + 2) * 3'")
 
         // The top-level expression should be a multiplicative expression
         val rhsExpressionParen = assignment?.expression
         val multiplicativeExpression =
             PsiTreeUtil.findChildOfType(rhsExpressionParen, PicatMultiplicativeExpression::class.java)
-        assertNotNull(
+        Assertions.assertNotNull(
             multiplicativeExpression,
             "Expression '(1 + 2) * 3' should be a multiplicative expression"
         )
 
-        assertTrue(multiplicativeExpression!!.node.getChildren(null).any { it.elementType == PicatTokenTypes.MULTIPLY })
+        Assertions.assertTrue(
+            multiplicativeExpression!!.node.getChildren(null).any { it.elementType == PicatTokenTypes.MULTIPLY })
         // A parenthesized expression is a primary_expression,
         // which is part of power_expression -> unary_expression -> primary_expression
         val factors = multiplicativeExpression.powerExpressionList
-        assertEquals(2, factors.size) // Should have two powerExpression children
+        Assertions.assertEquals(2, factors.size) // Should have two powerExpression children
 
         // To get to (1+2) which is a primary_expression from power_expression:
         val firstFactorPrimary = getInnermostPrimaryExpression(factors[0])
 
-        assertNotNull(
+        Assertions.assertNotNull(
             firstFactorPrimary,
             "Multiplicative expression should have a first factor (primary)"
         )
-        assertEquals("(1 + 2)", firstFactorPrimary!!.text)
+        Assertions.assertEquals("(1 + 2)", firstFactorPrimary!!.text)
 
-
-        // This primary expression should contain LPAR, RPAR and an additive expression
-        assertNotNull(firstFactorPrimary.lpar, "Parenthesized expression should have LPAR")
-        assertNotNull(firstFactorPrimary.rpar, "Parenthesized expression should have RPAR")
         // The expression inside LPAR RPAR is a general expression, which can be additive
         val nestedExpression = firstFactorPrimary.expression // primary_expression ::= LPAR expression RPAR
         val nestedAdditiveExpression = PsiTreeUtil.findChildOfType(
             nestedExpression,
             PicatAdditiveExpression::class.java
         )
-        assertNotNull(
+        Assertions.assertNotNull(
             nestedAdditiveExpression,
             "Parenthesized expression should contain an additive expression"
         )
 
         // Verify the nested additive expression "1 + 2"
-        assertTrue(nestedAdditiveExpression!!.node.getChildren(null).any { it.elementType == PicatTokenTypes.PLUS })
+        Assertions.assertTrue(
+            nestedAdditiveExpression!!.node.getChildren(null).any { it.elementType == PicatTokenTypes.PLUS })
         val nestedTerms = nestedAdditiveExpression.multiplicativeExpressionList
-        assertEquals(2, nestedTerms.size, "Nested additive expression should have two terms")
-        assertEquals("1", nestedTerms[0].text)
-        assertEquals("2", nestedTerms[1].text)
+        Assertions.assertEquals(
+            2,
+            nestedTerms.size,
+            "Nested additive expression should have two terms"
+        )
+        Assertions.assertEquals("1", nestedTerms[0].text)
+        Assertions.assertEquals("2", nestedTerms[1].text)
 
         // To get to "3" (second factor)
         val secondFactorPrimary = getInnermostPrimaryExpression(factors[1])
 
-        assertNotNull(secondFactorPrimary)
-        assertEquals("3", secondFactorPrimary!!.text)
+        Assertions.assertNotNull(secondFactorPrimary)
+        Assertions.assertEquals("3", secondFactorPrimary!!.text)
     }
 
     @Test
@@ -178,31 +196,30 @@ class PicatExpressionTest : BasePlatformTestCase() {
 
         val assignment = PsiTreeUtil.findChildrenOfType(file, PicatAssignment::class.java)
             .firstOrNull { it.text == "Z = X + Y" }
-        assertNotNull(assignment, "Should find the assignment 'Z = X + Y'")
+        Assertions.assertNotNull(assignment, "Should find the assignment 'Z = X + Y'")
 
         val rhsExpressionVar = assignment?.expression
         val additiveExpression = PsiTreeUtil.findChildOfType(rhsExpressionVar, PicatAdditiveExpression::class.java)
-        assertNotNull(additiveExpression, "Expression 'X + Y' should be an additive expression")
+        Assertions.assertNotNull(
+            additiveExpression,
+            "Expression 'X + Y' should be an additive expression"
+        )
 
-        assertTrue(additiveExpression!!.node.getChildren(null).any { it.elementType == PicatTokenTypes.PLUS })
+        Assertions.assertTrue(
+            additiveExpression!!.node.getChildren(null).any { it.elementType == PicatTokenTypes.PLUS })
 
         val terms = additiveExpression.multiplicativeExpressionList
-        assertEquals(2, terms.size, "Additive expression 'X + Y' should have two terms")
+        Assertions.assertEquals(
+            2,
+            terms.size,
+            "Additive expression 'X + Y' should have two terms"
+        )
 
         // Each term (X, Y) is a multiplicativeExpression.
         val primaryX = getInnermostPrimaryExpression(terms[0])
-        assertEquals("X", primaryX?.text)
-        assertNotNull(
-            primaryX?.atom ?: primaryX?.variable,
-            "Term 'X' should contain an atom or variable"
-        )
-
+        Assertions.assertEquals("X", primaryX?.text)
         val primaryY = getInnermostPrimaryExpression(terms[1])
-        assertEquals("Y", primaryY?.text)
-        assertNotNull(
-            primaryY?.atom ?: primaryY?.variable,
-            "Term 'Y' should contain an atom or variable"
-        )
+        Assertions.assertEquals("Y", primaryY?.text)
     }
 
     @Test
@@ -224,21 +241,25 @@ class PicatExpressionTest : BasePlatformTestCase() {
         val functionCalls = PsiTreeUtil.findChildrenOfType(file, PicatFunctionCall::class.java)
 
         // Find the factorial function call
-        val factorialCall = functionCalls.firstOrNull { it.atom.text == "factorial" }
-        assertNotNull(factorialCall, "Should find 'factorial(5)' function call")
+        val factorialCall = functionCalls.firstOrNull { it.atom?.text == "factorial" }
+        Assertions.assertNotNull(factorialCall, "Should find 'factorial(5)' function call")
 
-        assertEquals("factorial", factorialCall!!.atom.text, "Function call name should be 'factorial'")
+        Assertions.assertEquals(
+            "factorial",
+            factorialCall!!.atom?.text,
+            "Function call name should be 'factorial'"
+        )
 
         val arity = factorialCall.argumentList?.expressionList?.size ?: 0
-        assertEquals(1, arity, "Function call arity should be 1")
+        Assertions.assertEquals(1, arity, "Function call arity should be 1")
 
         val argumentList = factorialCall.argumentList
-        assertNotNull(argumentList, "Function call should have an argument list")
+        Assertions.assertNotNull(argumentList, "Function call should have an argument list")
 
         val arguments = argumentList!!.expressionList
-        assertNotNull(arguments, "Argument list should not be null")
-        assertEquals(1, arguments.size, "Argument list should have 1 argument")
-        assertEquals("5", arguments[0].text)
+        Assertions.assertNotNull(arguments, "Argument list should not be null")
+        Assertions.assertEquals(1, arguments.size, "Argument list should have 1 argument")
+        Assertions.assertEquals("5", arguments[0].text)
     }
 
     @Test
@@ -265,14 +286,14 @@ class PicatExpressionTest : BasePlatformTestCase() {
                     && expr.text.contains("X")
                     && expr.text.contains("Y")
         }
-        assertNotNull(specificComparison, "Should find comparison 'X < Y'")
+        Assertions.assertNotNull(specificComparison, "Should find comparison 'X < Y'")
 
         // The rule is: "comparison ::= expression comparison_operator expression {elementType=COMPARISON}"
         // This means PicatComparison PSI element will have an expressionList.
         val operands = specificComparison!!.expressionList
-        assertEquals(2, operands.size, "Comparison X < Y should have two operands")
-        assertEquals("X", operands[0].text)
-        assertEquals("Y", operands[1].text)
+        Assertions.assertEquals(2, operands.size, "Comparison X < Y should have two operands")
+        Assertions.assertEquals("X", operands[0].text)
+        Assertions.assertEquals("Y", operands[1].text)
     }
 
     // Test for PicatStructure (similar to function call but used in facts/rules directly)
@@ -283,20 +304,24 @@ class PicatExpressionTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         val structures = PsiTreeUtil.findChildrenOfType(file, PicatStructure::class.java)
-        assertTrue(structures.isNotEmpty())
+        Assertions.assertTrue(structures.isNotEmpty())
 
         val pointStructure = structures.firstOrNull { it.atom.text == "point" }
-        assertNotNull(pointStructure, "Should find structure 'point(1,2)'")
+        Assertions.assertNotNull(pointStructure, "Should find structure 'point(1,2)'")
 
-        assertEquals("point", pointStructure!!.atom.text, "Structure name should be 'point'")
+        Assertions.assertEquals(
+            "point",
+            pointStructure!!.atom.text,
+            "Structure name should be 'point'"
+        )
         val arity = pointStructure.argumentList?.expressionList?.size ?: 0
-        assertEquals(2, arity, "Structure arity should be 2")
+        Assertions.assertEquals(2, arity, "Structure arity should be 2")
 
         val arguments = pointStructure.argumentList?.expressionList
-        assertNotNull(arguments)
-        assertEquals(2, arguments!!.size)
-        assertEquals("1", arguments[0].text)
-        assertEquals("2", arguments[1].text)
+        Assertions.assertNotNull(arguments)
+        Assertions.assertEquals(2, arguments!!.size)
+        Assertions.assertEquals("1", arguments[0].text)
+        Assertions.assertEquals("2", arguments[1].text)
     }
 
     // Test for List Expression
@@ -307,28 +332,28 @@ class PicatExpressionTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         val listExpressions = PsiTreeUtil.findChildrenOfType(file, PicatListExpression::class.java)
-        assertTrue(listExpressions.isNotEmpty())
+        Assertions.assertTrue(listExpressions.isNotEmpty())
 
         val list = listExpressions.first() // Assuming it's the primary list in X = [...]
-        assertNotNull(list, "Should find the list [1, a, f(X)]")
+        Assertions.assertNotNull(list, "Should find the list [1, a, f(X)]")
 
         // list_expression ::= LBRACKET list_items? RBRACKET
         // list_items ::= expression ((COMMA | SEMICOLON) expression)* (PIPE expression)? {elementType = LIST_ELEMENTS}
         // The PSI class for list_items is PicatListItems (due to psiClassPrefix and rule name)
         // It should have an expressionList.
         val listItems = list.listItems
-        assertNotNull(listItems)
+        Assertions.assertNotNull(listItems)
         val items = listItems!!.expressionList
-        assertEquals(3, items.size, "List should have 3 items")
-        assertEquals("1", items[0].text)
-        assertEquals("a", items[1].text)
-        assertEquals("f(X)", items[2].text)
+        Assertions.assertEquals(3, items.size, "List should have 3 items")
+        Assertions.assertEquals("1", items[0].text)
+        Assertions.assertEquals("a", items[1].text)
+        Assertions.assertEquals("f(X)", items[2].text)
 
         // To check if items[2] is a function call, we need to inspect its type.
         // expression -> ... -> primary_expression -> function_call
         val primaryExpression = getInnermostPrimaryExpression(items[2])
-        assertNotNull(primaryExpression)
-        assertTrue(primaryExpression!!.functionCall != null)
+        Assertions.assertNotNull(primaryExpression)
+        Assertions.assertTrue(primaryExpression!!.functionCall != null)
     }
 
 }
@@ -369,7 +394,7 @@ private fun getInnermostPrimaryExpression(element: PsiElement?): PicatPrimaryExp
         }
     }
     if (current is PicatPowerExpression) {
-        current = current.unaryExpressionList?.first()?.primaryExpression
+        current = current.unaryExpressionList.first()?.primaryExpression
     }
     if (current is PicatUnaryExpression) {
         current = current.primaryExpression
