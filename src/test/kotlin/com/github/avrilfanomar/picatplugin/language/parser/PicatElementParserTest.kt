@@ -157,11 +157,30 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Check that the function has the correct name
         val function = functions[0]
-        assertEquals("Function should be named 'square'", "square", function.head.atom.text)
+        val headPsi = function.head
+        var functionName: String? = null
+        var arity = 0
+        if (headPsi?.atomNoArgs != null) {
+            functionName = headPsi.atomNoArgs!!.atom.text
+            // atom_no_args implies arity 0 unless it's a variable, but for func defs it's an atom.
+            // Arity for atom_no_args in a function head context is 0.
+            arity = 0
+        } else if (headPsi?.structure != null) {
+            functionName = headPsi.structure!!.atom.text
+            arity = headPsi.structure!!.argumentList?.expressionList?.size ?: 0
+        } else if (headPsi?.qualifiedAtom != null) {
+            // Handle qualified atom if necessary, though less common for simple function names
+            functionName = headPsi.qualifiedAtom!!.text // Or more specific part
+            // Arity for qualified_atom might need specific handling if it can have args
+            // For now, assume qualified atoms used as function names also might not have separate (...) args
+            // or this needs to be defined by how arity is counted for them.
+            // Based on `square(X)`, this path won't be hit.
+        }
+        assertEquals("Function should be named 'square'", "square", functionName)
 
         // Check that the function has the correct arity
-        val squareArity = function.head.structure?.argumentList?.children?.size ?: 0
-        assertEquals("Function should have arity 1", 1, squareArity)
+        // val squareArity = function.head.structure?.argumentList?.children?.size ?: 0 // Old line
+        assertEquals("Function should have arity 1", 1, arity)
     }
 
     @Test
@@ -180,11 +199,23 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Check that the function has the correct name
         val function = functions[0]
-        assertEquals("Function should be named 'factorial'", "factorial", function.head.atom.text)
+        val headPsiFact = function.head
+        var functionNameFact: String? = null
+        var arityFact = 0
+        if (headPsiFact?.atomNoArgs != null) {
+            functionNameFact = headPsiFact.atomNoArgs!!.atom.text
+            arityFact = 0
+        } else if (headPsiFact?.structure != null) {
+            functionNameFact = headPsiFact.structure!!.atom.text
+            arityFact = headPsiFact.structure!!.argumentList?.expressionList?.size ?: 0
+        } else if (headPsiFact?.qualifiedAtom != null) {
+            functionNameFact = headPsiFact.qualifiedAtom!!.text
+        }
+        assertEquals("Function should be named 'factorial'", "factorial", functionNameFact)
 
         // Check that the function has the correct arity
-        val factorialArity = function.head.structure?.argumentList?.children?.size ?: 0
-        assertEquals("Function should have arity 1", 1, factorialArity)
+        // val factorialArity = function.head.structure?.argumentList?.children?.size ?: 0 // Old line
+        assertEquals("Function should have arity 1", 1, arityFact)
     }
 
     @Test
@@ -202,7 +233,16 @@ class PicatElementParserTest : BasePlatformTestCase() {
         assertEquals("Should have one function", 1, functions.size)
 
         // Check that both functions have the same name
-        assertEquals("Function should be named 'custom_sum'", "custom_sum", functions[0].head.atom.text)
+        val headPsiSum = functions[0].head
+        var functionNameSum: String? = null
+        if (headPsiSum?.atomNoArgs != null) {
+            functionNameSum = headPsiSum.atomNoArgs!!.atom.text
+        } else if (headPsiSum?.structure != null) {
+            functionNameSum = headPsiSum.structure!!.atom.text
+        } else if (headPsiSum?.qualifiedAtom != null) {
+            functionNameSum = headPsiSum.qualifiedAtom!!.text
+        }
+        assertEquals("Function should be named 'custom_sum'", "custom_sum", functionNameSum)
     }
 
     @Test
