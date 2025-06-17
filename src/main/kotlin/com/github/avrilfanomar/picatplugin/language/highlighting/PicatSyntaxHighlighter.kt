@@ -183,7 +183,6 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.NOT_EQUAL,
             PicatTokenTypes.NOT_IDENTICAL,
             PicatTokenTypes.PIPE,
-            PicatTokenTypes.PIPE_CHOICE,
             PicatTokenTypes.PLUS,
             PicatTokenTypes.POWER,
             PicatTokenTypes.RANGE_OP,

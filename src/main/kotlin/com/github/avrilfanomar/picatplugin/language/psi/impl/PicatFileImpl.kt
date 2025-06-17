@@ -1,20 +1,25 @@
 package com.github.avrilfanomar.picatplugin.language.psi.impl
 
+import com.github.avrilfanomar.picatplugin.language.PicatFileType
+import com.github.avrilfanomar.picatplugin.language.PicatLanguage
+import com.github.avrilfanomar.picatplugin.language.psi.PicatActorDefinition
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionClause
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionFact
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
+import com.github.avrilfanomar.picatplugin.language.psi.PicatGeneralDirective
+import com.github.avrilfanomar.picatplugin.language.psi.PicatItem_
+import com.github.avrilfanomar.picatplugin.language.psi.PicatModuleDecl
+import com.github.avrilfanomar.picatplugin.language.psi.PicatPicatFileContent
+import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateClause
+import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateFact
+import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
+import com.github.avrilfanomar.picatplugin.language.psi.PicatVisitor
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
-import com.github.avrilfanomar.picatplugin.language.PicatLanguage
-import com.github.avrilfanomar.picatplugin.language.PicatFileType
-import com.github.avrilfanomar.picatplugin.language.psi.PicatPicatFileContent // Corrected interface name
-import com.github.avrilfanomar.picatplugin.language.psi.PicatItem_
-import com.github.avrilfanomar.picatplugin.language.psi.PicatVisitor
-import com.github.avrilfanomar.picatplugin.language.psi.PicatModuleDecl
-import com.github.avrilfanomar.picatplugin.language.psi.PicatGeneralDirective
-import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateClause
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionClause
-import com.github.avrilfanomar.picatplugin.language.psi.PicatActorDefinition
 
 // This class is the root of the PSI tree for a Picat file.
 // It implements PicatPicatFileContent, which is the interface generated from the `picat_file_content` rule in the BNF.
@@ -63,5 +68,21 @@ class PicatFileImpl(viewProvider: FileViewProvider) :
         } else {
             super.accept(visitor)
         }
+    }
+
+    fun getPredicateFacts(): List<PicatPredicateFact> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatPredicateFact::class.java)
+    }
+
+    fun getFunctionFacts(): List<PicatFunctionFact> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatFunctionFact::class.java)
+    }
+
+    fun getRules(): List<PicatPredicateRule> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatPredicateRule::class.java)
+    }
+
+    fun getFunctions(): List<PicatFunctionRule> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatFunctionRule::class.java)
     }
 }

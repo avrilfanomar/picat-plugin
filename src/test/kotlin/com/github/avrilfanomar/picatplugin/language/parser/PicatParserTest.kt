@@ -1,5 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
+import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Test
@@ -55,7 +56,7 @@ class PicatParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Verify that the rule is parsed correctly
-        val rules = file.findChildrenByClass(PicatRule::class.java)
+        val rules = file.findChildrenByClass(PicatPredicateRule::class.java)
         assertTrue("Should have at least one rule", rules.size >= 1)
     }
 
@@ -78,8 +79,8 @@ class PicatParserTest : BasePlatformTestCase() {
         assertTrue("Should have at least 2 functions", functions.size >= 2)
 
         // Find the specific functions
-        val customLengthFunctions = functions.filter { it.getName() == "custom_length" }
-        val customSumFunctions = functions.filter { it.getName() == "custom_sum" }
+        val customLengthFunctions = functions.filter { it.head.structure?.atom?.text == "custom_length" }
+        val customSumFunctions = functions.filter { it.head.structure?.atom?.text == "custom_sum" }
 
         assertTrue("Should have at least one custom_length function", customLengthFunctions.isNotEmpty())
         assertTrue("Should have at least one custom_sum function", customSumFunctions.isNotEmpty())
@@ -93,15 +94,15 @@ class PicatParserTest : BasePlatformTestCase() {
             factorial(0) = 1
 
             % This should still be parsed correctly
-            factorial(N) = N * factorial(N-1) => N > 0.
+            factorial(N) = N * factorial(N-1).
         """.trimIndent()
 
         myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFileImpl
 
         // Verify that at least the second fact is parsed correctly
-        val facts = file.getAllFacts()
-        assertTrue("Should have at least one fact", facts.size >= 1)
+        val facts = file.getFunctionFacts()
+        assertTrue("Should have at least one fact", facts.size == 2)
     }
 
     @Test
@@ -118,7 +119,7 @@ class PicatParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Verify that atoms are parsed correctly
-        val facts = file.getAllFacts()
+        val facts = file.getPredicateFacts()
         assertEquals("Should have four facts", 4, facts.size)
 
         // Check that the facts have heads
@@ -141,7 +142,7 @@ class PicatParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Verify that structures are parsed correctly
-        val facts = file.getAllFacts()
+        val facts = file.getPredicateFacts()
         assertEquals("Should have four facts", 4, facts.size)
 
         // Check that the facts have heads
@@ -179,7 +180,7 @@ class PicatParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Verify that rules are parsed correctly
-        val rules = file.findChildrenByClass(PicatRule::class.java)
+        val rules = file.findChildrenByClass(PicatPredicateRule::class.java)
         assertEquals("Should have 7 rules", 7, rules.size)
 
         // Check for different rule operators in rule texts
@@ -218,7 +219,7 @@ class PicatParserTest : BasePlatformTestCase() {
         assertTrue("Should have at least 3 functions", functions.size >= 3)
 
         // Check function names
-        val functionNames = functions.mapNotNull { it.getName() }.distinct()
+        val functionNames = functions.mapNotNull { it.head.structure?.atom?.text }.distinct()
         assertTrue("Should have at least 3 distinct function names", functionNames.size >= 3)
         assertTrue("Should contain 'square'", functionNames.contains("square"))
         assertTrue("Should contain 'factorial'", functionNames.contains("factorial"))
@@ -266,11 +267,11 @@ class PicatParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Verify that expressions are parsed correctly
-        val rules = file.findChildrenByClass(PicatRule::class.java)
+        val rules = file.findChildrenByClass(PicatPredicateRule::class.java)
         assertTrue("Should have at least one rule", rules.size >= 1)
 
         // Find the test_expressions rule
-        val testExpressionsRule = rules.find { it.getHead()?.text == "test_expressions" }
+        val testExpressionsRule = rules.find { it.getHead().text == "test_expressions" }
         assertNotNull("Should have a rule with head 'test_expressions'", testExpressionsRule)
 
         // Check that the rule has a body
@@ -307,7 +308,7 @@ class PicatParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Verify that patterns are parsed correctly
-        val rules = file.findChildrenByClass(PicatRule::class.java)
+        val rules = file.findChildrenByClass(PicatPredicateRule::class.java)
         assertTrue("Should have multiple rules", rules.size >= 5)
 
         // Check for patterns in rule heads

@@ -304,13 +304,13 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         assertEquals("import cp.", importStatements.first().text)
 
         // Verify the main rule
-        val mainRule = PsiTreeUtil.findChildrenOfType(file, PicatRule::class.java) // Use interface
+        val mainRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("main") }
         assertNotNull("Main rule should exist", mainRule)
         assertNotNull("Main rule should have a body", mainRule?.getBody())
 
         // Verify asp rules
-        val aspRules = PsiTreeUtil.findChildrenOfType(file, PicatRule::class.java) // Use interface
+        val aspRules = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .filter { it.text.startsWith("asp") }
         assertTrue("Should have asp rules", aspRules.isNotEmpty())
         aspRules.forEach { rule ->
@@ -318,7 +318,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         }
 
         // Verify helper functions
-        val helperRules = PsiTreeUtil.findChildrenOfType(file, PicatRule::class.java) // Use interface
+        val helperRules = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .filter { rule ->
                 listOf(
                     "fillGivenMoves", "computeDomain", "feasiblePositions",
@@ -343,12 +343,12 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         assertEquals("import util.", importStatements.first().text)
 
         // Verify the main rule
-        val mainRule = PsiTreeUtil.findChildrenOfType(file, PicatRule::class.java) // Use interface
+        val mainRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("main") }
         assertNotNull("Main rule should exist", mainRule)
 
         // Verify the go rule
-        val goRule = PsiTreeUtil.findChildrenOfType(file, PicatRule::class.java) // Use interface
+        val goRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("go") }
         assertNotNull("Go rule should exist", goRule)
 

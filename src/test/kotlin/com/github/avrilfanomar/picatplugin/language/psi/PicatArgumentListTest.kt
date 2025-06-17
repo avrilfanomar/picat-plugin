@@ -1,5 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Test
 
@@ -20,7 +21,7 @@ class PicatArgumentListTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all facts in the file
-        val facts = file.findChildrenByClass(PicatFact::class.java)
+        val facts = file.getFunctionFacts()
 
         // Verify that there is exactly one fact
         assertEquals("There should be exactly one fact", 1, facts.size)
@@ -35,19 +36,19 @@ class PicatArgumentListTest : BasePlatformTestCase() {
         val structure = head as PicatStructure
 
         // Verify that the structure has the correct name and arity
-        assertEquals("Structure should have name 'factorial'", "factorial", structure.getName())
-        assertEquals("Structure should have arity 1", 1, structure.getArity())
+        assertEquals("Structure should have name 'factorial'", "factorial", structure.atom.text)
+        assertEquals("Structure should have arity 1", 1, structure.argumentList?.expressionList?.size)
 
         // Verify that the structure has an argument list
         val argumentList = structure.getArgumentList()
         assertNotNull("Structure should have an argument list", argumentList)
 
         // Verify that the argument list has the correct number of arguments
-        val arguments = argumentList!!.getArguments()
+        val arguments = argumentList!!.expressionList
         assertEquals("Argument list should have 1 argument", 1, arguments.size)
 
         // Verify that the argument has the correct expression
-        assertEquals("First argument should be 0", "0", arguments[0].getExpression()?.text)
+        assertEquals("First argument should be 0", "0", arguments[0]?.text)
     }
 
     @Test
@@ -61,7 +62,7 @@ class PicatArgumentListTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all facts in the file
-        val facts = file.findChildrenByClass(PicatFact::class.java)
+        val facts = file.getFunctionFacts()
 
         // Verify that there is exactly one fact
         assertEquals("There should be exactly one fact", 1, facts.size)
@@ -76,20 +77,20 @@ class PicatArgumentListTest : BasePlatformTestCase() {
         val structure = head as PicatStructure
 
         // Verify that the structure has the correct name and arity
-        assertEquals("Structure should have name custom_sum", "custom_sum", structure.getName())
-        assertEquals("Structure should have arity 3", 3, structure.getArity())
+        assertEquals("Structure should have name custom_sum", "custom_sum", structure.atom.text)
+        assertEquals("Structure should have arity 3", 3, structure.argumentList?.expressionList?.size)
 
         // Verify that the structure has an argument list
         val argumentList = structure.getArgumentList()
         assertNotNull("Structure should have an argument list", argumentList)
 
         // Verify that the argument list has the correct number of arguments
-        val arguments = argumentList!!.getArguments()
+        val arguments = argumentList!!.expressionList
         assertEquals("Argument list should have 3 arguments", 3, arguments.size)
 
         // Verify that each argument has the correct expression
-        assertEquals("First argument should be 1", "1", arguments[0].getExpression()?.text)
-        assertEquals("Second argument should be 2", "2", arguments[1].getExpression()?.text)
-        assertEquals("Third argument should be 3", "3", arguments[2].getExpression()?.text)
+        assertEquals("First argument should be 1", "1", arguments[0]?.text)
+        assertEquals("Second argument should be 2", "2", arguments[1]?.text)
+        assertEquals("Third argument should be 3", "3", arguments[2]?.text)
     }
 }

@@ -38,20 +38,20 @@ class PicatStructureTest : BasePlatformTestCase() {
         assertNotNull(pointStructure, "There should be a point structure")
 
         // Verify that the point structure has the correct name and arity
-        assertEquals("Structure name should be 'point'", "point", pointStructure?.getName())
-        assertEquals(2, pointStructure?.getArity(), "Structure arity should be 2")
+        assertEquals("Structure name should be 'point'", "point", pointStructure?.atom?.text)
+        assertEquals(2, pointStructure?.argumentList?.expressionList?.size, "Structure arity should be 2")
 
         // Verify that the point structure has an argument list
         val argumentList = pointStructure?.getArgumentList()
         assertNotNull(argumentList, "Structure should have an argument list")
 
         // Verify that the argument list has the correct number of arguments
-        val arguments = argumentList!!.getArguments()
+        val arguments = argumentList!!.expressionList()
         assertEquals(2, arguments.size, "Argument list should have 2 arguments")
 
         // Verify that each argument has the correct expression
-        assertEquals("First argument should be 1", "1", arguments[0].getExpression()?.text)
-        assertEquals("Second argument should be 2", "2", arguments[1].getExpression()?.text)
+        assertEquals("First argument should be 1", "1", arguments[0]?.text)
+        assertEquals("Second argument should be 2", "2", arguments[1]?.text)
     }
 
     @Test
@@ -79,8 +79,8 @@ class PicatStructureTest : BasePlatformTestCase() {
         assertNotNull(outerPointStructure, "There should be an outer point structure")
 
         // Verify that the outer point structure has the correct name and arity
-        assertEquals("Structure name should be 'point'", "point", outerPointStructure?.getName())
-        assertEquals(2, outerPointStructure?.getArity(), "Structure arity should be 2")
+        assertEquals("Structure name should be 'point'", "point", outerPointStructure?.atom.text())
+        assertEquals(2, outerPointStructure?.argumentList.expressionList.size(), "Structure arity should be 2")
 
         // Verify that the outer point structure has an argument list
         val outerArgumentList = outerPointStructure?.getArgumentList()
@@ -187,7 +187,7 @@ class PicatStructureTest : BasePlatformTestCase() {
         structures.addAll(file.findChildrenByClass(PicatStructure::class.java))
 
         // Then, find all structures in rules
-        val rules = file.findChildrenByClass(PicatRule::class.java)
+        val rules = file.findChildrenByClass(PicatPredicateRule::class.java)
         for (rule in rules) {
             // Find structures in the rule body
             val body = rule.getBody()
