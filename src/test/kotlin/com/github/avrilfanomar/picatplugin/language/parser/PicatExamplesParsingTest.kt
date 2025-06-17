@@ -5,11 +5,6 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatImportStatement
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
-import com.github.avrilfanomar.picatplugin.language.psi.PicatForeachLoop
-import com.github.avrilfanomar.picatplugin.language.psi.PicatImportStatement
-import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
-import com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions
@@ -238,6 +233,7 @@ private const val LOOPS_PROGRAM = """
  */
 class PicatExamplesParsingTest : BasePlatformTestCase() {
 
+    @Suppress("GrazieInspection")
     @Test
     fun testBQueens() {
         myFixture.configureByText("test.pi", B_QUEENS_PROGRAM.trimIndent())

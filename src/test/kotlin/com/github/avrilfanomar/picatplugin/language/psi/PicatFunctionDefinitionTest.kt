@@ -1,3 +1,5 @@
+@file:Suppress("GrazieInspection")
+
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
@@ -183,13 +185,25 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         // Verify that each function definition has the correct arity
         headElement = PsiTreeUtil.getChildOfType(functionClauses[0], PicatHead::class.java)
         structure = headElement as? PicatStructure
-        Assertions.assertEquals(1, structure?.argumentList?.expressionList?.size ?: 0, "First function arity should be 1")
+        Assertions.assertEquals(
+            1,
+            structure?.argumentList?.expressionList?.size ?: 0,
+            "First function arity should be 1"
+        )
         headElement = PsiTreeUtil.getChildOfType(functionClauses[1], PicatHead::class.java)
         structure = headElement as? PicatStructure
-        Assertions.assertEquals(1, structure?.argumentList?.expressionList?.size ?: 0, "Second function arity should be 1")
+        Assertions.assertEquals(
+            1,
+            structure?.argumentList?.expressionList?.size ?: 0,
+            "Second function arity should be 1"
+        )
         headElement = PsiTreeUtil.getChildOfType(functionClauses[2], PicatHead::class.java)
         structure = headElement as? PicatStructure
-        Assertions.assertEquals(2, structure?.argumentList?.expressionList?.size ?: 0, "Third function arity should be 2")
+        Assertions.assertEquals(
+            2,
+            structure?.argumentList?.expressionList?.size ?: 0,
+            "Third function arity should be 2"
+        )
     }
 
     @Test
@@ -209,7 +223,10 @@ class PicatFunctionDefinitionTest : BasePlatformTestCase() {
         Assertions.assertEquals(1, functionClauses!!.size, "There should be exactly one function clause")
 
         val functionClause = functionClauses[0]
-        Assertions.assertTrue(functionClause is PicatFunctionRule, "This test expects a rule with a FunctionBody due to ':='")
+        Assertions.assertTrue(
+            functionClause is PicatFunctionRule,
+            "This test expects a rule with a FunctionBody due to ':='"
+        )
 
         val functionRule = functionClause as PicatFunctionRule
         // Verify that the function definition has a body

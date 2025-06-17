@@ -2,9 +2,7 @@ package com.github.avrilfanomar.picatplugin.language
 
 import com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighter
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
-import com.intellij.psi.TokenType // Added TokenType import
 import com.intellij.lexer.Lexer
-import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.testFramework.LexerTestCase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -33,7 +31,14 @@ class PicatBasicModuleTest : LexerTestCase() {
         // Report issues
         if (issues.isNotEmpty()) {
             // Fail the test with a detailed message
-            Assertions.fail("Found ${issues.size} issues in basic module test:\n${issues.joinToString("\n")}")
+            val value: Any? =
+                Assertions.fail(
+                    "Found ${issues.size} issues in basic module test:" +
+                            "\n${issues.joinToString("\n")}"
+                )
+            if (value != null) {
+                println("it was not null")//whatever
+            }
         }
 
         // Basic module functions found (not logged, but kept for test functionality)
@@ -92,9 +97,9 @@ class PicatBasicModuleTest : LexerTestCase() {
      * Processes tokens from the lexer and checks for basic module functions.
      */
     private fun processTokens(
-        lexer: Lexer, 
-        text: String, 
-        basicModuleFunctionsFound: MutableList<String>, 
+        lexer: Lexer,
+        text: String,
+        basicModuleFunctionsFound: MutableList<String>,
         issues: MutableList<String>
     ) {
         val expectedBasicModuleFunctions = listOf(
@@ -117,7 +122,7 @@ class PicatBasicModuleTest : LexerTestCase() {
             val isNotIdentifier = tokenType != PicatTokenTypes.IDENTIFIER
             if (isExpectedFunction && isNotIdentifier) { // Changed here
                 val errorMessage = "Basic module function not recognized as IDENTIFIER: " +
-                                   "'$tokenText' at position ${lexer.tokenStart}"
+                        "'$tokenText' at position ${lexer.tokenStart}"
                 issues.add(errorMessage)
             }
 

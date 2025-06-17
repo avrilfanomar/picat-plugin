@@ -31,7 +31,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         // Check that the facts have heads
         facts.forEach { fact ->
             Assertions.assertNotNull(fact.head, "Fact should have a head")
-            // Further checks for atom_no_args can be added here if needed
+            // Further checks for atom_no_args can be added here if needed.
             // For example, checking name and arity:
             // val head = fact.head
             // if (head.atom_no_args != null) {
@@ -61,7 +61,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         // Check that the facts have heads
         facts.forEach { fact ->
             Assertions.assertNotNull(fact.head, "Fact should have a head")
-            // Further checks for structure can be added here if needed
+            // Further checks for structure can be added here if needed.
             // For example, checking name and arity:
             // val head = fact.head
             // if (head.structure != null) {
@@ -161,15 +161,15 @@ class PicatElementParserTest : BasePlatformTestCase() {
         val headPsi = function.head
         var functionName: String? = null
         var arity = 0
-        if (headPsi?.atomNoArgs != null) {
+        if (headPsi.atomNoArgs != null) {
             functionName = headPsi.atomNoArgs!!.atom.text
-            // atom_no_args implies arity 0 unless it's a variable, but for func defs it's an atom.
+            // "atom_no_args" implies arity 0 unless it's a variable, but for func defs it's an atom.
             // Arity for atom_no_args in a function head context is 0.
             arity = 0
-        } else if (headPsi?.structure != null) {
+        } else if (headPsi.structure != null) {
             functionName = headPsi.structure!!.atom.text
             arity = headPsi.structure!!.argumentList?.expressionList?.size ?: 0
-        } else if (headPsi?.qualifiedAtom != null) {
+        } else if (headPsi.qualifiedAtom != null) {
             // Handle qualified atom if necessary, though less common for simple function names
             functionName = headPsi.qualifiedAtom!!.text // Or more specific part
             // Arity for qualified_atom might need specific handling if it can have args
@@ -203,13 +203,13 @@ class PicatElementParserTest : BasePlatformTestCase() {
         val headPsiFact = function.head
         var functionNameFact: String? = null
         var arityFact = 0
-        if (headPsiFact?.atomNoArgs != null) {
+        if (headPsiFact.atomNoArgs != null) {
             functionNameFact = headPsiFact.atomNoArgs!!.atom.text
             arityFact = 0
-        } else if (headPsiFact?.structure != null) {
+        } else if (headPsiFact.structure != null) {
             functionNameFact = headPsiFact.structure!!.atom.text
             arityFact = headPsiFact.structure!!.argumentList?.expressionList?.size ?: 0
-        } else if (headPsiFact?.qualifiedAtom != null) {
+        } else if (headPsiFact.qualifiedAtom != null) {
             functionNameFact = headPsiFact.qualifiedAtom!!.text
         }
         Assertions.assertEquals("factorial", functionNameFact, "Function should be named 'factorial'")
@@ -236,11 +236,11 @@ class PicatElementParserTest : BasePlatformTestCase() {
         // Check that both functions have the same name
         val headPsiSum = functions[0].head
         var functionNameSum: String? = null
-        if (headPsiSum?.atomNoArgs != null) {
+        if (headPsiSum.atomNoArgs != null) {
             functionNameSum = headPsiSum.atomNoArgs!!.atom.text
-        } else if (headPsiSum?.structure != null) {
+        } else if (headPsiSum.structure != null) {
             functionNameSum = headPsiSum.structure!!.atom.text
-        } else if (headPsiSum?.qualifiedAtom != null) {
+        } else if (headPsiSum.qualifiedAtom != null) {
             functionNameSum = headPsiSum.qualifiedAtom!!.text
         }
         Assertions.assertEquals("custom_sum", functionNameSum, "Function should be named 'custom_sum'")
