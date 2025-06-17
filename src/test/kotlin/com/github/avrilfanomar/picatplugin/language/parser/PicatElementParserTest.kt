@@ -24,12 +24,19 @@ class PicatElementParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Verify that atoms are parsed correctly
-        val facts = file.getAllFacts()
+        val facts = file.getPredicateFacts()
         assertEquals("Should have four facts", 4, facts.size)
 
         // Check that the facts have heads
         facts.forEach { fact ->
-            assertNotNull("Fact should have a head", fact.getHead())
+            assertNotNull("Fact should have a head", fact.head)
+            // Further checks for atom_no_args can be added here if needed
+            // For example, checking name and arity:
+            // val head = fact.head
+            // if (head.atom_no_args != null) {
+            //     assertEquals("Expected arity 0 for atom_no_args", 0, head.atom_no_args!!.arity)
+            //     assertNotNull("Expected name for atom_no_args", head.atom_no_args!!.atom.text)
+            // }
         }
     }
 
@@ -47,12 +54,21 @@ class PicatElementParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Verify that structures are parsed correctly
-        val facts = file.getAllFacts()
+        val facts = file.getPredicateFacts()
         assertEquals("Should have four facts", 4, facts.size)
 
         // Check that the facts have heads
         facts.forEach { fact ->
-            assertNotNull("Fact should have a head", fact.getHead())
+            assertNotNull("Fact should have a head", fact.head)
+            // Further checks for structure can be added here if needed
+            // For example, checking name and arity:
+            // val head = fact.head
+            // if (head.structure != null) {
+            //     assertNotNull("Expected name for structure", head.structure!!.atom.text)
+            //     val argumentList = head.structure!!.argument_list
+            //     val expectedArity = argumentList?.children?.size ?: 0
+            //     assertEquals("Expected arity for structure", expectedArity, head.structure!!.arity)
+            // }
         }
     }
 
@@ -141,10 +157,11 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Check that the function has the correct name
         val function = functions[0]
-        assertEquals("Function should be named 'square'", "square", function.getName())
+        assertEquals("Function should be named 'square'", "square", function.head.atom.text)
 
         // Check that the function has the correct arity
-        assertEquals("Function should have arity 1", 1, function.getArity())
+        val squareArity = function.head.structure?.argumentList?.children?.size ?: 0
+        assertEquals("Function should have arity 1", 1, squareArity)
     }
 
     @Test
@@ -163,10 +180,11 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Check that the function has the correct name
         val function = functions[0]
-        assertEquals("Function should be named 'factorial'", "factorial", function.getName())
+        assertEquals("Function should be named 'factorial'", "factorial", function.head.atom.text)
 
         // Check that the function has the correct arity
-        assertEquals("Function should have arity 1", 1, function.getArity())
+        val factorialArity = function.head.structure?.argumentList?.children?.size ?: 0
+        assertEquals("Function should have arity 1", 1, factorialArity)
     }
 
     @Test
@@ -184,7 +202,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         assertEquals("Should have one function", 1, functions.size)
 
         // Check that both functions have the same name
-        assertEquals("Function should be named 'custom_sum'", "custom_sum", functions[0].getName())
+        assertEquals("Function should be named 'custom_sum'", "custom_sum", functions[0].head.atom.text)
     }
 
     @Test

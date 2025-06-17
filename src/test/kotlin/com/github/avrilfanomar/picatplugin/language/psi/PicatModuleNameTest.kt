@@ -1,6 +1,10 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
+import com.github.avrilfanomar.picatplugin.language.psi.* // Import all PSI interfaces
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 /**
@@ -10,7 +14,7 @@ import org.junit.jupiter.api.Test
 class PicatModuleNameTest : BasePlatformTestCase() {
 
     @Test
-    fun testSimpleModuleNamePsi() {
+    fun testSimpleModuleNamePsi() { // Corresponds to testSingleModuleImport
         // Test that a simple module name is correctly parsed
         val code = """
             import util.
@@ -20,31 +24,28 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all import statements in the file
-        val importStatements = file.findChildrenByClass(PicatImportStatement::class.java)
+        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java)
 
         // Verify that there is exactly one import statement
-        assertEquals("There should be exactly one import statement", 1, importStatements.size)
+        assertEquals(1, importStatements.size, "There should be exactly one import statement")
 
         // Get the module names from the import statement
-        val moduleNames = importStatements[0].getModuleNames()
+        val importStatement = importStatements.first()
+        val moduleNameElements = importStatement.importList?.importItemList ?: emptyList()
+        val moduleNames = moduleNameElements.mapNotNull { it.moduleName?.atom?.text }
+
 
         // Verify that there is exactly one module name
-        assertEquals("There should be exactly one module name", 1, moduleNames.size)
+        assertEquals(1, moduleNames.size, "There should be exactly one module name")
 
         // Verify that the module name has the correct text
-        val moduleName = moduleNames[0]
-        assertEquals("Module name should be 'util'", "util", moduleName.text)
-
-        // Verify that the module name has the correct identifier
-        val name = moduleName.text
-        assertNotNull("Module name should have an identifier", name)
-        assertEquals("Identifier should be 'util'", "util", name)
-
+        val moduleNameText = moduleNames.first()
+        assertEquals("util", moduleNameText, "Module name should be 'util'")
     }
 
     @Test
-    fun testMultipleModuleNamesPsi() {
-        // Test that multiple module names are correctly parsed
+    fun testMultipleModuleNamesPsi() { // Corresponds to testMultipleModuleImport
+        // Test that multiple module names are correctly parsed in a single import statement
         val code = """
             import util, math, cp.
         """.trimIndent()
@@ -53,21 +54,23 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all import statements in the file
-        val importStatements = file.findChildrenByClass(PicatImportStatement::class.java)
+        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java)
 
         // Verify that there is exactly one import statement
-        assertEquals("There should be exactly one import statement", 1, importStatements.size)
+        assertEquals(1, importStatements.size, "There should be exactly one import statement")
 
         // Get the module names from the import statement
-        val moduleNames = importStatements[0].getModuleNames()
+        val importStatement = importStatements.first()
+        val moduleNameElements = importStatement.importList?.importItemList ?: emptyList()
+        val moduleNames = moduleNameElements.mapNotNull { it.moduleName?.atom?.text }
 
         // Verify that there are exactly three module names
-        assertEquals("There should be exactly three module names", 3, moduleNames.size)
+        assertEquals(3, moduleNames.size, "There should be exactly three module names")
 
         // Verify that each module name has the correct text
-        assertEquals("First module name should be 'util'", "util", moduleNames[0].text)
-        assertEquals("Second module name should be 'math'", "math", moduleNames[1].text)
-        assertEquals("Third module name should be 'cp'", "cp", moduleNames[2].text)
+        assertEquals("util", moduleNames[0], "First module name should be 'util'")
+        assertEquals("math", moduleNames[1], "Second module name should be 'math'")
+        assertEquals("cp", moduleNames[2], "Third module name should be 'cp'")
     }
 
     @Test
@@ -83,20 +86,19 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all import statements in the file
-        val importStatements = file.findChildrenByClass(PicatImportStatement::class.java)
+        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java)
 
         // Verify that there are exactly three import statements
-        assertEquals("There should be exactly three import statements", 3, importStatements.size)
+        assertEquals(3, importStatements.size, "There should be exactly three import statements")
 
-        // Verify that each import statement has exactly one module name
-        for (i in 0..2) {
-            val moduleNames = importStatements[i].getModuleNames()
-            assertEquals("Import statement ${i + 1} should have exactly one module name", 1, moduleNames.size)
+        // Verify that each import statement has exactly one module name and the correct text
+        val expectedModuleNames = listOf("util", "math", "cp")
+        importStatements.forEachIndexed { i, importStatement ->
+            val moduleNameElements = importStatement.importList?.importItemList ?: emptyList()
+            val moduleNames = moduleNameElements.mapNotNull { it.moduleName?.atom?.text }
+
+            assertEquals(1, moduleNames.size, "Import statement ${i + 1} should have exactly one module name")
+            assertEquals(expectedModuleNames[i], moduleNames.first(), "Module name for import statement ${i + 1} should be '${expectedModuleNames[i]}'")
         }
-
-        // Verify that each module name has the correct text
-        assertEquals("First module name should be 'util'", "util", importStatements[0].getModuleNames()[0].text)
-        assertEquals("Second module name should be 'math'", "math", importStatements[1].getModuleNames()[0].text)
-        assertEquals("Third module name should be 'cp'", "cp", importStatements[2].getModuleNames()[0].text)
     }
 }
