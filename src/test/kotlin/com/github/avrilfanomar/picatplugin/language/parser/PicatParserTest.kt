@@ -3,6 +3,7 @@ package com.github.avrilfanomar.picatplugin.language.parser
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 /**
@@ -19,7 +20,7 @@ class PicatParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Verify that the file is empty
-        assertEquals("Empty file should have no children", 0, file.children.size)
+        Assertions.assertEquals("Empty file should have no children", 0, file.children.size)
     }
 
     @Test
@@ -37,7 +38,7 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that comments are parsed correctly
         val functionDefinitions = file.getFunctions()
-        assertEquals("Should have one function", 1, functionDefinitions.size)
+        Assertions.assertEquals("Should have one function", 1, functionDefinitions.size)
     }
 
 
@@ -57,7 +58,7 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that the rule is parsed correctly
         val rules = file.findChildrenByClass(PicatPredicateRule::class.java)
-        assertTrue("Should have at least one rule", rules.size >= 1)
+        Assertions.assertTrue("Should have at least one rule", rules.size >= 1)
     }
 
     @Test
@@ -76,14 +77,14 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that functions are parsed correctly
         val functions = file.getFunctions()
-        assertTrue("Should have at least 2 functions", functions.size >= 2)
+        Assertions.assertTrue("Should have at least 2 functions", functions.size >= 2)
 
         // Find the specific functions
         val customLengthFunctions = functions.filter { it.head.structure?.atom?.text == "custom_length" }
         val customSumFunctions = functions.filter { it.head.structure?.atom?.text == "custom_sum" }
 
-        assertTrue("Should have at least one custom_length function", customLengthFunctions.isNotEmpty())
-        assertTrue("Should have at least one custom_sum function", customSumFunctions.isNotEmpty())
+        Assertions.assertTrue("Should have at least one custom_length function", customLengthFunctions.isNotEmpty())
+        Assertions.assertTrue("Should have at least one custom_sum function", customSumFunctions.isNotEmpty())
     }
 
     @Test
@@ -102,7 +103,7 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that at least the second fact is parsed correctly
         val facts = file.getFunctionFacts()
-        assertTrue("Should have at least one fact", facts.size == 2)
+        Assertions.assertTrue("Should have at least one fact", facts.size == 2)
     }
 
     @Test
@@ -120,11 +121,11 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that atoms are parsed correctly
         val facts = file.getPredicateFacts()
-        assertEquals("Should have four facts", 4, facts.size)
+        Assertions.assertEquals("Should have four facts", 4, facts.size)
 
         // Check that the facts have heads
         facts.forEach { fact ->
-            assertNotNull("Fact should have a head", fact.getHead())
+            Assertions.assertNotNull("Fact should have a head", fact.getHead())
         }
     }
 
@@ -143,16 +144,16 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that structures are parsed correctly
         val facts = file.getPredicateFacts()
-        assertEquals("Should have four facts", 4, facts.size)
+        Assertions.assertEquals("Should have four facts", 4, facts.size)
 
         // Check that the facts have heads
         facts.forEach { fact ->
-            assertNotNull("Fact should have a head", fact.getHead())
+            Assertions.assertNotNull("Fact should have a head", fact.getHead())
         }
 
         // Check for function definitions
         val functions = file.getFunctions()
-        assertEquals("Should have no functions", 0, functions.size)
+        Assertions.assertEquals("Should have no functions", 0, functions.size)
     }
 
     @Test
@@ -181,15 +182,15 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that rules are parsed correctly
         val rules = file.findChildrenByClass(PicatPredicateRule::class.java)
-        assertEquals("Should have 7 rules", 7, rules.size)
+        Assertions.assertEquals("Should have 7 rules", 7, rules.size)
 
         // Check for different rule operators in rule texts
         val ruleTexts = rules.map { it.text }
         val allRuleText = ruleTexts.joinToString(" ")
 
-        assertTrue("Should contain '=>' operator", allRuleText.contains("=>"))
-        assertTrue("Should contain '?=>' operator", allRuleText.contains("?=>"))
-        assertTrue("Should contain ':-' operator", allRuleText.contains(":-"))
+        Assertions.assertTrue("Should contain '=>' operator", allRuleText.contains("=>"))
+        Assertions.assertTrue("Should contain '?=>' operator", allRuleText.contains("?=>"))
+        Assertions.assertTrue("Should contain ':-' operator", allRuleText.contains(":-"))
     }
 
     @Test
@@ -216,14 +217,14 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that functions are parsed correctly
         val functions = file.getFunctions()
-        assertTrue("Should have at least 3 functions", functions.size >= 3)
+        Assertions.assertTrue("Should have at least 3 functions", functions.size >= 3)
 
         // Check function names
         val functionNames = functions.mapNotNull { it.head.structure?.atom?.text }.distinct()
-        assertTrue("Should have at least 3 distinct function names", functionNames.size >= 3)
-        assertTrue("Should contain 'square'", functionNames.contains("square"))
-        assertTrue("Should contain 'factorial'", functionNames.contains("factorial"))
-        assertTrue("Should contain 'custom_sum'", functionNames.contains("custom_sum"))
+        Assertions.assertTrue("Should have at least 3 distinct function names", functionNames.size >= 3)
+        Assertions.assertTrue("Should contain 'square'", functionNames.contains("square"))
+        Assertions.assertTrue("Should contain 'factorial'", functionNames.contains("factorial"))
+        Assertions.assertTrue("Should contain 'custom_sum'", functionNames.contains("custom_sum"))
     }
 
     @Test
@@ -268,15 +269,15 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that expressions are parsed correctly
         val rules = file.findChildrenByClass(PicatPredicateRule::class.java)
-        assertTrue("Should have at least one rule", rules.size >= 1)
+        Assertions.assertTrue("Should have at least one rule", rules.size >= 1)
 
         // Find the test_expressions rule
         val testExpressionsRule = rules.find { it.getHead().text == "test_expressions" }
-        assertNotNull("Should have a rule with head 'test_expressions'", testExpressionsRule)
+        Assertions.assertNotNull("Should have a rule with head 'test_expressions'", testExpressionsRule)
 
         // Check that the rule has a body
         val body = testExpressionsRule?.getBody()
-        assertNotNull("Rule should have a body", body)
+        Assertions.assertNotNull("Rule should have a body", body)
     }
 
     @Test
@@ -309,14 +310,14 @@ class PicatParserTest : BasePlatformTestCase() {
 
         // Verify that patterns are parsed correctly
         val rules = file.findChildrenByClass(PicatPredicateRule::class.java)
-        assertTrue("Should have multiple rules", rules.size >= 5)
+        Assertions.assertTrue("Should have multiple rules", rules.size >= 5)
 
         // Check for patterns in rule heads
         val heads = rules.mapNotNull { it.getHead() }
-        assertEquals("Should have the same number of heads as rules", rules.size, heads.size)
+        Assertions.assertEquals("Should have the same number of heads as rules", rules.size, heads.size)
 
         // Check for function definitions with patterns
         val functions = file.getFunctions()
-        assertTrue("Should have at least 2 functions", functions.size >= 2)
+        Assertions.assertTrue("Should have at least 2 functions", functions.size >= 2)
     }
 }

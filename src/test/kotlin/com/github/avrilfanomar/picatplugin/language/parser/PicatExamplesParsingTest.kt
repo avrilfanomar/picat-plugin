@@ -5,8 +5,14 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatImportStatement
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
+import com.github.avrilfanomar.picatplugin.language.psi.PicatForeachLoop
+import com.github.avrilfanomar.picatplugin.language.psi.PicatImportStatement
+import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
+import com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 private const val KAKURO_PROGRAM = """
@@ -239,29 +245,29 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
 
         // Verify import statement
         val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java)
-        assertEquals(1, importStatements.size)
+        Assertions.assertEquals(1, importStatements.size)
 
         // Verify the main rule
         val mainRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java)
             .find { it.text.startsWith("main") }
-        assertNotNull("Main rule should exist", mainRule)
+        Assertions.assertNotNull("Main rule should exist", mainRule)
 
         // Verify queens rule
         val queensRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("queens") }
-        assertNotNull("Queens rule should exist", queensRule)
+        Assertions.assertNotNull("Queens rule should exist", queensRule)
 
         // Get the body of the queens rule
         val queensBody = queensRule!!.getBody()
-        assertNotNull("Queens rule should have a body", queensBody)
+        Assertions.assertNotNull("Queens rule should have a body", queensBody)
         val bodyText = queensBody!!.text
-        assertTrue("Queens rule body should contain foreach", bodyText.contains("foreach"))
-        assertTrue("Queens rule body should contain solve", bodyText.contains("solve"))
+        Assertions.assertTrue("Queens rule body should contain foreach", bodyText.contains("foreach"))
+        Assertions.assertTrue("Queens rule body should contain solve", bodyText.contains("solve"))
 
         // Verify foreach loops
         val foreachLoops = PsiTreeUtil.findChildrenOfType(queensBody, PicatForeachLoop::class.java) // Use interface
-        assertNotNull("Foreach loops should exist", foreachLoops)
-        assertEquals("Should have 5 foreach loops", 5, foreachLoops.size)
+        Assertions.assertNotNull("Foreach loops should exist", foreachLoops)
+        Assertions.assertEquals("Should have 5 foreach loops", 5, foreachLoops.size)
 
     }
 
@@ -272,25 +278,25 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
 
         // Verify import statement
         val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java) // Use interface
-        assertEquals(1, importStatements.size)
-        assertEquals("import cp.", importStatements.first().text)
+        Assertions.assertEquals(1, importStatements.size)
+        Assertions.assertEquals("import cp.", importStatements.first().text)
 
         // Verify the main rule
         val mainRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("main") }
-        assertNotNull("Main rule should exist", mainRule)
+        Assertions.assertNotNull("Main rule should exist", mainRule)
 
         // Verify the go rule
         val goRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("go") }
-        assertNotNull("Go rule should exist", goRule)
-        assertNotNull("Go rule should have a body", goRule?.getBody())
+        Assertions.assertNotNull("Go rule should exist", goRule)
+        Assertions.assertNotNull("Go rule should have a body", goRule?.getBody())
 
         // Verify the problem rule
         val problemRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("problem") }
-        assertNotNull("Problem rule should exist", problemRule)
-        assertNotNull("Problem rule should have a body", problemRule?.getBody())
+        Assertions.assertNotNull("Problem rule should exist", problemRule)
+        Assertions.assertNotNull("Problem rule should have a body", problemRule?.getBody())
     }
 
     @Test
@@ -300,21 +306,21 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
 
         // Verify import statement
         val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java) // Use interface
-        assertEquals(1, importStatements.size)
-        assertEquals("import cp.", importStatements.first().text)
+        Assertions.assertEquals(1, importStatements.size)
+        Assertions.assertEquals("import cp.", importStatements.first().text)
 
         // Verify the main rule
         val mainRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("main") }
-        assertNotNull("Main rule should exist", mainRule)
-        assertNotNull("Main rule should have a body", mainRule?.getBody())
+        Assertions.assertNotNull("Main rule should exist", mainRule)
+        Assertions.assertNotNull("Main rule should have a body", mainRule?.getBody())
 
         // Verify asp rules
         val aspRules = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .filter { it.text.startsWith("asp") }
-        assertTrue("Should have asp rules", aspRules.isNotEmpty())
+        Assertions.assertTrue("Should have asp rules", aspRules.isNotEmpty())
         aspRules.forEach { rule ->
-            assertNotNull("Asp rule should have a body", rule.getBody())
+            Assertions.assertNotNull("Asp rule should have a body", rule.getBody())
         }
 
         // Verify helper functions
@@ -326,9 +332,9 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
                 )
                     .any { rule.text.startsWith(it) }
             }
-        assertTrue("Should have helper functions", helperRules.isNotEmpty())
+        Assertions.assertTrue("Should have helper functions", helperRules.isNotEmpty())
         helperRules.forEach { rule ->
-            assertNotNull("Helper rule should have a body", rule.getBody())
+            Assertions.assertNotNull("Helper rule should have a body", rule.getBody())
         }
     }
 
@@ -339,31 +345,31 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
 
         // Verify import statement
         val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java) // Use interface
-        assertEquals(1, importStatements.size)
-        assertEquals("import util.", importStatements.first().text)
+        Assertions.assertEquals(1, importStatements.size)
+        Assertions.assertEquals("import util.", importStatements.first().text)
 
         // Verify the main rule
         val mainRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("main") }
-        assertNotNull("Main rule should exist", mainRule)
+        Assertions.assertNotNull("Main rule should exist", mainRule)
 
         // Verify the go rule
         val goRule = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java) // Use interface
             .find { it.text.startsWith("go") }
-        assertNotNull("Go rule should exist", goRule)
+        Assertions.assertNotNull("Go rule should exist", goRule)
 
         // Get the body of the go rule
         val goBody = goRule!!.getBody()
-        assertNotNull("Go rule should have a body", goBody)
+        Assertions.assertNotNull("Go rule should have a body", goBody)
 
         // Verify while loops
         val whileLoops = PsiTreeUtil.findChildrenOfType(goBody, PicatWhileLoop::class.java) // Use interface
-        assertNotNull("While loops should exist", whileLoops)
-        assertEquals("Should have 1 while loop", 1, whileLoops.size)
+        Assertions.assertNotNull("While loops should exist", whileLoops)
+        Assertions.assertEquals("Should have 1 while loop", 1, whileLoops.size)
 
         // Verify foreach loops
         val foreachLoops = PsiTreeUtil.findChildrenOfType(goBody, PicatForeachLoop::class.java) // Use interface
-        assertNotNull("Foreach loops should exist", foreachLoops)
-        assertEquals("Should have 1 foreach loop", 1, foreachLoops.size)
+        Assertions.assertNotNull("Foreach loops should exist", foreachLoops)
+        Assertions.assertEquals("Should have 1 foreach loop", 1, foreachLoops.size)
     }
 }

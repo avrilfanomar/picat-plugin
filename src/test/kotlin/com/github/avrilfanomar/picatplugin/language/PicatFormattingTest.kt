@@ -1,9 +1,11 @@
 package com.github.avrilfanomar.picatplugin.language
 
 import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder
+import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder
 import com.intellij.lang.LanguageFormatting
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 /**
@@ -39,7 +41,7 @@ class PicatFormattingTest : BasePlatformTestCase() {
         val formattedText = myFixture.editor.document.text
 
         // Compare the formatted text with the expected output
-        assertEquals("Formatting should match expected output", expected, formattedText)
+        Assertions.assertEquals("Formatting should match expected output", expected, formattedText)
     }
 
     @Test
@@ -48,10 +50,10 @@ class PicatFormattingTest : BasePlatformTestCase() {
         val formattingModelBuilder = LanguageFormatting.INSTANCE.forLanguage(PicatLanguage)
 
         // Assert that a FormattingModelBuilder is registered
-        assertNotNull("FormattingModelBuilder should be registered for Picat language", formattingModelBuilder)
+        Assertions.assertNotNull("FormattingModelBuilder should be registered for Picat language", formattingModelBuilder)
 
         // Assert that it's an instance of PicatFormattingModelBuilder
-        assertTrue(
+        Assertions.assertTrue(
             "FormattingModelBuilder should be an instance of PicatFormattingModelBuilder",
             formattingModelBuilder is PicatFormattingModelBuilder
         )
@@ -403,7 +405,7 @@ literals_example =>
         val formatted = myFixture.editor.document.text
 
         // Assert that the formatted code matches the expected output
-        assertEquals("Formatting should match expected output", expected, formatted)
+        Assertions.assertEquals("Formatting should match expected output", expected, formatted)
     }
 
     @Test
@@ -475,7 +477,7 @@ constraint_rule_example =>
         // Get the text after second formatting
         val formattedTwice = myFixture.editor.document.text
 
-        assertEquals(formattedOnce, formattedTwice)
+        Assertions.assertEquals(formattedOnce, formattedTwice)
     }
 
     @Test

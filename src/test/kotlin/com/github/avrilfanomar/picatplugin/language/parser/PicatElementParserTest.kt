@@ -2,6 +2,7 @@ package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 /**
@@ -25,17 +26,17 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Verify that atoms are parsed correctly
         val facts = file.getPredicateFacts()
-        assertEquals("Should have four facts", 4, facts.size)
+        Assertions.assertEquals("Should have four facts", 4, facts.size)
 
         // Check that the facts have heads
         facts.forEach { fact ->
-            assertNotNull("Fact should have a head", fact.head)
+            Assertions.assertNotNull("Fact should have a head", fact.head)
             // Further checks for atom_no_args can be added here if needed
             // For example, checking name and arity:
             // val head = fact.head
             // if (head.atom_no_args != null) {
-            //     assertEquals("Expected arity 0 for atom_no_args", 0, head.atom_no_args!!.arity)
-            //     assertNotNull("Expected name for atom_no_args", head.atom_no_args!!.atom.text)
+            //     Assertions.assertEquals("Expected arity 0 for atom_no_args", 0, head.atom_no_args!!.arity)
+            //     Assertions.assertNotNull("Expected name for atom_no_args", head.atom_no_args!!.atom.text)
             // }
         }
     }
@@ -55,19 +56,19 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Verify that structures are parsed correctly
         val facts = file.getPredicateFacts()
-        assertEquals("Should have four facts", 4, facts.size)
+        Assertions.assertEquals("Should have four facts", 4, facts.size)
 
         // Check that the facts have heads
         facts.forEach { fact ->
-            assertNotNull("Fact should have a head", fact.head)
+            Assertions.assertNotNull("Fact should have a head", fact.head)
             // Further checks for structure can be added here if needed
             // For example, checking name and arity:
             // val head = fact.head
             // if (head.structure != null) {
-            //     assertNotNull("Expected name for structure", head.structure!!.atom.text)
+            //     Assertions.assertNotNull("Expected name for structure", head.structure!!.atom.text)
             //     val argumentList = head.structure!!.argument_list
             //     val expectedArity = argumentList?.children?.size ?: 0
-            //     assertEquals("Expected arity for structure", expectedArity, head.structure!!.arity)
+            //     Assertions.assertEquals("Expected arity for structure", expectedArity, head.structure!!.arity)
             // }
         }
     }
@@ -84,15 +85,15 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Verify that the rule is parsed correctly
         val rules = file.getRules()
-        assertEquals("Should have one rule", 1, rules.size)
+        Assertions.assertEquals("Should have one rule", 1, rules.size)
 
         // Check that the rule has a head and body
         val rule = rules[0]
-        assertNotNull("Rule should have a head", rule.getHead())
-        assertNotNull("Rule should have a body", rule.getBody())
+        Assertions.assertNotNull("Rule should have a head", rule.getHead())
+        Assertions.assertNotNull("Rule should have a body", rule.getBody())
 
         // Check that the rule contains the correct operator
-        assertTrue("Rule should contain => operator", rule.text.contains("=>"))
+        Assertions.assertTrue("Rule should contain => operator", rule.text.contains("=>"))
     }
 
     @Test
@@ -107,15 +108,15 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Verify that the rule is parsed correctly
         val rules = file.getRules()
-        assertEquals("Should have one rule", 1, rules.size)
+        Assertions.assertEquals("Should have one rule", 1, rules.size)
 
         // Check that the rule has a head and body
         val rule = rules[0]
-        assertNotNull("Rule should have a head", rule.getHead())
-        assertNotNull("Rule should have a body", rule.getBody())
+        Assertions.assertNotNull("Rule should have a head", rule.getHead())
+        Assertions.assertNotNull("Rule should have a body", rule.getBody())
 
         // Check that the rule contains the correct operator
-        assertTrue("Rule should contain ?=> operator", rule.text.contains("?=>"))
+        Assertions.assertTrue("Rule should contain ?=> operator", rule.text.contains("?=>"))
     }
 
     @Test
@@ -130,15 +131,15 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Verify that the rule is parsed correctly
         val rules = file.getRules()
-        assertEquals("Should have one rule", 1, rules.size)
+        Assertions.assertEquals("Should have one rule", 1, rules.size)
 
         // Check that the rule has a head and body
         val rule = rules[0]
-        assertNotNull("Rule should have a head", rule.getHead())
-        assertNotNull("Rule should have a body", rule.getBody())
+        Assertions.assertNotNull("Rule should have a head", rule.getHead())
+        Assertions.assertNotNull("Rule should have a body", rule.getBody())
 
         // Check that the rule contains the correct operator
-        assertTrue("Rule should contain :- operator", rule.text.contains(":-"))
+        Assertions.assertTrue("Rule should contain :- operator", rule.text.contains(":-"))
     }
 
     @Test
@@ -153,7 +154,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Verify that the function is parsed correctly
         val functions = file.getFunctions()
-        assertEquals("Should have one function", 1, functions.size)
+        Assertions.assertEquals("Should have one function", 1, functions.size)
 
         // Check that the function has the correct name
         val function = functions[0]
@@ -176,11 +177,11 @@ class PicatElementParserTest : BasePlatformTestCase() {
             // or this needs to be defined by how arity is counted for them.
             // Based on `square(X)`, this path won't be hit.
         }
-        assertEquals("Function should be named 'square'", "square", functionName)
+        Assertions.assertEquals("Function should be named 'square'", "square", functionName)
 
         // Check that the function has the correct arity
         // val squareArity = function.head.structure?.argumentList?.children?.size ?: 0 // Old line
-        assertEquals("Function should have arity 1", 1, arity)
+        Assertions.assertEquals("Function should have arity 1", 1, arity)
     }
 
     @Test
@@ -195,7 +196,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Verify that the function is parsed correctly
         val functions = file.getFunctions()
-        assertEquals("Should have one function", 1, functions.size)
+        Assertions.assertEquals("Should have one function", 1, functions.size)
 
         // Check that the function has the correct name
         val function = functions[0]
@@ -211,11 +212,11 @@ class PicatElementParserTest : BasePlatformTestCase() {
         } else if (headPsiFact?.qualifiedAtom != null) {
             functionNameFact = headPsiFact.qualifiedAtom!!.text
         }
-        assertEquals("Function should be named 'factorial'", "factorial", functionNameFact)
+        Assertions.assertEquals("Function should be named 'factorial'", "factorial", functionNameFact)
 
         // Check that the function has the correct arity
         // val factorialArity = function.head.structure?.argumentList?.children?.size ?: 0 // Old line
-        assertEquals("Function should have arity 1", 1, arityFact)
+        Assertions.assertEquals("Function should have arity 1", 1, arityFact)
     }
 
     @Test
@@ -230,7 +231,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Verify that the functions are parsed correctly
         val functions = file.getFunctions()
-        assertEquals("Should have one function", 1, functions.size)
+        Assertions.assertEquals("Should have one function", 1, functions.size)
 
         // Check that both functions have the same name
         val headPsiSum = functions[0].head
@@ -242,7 +243,7 @@ class PicatElementParserTest : BasePlatformTestCase() {
         } else if (headPsiSum?.qualifiedAtom != null) {
             functionNameSum = headPsiSum.qualifiedAtom!!.text
         }
-        assertEquals("Function should be named 'custom_sum'", "custom_sum", functionNameSum)
+        Assertions.assertEquals("Function should be named 'custom_sum'", "custom_sum", functionNameSum)
     }
 
     @Test
@@ -258,12 +259,12 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Verify that the rule is parsed correctly
         val rules = file.getRules()
-        assertEquals("Should have one rule", 1, rules.size)
+        Assertions.assertEquals("Should have one rule", 1, rules.size)
 
         // Check that the rule has a body
         val rule = rules[0]
         val body = rule.getBody()
-        assertNotNull("Rule should have a body", body)
+        Assertions.assertNotNull("Rule should have a body", body)
     }
 
     @Test
@@ -282,12 +283,12 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Verify that the rule is parsed correctly
         val rules = file.getRules()
-        assertEquals("Should have one rule", 1, rules.size)
+        Assertions.assertEquals("Should have one rule", 1, rules.size)
 
         // Check that the rule has a body
         val rule = rules[0]
         val body = rule.getBody()
-        assertNotNull("Rule should have a body", body)
+        Assertions.assertNotNull("Rule should have a body", body)
     }
 
     @Test
@@ -306,11 +307,11 @@ class PicatElementParserTest : BasePlatformTestCase() {
         // Verify that the rule is parsed correctly
         val rules = file.getRules()
 
-        assertEquals("Should have one rule", 1, rules.size)
+        Assertions.assertEquals("Should have one rule", 1, rules.size)
 
         // Check that the rule has a body
         val rule = rules[0]
         val body = rule.getBody()
-        assertNotNull("Rule should have a body", body)
+        Assertions.assertNotNull("Rule should have a body", body)
     }
 }

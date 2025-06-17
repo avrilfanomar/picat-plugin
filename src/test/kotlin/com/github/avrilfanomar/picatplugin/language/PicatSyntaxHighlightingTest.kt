@@ -1,9 +1,11 @@
 package com.github.avrilfanomar.picatplugin.language
 
 import com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighter
+import com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighter
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.testFramework.LexerTestCase
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 /**
@@ -116,7 +118,7 @@ class PicatSyntaxHighlightingTest : LexerTestCase() {
                 val expectedAttribute = expectedHighlights[tokenText]
                 val attributeNames = attributesToString(attributes)
 
-                assertTrue(
+                Assertions.assertTrue(
                     "Token '$tokenText' should have attribute '$expectedAttribute' but has '$attributeNames'",
                     attributeNames.contains(expectedAttribute ?: "")
                 )

@@ -6,6 +6,7 @@ import com.intellij.psi.TokenType // Added TokenType import
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.testFramework.LexerTestCase
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 /**
@@ -32,7 +33,7 @@ class PicatBasicModuleTest : LexerTestCase() {
         // Report issues
         if (issues.isNotEmpty()) {
             // Fail the test with a detailed message
-            fail("Found ${issues.size} issues in basic module test:\n${issues.joinToString("\n")}")
+            Assertions.fail("Found ${issues.size} issues in basic module test:\n${issues.joinToString("\n")}")
         }
 
         // Basic module functions found (not logged, but kept for test functionality)

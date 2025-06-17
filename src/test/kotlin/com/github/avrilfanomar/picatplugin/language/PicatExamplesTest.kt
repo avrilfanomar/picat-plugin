@@ -7,6 +7,7 @@ import com.intellij.psi.TokenType // Keep one TokenType import
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.tree.IElementType
 import com.intellij.testFramework.LexerTestCase
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -55,7 +56,7 @@ class PicatExamplesTest : LexerTestCase() {
         // Report issues
         if (issues.isNotEmpty()) {
             // Fail the test with a detailed message
-            fail("Found ${issues.size} issues in examples.pi:\n${issues.joinToString("\n")}")
+            Assertions.fail("Found ${issues.size} issues in examples.pi:\n${issues.joinToString("\n")}")
         }
     }
 
