@@ -59,8 +59,8 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType
-                name="Picat"
-                implementationClass="com.github.avrilfanomar.picatplugin.language.psi.PicatFileType"
+                name="Picat File"
+                implementationClass="com.github.avrilfanomar.picatplugin.language.PicatFileType"
                 fieldName="INSTANCE"
                 language="Picat"
                 extensions="pi"/>
