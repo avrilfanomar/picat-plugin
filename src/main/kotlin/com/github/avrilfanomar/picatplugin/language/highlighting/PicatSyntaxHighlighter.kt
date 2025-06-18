@@ -9,7 +9,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
-import org.intellij.grammar.parser.BnfLexer
+import com.github.avrilfanomar.picatplugin.language.lexer._PicatLexer
 
 /**
  * Syntax highlighter for Picat language.
@@ -17,7 +17,7 @@ import org.intellij.grammar.parser.BnfLexer
  */
 class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
     override fun getHighlightingLexer(): Lexer {
-        return BnfLexer()//TODO
+        return _PicatLexer()
     }
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
