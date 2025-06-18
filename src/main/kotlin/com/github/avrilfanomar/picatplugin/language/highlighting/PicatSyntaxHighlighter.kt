@@ -10,13 +10,14 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
 import com.github.avrilfanomar.picatplugin.language.lexer._PicatLexer
+import com.intellij.lexer.FlexLexer
 
 /**
  * Syntax highlighter for Picat language.
  * Defines colors and styles for different token types.
  */
 class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
-    override fun getHighlightingLexer(): Lexer {
+    override fun getHighlightingLexer(): FlexLexer {
         return _PicatLexer()
     }
 
