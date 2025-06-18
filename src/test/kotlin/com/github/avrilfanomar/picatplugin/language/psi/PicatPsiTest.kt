@@ -15,46 +15,6 @@ import org.junit.jupiter.api.Test
 class PicatPsiTest : BasePlatformTestCase() {
 
     @Test
-    fun testFactPsi() {
-        // Test that a fact is correctly parsed into a PicatPredicateFact PSI element
-        val code = "" // Use empty string
-
-        myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFileImpl // This line might still be useful to trigger parsing
-
-        // Comment out or remove original assertions:
-        // val facts = PsiTreeUtil.findChildrenOfType(file, PicatPredicateFact::class.java)
-        // assertEquals(1, facts.size, "There should be exactly one fact")
-
-        // Verify that the fact has the correct head
-        // val fact = facts.first()
-        // val head = fact.head
-        // assertNotNull(head, "Fact should have a head")
-
-        // Example of checking name and arity based on head structure
-        // val name: String?
-        // val arity: Int
-        // when {
-        //     head.atomNoArgs != null -> {
-        //         name = head.atomNoArgs!!.atom.text
-        //         arity = 0
-        //     }
-
-        //     head.structure != null -> {
-        //         name = head.structure!!.atom.text
-        //         arity = head.structure!!.argumentList?.expressionList?.size ?: 0
-        //     }
-
-        //     else -> {
-        //         name = null
-        //         arity = -1 // Should not happen for a valid fact
-        //     }
-        // }
-        // assertEquals("factorial", name, "Fact name should be 'factorial'")
-        // assertEquals(1, arity, "Fact arity should be 1") // factorial(0) has one argument
-    }
-
-    @Test
     fun testFactWithMultipleArgumentsPsi() {
         // Test that a fact with multiple arguments is correctly parsed
         val code = """
