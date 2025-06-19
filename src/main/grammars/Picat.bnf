@@ -129,7 +129,7 @@ picat_file_content ::= item_* {
   // The manual PicatProgramImpl will extend PsiFileBase and implement PicatFileContent
 }
 
-item_ ::= (function_clause | predicate_clause | COMMENT | MULTI_LINE_COMMENT) {elementType=ITEM}
+item_ ::= (function_clause | predicate_clause | general_directive | COMMENT | MULTI_LINE_COMMENT) {elementType=ITEM}
 
 
 // Module declaration
