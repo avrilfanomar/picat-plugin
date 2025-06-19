@@ -32,13 +32,8 @@ class PicatElementParserTest : BasePlatformTestCase() {
         // Check that the facts have heads
         facts.forEach { fact ->
             Assertions.assertNotNull(fact.head, "Fact should have a head")
-            // Further checks for atom_no_args can be added here if needed.
-            // For example, checking name and arity:
-            // val head = fact.head
-            // if (head.atom_no_args != null) {
-            //     Assertions.assertEquals("Expected arity 0 for atom_no_args", 0, head.atom_no_args!!.arity)
-            //     Assertions.assertNotNull("Expected name for atom_no_args", head.atom_no_args!!.atom.text)
-            // }
+            val head = fact.head
+            Assertions.assertNotNull("Expected name for atom_no_args", head.atomNoArgs!!.atom.text)
         }
     }
 
@@ -62,15 +57,6 @@ class PicatElementParserTest : BasePlatformTestCase() {
         // Check that the facts have heads
         facts.forEach { fact ->
             Assertions.assertNotNull(fact.head, "Fact should have a head")
-            // Further checks for structure can be added here if needed.
-            // For example, checking name and arity:
-            // val head = fact.head
-            // if (head.structure != null) {
-            //     Assertions.assertNotNull("Expected name for structure", head.structure!!.atom.text)
-            //     val argumentList = head.structure!!.argument_list
-            //     val expectedArity = argumentList?.children?.size ?: 0
-            //     Assertions.assertEquals("Expected arity for structure", expectedArity, head.structure!!.arity)
-            // }
         }
     }
 
@@ -173,15 +159,10 @@ class PicatElementParserTest : BasePlatformTestCase() {
         } else if (headPsi.qualifiedAtom != null) {
             // Handle qualified atom if necessary, though less common for simple function names
             functionName = headPsi.qualifiedAtom!!.text // Or more specific part
-            // Arity for qualified_atom might need specific handling if it can have args
-            // For now, assume qualified atoms used as function names also might not have separate (...) args
-            // or this needs to be defined by how arity is counted for them.
-            // Based on `square(X)`, this path won't be hit.
         }
         Assertions.assertEquals("square", functionName, "Function should be named 'square'")
 
         // Check that the function has the correct arity
-        // val squareArity = function.head.structure?.argumentList?.children?.size ?: 0 // Old line
         Assertions.assertEquals(1, arity, "Function should have arity 1")
     }
 
@@ -216,7 +197,6 @@ class PicatElementParserTest : BasePlatformTestCase() {
         Assertions.assertEquals("factorial", functionNameFact, "Function should be named 'factorial'")
 
         // Check that the function has the correct arity
-        // val factorialArity = function.head.structure?.argumentList?.children?.size ?: 0 // Old line
         Assertions.assertEquals(1, arityFact, "Function should have arity 1")
     }
 
