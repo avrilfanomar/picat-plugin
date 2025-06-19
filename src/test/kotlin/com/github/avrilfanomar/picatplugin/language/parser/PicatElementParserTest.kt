@@ -231,11 +231,11 @@ class PicatElementParserTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Verify that the functions are parsed correctly
-        val functions = file.getFunctions()
+        val functions = file.getFunctions() // Reverted to getFunctions()
         Assertions.assertEquals(1, functions.size, "Should have one function")
 
         // Check that both functions have the same name
-        val headPsiSum = functions[0].head
+        val headPsiSum = functions[0].head // Reverted to functions[0]
         var functionNameSum: String? = null
         if (headPsiSum.atomNoArgs != null) {
             functionNameSum = headPsiSum.atomNoArgs!!.atom.text

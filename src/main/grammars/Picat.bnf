@@ -129,7 +129,7 @@ picat_file_content ::= item_* {
   // The manual PicatProgramImpl will extend PsiFileBase and implement PicatFileContent
 }
 
-item_ ::= (predicate_clause | COMMENT | MULTI_LINE_COMMENT)
+item_ ::= (function_clause | predicate_clause | COMMENT | MULTI_LINE_COMMENT) {elementType=ITEM}
 
 
 // Module declaration
@@ -170,15 +170,16 @@ file_spec ::= STRING | atom {elementType=FILE_SPEC}
 // Predicate Clauses
 predicate_clause ::= predicate_rule | predicate_fact {elementType=PREDICATE_CLAUSE}
 
-predicate_rule ::= head RULE_OP body DOT {pin=1 elementType = PREDICATE_RULE}
+// Changed pin from 1 to 2, assuming RULE_OP (actual: rule_operator) is the commit point
+predicate_rule ::= head rule_operator body DOT {pin=2 elementType = PREDICATE_RULE}
 predicate_fact ::= head DOT {pin=1 elementType = PREDICATE_FACT}
 
 
 // Function Clauses
 function_clause ::= function_rule | function_fact {elementType=FUNCTION_CLAUSE}
 
-function_rule ::= head ASSIGN_OP function_body DOT {pin=1 elementType = FUNCTION_RULE}
-function_fact ::= head ASSIGN_OP expression DOT {pin=1 elementType = FUNCTION_FACT}
+function_rule ::= head EQUAL function_body DOT {pin=2 elementType = FUNCTION_RULE} // ASSIGN_OP changed to EQUAL
+function_fact ::= head EQUAL expression DOT {pin=2 elementType = FUNCTION_FACT} // ASSIGN_OP changed to EQUAL
 
 function_body ::= expression {
   elementType = FUNCTION_BODY
@@ -194,7 +195,7 @@ action_rule ::= head HASH_ARROW_OP body {elementType = ACTION_RULE}
 rule_operator ::= ARROW_OP | BACKTRACKABLE_ARROW_OP | BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP | RULE_OP {elementType=RULE_OPERATOR}
 
 // Heads
-head ::= atom_no_args | structure | qualified_atom {elementType=HEAD}
+head ::= structure | atom_no_args | qualified_atom {elementType=HEAD} // Reordered: structure first
 qualified_atom ::= atom DOT atom {elementType=QUALIFIED_ATOM} // DOT was "."
 atom_no_args ::= atom !LPAR {elementType=ATOM_NO_ARGS}
 
@@ -227,6 +228,7 @@ goal ::= call
        | continue_stmt
        | break_stmt
        | throw_stmt
+       | expression  // Added expression as a possible goal
        {elementType=GOAL}
 
 // Goal implementations
@@ -283,9 +285,9 @@ tuple_pattern ::= LBRACE pattern_list? RBRACE {elementType=TUPLE_PATTERN}
 pattern_list ::= pattern (COMMA pattern)* {elementType=PATTERN_LIST}
 
 // Basic elements
-atom ::= IDENTIFIER | QUOTED_ATOM
+atom ::= IDENTIFIER | QUOTED_ATOM {elementType=ATOM}
 number ::= INTEGER | FLOAT | HEX_INTEGER | OCTAL_INTEGER | BINARY_INTEGER
-structure ::= "$"? atom LPAR argument_list? RPAR {
+structure ::= atom LPAR argument_list? RPAR { // Removed optional "$?"
   elementType = STRUCTURE
 }
 tuple ::= LBRACE tuple_items? RBRACE {elementType=TUPLE}
@@ -317,23 +319,26 @@ additive_expression ::= multiplicative_expression ((PLUS | MINUS) multiplicative
 multiplicative_expression ::= power_expression ((MULTIPLY | DIVIDE | INT_DIVIDE | MOD_KEYWORD | DIV_KEYWORD | REM_KEYWORD) power_expression)*
 power_expression ::= unary_expression (POWER unary_expression)*
 
-unary_expression ::= (PLUS | MINUS | NOT_KEYWORD | BACKSLASH | HASH_TILDE_OP) primary_expression {elementType=UNARY_EXPRESSION}
+unary_expression ::= ((PLUS | MINUS | NOT_KEYWORD | BACKSLASH | HASH_TILDE_OP) primary_expression) | primary_expression {elementType=UNARY_EXPRESSION}
 
 primary_expression ::=
-    atom
+    // Compound forms starting with atom/variable first
+    function_call                 // atom LPAR ...
+  | term_constructor_expression   // atom LBRACE ...
+  | index_access_expression       // variable LBRACKET ...
+  | as_pattern_expression         // variable AT pattern (starts with variable, but pattern is more specific)
+    // Simpler forms later
+  | atom
   | number
   | variable
   | list_expression
   | tuple
   | map
-  | index_access_expression
-  | as_pattern_expression
+  //  | as_pattern_expression // Moved up as it starts with variable too
   | lambda_expression
-  | term_constructor_expression
   | list_comprehension_expression
   | dollar_term_constructor
   | LPAR expression RPAR
-  | function_call
 
 dollar_term_constructor ::= "$" goal "$" {elementType=DOLLAR_TERM_CONSTRUCTOR}
 
