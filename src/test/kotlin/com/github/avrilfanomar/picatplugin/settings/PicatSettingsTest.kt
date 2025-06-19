@@ -34,17 +34,17 @@ class PicatSettingsTest : BasePlatformTestCase() {
 
         // Verify that the path is correctly stored
         Assertions.assertEquals(
-            "Picat executable path should be correctly stored",
             testPath,
-            settings.picatExecutablePath
+            settings.picatExecutablePath,
+            "Picat executable path should be correctly stored"
         )
 
         // Get the settings instance again and verify that the path is still there
         val settings2 = PicatSettings.getInstance(project)
         Assertions.assertEquals(
-            "Picat executable path should be preserved across instances",
             testPath,
-            settings2.picatExecutablePath
+            settings2.picatExecutablePath,
+            "Picat executable path should be preserved across instances"
         )
     }
 
@@ -65,9 +65,9 @@ class PicatSettingsTest : BasePlatformTestCase() {
 
         // Verify that the state has the correct Picat executable path
         Assertions.assertEquals(
-            "State should have the correct Picat executable path",
             testPath,
-            state.picatExecutablePath
+            state.picatExecutablePath,
+            "State should have the correct Picat executable path"
         )
     }
 
@@ -86,9 +86,9 @@ class PicatSettingsTest : BasePlatformTestCase() {
 
         // Verify that the path is correctly loaded
         Assertions.assertEquals(
-            "Picat executable path should be correctly loaded",
             testPath,
-            settings.picatExecutablePath
+            settings.picatExecutablePath,
+            "Picat executable path should be correctly loaded"
         )
     }
 }
