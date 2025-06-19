@@ -200,11 +200,12 @@ qualified_atom ::= atom DOT atom {elementType=QUALIFIED_ATOM} // DOT was "."
 atom_no_args ::= atom !LPAR {elementType=ATOM_NO_ARGS}
 
 // Body
-body ::= goal ((SEMICOLON | COMMA) goal)* [CUT] {elementType=BODY recoverWhile=body_recover } // SEMICOLON was ";", COMMA was ",", CUT was "!"
+body ::= goal ((SEMICOLON | COMMA) goal)* {elementType=BODY recoverWhile=body_recover }
 private body_recover ::= !(DOT | END_KEYWORD)
 
 // Goals
-goal ::= call
+goal ::= predicate_fact
+       | call
        | if_then_else
        | case_expression
        | try_catch
@@ -228,11 +229,11 @@ goal ::= call
        | continue_stmt
        | break_stmt
        | throw_stmt
-       | expression  // Added expression as a possible goal
+       | expression
        {elementType=GOAL}
 
 // Goal implementations
-call ::= atom | structure
+call ::= structure | atom
 if_then_else ::= IF_KEYWORD expression THEN_KEYWORD body [elseif_clause] [ELSE_KEYWORD body] END_KEYWORD {elementType=IF_THEN_ELSE}
 elseif_clause ::= ELSEIF_KEYWORD expression THEN_KEYWORD body [elseif_clause] {elementType=ELSEIF_CLAUSE}
 assignment ::= variable ASSIGN_OP expression {elementType=ASSIGNMENT}
