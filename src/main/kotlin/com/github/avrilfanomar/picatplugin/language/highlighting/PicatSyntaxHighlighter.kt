@@ -11,14 +11,16 @@ import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
 import com.github.avrilfanomar.picatplugin.language.lexer._PicatLexer
 import com.intellij.lexer.FlexLexer
+import com.intellij.lexer.FlexAdapter
+import java.io.Reader
 
 /**
  * Syntax highlighter for Picat language.
  * Defines colors and styles for different token types.
  */
 class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
-    override fun getHighlightingLexer(): FlexLexer {
-        return _PicatLexer()
+    override fun getHighlightingLexer(): Lexer {
+        return FlexAdapter(_PicatLexer(null as Reader?))
     }
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
@@ -78,7 +80,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
     private fun isBracket(tokenType: IElementType): Boolean =
         tokenType == PicatTokenTypes.LBRACKET || tokenType == PicatTokenTypes.RBRACKET
 
-    private fun isVariable(tokenType: IElementType): Boolean = // Commenting out due to VARIABLE ambiguity for now
+    private fun isVariable(tokenType: IElementType): Boolean =
         tokenType == PicatTokenTypes.VARIABLE || tokenType == PicatTokenTypes.ANONYMOUS_VARIABLE
 
     private fun isIdentifier(tokenType: IElementType): Boolean =
