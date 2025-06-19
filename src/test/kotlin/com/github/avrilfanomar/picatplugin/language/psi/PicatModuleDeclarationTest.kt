@@ -3,7 +3,7 @@ package com.github.avrilfanomar.picatplugin.language.psi
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 /**
@@ -26,12 +26,12 @@ class PicatModuleDeclarationTest : BasePlatformTestCase() {
         val moduleDeclarations = PsiTreeUtil.findChildrenOfType(file, PicatModuleDeclaration::class.java)
 
         // Verify that there is exactly one module declaration
-        assertEquals(1, moduleDeclarations.size, "There should be exactly one module declaration")
+        Assertions.assertEquals(1, moduleDeclarations.size, "There should be exactly one module declaration")
 
         // Verify that the module declaration has the correct name
         val moduleDeclaration = moduleDeclarations.first()
         val moduleName = moduleDeclaration?.moduleName?.atom?.text
-        assertEquals("example", moduleName, "Module name should be 'example'")
+        Assertions.assertEquals("example", moduleName, "Module name should be 'example'")
     }
 
     @Test
@@ -54,26 +54,26 @@ class PicatModuleDeclarationTest : BasePlatformTestCase() {
         val moduleDeclarations = PsiTreeUtil.findChildrenOfType(file, PicatModuleDeclaration::class.java)
 
         // Verify that there is exactly one module declaration
-        assertEquals(1, moduleDeclarations.size, "There should be exactly one module declaration")
+        Assertions.assertEquals(1, moduleDeclarations.size, "There should be exactly one module declaration")
 
         // Verify that the module declaration has the correct name
         val moduleDeclaration = moduleDeclarations.first()
         val moduleName = moduleDeclaration?.moduleName?.atom?.text
-        assertEquals("example", moduleName, "Module name should be 'example'")
+        Assertions.assertEquals("example", moduleName, "Module name should be 'example'")
 
         // Verify that import statements are parsed correctly
         val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java)
-        assertEquals(1, importStatements.size, "Should have one import statement")
+        Assertions.assertEquals(1, importStatements.size, "Should have one import statement")
 
         val firstImport = importStatements.first()
         val importedModuleName = firstImport.importList?.importItemList?.firstOrNull()?.moduleName?.atom?.text
-        assertEquals("util", importedModuleName, "Imported module should be 'utils'")
+        Assertions.assertEquals("util", importedModuleName, "Imported module should be 'utils'")
 
 
         // Verify export statements (assuming PicatExportStatement exists and is a direct child of the file)
         // The BNF for export_clause was not given, so this is the best guess based on the original test structure
         val exportStatements = PsiTreeUtil.findChildrenOfType(file, PicatExportStatement::class.java)
-        assertEquals(1, exportStatements.size, "Should have one export statement")
-        // Further assertions on exportStatements content would depend on PicatExportStatement's PSI structure
+        Assertions.assertEquals(1, exportStatements.size, "Should have one export statement")
+        // FurtherAssertions.assertions on exportStatements content would depend on PicatExportStatement's PSI structure
     }
 }
