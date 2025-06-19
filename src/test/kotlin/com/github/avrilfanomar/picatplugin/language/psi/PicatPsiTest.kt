@@ -3,9 +3,7 @@ package com.github.avrilfanomar.picatplugin.language.psi
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 /**
@@ -28,33 +26,33 @@ class PicatPsiTest : BasePlatformTestCase() {
         val facts = PsiTreeUtil.findChildrenOfType(file, PicatPredicateFact::class.java)
 
         // Verify that there is exactly one fact
-        assertEquals(1, facts.size, "There should be exactly one fact")
+        Assertions.assertEquals(1, facts.size, "There should be exactly one fact")
 
         val fact = facts.first()
         val head = fact.head
-        assertNotNull(head, "Fact should have a head")
+        Assertions.assertNotNull(head, "Fact should have a head")
 
         // Verify that the head is a structure for this case
         val structure = head.structure
-        assertNotNull(structure, "Fact head should be a structure")
+        Assertions.assertNotNull(structure, "Fact head should be a structure")
 
         // Verify that the structure has the correct name and arity
-        assertEquals("custom_sum", structure!!.atom.text, "Structure name should be 'custom_sum'")
+        Assertions.assertEquals("custom_sum", structure!!.atom.text, "Structure name should be 'custom_sum'")
         val arity = structure.argumentList?.expressionList?.size ?: 0
-        assertEquals(3, arity, "Structure arity should be 3")
+        Assertions.assertEquals(3, arity, "Structure arity should be 3")
 
         // Verify that the structure has an argument list
         val argumentList = structure.argumentList
-        assertNotNull(argumentList, "Structure should have an argument list")
+        Assertions.assertNotNull(argumentList, "Structure should have an argument list")
 
         // Verify that the argument list has the correct number of arguments
         val arguments = argumentList!!.expressionList
-        assertEquals(3, arguments.size, "Argument list should have 3 arguments")
+        Assertions.assertEquals(3, arguments.size, "Argument list should have 3 arguments")
 
         // Verify that each argument has the correct expression text
-        assertEquals("1", arguments[0].text, "First argument should be 1")
-        assertEquals("2", arguments[1].text, "Second argument should be 2")
-        assertEquals("3", arguments[2].text, "Third argument should be 3")
+        Assertions.assertEquals("1", arguments[0].text, "First argument should be 1")
+        Assertions.assertEquals("2", arguments[1].text, "Second argument should be 2")
+        Assertions.assertEquals("3", arguments[2].text, "Third argument should be 3")
     }
 
     @Test
@@ -72,8 +70,8 @@ class PicatPsiTest : BasePlatformTestCase() {
         val exportStatements = PsiTreeUtil.findChildrenOfType(file, PicatExportStatement::class.java)
 
         // Verify that there is exactly one export statement
-        assertEquals(1, exportStatements.size, "There should be exactly one export statement")
-        // Further assertions would depend on PicatExportStatement's internal structure.
+        Assertions.assertEquals(1, exportStatements.size, "There should be exactly one export statement")
+        // Further Assertions.assertions would depend on PicatExportStatement's internal structure.
     }
 
     @Test
@@ -90,7 +88,7 @@ class PicatPsiTest : BasePlatformTestCase() {
         val includeStatements = PsiTreeUtil.findChildrenOfType(file, PicatIncludeStatement::class.java)
 
         // Verify that there is exactly one include statement
-        assertEquals(1, includeStatements.size, "There should be exactly one include statement")
+        Assertions.assertEquals(1, includeStatements.size, "There should be exactly one include statement")
 
         // Verify that the include statement has the correct path
         val includeStatement = includeStatements.first()
@@ -98,7 +96,7 @@ class PicatPsiTest : BasePlatformTestCase() {
         if (includeStatement.fileSpec?.string != null) { // If it's a STRING token
             path = path?.removeSurrounding("\"")
         }
-        assertEquals("utils.pi", path, "Include statement should have path utils.pi")
+        Assertions.assertEquals("utils.pi", path, "Include statement should have path utils.pi")
     }
 
     @Test
@@ -118,14 +116,14 @@ class PicatPsiTest : BasePlatformTestCase() {
 
         // Find all import statements
         val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java)
-        assertEquals(2, importStatements.size, "There should be exactly two import statements")
+        Assertions.assertEquals(2, importStatements.size, "There should be exactly two import statements")
 
         // Test extracting all imported module names from the file
         val allImportedModuleNames = importStatements.flatMap { stmt ->
             stmt.importList?.importItemList?.mapNotNull { it.moduleName.atom.text } ?: emptyList()
         }
-        assertEquals(4, allImportedModuleNames.size, "There should be four imported module names in total")
-        assertTrue(
+        Assertions.assertEquals(4, allImportedModuleNames.size, "There should be four imported module names in total")
+        Assertions.assertTrue(
             allImportedModuleNames.containsAll(listOf("util", "math", "cp", "planner")),
             "All expected module names should be present"
         )
