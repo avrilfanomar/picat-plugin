@@ -95,11 +95,6 @@ class PicatBlock(
         else if (helper.shouldIndentNestedExpressions(parentType, grandParentType)) {
             indent = Indent.getNormalIndent()
         }
-        // Handle statements after rule operators
-        else if (parentType == PicatTokenTypes.STATEMENT &&
-            (grandParentType == PicatTokenTypes.PREDICATE_RULE || grandParentType == PicatTokenTypes.FUNCTION_RULE)) {
-            indent = Indent.getNormalIndent()
-        }
         // Handle elements after rule operators
         else if (parentType == PicatTokenTypes.PREDICATE_RULE || parentType == PicatTokenTypes.FUNCTION_RULE) {
             indent = Indent.getNormalIndent()

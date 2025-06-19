@@ -26,7 +26,8 @@ class PicatElementParserTest : BasePlatformTestCase() {
 
         // Verify that atoms are parsed correctly
         val facts = file.getPredicateFacts()
-        Assertions.assertEquals(4, facts.size, "Should have four facts")
+        val actualSize = facts.size
+        Assertions.assertEquals(4, actualSize, "Should have four facts. Actual: $actualSize")
 
         // Check that the facts have heads
         facts.forEach { fact ->

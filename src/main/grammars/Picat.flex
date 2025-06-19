@@ -119,7 +119,6 @@ MULTI_LINE_COMMENT_REGEX=\/\*([^*]|\*+[^*/])*\*+\/
   "^"                         { return CARET; }
   "&"                         { return AMPERSAND; }
   "|"                         { return PIPE; }
-  \.\s+                       { return EOR; }
   "."                         { return DOT; }
   "++"                        { return CONCAT_OP; }
 

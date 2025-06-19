@@ -37,52 +37,55 @@ class PicatFileImpl(viewProvider: FileViewProvider) :
 
     // Implementation for PicatPicatFileContent interface (from 'picat_file_content ::= item_*')
     override fun getItem_List(): List<PicatItem_> {
+        // Children should be PicatItem_ if item_ has an elementType=ITEM.
+        // If item_ is transparent, children might be PicatPredicateClause, etc.
+        // This method's correctness depends on how item_ is defined and if PicatItem_ PSI nodes are created.
         return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatItem_::class.java)
     }
 
     fun getModuleDeclList(): List<PicatModuleDecl> {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatModuleDecl::class.java)
+        return PsiTreeUtil.collectElementsOfType(this, PicatModuleDecl::class.java).toList()
     }
 
     fun getGeneralDirectiveList(): List<PicatGeneralDirective> {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatGeneralDirective::class.java)
+        return PsiTreeUtil.collectElementsOfType(this, PicatGeneralDirective::class.java).toList()
     }
 
     fun getPredicateClauseList(): List<PicatPredicateClause> {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatPredicateClause::class.java)
+        return PsiTreeUtil.collectElementsOfType(this, PicatPredicateClause::class.java).toList()
     }
 
     fun getFunctionClauseList(): List<PicatFunctionClause> {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatFunctionClause::class.java)
+        return PsiTreeUtil.collectElementsOfType(this, PicatFunctionClause::class.java).toList()
     }
 
     fun getActorDefinitionList(): List<PicatActorDefinition> {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatActorDefinition::class.java)
+        return PsiTreeUtil.collectElementsOfType(this, PicatActorDefinition::class.java).toList()
     }
 
     override fun accept(visitor: PsiElementVisitor) {
         if (visitor is PicatVisitor) {
             // PicatVisitor should have visitPicatFileContent(PicatPicatFileContent o)
             // as picat_file_content is a public rule defining this structure.
-            visitor.visitPicatFileContent(this)
+            visitor.visitPicatFileContent(this) // Reverted to visitPicatFileContent
         } else {
             super.accept(visitor)
         }
     }
 
     fun getPredicateFacts(): List<PicatPredicateFact> {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatPredicateFact::class.java)
+        return PsiTreeUtil.collectElementsOfType(this, PicatPredicateFact::class.java).toList()
     }
 
     fun getFunctionFacts(): List<PicatFunctionFact> {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatFunctionFact::class.java)
+        return PsiTreeUtil.collectElementsOfType(this, PicatFunctionFact::class.java).toList()
     }
 
     fun getRules(): List<PicatPredicateRule> {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatPredicateRule::class.java)
+        return PsiTreeUtil.collectElementsOfType(this, PicatPredicateRule::class.java).toList()
     }
 
     fun getFunctions(): List<PicatFunctionRule> {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatFunctionRule::class.java)
+        return PsiTreeUtil.collectElementsOfType(this, PicatFunctionRule::class.java).toList()
     }
 }
