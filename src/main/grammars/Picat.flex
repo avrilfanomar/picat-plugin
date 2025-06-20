@@ -96,6 +96,7 @@ MULTI_LINE_COMMENT_REGEX=\/\*([^*]|\*+[^*/])*\*+\/
   "#/\\"                      { return HASH_AND_OP; } // Escaped backslash for JFlex string
   "#~"                        { return HASH_TILDE_OP; }
   ":-"                        { return RULE_OP; }
+  "::"                        { return DOUBLE_COLON_OP; }
   ":="                        { return ASSIGN_OP; }
   ".."                        { return RANGE_OP; }
   "="                         { return EQUAL; }

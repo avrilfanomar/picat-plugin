@@ -90,6 +90,7 @@
     PIPE="|"
     IS_KEYWORD="is"
     CONCAT_OP="++"
+    DOUBLE_COLON_OP="::"
 
     // Separators
     DOT="."

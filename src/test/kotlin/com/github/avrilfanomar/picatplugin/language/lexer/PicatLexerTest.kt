@@ -220,4 +220,44 @@ class PicatLexerTest {
             "Should contain operator tokens"
         )
     }
+
+    @Test
+    fun testDoubleColonOperator() {
+        val tokens = tokenize("::")
+        Assertions.assertEquals(1, tokens.size, "Should have 1 token")
+        Assertions.assertEquals(PicatTokenTypes.DOUBLE_COLON_OP, tokens[0].first)
+        Assertions.assertEquals("::", tokens[0].second)
+    }
+
+    @Test
+    fun testMixedOperatorsIncludingDoubleColon() {
+        val tokens = tokenize(":: + :=")
+        Assertions.assertEquals(5, tokens.size, "Should correctly tokenize mixed operators")
+        Assertions.assertEquals(PicatTokenTypes.DOUBLE_COLON_OP, tokens[0].first)
+        Assertions.assertEquals("::", tokens[0].second)
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[1].first)
+        Assertions.assertEquals(" ", tokens[1].second)
+        Assertions.assertEquals(PicatTokenTypes.PLUS, tokens[2].first)
+        Assertions.assertEquals("+", tokens[2].second)
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[3].first)
+        Assertions.assertEquals(" ", tokens[3].second)
+        Assertions.assertEquals(PicatTokenTypes.ASSIGN_OP, tokens[4].first)
+        Assertions.assertEquals(":=", tokens[4].second)
+    }
+
+    @Test
+    fun testColonAndDoubleColon() {
+        val tokens = tokenize(": :: :")
+        Assertions.assertEquals(5, tokens.size)
+        Assertions.assertEquals(PicatTokenTypes.COLON, tokens[0].first)
+        Assertions.assertEquals(":", tokens[0].second)
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[1].first)
+        Assertions.assertEquals(" ", tokens[1].second)
+        Assertions.assertEquals(PicatTokenTypes.DOUBLE_COLON_OP, tokens[2].first)
+        Assertions.assertEquals("::", tokens[2].second)
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[3].first)
+        Assertions.assertEquals(" ", tokens[3].second)
+        Assertions.assertEquals(PicatTokenTypes.COLON, tokens[4].first)
+        Assertions.assertEquals(":", tokens[4].second)
+    }
 }
