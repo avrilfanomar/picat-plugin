@@ -109,7 +109,6 @@
     // Literals (expanded)
     IDENTIFIER="regexp:[a-z][a-zA-Z0-9_]*"
     VARIABLE="regexp:[A-Z][a-zA-Z0-9_]*"
-    ANONYMOUS_VARIABLE="regexp:_[a-zA-Z0-9_]*"
     INTEGER="regexp:[0-9]+"
     HEX_INTEGER="regexp:0[xX][0-9a-fA-F]+"
     OCTAL_INTEGER="regexp:0[oO][0-7]+"
@@ -237,6 +236,7 @@ fail_goal ::= FAIL_KEYWORD {elementType=FAIL_GOAL}
 pass_goal ::= PASS_KEYWORD {elementType=PASS_GOAL}
 true_goal ::= TRUE_KEYWORD {elementType=TRUE_GOAL}
 false_goal ::= FALSE_KEYWORD {elementType=FALSE_GOAL}
+variable ::= VARIABLE {elementType=VARIABLE}
 not_goal ::= negation
 foreach_loop ::= FOREACH_KEYWORD LPAR foreach_generators RPAR body END_KEYWORD {
   elementType = FOREACH_LOOP
@@ -256,13 +256,13 @@ case_arm ::= pattern ARROW_OP body {elementType=CASE_ARM}
 try_catch ::= TRY_KEYWORD body CATCH_KEYWORD catch_clauses [FINALLY_KEYWORD body] END_KEYWORD {elementType=TRY_CATCH}
 catch_clauses ::= catch_clause (SEMICOLON catch_clause)* {elementType=CATCH_CLAUSES}
 catch_clause ::= pattern ARROW_OP body {elementType=CATCH_CLAUSE}
-while_loop ::= WHILE_KEYWORD expression DO_KEYWORD body END_KEYWORD {
+while_loop ::= WHILE_KEYWORD expression body END_KEYWORD {
   elementType = WHILE_LOOP
 }
 loop_while_statement ::= LOOP_KEYWORD body WHILE_KEYWORD expression DOT {pin=1 elementType=LOOP_WHILE_STATEMENT}
 
 // Patterns
-pattern ::= variable | atom | number | ANONYMOUS_VARIABLE | structure_pattern | list_pattern | tuple_pattern {elementType=PATTERN}
+pattern ::= variable | atom | number | structure_pattern | list_pattern | tuple_pattern {elementType=PATTERN}
 structure_pattern ::= atom LPAR pattern_list? RPAR {elementType=STRUCTURE_PATTERN}
 list_pattern ::= LBRACKET pattern_list? (PIPE pattern)? RBRACKET {elementType=LIST_PATTERN}
 tuple_pattern ::= LBRACE pattern_list? RBRACE {elementType=TUPLE_PATTERN}
@@ -314,7 +314,6 @@ primary_expression ::=
   | atom
   | number
   | variable
-  | ANONYMOUS_VARIABLE
   | list_expression
   | list_pattern
   | structure_pattern
