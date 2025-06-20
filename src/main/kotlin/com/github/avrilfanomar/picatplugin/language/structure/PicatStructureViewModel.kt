@@ -1,6 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.structure
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatPicatFileContent // Corrected Interface
+// Removed import for PicatPicatFile
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl // Import PicatFileImpl
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
 import com.intellij.ide.structureView.StructureViewModel
 import com.intellij.ide.structureView.StructureViewModelBase
@@ -19,13 +20,13 @@ class PicatStructureViewModel(psiFile: PsiFile) :
     override fun getSorters(): Array<Sorter> = arrayOf(Sorter.ALPHA_SORTER)
 
     override fun isAlwaysShowsPlus(element: StructureViewTreeElement): Boolean =
-        element.value is PicatPicatFileContent // Corrected Interface
+        element.value is PicatFileImpl // Changed to PicatFileImpl
 
     override fun isAlwaysLeaf(element: StructureViewTreeElement): Boolean =
         element.value is PicatFunctionRule
 
     override fun getSuitableClasses(): Array<Class<*>> = arrayOf(
-        PicatPicatFileContent::class.java, // Corrected Interface
+        PicatFileImpl::class.java, // Changed to PicatFileImpl
         PicatFunctionRule::class.java
     )
 }

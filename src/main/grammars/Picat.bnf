@@ -122,12 +122,9 @@
 }
 
 // Root rule
-picatFile ::= picat_file_content
+picatFile ::= (item_*)? // Explicitly make the whole sequence of items optional
 
-picat_file_content ::= item_* {
-  // No extends here, this rule just defines the structure for the interface
-  // The manual PicatProgramImpl will extend PsiFileBase and implement PicatFileContent
-}
+// Removed picat_file_content rule
 
 item_ ::= (function_clause | predicate_clause | general_directive | COMMENT | MULTI_LINE_COMMENT) {elementType=ITEM}
 
@@ -181,7 +178,7 @@ function_clause ::= function_rule | function_fact {elementType=FUNCTION_CLAUSE}
 function_rule ::= head EQUAL function_body DOT {pin=2 elementType = FUNCTION_RULE} // ASSIGN_OP changed to EQUAL
 function_fact ::= head EQUAL expression DOT {pin=2 elementType = FUNCTION_FACT} // ASSIGN_OP changed to EQUAL
 
-function_body ::= expression {
+function_body ::= expression [rule_operator body]? {
   elementType = FUNCTION_BODY
 }
 
@@ -204,8 +201,7 @@ body ::= goal ((SEMICOLON | COMMA) goal)* {elementType=BODY recoverWhile=body_re
 private body_recover ::= !(DOT | END_KEYWORD)
 
 // Goals
-goal ::= predicate_fact
-       | call
+goal ::= call  // Replaced predicate_fact with call to avoid consuming DOT within body
        | if_then_else
        | case_expression
        | try_catch
@@ -332,10 +328,13 @@ primary_expression ::=
   | atom
   | number
   | variable
+  | ANONYMOUS_VARIABLE
   | list_expression
+  | list_pattern
+  | structure_pattern
+  | tuple_pattern
   | tuple
   | map
-  //  | as_pattern_expression // Moved up as it starts with variable too
   | lambda_expression
   | list_comprehension_expression
   | dollar_term_constructor
