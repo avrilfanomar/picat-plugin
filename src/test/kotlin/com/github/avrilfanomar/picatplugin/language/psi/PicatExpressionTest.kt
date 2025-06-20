@@ -368,18 +368,33 @@ private fun getInnermostPrimaryExpression(element: PsiElement?): PicatPrimaryExp
 
     // Descend through expression wrappers if 'element' itself is a high-level expression type
     if (current is PicatExpression) {
-        current = PsiTreeUtil.getChildOfType(current, PicatBiconditionalExpressionLevel::class.java)
-        current = PsiTreeUtil.getChildOfType(current, PicatImplicationExpressionLevel::class.java)
-        current = PsiTreeUtil.getChildOfType(current, PicatConditionalExpression::class.java)
-        current = PsiTreeUtil.getChildOfType(current, PicatLogicalOrExpression::class.java)
-        current = PsiTreeUtil.getChildOfType(current, PicatLogicalAndExpression::class.java)
-        current = PsiTreeUtil.getChildOfType(current, PicatBitwiseOrExpression::class.java)
-        current = PsiTreeUtil.getChildOfType(current, PicatBitwiseXorExpression::class.java)
-        current = PsiTreeUtil.getChildOfType(current, PicatBitwiseAndExpression::class.java)
-        current = PsiTreeUtil.getChildOfType(current, PicatEqualityExpression::class.java)
-        current = PsiTreeUtil.getChildOfType(current, PicatRelationalExpression::class.java)
-        current = PsiTreeUtil.getChildOfType(current, PicatShiftExpression::class.java)
-        current = PsiTreeUtil.getChildOfType(current, PicatAdditiveExpression::class.java)
+        // Attempt to find the most specific, highest-priority expression type that is a direct child.
+        // This order reflects the precedence hierarchy from the BNF.
+        val directChild = current.children.firstOrNull { it is PicatBiconditionalExpressionLevel }
+            ?: current.children.firstOrNull { it is PicatImplicationExpressionLevel }
+            ?: current.children.firstOrNull { it is PicatConditionalExpression }
+            ?: current.children.firstOrNull { it is PicatLogicalOrExpression }
+            ?: current.children.firstOrNull { it is PicatLogicalAndExpression }
+            ?: current.children.firstOrNull { it is PicatBitwiseOrExpression }
+            ?: current.children.firstOrNull { it is PicatBitwiseXorExpression }
+            ?: current.children.firstOrNull { it is PicatBitwiseAndExpression }
+            ?: current.children.firstOrNull { it is PicatEqualityExpression }
+            ?: current.children.firstOrNull { it is PicatRelationalExpression }
+            ?: current.children.firstOrNull { it is PicatShiftExpression }
+            ?: current.children.firstOrNull { it is PicatAdditiveExpression }
+            ?: current.children.firstOrNull { it is PicatMultiplicativeExpression } // Added lower levels just in case
+            ?: current.children.firstOrNull { it is PicatPowerExpression }
+            ?: current.children.firstOrNull { it is PicatUnaryExpression }
+            ?: current.children.firstOrNull { it is PicatPrimaryExpression }
+
+        if (directChild != null) {
+            current = directChild
+        }
+        // If no such specific child is found, 'current' remains the original PicatExpression.
+        // The subsequent 'if (current is PicatAdditiveExpression)' etc. blocks will then
+        // attempt to process it. If 'current' is still just a PicatExpression and not one
+        // of the handled specific types, the function will likely (and correctly) return null
+        // or current if it happens to be a PicatPrimaryExpression itself.
     }
 
     // Descend through multiplicative and power expressions
