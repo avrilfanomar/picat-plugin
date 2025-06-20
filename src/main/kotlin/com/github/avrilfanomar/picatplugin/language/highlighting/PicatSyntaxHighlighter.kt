@@ -1,6 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.highlighting
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors
@@ -10,7 +9,7 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
 import com.github.avrilfanomar.picatplugin.language.lexer._PicatLexer
-import com.intellij.lexer.FlexLexer
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lexer.FlexAdapter
 import java.io.Reader
 
@@ -81,7 +80,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
         tokenType == PicatTokenTypes.LBRACKET || tokenType == PicatTokenTypes.RBRACKET
 
     private fun isVariable(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.VARIABLE || tokenType == PicatTokenTypes.ANONYMOUS_VARIABLE
+        tokenType == PicatTokenTypes.VARIABLE
 
     private fun isIdentifier(tokenType: IElementType): Boolean =
         tokenType == PicatTokenTypes.IDENTIFIER || tokenType == PicatTokenTypes.QUOTED_ATOM

@@ -24,7 +24,6 @@ WHITE_SPACE=[ \t\f\r\n]+
 COMMENT_LINE=\%.*
 IDENTIFIER_REGEX=[a-z][a-zA-Z0-9_]*
 VARIABLE_REGEX=[A-Z_][a-zA-Z0-9_]*
-ANONYMOUS_VARIABLE_REGEX=_[a-zA-Z0-9_]*
 NUMBER_REGEX=[0-9]+
 HEX_NUMBER_REGEX=0[xX][0-9a-fA-F]+
 OCTAL_NUMBER_REGEX=0[oO][0-7]+
@@ -145,8 +144,7 @@ MULTI_LINE_COMMENT_REGEX=\/\*([^*]|\*+[^*/])*\*+\/
   {STRING_REGEX}              { return STRING; }
   {QUOTED_ATOM_REGEX}         { return QUOTED_ATOM; }
 
-  // IMPORTANT: Order for IDENTIFIER, VARIABLE, ANONYMOUS_VARIABLE matters to avoid shadowing
-  {ANONYMOUS_VARIABLE_REGEX}  { return ANONYMOUS_VARIABLE; }
+  // IMPORTANT: Order for IDENTIFIER, VARIABLE matters to avoid shadowing
   {VARIABLE_REGEX}            { return VARIABLE; }
   {IDENTIFIER_REGEX}          { return IDENTIFIER; }
 }

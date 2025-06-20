@@ -1,7 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language
 
 import com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighter
-import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lexer.Lexer
 import com.intellij.testFramework.LexerTestCase
 import org.junit.jupiter.api.Assertions

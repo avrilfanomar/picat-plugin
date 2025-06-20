@@ -17,7 +17,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
-import com.github.avrilfanomar.picatplugin.language.parser.PicatParser // Corrected Parser Import
 
 /**
  * Parser definition for Picat language.

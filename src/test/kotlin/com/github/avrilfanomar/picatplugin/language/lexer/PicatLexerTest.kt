@@ -70,7 +70,7 @@ class PicatLexerTest {
         Assertions.assertEquals(tokens[2].second, "Y")
         Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[3].first) // Changed here
         Assertions.assertEquals(tokens[3].second, " ")
-        Assertions.assertEquals(PicatTokenTypes.ANONYMOUS_VARIABLE, tokens[4].first)
+        Assertions.assertEquals(PicatTokenTypes.VARIABLE, tokens[4].first)
         Assertions.assertEquals(tokens[4].second, "_var")
     }
 

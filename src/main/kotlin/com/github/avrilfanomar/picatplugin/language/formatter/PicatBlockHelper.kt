@@ -1,6 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.formatter
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.psi.tree.IElementType
 
 /**
