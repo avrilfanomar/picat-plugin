@@ -370,22 +370,7 @@ private fun getInnermostPrimaryExpression(element: PsiElement?): PicatPrimaryExp
     if (current is PicatExpression) {
         // Attempt to find the most specific, highest-priority expression type that is a direct child.
         // This order reflects the precedence hierarchy from the BNF.
-        val directChild = current.children.firstOrNull { it is PicatBiconditionalExpressionLevel }
-            ?: current.children.firstOrNull { it is PicatImplicationExpressionLevel }
-            ?: current.children.firstOrNull { it is PicatConditionalExpression }
-            ?: current.children.firstOrNull { it is PicatLogicalOrExpression }
-            ?: current.children.firstOrNull { it is PicatLogicalAndExpression }
-            ?: current.children.firstOrNull { it is PicatBitwiseOrExpression }
-            ?: current.children.firstOrNull { it is PicatBitwiseXorExpression }
-            ?: current.children.firstOrNull { it is PicatBitwiseAndExpression }
-            ?: current.children.firstOrNull { it is PicatEqualityExpression }
-            ?: current.children.firstOrNull { it is PicatRelationalExpression }
-            ?: current.children.firstOrNull { it is PicatShiftExpression }
-            ?: current.children.firstOrNull { it is PicatAdditiveExpression }
-            ?: current.children.firstOrNull { it is PicatMultiplicativeExpression } // Added lower levels just in case
-            ?: current.children.firstOrNull { it is PicatPowerExpression }
-            ?: current.children.firstOrNull { it is PicatUnaryExpression }
-            ?: current.children.firstOrNull { it is PicatPrimaryExpression }
+        val directChild = getDirectChild(current)
 
         if (directChild != null) {
             current = directChild
@@ -415,4 +400,28 @@ private fun getInnermostPrimaryExpression(element: PsiElement?): PicatPrimaryExp
         current = current.primaryExpression
     }
     return current as? PicatPrimaryExpression
+}
+
+private fun getDirectChild(current: PicatExpression): PsiElement? {
+    val targetTypes = listOf(
+        PicatBiconditionalExpressionLevel::class,
+        PicatImplicationExpressionLevel::class,
+        PicatConditionalExpression::class,
+        PicatLogicalOrExpression::class,
+        PicatLogicalAndExpression::class,
+        PicatBitwiseOrExpression::class,
+        PicatBitwiseXorExpression::class,
+        PicatBitwiseAndExpression::class,
+        PicatEqualityExpression::class,
+        PicatRelationalExpression::class,
+        PicatShiftExpression::class,
+        PicatAdditiveExpression::class,
+        PicatMultiplicativeExpression::class,
+        PicatPowerExpression::class,
+        PicatUnaryExpression::class,
+        PicatPrimaryExpression::class
+    )
+    return current.children.firstOrNull { child ->
+        targetTypes.any { it.isInstance(child) }
+    }
 }
