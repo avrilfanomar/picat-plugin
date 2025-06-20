@@ -123,12 +123,9 @@
 }
 
 // Root rule
-picatFile ::= (item_*)? // Explicitly make the whole sequence of items optional
-
-// Removed picat_file_content rule
+picatFile ::= (item_*)?
 
 item_ ::= (function_clause | predicate_clause | general_directive | COMMENT | MULTI_LINE_COMMENT) {elementType=ITEM}
-
 
 // Module declaration
 module_decl ::= module_declaration end_module_declaration? {elementType=MODULE_DECLARATION}
@@ -149,7 +146,6 @@ head_reference_list ::= head_reference ((COMMA | SEMICOLON) head_reference)* {el
 head_reference ::= atom ('/' INTEGER)? {elementType=HEAD_REFERENCE}
 indexing_details ::= LPAR argument_list RPAR {elementType=INDEXING_DETAILS}
 
-
 import_statement ::= IMPORT_KEYWORD import_list DOT { pin=1 elementType=IMPORT_STATEMENT}
 export_statement ::= EXPORT_KEYWORD export_list DOT { pin=1 elementType=EXPORT_STATEMENT}
 include_statement ::= INCLUDE_KEYWORD file_spec DOT { pin=1 elementType=INCLUDE_STATEMENT}
@@ -168,7 +164,6 @@ file_spec ::= STRING | atom {elementType=FILE_SPEC}
 // Predicate Clauses
 predicate_clause ::= predicate_rule | predicate_fact {elementType=PREDICATE_CLAUSE}
 
-// Changed pin from 1 to 2, assuming RULE_OP (actual: rule_operator) is the commit point
 predicate_rule ::= head rule_operator body DOT {pin=2 elementType = PREDICATE_RULE}
 predicate_fact ::= head DOT {pin=1 elementType = PREDICATE_FACT}
 
@@ -176,9 +171,8 @@ predicate_fact ::= head DOT {pin=1 elementType = PREDICATE_FACT}
 // Function Clauses
 function_clause ::= function_rule | function_fact {elementType=FUNCTION_CLAUSE}
 
-function_rule ::= head EQUAL function_body DOT {pin=2 elementType = FUNCTION_RULE} // ASSIGN_OP changed to EQUAL
-function_fact ::= head EQUAL expression DOT {pin=2 elementType = FUNCTION_FACT} // ASSIGN_OP changed to EQUAL
-
+function_rule ::= head EQUAL function_body DOT {pin=2 elementType = FUNCTION_RULE}
+function_fact ::= head EQUAL expression DOT {pin=2 elementType = FUNCTION_FACT}
 function_body ::= expression [rule_operator body]? {
   elementType = FUNCTION_BODY
 }
@@ -189,12 +183,11 @@ actor_name ::= atom {elementType=ACTOR_NAME}
 actor_member ::= action_rule | predicate_clause | function_clause | compilation_directive {elementType=ACTOR_MEMBER}
 action_rule ::= head HASH_ARROW_OP body {elementType = ACTION_RULE}
 
-
 rule_operator ::= ARROW_OP | BACKTRACKABLE_ARROW_OP | BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP | RULE_OP {elementType=RULE_OPERATOR}
 
 // Heads
-head ::= structure | atom_no_args | qualified_atom {elementType=HEAD} // Reordered: structure first
-qualified_atom ::= atom DOT atom {elementType=QUALIFIED_ATOM} // DOT was "."
+head ::= structure | atom_no_args | qualified_atom {elementType=HEAD}
+qualified_atom ::= atom DOT atom {elementType=QUALIFIED_ATOM}
 atom_no_args ::= atom !LPAR {elementType=ATOM_NO_ARGS}
 
 // Body
@@ -202,7 +195,7 @@ body ::= goal ((SEMICOLON | COMMA) goal)* {elementType=BODY recoverWhile=body_re
 private body_recover ::= !(DOT | END_KEYWORD)
 
 // Goals
-goal ::= call  // Replaced predicate_fact with call to avoid consuming DOT within body
+goal ::= call
        | if_then_else
        | case_expression
        | try_catch
@@ -252,28 +245,21 @@ foreach_generators ::= foreach_generator (COMMA foreach_generator)* {elementType
 foreach_generator ::= variable IN_KEYWORD expression | variable EQUAL expression {elementType=FOREACH_GENERATOR}
 list_comprehension_goal ::= LBRACKET expression PIPE foreach_generators RBRACKET {elementType=LIST_COMPREHENSION_GOAL}
 procedure_call ::= atom LPAR argument_list? RPAR {elementType=PROCEDURE_CALL} // Made argument_list optional here too based on function_call
-
 cut_goal ::= CUT {elementType=CUT_GOAL}
 return_stmt ::= RETURN_KEYWORD expression {elementType=RETURN_STMT}
 continue_stmt ::= CONTINUE_KEYWORD {elementType=CONTINUE_STMT}
 break_stmt ::= BREAK_KEYWORD {elementType=BREAK_STMT}
 throw_stmt ::= THROW_KEYWORD expression {elementType=THROW_STMT}
-
-// New control structures
 case_expression ::= CASE_KEYWORD expression OF_KEYWORD case_arms END_KEYWORD {elementType=CASE_EXPRESSION}
 case_arms ::= case_arm (SEMICOLON case_arm)* {elementType=CASE_ARMS}
 case_arm ::= pattern ARROW_OP body {elementType=CASE_ARM}
-
 try_catch ::= TRY_KEYWORD body CATCH_KEYWORD catch_clauses [FINALLY_KEYWORD body] END_KEYWORD {elementType=TRY_CATCH}
 catch_clauses ::= catch_clause (SEMICOLON catch_clause)* {elementType=CATCH_CLAUSES}
 catch_clause ::= pattern ARROW_OP body {elementType=CATCH_CLAUSE}
-
 while_loop ::= WHILE_KEYWORD expression DO_KEYWORD body END_KEYWORD {
   elementType = WHILE_LOOP
 }
-
 loop_while_statement ::= LOOP_KEYWORD body WHILE_KEYWORD expression DOT {pin=1 elementType=LOOP_WHILE_STATEMENT}
-
 
 // Patterns
 pattern ::= variable | atom | number | ANONYMOUS_VARIABLE | structure_pattern | list_pattern | tuple_pattern {elementType=PATTERN}
@@ -285,7 +271,7 @@ pattern_list ::= pattern (COMMA pattern)* {elementType=PATTERN_LIST}
 // Basic elements
 atom ::= IDENTIFIER | QUOTED_ATOM {elementType=ATOM}
 number ::= INTEGER | FLOAT | HEX_INTEGER | OCTAL_INTEGER | BINARY_INTEGER
-structure ::= atom LPAR argument_list? RPAR { // Removed optional "$?"
+structure ::= atom LPAR argument_list? RPAR {
   elementType = STRUCTURE
 }
 tuple ::= LBRACE tuple_items? RBRACE {elementType=TUPLE}
@@ -320,11 +306,10 @@ power_expression ::= unary_expression (POWER unary_expression)*
 unary_expression ::= ((PLUS | MINUS | NOT_KEYWORD | BACKSLASH | HASH_TILDE_OP) primary_expression) | primary_expression {elementType=UNARY_EXPRESSION}
 
 primary_expression ::=
-    // Compound forms starting with atom/variable first
-    function_call                 // atom LPAR ...
-  | term_constructor_expression   // atom LBRACE ...
-  | index_access_expression       // variable LBRACKET ...
-  | as_pattern_expression         // variable AT pattern (starts with variable, but pattern is more specific)
+    function_call
+  | term_constructor_expression
+  | index_access_expression
+  | as_pattern_expression
     // Simpler forms later
   | atom
   | number

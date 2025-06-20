@@ -91,9 +91,9 @@ MULTI_LINE_COMMENT_REGEX=\/\*([^*]|\*+[^*/])*\*+\/
   "?<=>"                      { return BACKTRACKABLE_BICONDITIONAL_OP; }
   "#<=>"                      { return HASH_BICONDITIONAL_OP; }
   "#=>"                       { return HASH_ARROW_OP; }
-  "#\\/"                      { return HASH_OR_OP; } // Escaped backslash for JFlex string
+  "#\\/"                      { return HASH_OR_OP; }
   "#^"                        { return HASH_CARET_OP; }
-  "#/\\"                      { return HASH_AND_OP; } // Escaped backslash for JFlex string
+  "#/\\"                      { return HASH_AND_OP; }
   "#~"                        { return HASH_TILDE_OP; }
   ":-"                        { return RULE_OP; }
   "::"                        { return DOUBLE_COLON_OP; }
@@ -106,7 +106,7 @@ MULTI_LINE_COMMENT_REGEX=\/\*([^*]|\*+[^*/])*\*+\/
   "<="                        { return LESS_EQUAL; }
   ">="                        { return GREATER_EQUAL; }
   "=:="                       { return IDENTICAL; }
-  "=\\="                      { return NOT_IDENTICAL; } // Escaped backslash
+  "=\\="                      { return NOT_IDENTICAL; }
   "+"                         { return PLUS; }
   "-"                         { return MINUS; }
   "*"                         { return MULTIPLY; }
@@ -116,7 +116,7 @@ MULTI_LINE_COMMENT_REGEX=\/\*([^*]|\*+[^*/])*\*+\/
   "<<"                        { return SHIFT_LEFT; }
   ">>"                        { return SHIFT_RIGHT; }
   ">>>"                       { return SHIFT_RIGHT_TRIPLE_OP; }
-  "\\"                        { return BACKSLASH; } // Escaped backslash
+  "\\"                        { return BACKSLASH; }
   "^"                         { return CARET; }
   "&"                         { return AMPERSAND; }
   "|"                         { return PIPE; }
@@ -142,8 +142,8 @@ MULTI_LINE_COMMENT_REGEX=\/\*([^*]|\*+[^*/])*\*+\/
   {OCTAL_NUMBER_REGEX}        { return OCTAL_INTEGER; }
   {BINARY_NUMBER_REGEX}       { return BINARY_INTEGER; }
   {FLOAT_NUMBER_REGEX}        { return FLOAT; }
-  {STRING_REGEX}              { return STRING; } // Assuming STRING is the token name from BNF
-  {QUOTED_ATOM_REGEX}         { return QUOTED_ATOM; } // Assuming QUOTED_ATOM is the token name from BNF
+  {STRING_REGEX}              { return STRING; }
+  {QUOTED_ATOM_REGEX}         { return QUOTED_ATOM; }
 
   // IMPORTANT: Order for IDENTIFIER, VARIABLE, ANONYMOUS_VARIABLE matters to avoid shadowing
   {ANONYMOUS_VARIABLE_REGEX}  { return ANONYMOUS_VARIABLE; }
