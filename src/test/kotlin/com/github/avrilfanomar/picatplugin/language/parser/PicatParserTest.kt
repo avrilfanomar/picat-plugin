@@ -1,14 +1,13 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
-// Keep existing imports
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
+import com.intellij.psi.impl.DebugUtil
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import com.intellij.psi.impl.DebugUtil
-import com.intellij.psi.util.PsiTreeUtil
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
 
 /**
  * Test for the PicatParser class.
@@ -23,9 +22,12 @@ class PicatParserTest : BasePlatformTestCase() {
         myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFileImpl
 
-        val psiString = DebugUtil.psiToString(file, false, true) // Set showChildren=false for the root, true for content
+        val psiString = DebugUtil.psiToString(file, false, true)
         // With picatFile ::= item_*, an empty file should result in PicatFileImpl having no children.
-        Assertions.assertTrue(file.children.isEmpty(), "Empty file should have no children. PSI:\n$psiString")
+        Assertions.assertTrue(
+            file.children.isEmpty(),
+            "Empty file should have no children. PSI:\n$psiString"
+        )
     }
 
     @Test
@@ -261,7 +263,7 @@ class PicatParserTest : BasePlatformTestCase() {
         val rules = PsiTreeUtil.collectElementsOfType(file, PicatPredicateRule::class.java)
         Assertions.assertTrue(rules.size >= 1, "Should have at least one rule")
 
-        val testExpressionsRule = rules.find { it.getHead()?.text == "test_expressions" }
+        val testExpressionsRule = rules.find { it.getHead().text == "test_expressions" }
         Assertions.assertNotNull(testExpressionsRule, "Should have a rule with head 'test_expressions'")
 
         val body = testExpressionsRule?.getBody()

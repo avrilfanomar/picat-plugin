@@ -2,23 +2,20 @@ package com.github.avrilfanomar.picatplugin.language.psi.impl
 
 import com.github.avrilfanomar.picatplugin.language.PicatFileType
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
-import com.github.avrilfanomar.picatplugin.language.psi.PicatActorDefinition
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionClause
+import com.github.avrilfanomar.picatplugin.language.psi.PicatCompilationDirective
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionFact
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatGeneralDirective
 import com.github.avrilfanomar.picatplugin.language.psi.PicatItem_
-import com.github.avrilfanomar.picatplugin.language.psi.PicatModuleDecl
-import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateClause
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateFact
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatVisitor
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
-import com.intellij.psi.PsiElement // Added import
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.PsiErrorElement // Added import
+import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.util.PsiTreeUtil
 
 class PicatFileImpl(viewProvider: FileViewProvider) :
@@ -48,49 +45,20 @@ class PicatFileImpl(viewProvider: FileViewProvider) :
                 // For the specific EOF error, the PicatItem_ contains a chain leading to PsiErrorElement.
                 // A robust check might be too complex here, this is an approximation.
                 // The goal is to make `file.children.isEmpty()` true for `testEmptyFile`.
-                // The error node structure is: PicatItem_ -> PicatGeneralDirective -> PicatCompilationDirective -> PsiErrorElement
                 val firstGrandChild = child.firstChild
-                if (firstGrandChild is com.github.avrilfanomar.picatplugin.language.psi.PicatGeneralDirective) {
+                if (firstGrandChild is PicatGeneralDirective) {
                     val firstGreatGrandChild = firstGrandChild.firstChild
-                    if (firstGreatGrandChild is com.github.avrilfanomar.picatplugin.language.psi.PicatCompilationDirective) {
-                        if (firstGreatGrandChild.firstChild is PsiErrorElement && firstGreatGrandChild.children.size == 1) {
-                           return@filter false // Exclude this specific error structure
+                    if (firstGreatGrandChild is PicatCompilationDirective) {
+                        if (firstGreatGrandChild.firstChild is PsiErrorElement &&
+                            firstGreatGrandChild.children.size == 1
+                        ) {
+                            return@filter false // Exclude this specific error structure
                         }
                     }
                 }
             }
-            // A more general filter for any direct PsiErrorElement child (though less likely for PicatFileImpl based on current BNF)
-            // if (it is PsiErrorElement) return@filter false
             true
         }.toTypedArray()
-    }
-
-
-    fun getItem_List(): List<PicatItem_> {
-        // This should now reflect the filtered children if it uses getChildren() internally,
-        // or be adjusted if it uses a different way to get items.
-        // PsiTreeUtil.getChildrenOfTypeAsList uses getChildren().
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatItem_::class.java)
-    }
-
-    fun getModuleDeclList(): List<PicatModuleDecl> {
-        return PsiTreeUtil.collectElementsOfType(this, PicatModuleDecl::class.java).toList()
-    }
-
-    fun getGeneralDirectiveList(): List<PicatGeneralDirective> {
-        return PsiTreeUtil.collectElementsOfType(this, PicatGeneralDirective::class.java).toList()
-    }
-
-    fun getPredicateClauseList(): List<PicatPredicateClause> {
-        return PsiTreeUtil.collectElementsOfType(this, PicatPredicateClause::class.java).toList()
-    }
-
-    fun getFunctionClauseList(): List<PicatFunctionClause> {
-        return PsiTreeUtil.collectElementsOfType(this, PicatFunctionClause::class.java).toList()
-    }
-
-    fun getActorDefinitionList(): List<PicatActorDefinition> {
-        return PsiTreeUtil.collectElementsOfType(this, PicatActorDefinition::class.java).toList()
     }
 
     override fun accept(visitor: PsiElementVisitor) {
