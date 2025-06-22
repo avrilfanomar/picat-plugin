@@ -1,6 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language
 
 import com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighter
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lexer.Lexer
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType

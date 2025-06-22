@@ -1,5 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.formatter
 
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.formatting.Alignment
 import com.intellij.formatting.Block
 import com.intellij.formatting.Indent
