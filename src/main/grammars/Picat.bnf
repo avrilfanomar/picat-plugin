@@ -260,8 +260,7 @@ argument_list ::= expression (COMMA expression)*
 // Expressions
 expression ::= biconditional_expression_level
 
-biconditional_expression_level ::= implication_expression_level ((BICONDITIONAL_OP | HASH_BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP) implication_expression_level)*
-implication_expression_level ::= conditional_expression ((ARROW_OP | HASH_ARROW_OP | BACKTRACKABLE_ARROW_OP) conditional_expression)*
+biconditional_expression_level ::= conditional_expression ((BICONDITIONAL_OP | HASH_BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP) conditional_expression)*
 conditional_expression ::= logical_or_expression ("?" expression COLON expression)?
 
 logical_or_expression ::= logical_and_expression ((OR_KEYWORD | HASH_OR_OP) logical_and_expression)*
