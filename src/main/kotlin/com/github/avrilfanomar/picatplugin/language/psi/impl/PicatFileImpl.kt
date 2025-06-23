@@ -73,10 +73,6 @@ class PicatFileImpl(viewProvider: FileViewProvider) :
         return PsiTreeUtil.collectElementsOfType(this, PicatPredicateFact::class.java).toList()
     }
 
-    fun getFunctionFacts(): List<PicatFunctionFact> {
-        return PsiTreeUtil.collectElementsOfType(this, PicatFunctionFact::class.java).toList()
-    }
-
     fun getRules(): List<PicatPredicateRule> {
         return PsiTreeUtil.collectElementsOfType(this, PicatPredicateRule::class.java).toList()
     }
