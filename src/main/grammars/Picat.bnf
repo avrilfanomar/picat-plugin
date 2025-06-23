@@ -171,7 +171,7 @@ function_body ::= expression (rule_operator body)?
 rule_operator ::= ARROW_OP | BACKTRACKABLE_ARROW_OP | BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP | RULE_OP
 
 // Heads
-head ::= structure | atom_no_args | qualified_atom
+head ::= (structure | atom_no_args | qualified_atom) (COMMA expression)*
 qualified_atom ::= atom DOT atom
 atom_no_args ::= atom !LPAR
 
