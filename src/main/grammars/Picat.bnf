@@ -141,8 +141,8 @@ indexing_details ::= LPAR argument_list RPAR
 
 import_statement ::= IMPORT_KEYWORD import_list DOT { pin=1}
 export_statement ::= EXPORT_KEYWORD export_list DOT { pin=1}
-include_statement ::= INCLUDE_KEYWORD file_spec DOT { pin=1 }
-using_statement ::= USING_KEYWORD module_name ["=>" rename_list] DOT { pin=1 }
+include_statement ::= INCLUDE_KEYWORD file_spec DOT { pin=1}
+using_statement ::= USING_KEYWORD module_name ["=>" rename_list] DOT { pin=1}
 
 import_list ::= import_item (COMMA import_item)*
 import_item ::= module_name ["=>" rename_list]
@@ -157,15 +157,15 @@ file_spec ::= STRING | atom
 // Predicate Clauses
 predicate_clause ::= predicate_rule | predicate_fact
 
-predicate_rule ::= head rule_operator body DOT {pin=2 }
-predicate_fact ::= head DOT {pin=1 }
+predicate_rule ::= head rule_operator body DOT {pin=2}
+predicate_fact ::= head DOT {pin=1}
 
 
 // Function Clauses
 function_clause ::= function_rule | function_fact
 
-function_rule ::= head EQUAL function_body DOT {pin=2 }
-function_fact ::= head EQUAL expression DOT {pin=2 }
+function_rule ::= head EQUAL function_body DOT {pin=2}
+function_fact ::= head EQUAL expression DOT {pin=2}
 function_body ::= expression (rule_operator body)?
 
 rule_operator ::= ARROW_OP | BACKTRACKABLE_ARROW_OP | BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP | RULE_OP
