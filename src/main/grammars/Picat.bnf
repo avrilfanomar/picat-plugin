@@ -285,6 +285,7 @@ primary_expression ::=
   | term_constructor_expression
   | index_access_expression
   | as_pattern_expression
+  | number_range
     // Simpler forms later
   | atom
   | number
@@ -311,6 +312,7 @@ variable_list ::= variable (COMMA variable)*
 
 term_constructor_expression ::= (atom | qualified_atom) LBRACE map_entries RBRACE
 
+number_range ::= INTEGER RANGE_OP INTEGER
 
 // Function Calls
 function_call ::= atom LPAR argument_list? RPAR | builtin_call

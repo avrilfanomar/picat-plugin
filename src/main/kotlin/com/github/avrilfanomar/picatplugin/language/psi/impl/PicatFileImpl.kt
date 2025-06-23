@@ -3,7 +3,6 @@ package com.github.avrilfanomar.picatplugin.language.psi.impl
 import com.github.avrilfanomar.picatplugin.language.PicatFileType
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
 import com.github.avrilfanomar.picatplugin.language.psi.PicatCompilationDirective
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionFact
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatGeneralDirective
 import com.github.avrilfanomar.picatplugin.language.psi.PicatItem_
