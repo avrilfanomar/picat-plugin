@@ -296,7 +296,7 @@ primary_expression ::= function_call
                      | dollar_term_constructor
                      | LPAR expression RPAR
 
-dollar_term_constructor ::= "$" goal "$"
+dollar_term_constructor ::= "$" goal
 
 index_access_expression ::= variable LBRACKET expression [ COMMA expression ] RBRACKET
 
