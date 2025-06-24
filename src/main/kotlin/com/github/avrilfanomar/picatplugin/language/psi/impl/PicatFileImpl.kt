@@ -3,7 +3,6 @@ package com.github.avrilfanomar.picatplugin.language.psi.impl
 import com.github.avrilfanomar.picatplugin.language.PicatFileType
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
 import com.github.avrilfanomar.picatplugin.language.psi.PicatCompilationDirective
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatGeneralDirective
 import com.github.avrilfanomar.picatplugin.language.psi.PicatItem_
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateFact
@@ -76,7 +75,4 @@ class PicatFileImpl(viewProvider: FileViewProvider) :
         return PsiTreeUtil.collectElementsOfType(this, PicatPredicateRule::class.java).toList()
     }
 
-    fun getFunctions(): List<PicatFunctionRule> {
-        return PsiTreeUtil.collectElementsOfType(this, PicatFunctionRule::class.java).toList()
-    }
 }
