@@ -282,6 +282,7 @@ primary_expression ::= function_call
                      | index_access_expression
                      | as_pattern_expression
                      | number_range
+                     | STRING
                      | atom
                      | number
                      | variable
