@@ -58,6 +58,7 @@
     HASH_CARET_OP="#^"
     HASH_AND_OP="#/\\"
     HASH_TILDE_OP="#~"
+    HASH_ASSIGN_OP="#="
     RULE_OP=":-"
     ASSIGN_OP=":="
     RANGE_OP=".."
@@ -184,6 +185,7 @@ goal ::= call
        | case_expression
        | try_catch
        | assignment
+       | type_annotation
        | unification
        | comparison
        | arithmetic_comparison
@@ -209,7 +211,8 @@ goal ::= call
 call ::= structure | atom
 if_then_else ::= IF_KEYWORD expression THEN_KEYWORD body [elseif_clause] [ELSE_KEYWORD body] END_KEYWORD
 elseif_clause ::= ELSEIF_KEYWORD expression THEN_KEYWORD body [elseif_clause]
-assignment ::= variable ASSIGN_OP expression
+assignment ::= variable ( ASSIGN_OP | HASH_ASSIGN_OP ) expression
+type_annotation ::= variable DOUBLE_COLON_OP expression
 unification ::= expression ( EQUAL | NOT_EQUAL ) expression
 comparison ::= expression comparison_operator expression
 comparison_operator ::= LESS | GREATER | LESS_EQUAL | GREATER_EQUAL
