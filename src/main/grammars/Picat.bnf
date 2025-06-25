@@ -58,7 +58,7 @@
     HASH_CARET_OP="#^"
     HASH_AND_OP="#/\\"
     HASH_TILDE_OP="#~"
-    HASH_ASSIGN_OP="#="
+    HASH_EQUAL_OP="#="
     RULE_OP=":-"
     ASSIGN_OP=":="
     RANGE_OP=".."
@@ -181,15 +181,12 @@ body ::= goal ( ( SEMICOLON | COMMA ) goal )* {recoverWhile=body_recover}
 private body_recover ::= !(DOT | END_KEYWORD)
 
 // Goals
-goal ::= call
-       | if_then_else
+goal ::= if_then_else
        | case_expression
        | try_catch
        | assignment
        | type_annotation
        | unification
-       | comparison
-       | arithmetic_comparison
        | negation
        | fail_goal
        | pass_goal
@@ -200,25 +197,22 @@ goal ::= call
        | while_loop
        | loop_while_statement
        | list_comprehension_goal
-       | procedure_call
        | cut_goal
        | return_stmt
        | continue_stmt
        | break_stmt
        | throw_stmt
        | expression
+       | procedure_call
+       | call
 
 // Goal implementations
 call ::= structure | atom
 if_then_else ::= IF_KEYWORD expression THEN_KEYWORD body [elseif_clause] [ELSE_KEYWORD body] END_KEYWORD
 elseif_clause ::= ELSEIF_KEYWORD expression THEN_KEYWORD body [elseif_clause]
-assignment ::= variable ( ASSIGN_OP | HASH_ASSIGN_OP ) expression
+assignment ::= variable ASSIGN_OP expression
 type_annotation ::= variable DOUBLE_COLON_OP expression
 unification ::= expression ( EQUAL | NOT_EQUAL | HASH_NOT_EQUAL_OP ) expression
-comparison ::= expression comparison_operator expression
-comparison_operator ::= LESS | GREATER | LESS_EQUAL | GREATER_EQUAL
-arithmetic_comparison ::= expression arithmetic_comparison_operator expression
-arithmetic_comparison_operator ::= IDENTICAL | NOT_IDENTICAL | HASH_ASSIGN_OP
 negation ::= NOT_KEYWORD goal
 fail_goal ::= FAIL_KEYWORD
 pass_goal ::= PASS_KEYWORD
@@ -262,7 +256,7 @@ argument_list ::= expression ( COMMA expression )*
 // Expressions
 expression ::= biconditional_expression_level
 
-biconditional_expression_level ::= conditional_expression ( ( BICONDITIONAL_OP | HASH_BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP ) conditional_expression )*
+biconditional_expression_level ::= conditional_expression ( ( BICONDITIONAL_OP | HASH_BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP ) conditional_expression )?
 conditional_expression ::= logical_or_expression [ "?" expression COLON expression ]
 
 logical_or_expression ::= logical_and_expression ( ( OR_KEYWORD | HASH_OR_OP ) logical_and_expression )*
@@ -272,8 +266,8 @@ bitwise_or_expression ::= bitwise_xor_expression ( PIPE bitwise_xor_expression )
 bitwise_xor_expression ::= bitwise_and_expression ( ( CARET | XOR_KEYWORD | HASH_CARET_OP ) bitwise_and_expression )*
 bitwise_and_expression ::= equality_expression ( AMPERSAND equality_expression )*
 
-equality_expression ::= relational_expression ( ( IDENTICAL | NOT_IDENTICAL ) relational_expression )*
-relational_expression ::= shift_expression ( ( LESS | GREATER | LESS_EQUAL | GREATER_EQUAL ) shift_expression )*
+equality_expression ::= relational_expression ( ( IDENTICAL | NOT_IDENTICAL | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | EQUAL | NOT_EQUAL ) relational_expression )?
+relational_expression ::= shift_expression ( ( LESS | GREATER | LESS_EQUAL | GREATER_EQUAL ) shift_expression )?
 shift_expression ::= additive_expression ( ( SHIFT_LEFT | SHIFT_RIGHT | SHIFT_RIGHT_TRIPLE_OP ) additive_expression )*
 additive_expression ::= multiplicative_expression ( ( PLUS | MINUS ) multiplicative_expression )*
 multiplicative_expression ::= power_expression ( ( MULTIPLY | DIVIDE | INT_DIVIDE | MOD_KEYWORD | DIV_KEYWORD | REM_KEYWORD ) power_expression )*
@@ -286,10 +280,6 @@ primary_expression ::= function_call
                      | index_access_expression
                      | as_pattern_expression
                      | number_range
-                     | STRING
-                     | atom
-                     | number
-                     | variable
                      | list_comprehension_expression
                      | list_expression
                      | list_pattern
@@ -300,6 +290,10 @@ primary_expression ::= function_call
                      | lambda_expression
                      | dollar_term_constructor
                      | LPAR expression RPAR
+                     | STRING
+                     | atom
+                     | number
+                     | variable
 
 dollar_term_constructor ::= "$" goal
 
