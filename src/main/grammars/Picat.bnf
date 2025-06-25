@@ -64,6 +64,7 @@
     RANGE_OP=".."
     EQUAL="="
     NOT_EQUAL="!="
+    HASH_NOT_EQUAL_OP="#!="
     LESS="<"
     GREATER=">"
     LESS_EQUAL="<="
@@ -213,7 +214,7 @@ if_then_else ::= IF_KEYWORD expression THEN_KEYWORD body [elseif_clause] [ELSE_K
 elseif_clause ::= ELSEIF_KEYWORD expression THEN_KEYWORD body [elseif_clause]
 assignment ::= variable ( ASSIGN_OP | HASH_ASSIGN_OP ) expression
 type_annotation ::= variable DOUBLE_COLON_OP expression
-unification ::= expression ( EQUAL | NOT_EQUAL ) expression
+unification ::= expression ( EQUAL | NOT_EQUAL | HASH_NOT_EQUAL_OP ) expression
 comparison ::= expression comparison_operator expression
 comparison_operator ::= LESS | GREATER | LESS_EQUAL | GREATER_EQUAL
 arithmetic_comparison ::= expression arithmetic_comparison_operator expression
