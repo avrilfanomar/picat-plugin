@@ -125,7 +125,7 @@
 // Root rule
 picatFile ::= item_*
 
-item_ ::= function_clause | predicate_clause | COMMENT | MULTI_LINE_COMMENT | general_directive
+private item_ ::= function_clause | predicate_clause | COMMENT | MULTI_LINE_COMMENT | general_directive
 
 // Module declaration
 module_name ::= atom
