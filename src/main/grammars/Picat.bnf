@@ -311,7 +311,7 @@ variable_list ::= variable ( COMMA variable )*
 
 term_constructor_expression ::= (atom | qualified_atom) LBRACE map_entries RBRACE
 
-number_range ::= INTEGER RANGE_OP INTEGER
+number_range ::= ( INTEGER | variable ) RANGE_OP ( INTEGER | variable )
 
 // Function Calls
 function_call ::= atom LPAR [argument_list] RPAR | builtin_call
