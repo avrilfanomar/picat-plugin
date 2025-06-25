@@ -218,7 +218,7 @@ unification ::= expression ( EQUAL | NOT_EQUAL | HASH_NOT_EQUAL_OP ) expression
 comparison ::= expression comparison_operator expression
 comparison_operator ::= LESS | GREATER | LESS_EQUAL | GREATER_EQUAL
 arithmetic_comparison ::= expression arithmetic_comparison_operator expression
-arithmetic_comparison_operator ::= IDENTICAL | NOT_IDENTICAL
+arithmetic_comparison_operator ::= IDENTICAL | NOT_IDENTICAL | HASH_ASSIGN_OP
 negation ::= NOT_KEYWORD goal
 fail_goal ::= FAIL_KEYWORD
 pass_goal ::= PASS_KEYWORD
@@ -290,6 +290,7 @@ primary_expression ::= function_call
                      | atom
                      | number
                      | variable
+                     | list_comprehension_expression
                      | list_expression
                      | list_pattern
                      | structure_pattern
@@ -297,7 +298,6 @@ primary_expression ::= function_call
                      | tuple
                      | map
                      | lambda_expression
-                     | list_comprehension_expression
                      | dollar_term_constructor
                      | LPAR expression RPAR
 
@@ -322,7 +322,7 @@ builtin_name ::= "call" | "apply" | "new_struct" | "new_map"
 // Lists and Arrays
 list_expression ::= LBRACKET [list_items] RBRACKET
 list_items ::= expression ( ( COMMA | SEMICOLON ) expression )* [ PIPE expression ]
-list_comprehension_expression ::= LBRACKET expression PIPE foreach_generators RBRACKET
+list_comprehension_expression ::= LBRACKET expression ( COLON | PIPE ) foreach_generators RBRACKET
 
 // Maps
 map ::= LBRACE [map_entries] RBRACE
