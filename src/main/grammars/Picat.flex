@@ -1,9 +1,10 @@
 package com.github.avrilfanomar.picatplugin.language.lexer;
 
 import com.intellij.lexer.FlexLexer;
+import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
+
 import static com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.*;
-import com.intellij.psi.TokenType; // For BAD_CHARACTER
 
 %% // Separator 1: After user code
 
@@ -94,6 +95,7 @@ MULTI_LINE_COMMENT_REGEX=\/\*([^*]|\*+[^*/])*\*+\/
   "#^"                        { return HASH_CARET_OP; }
   "#/\\"                      { return HASH_AND_OP; }
   "#~"                        { return HASH_TILDE_OP; }
+  "#=<"                       { return HASH_LESS_EQUAL_OP; }
   ":-"                        { return RULE_OP; }
   "::"                        { return DOUBLE_COLON_OP; }
   ":="                        { return ASSIGN_OP; }
