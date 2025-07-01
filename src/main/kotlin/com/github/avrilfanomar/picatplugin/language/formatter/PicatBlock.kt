@@ -84,7 +84,7 @@ class PicatBlock(
             indent = Indent.getNormalIndent()
         }
         // Handle function arguments indentation
-        else if (helper.shouldIndentFunctionArguments(elementType, parentType)) {
+        else if (helper.shouldIndentFunctionArguments(elementType)) {
             indent = Indent.getNormalIndent()
         }
         // Handle list elements indentation
@@ -128,10 +128,6 @@ class PicatBlock(
         else if (elementType == PicatTokenTypes.LIST_COMPREHENSION_GOAL ||
             elementType == PicatTokenTypes.LIST_COMPREHENSION_EXPRESSION
         ) {
-            indent = Indent.getNormalIndent()
-        }
-        // Proper indentation for function calls
-        else if (elementType == PicatTokenTypes.FUNCTION_CALL) {
             indent = Indent.getNormalIndent()
         }
         // Consistent indentation for lists

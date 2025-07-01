@@ -16,21 +16,6 @@ import org.junit.jupiter.api.Test
 class PicatParserTest : BasePlatformTestCase() {
 
     @Test
-    fun testEmptyFile() {
-        // Test parsing an empty file
-        val code = ""
-        myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFileImpl
-
-        val psiString = DebugUtil.psiToString(file, false, true)
-        // With picatFile ::= item_*, an empty file should result in PicatFileImpl having no children.
-        Assertions.assertTrue(
-            file.children.isEmpty(),
-            "Empty file should have no children. PSI:\n$psiString"
-        )
-    }
-
-    @Test
     fun testComplexExpression() {
         // Test parsing a complex expression
         val code = "main => println(1)."

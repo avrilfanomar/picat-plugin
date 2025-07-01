@@ -59,6 +59,7 @@
     HASH_AND_OP="#/\\"
     HASH_TILDE_OP="#~"
     HASH_EQUAL_OP="#="
+    HASH_LESS_EQUAL_OP="#=<"
     RULE_OP=":-"
     ASSIGN_OP=":="
     RANGE_OP=".."
@@ -107,28 +108,31 @@
     RBRACE="}"
     CUT="!"
     AT="@"
+    QUESTION_MARK="?"
+    DOLLAR="$"
 
-    // Literals (expanded)
+    // Literals
     IDENTIFIER="regexp:[a-z][a-zA-Z0-9_]*"
-    VARIABLE="regexp:[A-Z][a-zA-Z0-9_]*"
+    VARIABLE="regexp:[A-Z_][a-zA-Z0-9_]*"
     INTEGER="regexp:[0-9]+"
     HEX_INTEGER="regexp:0[xX][0-9a-fA-F]+"
     OCTAL_INTEGER="regexp:0[oO][0-7]+"
     BINARY_INTEGER="regexp:0[bB][01]+"
     FLOAT="regexp:[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?"
-    STRING="regexp:\"([^\"\\]|\\.)*\""
-    QUOTED_ATOM="regexp:'([^'\\]|\\.)*'"
+    STRING="regexp:\"([^\"\\]|\\\\.)*\""
+    QUOTED_ATOM="regexp:'([^'\\]|\\\\.)*'"
     COMMENT="regexp:%[^\r\n]*"
     MULTI_LINE_COMMENT="regexp:/\*([^*]|\*+[^*/])*\*+/"
   ]
 }
 
 // Root rule
-picatFile ::= item_*
+picatFile ::= module_declaration? item_*
 
 private item_ ::= function_clause | predicate_clause | COMMENT | MULTI_LINE_COMMENT | general_directive
 
 // Module declaration
+module_declaration ::= MODULE_KEYWORD module_name DOT {pin=1}
 module_name ::= atom
 
 // Directives
@@ -152,7 +156,7 @@ rename_list ::= rename_spec ( COMMA rename_spec )*
 rename_spec ::= atom [ "=>" atom ]
 
 export_list ::= export_spec ( COMMA export_spec )*
-export_spec ::= predicate_rule | atom
+export_spec ::= predicate_signature | atom
 
 file_spec ::= STRING | atom
 
@@ -160,7 +164,7 @@ file_spec ::= STRING | atom
 predicate_clause ::= predicate_rule | predicate_fact
 
 predicate_rule ::= head rule_operator body DOT {pin=2}
-predicate_fact ::= head DOT {pin=1}
+predicate_fact ::= head DOT {pin=2}
 
 // Function Clauses
 function_clause ::= function_rule | function_fact
@@ -172,12 +176,15 @@ function_body ::= expression [ rule_operator body ]
 rule_operator ::= ARROW_OP | BACKTRACKABLE_ARROW_OP | BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP | RULE_OP
 
 // Heads
-head ::= ( structure | atom_no_args | qualified_atom ) ( COMMA expression )*
+head ::= ( structure | atom_no_args | qualified_atom ) [ COMMA head_args ]
+head_args ::= expression ( COMMA expression )*
 qualified_atom ::= atom DOT atom
 atom_no_args ::= atom
+predicate_signature ::= atom "/" INTEGER
 
 // Body
-body ::= goal ( ( SEMICOLON | COMMA ) goal )* {recoverWhile=body_recover}
+body ::= goal ( goal_separator goal )* {recoverWhile=body_recover}
+goal_separator ::= SEMICOLON | COMMA
 private body_recover ::= !(DOT | END_KEYWORD)
 
 // Goals
@@ -187,12 +194,12 @@ goal ::= if_then_else
        | assignment
        | type_annotation
        | unification
+       | comparison
        | negation
        | fail_goal
        | pass_goal
        | true_goal
        | false_goal
-       | not_goal
        | foreach_loop
        | while_loop
        | loop_while_statement
@@ -202,47 +209,59 @@ goal ::= if_then_else
        | continue_stmt
        | break_stmt
        | throw_stmt
-       | expression
        | procedure_call
-       | call
+       | expression
 
 // Goal implementations
-call ::= structure | atom
-if_then_else ::= IF_KEYWORD expression THEN_KEYWORD body [elseif_clause] [ELSE_KEYWORD body] END_KEYWORD
-elseif_clause ::= ELSEIF_KEYWORD expression THEN_KEYWORD body [elseif_clause]
-assignment ::= variable ASSIGN_OP expression
+if_then_else ::= IF_KEYWORD expression THEN_KEYWORD body [elseif_clauses] [ELSE_KEYWORD body] END_KEYWORD {pin=1}
+elseif_clauses ::= elseif_clause+
+elseif_clause ::= ELSEIF_KEYWORD expression THEN_KEYWORD body
+
+assignment ::= assignable_expression ASSIGN_OP expression
+assignable_expression ::= variable | atom_expression
+
 type_annotation ::= variable DOUBLE_COLON_OP expression
+
 unification ::= expression ( EQUAL | NOT_EQUAL | HASH_NOT_EQUAL_OP ) expression
+comparison ::= expression ( LESS | GREATER | LESS_EQUAL | GREATER_EQUAL | HASH_LESS_EQUAL_OP | IDENTICAL | NOT_IDENTICAL | HASH_EQUAL_OP ) expression
+
 negation ::= NOT_KEYWORD goal
 fail_goal ::= FAIL_KEYWORD
 pass_goal ::= PASS_KEYWORD
 true_goal ::= TRUE_KEYWORD
 false_goal ::= FALSE_KEYWORD
-not_goal ::= negation
-foreach_loop ::= FOREACH_KEYWORD LPAR foreach_generators RPAR body END_KEYWORD
+
+foreach_loop ::= FOREACH_KEYWORD LPAR foreach_generators RPAR body END_KEYWORD {pin=1}
 foreach_generators ::= foreach_generator ( COMMA foreach_generator )*
 foreach_generator ::= variable IN_KEYWORD expression | variable EQUAL expression
+
 list_comprehension_goal ::= LBRACKET expression PIPE foreach_generators RBRACKET
-procedure_call ::= atom LPAR [argument_list] RPAR
+
+procedure_call ::= atom_expression
+
 cut_goal ::= CUT
-return_stmt ::= RETURN_KEYWORD expression
+return_stmt ::= RETURN_KEYWORD [expression]
 continue_stmt ::= CONTINUE_KEYWORD
 break_stmt ::= BREAK_KEYWORD
 throw_stmt ::= THROW_KEYWORD expression
-case_expression ::= CASE_KEYWORD expression OF_KEYWORD case_arms END_KEYWORD
+
+case_expression ::= CASE_KEYWORD expression OF_KEYWORD case_arms END_KEYWORD {pin=1}
 case_arms ::= case_arm ( SEMICOLON case_arm )*
 case_arm ::= pattern ARROW_OP body
-try_catch ::= TRY_KEYWORD body CATCH_KEYWORD catch_clauses [FINALLY_KEYWORD body] END_KEYWORD
-catch_clauses ::= catch_clause ( SEMICOLON catch_clause )*
-catch_clause ::= pattern ARROW_OP body
-while_loop ::= WHILE_KEYWORD expression body END_KEYWORD
-loop_while_statement ::= LOOP_KEYWORD body WHILE_KEYWORD expression DOT {pin=1}
+
+try_catch ::= TRY_KEYWORD body catch_clauses [FINALLY_KEYWORD body] END_KEYWORD {pin=1}
+catch_clauses ::= catch_clause+
+catch_clause ::= CATCH_KEYWORD pattern ARROW_OP body
+
+while_loop ::= WHILE_KEYWORD LPAR expression RPAR body END_KEYWORD {pin=1}
+loop_while_statement ::= LOOP_KEYWORD body WHILE_KEYWORD LPAR expression RPAR DOT {pin=1}
 
 // Patterns
-pattern ::= variable | atom | number | structure_pattern | list_pattern | tuple_pattern
+pattern ::= variable | atom | number | structure_pattern | list_pattern | tuple_pattern | as_pattern
 structure_pattern ::= atom LPAR [pattern_list] RPAR
 list_pattern ::= LBRACKET [pattern_list] [PIPE pattern] RBRACKET
 tuple_pattern ::= LBRACE [pattern_list] RBRACE
+as_pattern ::= variable AT pattern
 pattern_list ::= pattern ( COMMA pattern )*
 
 // Basic elements
@@ -253,65 +272,85 @@ tuple ::= LBRACE [tuple_items] RBRACE
 tuple_items ::= expression ( COMMA expression )*
 argument_list ::= expression ( COMMA expression )*
 
-// Expressions
-expression ::= biconditional_expression_level
+// Expressions with proper precedence (left-recursion removed)
+expression ::= conditional_expression
 
-biconditional_expression_level ::= conditional_expression ( ( BICONDITIONAL_OP | HASH_BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP ) conditional_expression )?
-conditional_expression ::= logical_or_expression [ "?" expression COLON expression ]
+conditional_expression ::= biconditional_expression [ QUESTION_MARK expression COLON expression ]
 
-logical_or_expression ::= logical_and_expression ( ( OR_KEYWORD | HASH_OR_OP ) logical_and_expression )*
-logical_and_expression ::= bitwise_or_expression ( ( AND_KEYWORD | HASH_AND_OP ) bitwise_or_expression )*
+biconditional_expression ::= logical_or_expression biconditional_expression_rest*
+biconditional_expression_rest ::= ( BICONDITIONAL_OP | HASH_BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP ) logical_or_expression
 
-bitwise_or_expression ::= bitwise_xor_expression ( PIPE bitwise_xor_expression )*
-bitwise_xor_expression ::= bitwise_and_expression ( ( CARET | XOR_KEYWORD | HASH_CARET_OP ) bitwise_and_expression )*
-bitwise_and_expression ::= equality_expression ( AMPERSAND equality_expression )*
+logical_or_expression ::= logical_and_expression logical_or_expression_rest*
+logical_or_expression_rest ::= ( OR_KEYWORD | HASH_OR_OP ) logical_and_expression
 
-equality_expression ::= relational_expression ( ( IDENTICAL | NOT_IDENTICAL | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | EQUAL | NOT_EQUAL ) relational_expression )?
-relational_expression ::= shift_expression ( ( LESS | GREATER | LESS_EQUAL | GREATER_EQUAL ) shift_expression )?
-shift_expression ::= additive_expression ( ( SHIFT_LEFT | SHIFT_RIGHT | SHIFT_RIGHT_TRIPLE_OP ) additive_expression )*
-additive_expression ::= multiplicative_expression ( ( PLUS | MINUS ) multiplicative_expression )*
-multiplicative_expression ::= power_expression ( ( MULTIPLY | DIVIDE | INT_DIVIDE | MOD_KEYWORD | DIV_KEYWORD | REM_KEYWORD ) power_expression )*
-power_expression ::= unary_expression ( POWER unary_expression )*
+logical_and_expression ::= bitwise_or_expression logical_and_expression_rest*
+logical_and_expression_rest ::= ( AND_KEYWORD | HASH_AND_OP ) bitwise_or_expression
 
-unary_expression ::= ( ( PLUS | MINUS | NOT_KEYWORD | BACKSLASH | HASH_TILDE_OP ) primary_expression ) | primary_expression
+bitwise_or_expression ::= bitwise_xor_expression bitwise_or_expression_rest*
+bitwise_or_expression_rest ::= PIPE bitwise_xor_expression
 
-primary_expression ::= function_call
-                     | term_constructor_expression
-                     | index_access_expression
-                     | as_pattern_expression
-                     | number_range
-                     | list_comprehension_expression
-                     | list_expression
-                     | list_pattern
-                     | structure_pattern
-                     | tuple_pattern
-                     | tuple
-                     | map
-                     | lambda_expression
-                     | dollar_term_constructor
-                     | LPAR expression RPAR
-                     | STRING
-                     | atom
-                     | number
-                     | variable
+bitwise_xor_expression ::= bitwise_and_expression bitwise_xor_expression_rest*
+bitwise_xor_expression_rest ::= ( CARET | XOR_KEYWORD | HASH_CARET_OP ) bitwise_and_expression
 
-dollar_term_constructor ::= "$" goal
+bitwise_and_expression ::= equality_expression bitwise_and_expression_rest*
+bitwise_and_expression_rest ::= AMPERSAND equality_expression
 
-index_access_expression ::= variable LBRACKET expression [ COMMA expression ] RBRACKET
+equality_expression ::= relational_expression equality_expression_rest*
+equality_expression_rest ::= ( IDENTICAL | NOT_IDENTICAL | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | EQUAL | NOT_EQUAL ) relational_expression
 
-as_pattern_expression ::= variable AT pattern [ AT ]
+relational_expression ::= concatenation_expression relational_expression_rest*
+relational_expression_rest ::= ( LESS | GREATER | LESS_EQUAL | GREATER_EQUAL | HASH_LESS_EQUAL_OP | IS_KEYWORD ) concatenation_expression
 
+concatenation_expression ::= shift_expression concatenation_expression_rest*
+concatenation_expression_rest ::= CONCAT_OP shift_expression
+
+shift_expression ::= additive_expression shift_expression_rest*
+shift_expression_rest ::= ( SHIFT_LEFT | SHIFT_RIGHT | SHIFT_RIGHT_TRIPLE_OP ) additive_expression
+
+additive_expression ::= multiplicative_expression additive_expression_rest*
+additive_expression_rest ::= ( PLUS | MINUS ) multiplicative_expression
+
+multiplicative_expression ::= power_expression multiplicative_expression_rest*
+multiplicative_expression_rest ::= ( MULTIPLY | DIVIDE | INT_DIVIDE | MOD_KEYWORD | DIV_KEYWORD | REM_KEYWORD ) power_expression
+
+power_expression ::= unary_expression [ POWER power_expression ]
+
+unary_expression ::= unary_operator* atom_expression
+
+unary_operator ::= PLUS | MINUS | NOT_KEYWORD | BACKSLASH | HASH_TILDE_OP
+
+atom_expression ::= base_expression postfix_expression*
+
+postfix_expression ::= function_call_suffix | index_access_suffix | field_access_suffix
+
+function_call_suffix ::= LPAR [argument_list] RPAR
+index_access_suffix ::= LBRACKET expression [ COMMA expression ] RBRACKET
+field_access_suffix ::= DOT atom
+
+base_expression ::= term_constructor_expression
+                  | as_pattern_expression
+                  | simple_number_range
+                  | list_comprehension_expression
+                  | list_expression
+                  | tuple
+                  | map
+                  | lambda_expression
+                  | dollar_term_constructor
+                  | parenthesized_expression
+                  | STRING
+                  | atom
+                  | number
+                  | variable
+
+parenthesized_expression ::= LPAR expression RPAR
+dollar_term_constructor ::= DOLLAR goal
+as_pattern_expression ::= variable AT pattern
 lambda_expression ::= LBRACE [variable_list] RBRACE ARROW_OP (expression | body)
 variable_list ::= variable ( COMMA variable )*
-
 term_constructor_expression ::= (atom | qualified_atom) LBRACE map_entries RBRACE
 
-number_range ::= ( INTEGER | variable ) RANGE_OP ( INTEGER | variable )
-
-// Function Calls
-function_call ::= atom LPAR [argument_list] RPAR | builtin_call
-builtin_call ::= builtin_name LPAR [argument_list] RPAR
-builtin_name ::= "call" | "apply" | "new_struct" | "new_map"
+simple_number_range ::= range_operand RANGE_OP range_operand
+range_operand ::= INTEGER | variable | atom | parenthesized_expression
 
 // Lists and Arrays
 list_expression ::= LBRACKET [list_items] RBRACKET

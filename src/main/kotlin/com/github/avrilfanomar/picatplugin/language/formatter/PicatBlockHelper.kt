@@ -87,9 +87,8 @@ class PicatBlockHelper {
     /**
      * Checks if the element is a function argument that should be indented.
      */
-    fun shouldIndentFunctionArguments(elementType: IElementType?, parentType: IElementType?): Boolean {
-        return parentType == PicatTokenTypes.FUNCTION_CALL &&
-                elementType != PicatTokenTypes.LPAR &&
+    fun shouldIndentFunctionArguments(elementType: IElementType?): Boolean {
+        return elementType != PicatTokenTypes.LPAR &&
                 elementType != PicatTokenTypes.RPAR
     }
 

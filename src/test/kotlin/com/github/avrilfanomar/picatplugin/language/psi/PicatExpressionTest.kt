@@ -16,45 +16,6 @@ import org.junit.jupiter.api.Test
 class PicatExpressionTest : BasePlatformTestCase() {
 
     @Test
-    fun testFunctionCallExpressionPsi() {
-        val code = """
-            main => 
-                X = factorial(5),
-                println(X).
-
-            factorial(0) = 1.
-            factorial(N) = N * factorial(N-1) => N > 0.
-        """.trimIndent()
-
-        myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFileImpl
-
-        // Find all function calls
-        val functionCalls = PsiTreeUtil.findChildrenOfType(file, PicatFunctionCall::class.java)
-
-        // Find the factorial function call
-        val factorialCall = functionCalls.firstOrNull { it.atom?.text == "factorial" }
-        Assertions.assertNotNull(factorialCall, "Should find 'factorial(5)' function call")
-
-        Assertions.assertEquals(
-            "factorial",
-            factorialCall!!.atom?.text,
-            "Function call name should be 'factorial'"
-        )
-
-        val arity = factorialCall.argumentList?.expressionList?.size ?: 0
-        Assertions.assertEquals(1, arity, "Function call arity should be 1")
-
-        val argumentList = factorialCall.argumentList
-        Assertions.assertNotNull(argumentList, "Function call should have an argument list")
-
-        val arguments = argumentList!!.expressionList
-        Assertions.assertNotNull(arguments, "Argument list should not be null")
-        Assertions.assertEquals(1, arguments.size, "Argument list should have 1 argument")
-        Assertions.assertEquals("5", arguments[0].text)
-    }
-
-    @Test
     fun testStructureExpressionPsi() {
         val code = "point(1, 2)."
         myFixture.configureByText("test.pi", code)
