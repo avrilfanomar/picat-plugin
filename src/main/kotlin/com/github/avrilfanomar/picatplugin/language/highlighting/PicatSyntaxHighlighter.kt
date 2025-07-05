@@ -1,5 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.highlighting
 
+import com.github.avrilfanomar.picatplugin.language.parser._PicatLexer
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors
@@ -8,10 +10,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
-import com.github.avrilfanomar.picatplugin.language.lexer._PicatLexer
-import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lexer.FlexAdapter
-import java.io.Reader
 
 /**
  * Syntax highlighter for Picat language.
@@ -19,7 +18,7 @@ import java.io.Reader
  */
 class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
     override fun getHighlightingLexer(): Lexer {
-        return FlexAdapter(_PicatLexer(null as Reader?))
+        return FlexAdapter(_PicatLexer())
     }
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {

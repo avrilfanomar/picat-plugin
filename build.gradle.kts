@@ -1,6 +1,5 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
-import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
@@ -95,7 +94,9 @@ intellijPlatform {
 
     publishing {
         token = providers.environmentVariable("PUBLISH_TOKEN")
-        channels = providers.gradleProperty("pluginVersion").map { listOf(it.substringAfter('-', "").substringBefore('.').ifEmpty { "default" }) }
+        channels = providers.gradleProperty("pluginVersion")
+            .map { listOf(it.substringAfter('-', "")
+                .substringBefore('.').ifEmpty { "default" }) }
     }
 
     pluginVerification {
@@ -122,54 +123,8 @@ kover {
     }
 }
 
-grammarKit {
-    jflexRelease = "1.9.1" // Specify JFlex version
-}
-
-// Task configuration for JFlex lexer generation
-tasks.withType<org.jetbrains.grammarkit.tasks.GenerateLexerTask>().configureEach {
-    sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.flex"))
-    targetOutputDir.set(layout.buildDirectory.dir("generated/sources/grammarkit/gen/com/github/avrilfanomar/picatplugin/language/lexer"))
-    outputs.upToDateWhen { false } // Force task to always run
-}
-
-val genDir = layout.buildDirectory.dir("generated/sources/grammarkit/gen")
-val basePackagePath = "com/github/avrilfanomar/picatplugin/language"
-
-tasks.withType<GenerateParserTask>().configureEach {
-    outputs.upToDateWhen { false } // Force task to always run
-    sourceFile.set(layout.projectDirectory.file("src/main/grammars/Picat.bnf"))
-    targetRootOutputDir.set(genDir) // genDir is layout.buildDirectory.dir("/generated/sources/grammarkit/gen")
-
-    pathToParser.set("$basePackagePath/parser") // Directory for the parser class
-    pathToPsiRoot.set("$basePackagePath/psi")
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs(layout.buildDirectory.dir("generated/sources/grammarkit/gen"))
-        }
-    }
-    test {
-        // Generated sources should be taken from main output, not re-added here
-    }
-}
-
 kotlin {
     jvmToolchain(21)
-}
-
-tasks.named("compileKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java) {
-    dependsOn(tasks.named("generateParser"))
-    dependsOn(tasks.named("generateLexer"))
-}
-
-tasks.named("compileTestKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java) {
-    dependsOn(tasks.named("generateParser"))
-    dependsOn(tasks.named("generateLexer"))
-    // Ensure main output (including compiled Java PSI) is on the classpath
-    libraries.from(project.sourceSets.main.get().output.classesDirs)
 }
 
 // Configure Detekt - read more: https://detekt.dev/docs/introduction/gradle/

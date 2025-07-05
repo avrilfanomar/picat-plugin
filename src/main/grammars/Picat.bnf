@@ -2,6 +2,7 @@
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
   parserClass="com.github.avrilfanomar.picatplugin.language.parser.PicatParser"
+  parserUtilClass="com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil"
   psiClassPrefix="Picat"
   psiImplClassSuffix="Impl"
   psiPackage="com.github.avrilfanomar.picatplugin.language.psi"
@@ -114,6 +115,7 @@
     // Literals
     IDENTIFIER="regexp:[a-z][a-zA-Z0-9_]*"
     VARIABLE="regexp:[A-Z_][a-zA-Z0-9_]*"
+    FIELD_ACCESS="regexp:\.[a-z][a-zA-Z0-9_]*"
     INTEGER="regexp:[0-9]+"
     HEX_INTEGER="regexp:0[xX][0-9a-fA-F]+"
     OCTAL_INTEGER="regexp:0[oO][0-7]+"
@@ -163,8 +165,9 @@ file_spec ::= STRING | atom
 // Predicate Clauses
 predicate_clause ::= predicate_rule | predicate_fact
 
-predicate_rule ::= head rule_operator body DOT {pin=2}
-predicate_fact ::= head DOT {pin=2}
+predicate_rule ::= head rule_operator body DOT {pin=2; recoverWhile=predicate_recover}
+private predicate_recover ::= !DOT
+predicate_fact ::= head DOT
 
 // Function Clauses
 function_clause ::= function_rule | function_fact
@@ -185,7 +188,7 @@ predicate_signature ::= atom "/" INTEGER
 // Body
 body ::= goal ( goal_separator goal )* {recoverWhile=body_recover}
 goal_separator ::= SEMICOLON | COMMA
-private body_recover ::= !(DOT | END_KEYWORD)
+private body_recover ::= !(DOT | SEMICOLON | END_KEYWORD | EOF)
 
 // Goals
 goal ::= if_then_else
@@ -325,7 +328,7 @@ postfix_expression ::= function_call_suffix | index_access_suffix | field_access
 
 function_call_suffix ::= LPAR [argument_list] RPAR
 index_access_suffix ::= LBRACKET expression [ COMMA expression ] RBRACKET
-field_access_suffix ::= DOT atom
+field_access_suffix ::= FIELD_ACCESS
 
 base_expression ::= term_constructor_expression
                   | as_pattern_expression
