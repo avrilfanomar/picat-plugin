@@ -38,6 +38,9 @@ public interface PicatBaseExpression extends PsiElement {
   PicatSimpleNumberRange getSimpleNumberRange();
 
   @Nullable
+  PicatStructure getStructure();
+
+  @Nullable
   PicatTermConstructorExpression getTermConstructorExpression();
 
   @Nullable

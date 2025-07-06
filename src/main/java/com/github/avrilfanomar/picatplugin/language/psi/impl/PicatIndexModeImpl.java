@@ -28,9 +28,9 @@ public class PicatIndexModeImpl extends ASTWrapperPsiElement implements PicatInd
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PicatHeadReferenceList getHeadReferenceList() {
-    return findNotNullChildByClass(PicatHeadReferenceList.class);
+    return findChildByClass(PicatHeadReferenceList.class);
   }
 
   @Override

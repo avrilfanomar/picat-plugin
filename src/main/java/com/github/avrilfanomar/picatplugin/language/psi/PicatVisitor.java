@@ -215,10 +215,6 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitFunctionFact(@NotNull PicatFunctionFact o) {
-    visitPsiElement(o);
-  }
-
   public void visitFunctionRule(@NotNull PicatFunctionRule o) {
     visitPsiElement(o);
   }
@@ -400,10 +396,6 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitPredicateSignature(@NotNull PicatPredicateSignature o) {
-    visitPsiElement(o);
-  }
-
-  public void visitProcedureCall(@NotNull PicatProcedureCall o) {
     visitPsiElement(o);
   }
 

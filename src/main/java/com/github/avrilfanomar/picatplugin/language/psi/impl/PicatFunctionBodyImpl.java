@@ -34,9 +34,15 @@ public class PicatFunctionBodyImpl extends ASTWrapperPsiElement implements Picat
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PicatExpression getExpression() {
-    return findNotNullChildByClass(PicatExpression.class);
+    return findChildByClass(PicatExpression.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatGoal getGoal() {
+    return findChildByClass(PicatGoal.class);
   }
 
   @Override

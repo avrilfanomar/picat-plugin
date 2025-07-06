@@ -140,9 +140,9 @@ module_name ::= atom
 // Directives
 general_directive ::= import_statement | export_statement | include_statement | using_statement | compilation_directive
 
-compilation_directive ::= [PRIVATE_KEYWORD] (table_mode | index_mode) DOT {pin=1}
-table_mode ::= TABLE_KEYWORD head_reference_list
-index_mode ::= INDEX_KEYWORD head_reference_list [indexing_details]
+compilation_directive ::= [PRIVATE_KEYWORD] (table_mode | index_mode) DOT
+table_mode ::= TABLE_KEYWORD head_reference_list {pin=1}
+index_mode ::= INDEX_KEYWORD head_reference_list [indexing_details] {pin=1}
 head_reference_list ::= head_reference ( (COMMA | SEMICOLON) head_reference )*
 head_reference ::= atom ["/" INTEGER]
 indexing_details ::= LPAR argument_list RPAR
@@ -153,7 +153,7 @@ include_statement ::= INCLUDE_KEYWORD file_spec DOT {pin=1}
 using_statement ::= USING_KEYWORD module_name [ "=>" rename_list ] DOT {pin=1}
 
 import_list ::= import_item ( COMMA import_item )*
-import_item ::= module_name [ "=>" rename_list ]
+import_item ::= module_name ( "=>" rename_list )?
 rename_list ::= rename_spec ( COMMA rename_spec )*
 rename_spec ::= atom [ "=>" atom ]
 
@@ -165,17 +165,14 @@ file_spec ::= STRING | atom
 // Predicate Clauses
 predicate_clause ::= predicate_rule | predicate_fact
 
-predicate_rule ::= head rule_operator body DOT {pin=2; recoverWhile=predicate_recover}
-private predicate_recover ::= !DOT
+predicate_rule ::= head rule_operator body DOT {pin=2}
 predicate_fact ::= head DOT
 
 // Function Clauses
-function_clause ::= function_rule | function_fact
+function_clause ::= function_rule
 
-function_rule ::= head EQUAL function_body DOT {pin=2}
-function_fact ::= head EQUAL expression DOT {pin=2}
-function_body ::= expression [ rule_operator body ]
-
+function_rule ::= head EQUAL function_body DOT
+function_body ::= ( expression | goal ) [ rule_operator body ]
 rule_operator ::= ARROW_OP | BACKTRACKABLE_ARROW_OP | BICONDITIONAL_OP | BACKTRACKABLE_BICONDITIONAL_OP | RULE_OP
 
 // Heads
@@ -186,9 +183,8 @@ atom_no_args ::= atom
 predicate_signature ::= atom "/" INTEGER
 
 // Body
-body ::= goal ( goal_separator goal )* {recoverWhile=body_recover}
+body ::= goal ( goal_separator goal )*
 goal_separator ::= SEMICOLON | COMMA
-private body_recover ::= !(DOT | SEMICOLON | END_KEYWORD | EOF)
 
 // Goals
 goal ::= if_then_else
@@ -212,7 +208,6 @@ goal ::= if_then_else
        | continue_stmt
        | break_stmt
        | throw_stmt
-       | procedure_call
        | expression
 
 // Goal implementations
@@ -239,8 +234,6 @@ foreach_generators ::= foreach_generator ( COMMA foreach_generator )*
 foreach_generator ::= variable IN_KEYWORD expression | variable EQUAL expression
 
 list_comprehension_goal ::= LBRACKET expression PIPE foreach_generators RBRACKET
-
-procedure_call ::= atom_expression
 
 cut_goal ::= CUT
 return_stmt ::= RETURN_KEYWORD [expression]
@@ -330,7 +323,8 @@ function_call_suffix ::= LPAR [argument_list] RPAR
 index_access_suffix ::= LBRACKET expression [ COMMA expression ] RBRACKET
 field_access_suffix ::= FIELD_ACCESS
 
-base_expression ::= term_constructor_expression
+base_expression ::= structure
+                  | term_constructor_expression
                   | as_pattern_expression
                   | simple_number_range
                   | list_comprehension_expression

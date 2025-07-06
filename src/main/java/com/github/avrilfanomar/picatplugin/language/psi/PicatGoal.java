@@ -53,9 +53,6 @@ public interface PicatGoal extends PsiElement {
   PicatPassGoal getPassGoal();
 
   @Nullable
-  PicatProcedureCall getProcedureCall();
-
-  @Nullable
   PicatReturnStmt getReturnStmt();
 
   @Nullable

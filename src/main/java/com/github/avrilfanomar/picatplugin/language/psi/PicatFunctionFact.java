@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatFunctionFact extends PsiElement {
 
-  @Nullable
+  @NotNull
   PicatExpression getExpression();
 
   @NotNull

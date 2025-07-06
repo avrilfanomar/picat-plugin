@@ -28,9 +28,9 @@ public class PicatTableModeImpl extends ASTWrapperPsiElement implements PicatTab
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PicatHeadReferenceList getHeadReferenceList() {
-    return findNotNullChildByClass(PicatHeadReferenceList.class);
+    return findChildByClass(PicatHeadReferenceList.class);
   }
 
 }

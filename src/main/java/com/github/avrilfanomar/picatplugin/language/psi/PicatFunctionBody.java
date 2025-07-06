@@ -10,8 +10,11 @@ public interface PicatFunctionBody extends PsiElement {
   @Nullable
   PicatBody getBody();
 
-  @NotNull
+  @Nullable
   PicatExpression getExpression();
+
+  @Nullable
+  PicatGoal getGoal();
 
   @Nullable
   PicatRuleOperator getRuleOperator();

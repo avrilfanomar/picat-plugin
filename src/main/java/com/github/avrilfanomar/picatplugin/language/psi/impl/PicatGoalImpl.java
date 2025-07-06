@@ -119,12 +119,6 @@ public class PicatGoalImpl extends ASTWrapperPsiElement implements PicatGoal {
 
   @Override
   @Nullable
-  public PicatProcedureCall getProcedureCall() {
-    return findChildByClass(PicatProcedureCall.class);
-  }
-
-  @Override
-  @Nullable
   public PicatReturnStmt getReturnStmt() {
     return findChildByClass(PicatReturnStmt.class);
   }

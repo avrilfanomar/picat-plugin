@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatTableMode extends PsiElement {
 
-  @NotNull
+  @Nullable
   PicatHeadReferenceList getHeadReferenceList();
 
 }

@@ -28,15 +28,9 @@ public class PicatFunctionClauseImpl extends ASTWrapperPsiElement implements Pic
   }
 
   @Override
-  @Nullable
-  public PicatFunctionFact getFunctionFact() {
-    return findChildByClass(PicatFunctionFact.class);
-  }
-
-  @Override
-  @Nullable
+  @NotNull
   public PicatFunctionRule getFunctionRule() {
-    return findChildByClass(PicatFunctionRule.class);
+    return findNotNullChildByClass(PicatFunctionRule.class);
   }
 
 }

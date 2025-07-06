@@ -89,6 +89,12 @@ public class PicatBaseExpressionImpl extends ASTWrapperPsiElement implements Pic
 
   @Override
   @Nullable
+  public PicatStructure getStructure() {
+    return findChildByClass(PicatStructure.class);
+  }
+
+  @Override
+  @Nullable
   public PicatTermConstructorExpression getTermConstructorExpression() {
     return findChildByClass(PicatTermConstructorExpression.class);
   }

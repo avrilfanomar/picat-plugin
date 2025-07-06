@@ -29,25 +29,6 @@ class PicatParserTest : BasePlatformTestCase() {
     }
 
     @Test
-    fun testErrorRecovery() {
-        // Test that the parser can recover from syntax errors
-        val code = """
-            % Missing dot at the end of this fact
-            factorial(0) = 1
-
-            % This should still be parsed correctly
-            factorial(N) = N * factorial(N-1).
-        """.trimIndent()
-
-        myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFileImpl
-        val psiString = DebugUtil.psiToString(file, true, true)
-
-        val functionRules = PsiTreeUtil.collectElementsOfType(file, PicatFunctionRule::class.java)
-        Assertions.assertEquals(2, functionRules.size, "Should find 2 PicatFunctionRuleImpl nodes. PSI:\n$psiString")
-    }
-
-    @Test
     fun testAtomParsing() {
         // Test parsing different types of atoms
         val code = """

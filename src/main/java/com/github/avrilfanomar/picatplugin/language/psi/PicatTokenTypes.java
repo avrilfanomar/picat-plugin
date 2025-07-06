@@ -60,7 +60,6 @@ public interface PicatTokenTypes {
   IElementType FUNCTION_BODY = new PicatElementType("FUNCTION_BODY");
   IElementType FUNCTION_CALL_SUFFIX = new PicatElementType("FUNCTION_CALL_SUFFIX");
   IElementType FUNCTION_CLAUSE = new PicatElementType("FUNCTION_CLAUSE");
-  IElementType FUNCTION_FACT = new PicatElementType("FUNCTION_FACT");
   IElementType FUNCTION_RULE = new PicatElementType("FUNCTION_RULE");
   IElementType GENERAL_DIRECTIVE = new PicatElementType("GENERAL_DIRECTIVE");
   IElementType GOAL = new PicatElementType("GOAL");
@@ -107,7 +106,6 @@ public interface PicatTokenTypes {
   IElementType PREDICATE_FACT = new PicatElementType("PREDICATE_FACT");
   IElementType PREDICATE_RULE = new PicatElementType("PREDICATE_RULE");
   IElementType PREDICATE_SIGNATURE = new PicatElementType("PREDICATE_SIGNATURE");
-  IElementType PROCEDURE_CALL = new PicatElementType("PROCEDURE_CALL");
   IElementType QUALIFIED_ATOM = new PicatElementType("QUALIFIED_ATOM");
   IElementType RANGE_OPERAND = new PicatElementType("RANGE_OPERAND");
   IElementType RELATIONAL_EXPRESSION = new PicatElementType("RELATIONAL_EXPRESSION");
@@ -167,7 +165,6 @@ public interface PicatTokenTypes {
   IElementType ELSE_KEYWORD = new PicatTokenType("else");
   IElementType END_KEYWORD = new PicatTokenType("end");
   IElementType END_MODULE_KEYWORD = new PicatTokenType("end_module");
-  IElementType EOF = new PicatTokenType("EOF");
   IElementType EQUAL = new PicatTokenType("=");
   IElementType EXPORT_KEYWORD = new PicatTokenType("export");
   IElementType FAIL_KEYWORD = new PicatTokenType("fail");
@@ -403,9 +400,6 @@ public interface PicatTokenTypes {
       else if (type == FUNCTION_CLAUSE) {
         return new PicatFunctionClauseImpl(node);
       }
-      else if (type == FUNCTION_FACT) {
-        return new PicatFunctionFactImpl(node);
-      }
       else if (type == FUNCTION_RULE) {
         return new PicatFunctionRuleImpl(node);
       }
@@ -543,9 +537,6 @@ public interface PicatTokenTypes {
       }
       else if (type == PREDICATE_SIGNATURE) {
         return new PicatPredicateSignatureImpl(node);
-      }
-      else if (type == PROCEDURE_CALL) {
-        return new PicatProcedureCallImpl(node);
       }
       else if (type == QUALIFIED_ATOM) {
         return new PicatQualifiedAtomImpl(node);

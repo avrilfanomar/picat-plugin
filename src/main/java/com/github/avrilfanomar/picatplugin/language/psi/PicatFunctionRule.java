@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatFunctionRule extends PsiElement {
 
-  @Nullable
+  @NotNull
   PicatFunctionBody getFunctionBody();
 
   @NotNull

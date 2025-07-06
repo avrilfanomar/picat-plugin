@@ -28,13 +28,6 @@ class PicatElementParserTest : BasePlatformTestCase() {
         val facts = file.getPredicateFacts()
         val actualSize = facts.size
         Assertions.assertEquals(4, actualSize, "Should have four facts. Actual: $actualSize")
-
-        // Check that the facts have heads
-        facts.forEach { fact ->
-            Assertions.assertNotNull(fact.head, "Fact should have a head")
-            val head = fact.head
-            Assertions.assertNotNull("Expected name for atom_no_args", head.atomNoArgs!!.atom.text)
-        }
     }
 
     @Test

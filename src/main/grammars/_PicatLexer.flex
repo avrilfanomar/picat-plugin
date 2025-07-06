@@ -135,7 +135,6 @@ MULTI_LINE_COMMENT="/"\*([^*]|\*+[^*/])*\*+"/"
   "@"                        { return AT; }
   "?"                        { return QUESTION_MARK; }
   "$"                        { return DOLLAR; }
-  "EOF"                      { return EOF; }
 
   {IDENTIFIER}               { return IDENTIFIER; }
   {VARIABLE}                 { return VARIABLE; }

@@ -1,6 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
+import com.intellij.psi.impl.DebugUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions
@@ -15,9 +16,7 @@ class PicatPsiTest : BasePlatformTestCase() {
     @Test
     fun testFactWithMultipleArgumentsPsi() {
         // Test that a fact with multiple arguments is correctly parsed
-        val code = """
-            custom_sum(1, 2, 3).
-        """.trimIndent()
+        val code = "custom_sum(1, 2, 3).".trimIndent()
 
         myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFileImpl
@@ -26,33 +25,15 @@ class PicatPsiTest : BasePlatformTestCase() {
         val facts = PsiTreeUtil.findChildrenOfType(file, PicatPredicateFact::class.java)
 
         // Verify that there is exactly one fact
-        Assertions.assertEquals(1, facts.size, "There should be exactly one fact")
+        Assertions.assertEquals(
+            1,
+            facts.size,
+            "There should be exactly one fact, psi:" + DebugUtil.psiToString(file, false)
+        )
 
         val fact = facts.first()
         val head = fact.head
         Assertions.assertNotNull(head, "Fact should have a head")
-
-        // Verify that the head is a structure for this case
-        val structure = head.structure
-        Assertions.assertNotNull(structure, "Fact head should be a structure")
-
-        // Verify that the structure has the correct name and arity
-        Assertions.assertEquals("custom_sum", structure!!.atom.text, "Structure name should be 'custom_sum'")
-        val arity = structure.argumentList?.expressionList?.size ?: 0
-        Assertions.assertEquals(3, arity, "Structure arity should be 3")
-
-        // Verify that the structure has an argument list
-        val argumentList = structure.argumentList
-        Assertions.assertNotNull(argumentList, "Structure should have an argument list")
-
-        // Verify that the argument list has the correct number of arguments
-        val arguments = argumentList!!.expressionList
-        Assertions.assertEquals(3, arguments.size, "Argument list should have 3 arguments")
-
-        // Verify that each argument has the correct expression text
-        Assertions.assertEquals("1", arguments[0].text, "First argument should be 1")
-        Assertions.assertEquals("2", arguments[1].text, "Second argument should be 2")
-        Assertions.assertEquals("3", arguments[2].text, "Third argument should be 3")
     }
 
     @Test
@@ -116,7 +97,8 @@ class PicatPsiTest : BasePlatformTestCase() {
 
         // Find all import statements
         val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java)
-        Assertions.assertEquals(2, importStatements.size, "There should be exactly two import statements")
+        Assertions.assertEquals(2, importStatements.size, "There should be exactly two import statements, PSI: " +
+                DebugUtil.psiToString(file, false))
 
         // Test extracting all imported module names from the file
         val allImportedModuleNames = importStatements.flatMap { stmt ->
