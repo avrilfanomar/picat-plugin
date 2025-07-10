@@ -252,29 +252,33 @@ unary_expression ::= power_expression
 
 power_expression ::= primary_expression [POWER unary_expression]
 
-primary_expression ::= dot_expression | non_dot_expression
+primary_expression ::= base_expression postfix_operations?
 
-// Dot expressions can have postfix dot operations
-dot_expression ::= dot_base_expression postfix_dot_chain?
+postfix_operations ::= postfix_operation postfix_operations?
 
-postfix_dot_chain ::= dot_access postfix_dot_chain?
+postfix_operation ::= dot_access
 
-dot_access ::= DOT atom_or_call
+// Only allow dot access in specific contexts, not after function calls that could end statements
+dot_access ::= DOT atom_or_call {pin=1}
 
-// Base expressions that can be followed by dot access
-dot_base_expression ::= parenthesized_goal
-                      | variable_index
-                      | as_pattern
-                      | variable
-                      | atom_or_call
-                      | list_expression
-                      | array_expression
+base_expression ::= parenthesized_goal
+                  | variable_index
+                  | as_pattern
+                  | variable
+                  | integer
+                  | float
+                  | atom_without_args
+                  | function_call
+                  | list_expression
+                  | array_expression
+                  | lambda_term
+                  | term_constructor
 
-// Expressions that cannot be followed by dot access
-non_dot_expression ::= integer
-                     | float
-                     | lambda_term
-                     | term_constructor
+// Separate atom without arguments from function calls
+atom_without_args ::= atom !(LPAR)
+
+// Function calls should not be followed by dot access in statement contexts
+function_call ::= atom LPAR [argument (COMMA argument)*] RPAR
 
 parenthesized_goal ::= LPAR goal RPAR
 
@@ -284,7 +288,7 @@ variable_index ::= VARIABLE LBRACKET argument [COMMA argument] RBRACKET
 
 as_pattern ::= VARIABLE AT term [AT]
 
-atom_or_call ::= atom [LPAR [argument (COMMA argument)*] RPAR]
+atom_or_call ::= atom_without_args | function_call
 
 list_expression ::= LBRACKET argument list_expression_suffix RBRACKET
 

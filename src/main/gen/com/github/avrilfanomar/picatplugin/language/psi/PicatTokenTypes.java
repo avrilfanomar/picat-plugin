@@ -19,6 +19,8 @@ public interface PicatTokenTypes {
   IElementType ATOM = new PicatElementType("ATOM");
   IElementType ATOM_OR_CALL = new PicatElementType("ATOM_OR_CALL");
   IElementType ATOM_OR_CALL_NO_LAMBDA = new PicatElementType("ATOM_OR_CALL_NO_LAMBDA");
+  IElementType ATOM_WITHOUT_ARGS = new PicatElementType("ATOM_WITHOUT_ARGS");
+  IElementType BASE_EXPRESSION = new PicatElementType("BASE_EXPRESSION");
   IElementType BIN_REL_OP = new PicatElementType("BIN_REL_OP");
   IElementType BODY = new PicatElementType("BODY");
   IElementType CATCH_CLAUSE = new PicatElementType("CATCH_CLAUSE");
@@ -26,8 +28,6 @@ public interface PicatTokenTypes {
   IElementType CONJUNCTIVE_GOAL = new PicatElementType("CONJUNCTIVE_GOAL");
   IElementType DISJUNCTIVE_GOAL = new PicatElementType("DISJUNCTIVE_GOAL");
   IElementType DOT_ACCESS = new PicatElementType("DOT_ACCESS");
-  IElementType DOT_BASE_EXPRESSION = new PicatElementType("DOT_BASE_EXPRESSION");
-  IElementType DOT_EXPRESSION = new PicatElementType("DOT_EXPRESSION");
   IElementType ENCLOSED_GOAL = new PicatElementType("ENCLOSED_GOAL");
   IElementType EQUIV_CONSTR = new PicatElementType("EQUIV_CONSTR");
   IElementType EVENT_PATTERN = new PicatElementType("EVENT_PATTERN");
@@ -35,6 +35,7 @@ public interface PicatTokenTypes {
   IElementType EXPRESSION = new PicatElementType("EXPRESSION");
   IElementType EXPRESSION_WITH_RELATIONS = new PicatElementType("EXPRESSION_WITH_RELATIONS");
   IElementType FOREACH_LOOP = new PicatElementType("FOREACH_LOOP");
+  IElementType FUNCTION_CALL = new PicatElementType("FUNCTION_CALL");
   IElementType FUNCTION_CALL_NO_DOT = new PicatElementType("FUNCTION_CALL_NO_DOT");
   IElementType FUNCTION_CLAUSE = new PicatElementType("FUNCTION_CLAUSE");
   IElementType FUNCTION_DEFINITION = new PicatElementType("FUNCTION_DEFINITION");
@@ -59,12 +60,12 @@ public interface PicatTokenTypes {
   IElementType MULTIPLICATIVE_EXPRESSION = new PicatElementType("MULTIPLICATIVE_EXPRESSION");
   IElementType NEGATIVE_GOAL = new PicatElementType("NEGATIVE_GOAL");
   IElementType NONBACKTRACKABLE_PREDICATE_RULE = new PicatElementType("NONBACKTRACKABLE_PREDICATE_RULE");
-  IElementType NON_DOT_EXPRESSION = new PicatElementType("NON_DOT_EXPRESSION");
   IElementType NOT_CONSTR = new PicatElementType("NOT_CONSTR");
   IElementType OR_CONSTR = new PicatElementType("OR_CONSTR");
   IElementType OR_EXPRESSION = new PicatElementType("OR_EXPRESSION");
   IElementType PARENTHESIZED_GOAL = new PicatElementType("PARENTHESIZED_GOAL");
-  IElementType POSTFIX_DOT_CHAIN = new PicatElementType("POSTFIX_DOT_CHAIN");
+  IElementType POSTFIX_OPERATION = new PicatElementType("POSTFIX_OPERATION");
+  IElementType POSTFIX_OPERATIONS = new PicatElementType("POSTFIX_OPERATIONS");
   IElementType POWER_EXPRESSION = new PicatElementType("POWER_EXPRESSION");
   IElementType PREDICATE_CLAUSE = new PicatElementType("PREDICATE_CLAUSE");
   IElementType PREDICATE_DEFINITION = new PicatElementType("PREDICATE_DEFINITION");
@@ -215,6 +216,12 @@ public interface PicatTokenTypes {
       else if (type == ATOM_OR_CALL_NO_LAMBDA) {
         return new PicatAtomOrCallNoLambdaImpl(node);
       }
+      else if (type == ATOM_WITHOUT_ARGS) {
+        return new PicatAtomWithoutArgsImpl(node);
+      }
+      else if (type == BASE_EXPRESSION) {
+        return new PicatBaseExpressionImpl(node);
+      }
       else if (type == BIN_REL_OP) {
         return new PicatBinRelOpImpl(node);
       }
@@ -236,12 +243,6 @@ public interface PicatTokenTypes {
       else if (type == DOT_ACCESS) {
         return new PicatDotAccessImpl(node);
       }
-      else if (type == DOT_BASE_EXPRESSION) {
-        return new PicatDotBaseExpressionImpl(node);
-      }
-      else if (type == DOT_EXPRESSION) {
-        return new PicatDotExpressionImpl(node);
-      }
       else if (type == ENCLOSED_GOAL) {
         return new PicatEnclosedGoalImpl(node);
       }
@@ -262,6 +263,9 @@ public interface PicatTokenTypes {
       }
       else if (type == FOREACH_LOOP) {
         return new PicatForeachLoopImpl(node);
+      }
+      else if (type == FUNCTION_CALL) {
+        return new PicatFunctionCallImpl(node);
       }
       else if (type == FUNCTION_CALL_NO_DOT) {
         return new PicatFunctionCallNoDotImpl(node);
@@ -335,9 +339,6 @@ public interface PicatTokenTypes {
       else if (type == NONBACKTRACKABLE_PREDICATE_RULE) {
         return new PicatNonbacktrackablePredicateRuleImpl(node);
       }
-      else if (type == NON_DOT_EXPRESSION) {
-        return new PicatNonDotExpressionImpl(node);
-      }
       else if (type == NOT_CONSTR) {
         return new PicatNotConstrImpl(node);
       }
@@ -350,8 +351,11 @@ public interface PicatTokenTypes {
       else if (type == PARENTHESIZED_GOAL) {
         return new PicatParenthesizedGoalImpl(node);
       }
-      else if (type == POSTFIX_DOT_CHAIN) {
-        return new PicatPostfixDotChainImpl(node);
+      else if (type == POSTFIX_OPERATION) {
+        return new PicatPostfixOperationImpl(node);
+      }
+      else if (type == POSTFIX_OPERATIONS) {
+        return new PicatPostfixOperationsImpl(node);
       }
       else if (type == POWER_EXPRESSION) {
         return new PicatPowerExpressionImpl(node);

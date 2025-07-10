@@ -11,14 +11,14 @@ import static com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.avrilfanomar.picatplugin.language.psi.*;
 
-public class PicatDotBaseExpressionImpl extends ASTWrapperPsiElement implements PicatDotBaseExpression {
+public class PicatBaseExpressionImpl extends ASTWrapperPsiElement implements PicatBaseExpression {
 
-  public PicatDotBaseExpressionImpl(@NotNull ASTNode node) {
+  public PicatBaseExpressionImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PicatVisitor visitor) {
-    visitor.visitDotBaseExpression(this);
+    visitor.visitBaseExpression(this);
   }
 
   @Override
@@ -41,8 +41,20 @@ public class PicatDotBaseExpressionImpl extends ASTWrapperPsiElement implements 
 
   @Override
   @Nullable
-  public PicatAtomOrCall getAtomOrCall() {
-    return findChildByClass(PicatAtomOrCall.class);
+  public PicatAtomWithoutArgs getAtomWithoutArgs() {
+    return findChildByClass(PicatAtomWithoutArgs.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatFunctionCall getFunctionCall() {
+    return findChildByClass(PicatFunctionCall.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatLambdaTerm getLambdaTerm() {
+    return findChildByClass(PicatLambdaTerm.class);
   }
 
   @Override
@@ -55,6 +67,12 @@ public class PicatDotBaseExpressionImpl extends ASTWrapperPsiElement implements 
   @Nullable
   public PicatParenthesizedGoal getParenthesizedGoal() {
     return findChildByClass(PicatParenthesizedGoal.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatTermConstructor getTermConstructor() {
+    return findChildByClass(PicatTermConstructor.class);
   }
 
   @Override

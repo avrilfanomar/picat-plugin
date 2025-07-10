@@ -14,7 +14,10 @@ public interface PicatBaseExpression extends PsiElement {
   PicatAsPattern getAsPattern();
 
   @Nullable
-  PicatAtom getAtom();
+  PicatAtomWithoutArgs getAtomWithoutArgs();
+
+  @Nullable
+  PicatFunctionCall getFunctionCall();
 
   @Nullable
   PicatLambdaTerm getLambdaTerm();

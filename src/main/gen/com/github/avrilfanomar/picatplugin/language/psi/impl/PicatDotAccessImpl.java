@@ -28,9 +28,9 @@ public class PicatDotAccessImpl extends ASTWrapperPsiElement implements PicatDot
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PicatAtomOrCall getAtomOrCall() {
-    return findNotNullChildByClass(PicatAtomOrCall.class);
+    return findChildByClass(PicatAtomOrCall.class);
   }
 
 }

@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface PicatPostfixOperation extends PsiElement {
 
   @NotNull
-  List<PicatArgument> getArgumentList();
-
-  @Nullable
-  PicatAtomOrCall getAtomOrCall();
+  PicatDotAccess getDotAccess();
 
 }

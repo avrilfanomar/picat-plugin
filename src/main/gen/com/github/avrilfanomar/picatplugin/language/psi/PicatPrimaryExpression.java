@@ -7,10 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatPrimaryExpression extends PsiElement {
 
-  @Nullable
-  PicatDotExpression getDotExpression();
+  @NotNull
+  PicatBaseExpression getBaseExpression();
 
   @Nullable
-  PicatNonDotExpression getNonDotExpression();
+  PicatPostfixOperations getPostfixOperations();
 
 }
