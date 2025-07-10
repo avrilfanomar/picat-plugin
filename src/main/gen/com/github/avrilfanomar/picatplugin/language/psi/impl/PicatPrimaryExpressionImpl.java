@@ -33,10 +33,4 @@ public class PicatPrimaryExpressionImpl extends ASTWrapperPsiElement implements 
     return findNotNullChildByClass(PicatBaseExpression.class);
   }
 
-  @Override
-  @Nullable
-  public PicatPostfixOperations getPostfixOperations() {
-    return findChildByClass(PicatPostfixOperations.class);
-  }
-
 }

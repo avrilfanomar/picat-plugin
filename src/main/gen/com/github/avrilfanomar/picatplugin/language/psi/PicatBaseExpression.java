@@ -34,4 +34,13 @@ public interface PicatBaseExpression extends PsiElement {
   @Nullable
   PicatVariableIndex getVariableIndex();
 
+  @Nullable
+  PsiElement getFloat();
+
+  @Nullable
+  PsiElement getInteger();
+
+  @Nullable
+  PsiElement getVariable();
+
 }

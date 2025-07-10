@@ -179,9 +179,9 @@ body ::= goal
 // Goals - following the official precedence hierarchy
 goal ::= disjunctive_goal
 
-disjunctive_goal ::= conjunctive_goal (SEMICOLON disjunctive_goal)?
+disjunctive_goal ::= conjunctive_goal (SEMICOLON disjunctive_goal)*
 
-conjunctive_goal ::= negative_goal (COMMA conjunctive_goal)?
+conjunctive_goal ::= negative_goal (COMMA conjunctive_goal)*
 
 negative_goal ::= (NOT_KEYWORD negative_goal) | equiv_constr
 
@@ -252,21 +252,21 @@ unary_expression ::= power_expression
 
 power_expression ::= primary_expression [POWER unary_expression]
 
-primary_expression ::= base_expression postfix_operations?
+primary_expression ::= base_expression
 
-postfix_operations ::= postfix_operation postfix_operations?
-
-postfix_operation ::= dot_access
-
-// Only allow dot access in specific contexts, not after function calls that could end statements
-dot_access ::= DOT atom_or_call {pin=1}
+//TODO space after dot access is still allowed and results in parsing issues
+//primary_expression ::= base_expression postfix_operations?
+//postfix_operations ::= postfix_operation postfix_operations?
+//postfix_operation ::= dot_access
+//dot_access ::= DOT !<<isWhitespaceNext>> atom_or_call
+//atom_or_call ::= atom [LPAR [argument (COMMA argument)*] RPAR]
 
 base_expression ::= parenthesized_goal
                   | variable_index
                   | as_pattern
-                  | variable
-                  | integer
-                  | float
+                  | VARIABLE
+                  | INTEGER
+                  | FLOAT
                   | atom_without_args
                   | function_call
                   | list_expression
@@ -287,8 +287,6 @@ type_annotation ::= VARIABLE DOUBLE_COLON_OP expression
 variable_index ::= VARIABLE LBRACKET argument [COMMA argument] RBRACKET
 
 as_pattern ::= VARIABLE AT term [AT]
-
-atom_or_call ::= atom_without_args | function_call
 
 list_expression ::= LBRACKET argument list_expression_suffix RBRACKET
 

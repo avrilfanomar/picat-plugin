@@ -34,9 +34,9 @@ public class PicatDisjunctiveGoalImpl extends ASTWrapperPsiElement implements Pi
   }
 
   @Override
-  @Nullable
-  public PicatDisjunctiveGoal getDisjunctiveGoal() {
-    return findChildByClass(PicatDisjunctiveGoal.class);
+  @NotNull
+  public List<PicatDisjunctiveGoal> getDisjunctiveGoalList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatDisjunctiveGoal.class);
   }
 
 }
