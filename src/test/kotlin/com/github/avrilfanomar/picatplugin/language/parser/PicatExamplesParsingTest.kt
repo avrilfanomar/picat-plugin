@@ -1,6 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatForeachLoop
+import com.github.avrilfanomar.picatplugin.language.psi.PicatImportDeclaration
 import com.github.avrilfanomar.picatplugin.language.psi.PicatImportItem
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop
@@ -255,9 +256,9 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         // Get the body of the queens rule
         val queensBody = queensRule!!.getBody()
         Assertions.assertNotNull(queensBody, "Queens rule should have a body")
-        val bodyText = queensBody.text
-        Assertions.assertTrue(bodyText.contains("foreach"), "Queens rule body should contain foreach")
-        Assertions.assertTrue(bodyText.contains("solve"), "Queens rule body should contain solve")
+        val bodyText = queensBody?.text
+        Assertions.assertTrue(bodyText?.contains("foreach") ?: false, "Queens rule body should contain foreach")
+        Assertions.assertTrue(bodyText?.contains("solve") ?: false, "Queens rule body should contain solve")
 
         // Verify foreach loops
         val foreachLoops = PsiTreeUtil.findChildrenOfType(queensBody, PicatForeachLoop::class.java) // Use interface
@@ -339,7 +340,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Verify import statement
-        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportItem::class.java) // Use interface
+        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportDeclaration::class.java) // Use interface
         Assertions.assertEquals(1, importStatements.size)
         Assertions.assertEquals("import util.", importStatements.first().text)
 
