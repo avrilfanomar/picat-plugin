@@ -1,7 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.references
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatStructure
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.psi.PsiReferenceProvider

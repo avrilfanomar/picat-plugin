@@ -18,10 +18,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
         // Rule operators (=>, ?=>, :-, <=>, ?<=>)
         val RULE_OPERATORS = TokenSet.create(
             PicatTokenTypes.ARROW_OP,
-            PicatTokenTypes.BACKTRACKABLE_ARROW_OP,
-            PicatTokenTypes.RULE_OP,
-            PicatTokenTypes.BICONDITIONAL_OP,
-            PicatTokenTypes.BACKTRACKABLE_BICONDITIONAL_OP
+            PicatTokenTypes.BACKTRACKABLE_ARROW_OP
         )
 
         // Constraint rule operators (#=>, #<=>)
@@ -39,9 +36,8 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
 
         // Logical operators (&&, ||, !)
         val LOGICAL_OPERATORS = TokenSet.create(
-            PicatTokenTypes.AND_KEYWORD, // Replaced AND
-            PicatTokenTypes.OR_KEYWORD,  // Replaced OR
-            PicatTokenTypes.NOT_KEYWORD  // Replaced NOT
+            PicatTokenTypes.HASH_OR_OP,
+            PicatTokenTypes.NOT_KEYWORD
         )
 
         // Equality operators (==, !=, ===, !==)
@@ -80,21 +76,14 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
         // Constraint operators (#=, #!=, etc.)
         // Kept existing hash operators, removed others
         val CONSTRAINT_OPERATORS = TokenSet.create(
-            PicatTokenTypes.HASH_AND_OP,    // Replaced CONSTRAINT_AND
-            PicatTokenTypes.HASH_OR_OP,     // Replaced CONSTRAINT_OR
-            PicatTokenTypes.HASH_CARET_OP,  // Replaced CONSTRAINT_XOR
-            PicatTokenTypes.HASH_TILDE_OP   // Replaced CONSTRAINT_NOT
-            // Removed: CONSTRAINT_EQ, CONSTRAINT_NEQ, CONSTRAINT_LT, CONSTRAINT_LE,
-            // CONSTRAINT_LE_ALT, CONSTRAINT_GT, CONSTRAINT_GE
+            PicatTokenTypes.HASH_AND_OP,
+            PicatTokenTypes.HASH_OR_OP
         )
-
-        // Term comparison operators (@<, @=<, etc.) - Removed as not defined
-        val TERM_COMPARISON_OPERATORS = TokenSet.EMPTY
 
         // Bitwise operators (/\, \/, <<, >>)
         val BITWISE_OPERATORS = TokenSet.create(
-            PicatTokenTypes.AMPERSAND,    // Replaced BITWISE_AND
-            PicatTokenTypes.PIPE,         // Replaced BITWISE_OR
+            PicatTokenTypes.BITWISE_OR,
+            PicatTokenTypes.BITWISE_AND,
             PicatTokenTypes.SHIFT_LEFT,
             PicatTokenTypes.SHIFT_RIGHT
         )
@@ -112,8 +101,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             PicatTokenTypes.THEN_KEYWORD,
             PicatTokenTypes.ELSE_KEYWORD,
             PicatTokenTypes.FOREACH_KEYWORD,
-            PicatTokenTypes.WHILE_KEYWORD,
-            PicatTokenTypes.RETURN_KEYWORD
+            PicatTokenTypes.WHILE_KEYWORD
         )
 
         // Block keywords for indentation (then, else)

@@ -1,8 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.structure
 
-// Removed import for PicatPicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl // Import PicatFileImpl
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.ide.structureView.StructureViewModel
 import com.intellij.ide.structureView.StructureViewModelBase
 import com.intellij.ide.structureView.StructureViewTreeElement

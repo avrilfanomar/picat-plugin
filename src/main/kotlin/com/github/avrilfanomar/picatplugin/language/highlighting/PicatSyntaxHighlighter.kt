@@ -52,18 +52,14 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
         tokenType in KEYWORDS_SET
 
     private fun isComment(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.COMMENT ||
-                tokenType == PicatTokenTypes.MULTI_LINE_COMMENT
+        tokenType == PicatTokenTypes.COMMENT
 
     private fun isString(tokenType: IElementType): Boolean =
         tokenType == PicatTokenTypes.STRING
 
     private fun isNumber(tokenType: IElementType): Boolean =
         tokenType == PicatTokenTypes.INTEGER ||
-                tokenType == PicatTokenTypes.FLOAT ||
-                tokenType == PicatTokenTypes.HEX_INTEGER ||
-                tokenType == PicatTokenTypes.OCTAL_INTEGER ||
-                tokenType == PicatTokenTypes.BINARY_INTEGER
+                tokenType == PicatTokenTypes.FLOAT
 
 
     private fun isOperator(tokenType: IElementType): Boolean =
@@ -82,7 +78,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
         tokenType == PicatTokenTypes.VARIABLE
 
     private fun isIdentifier(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.IDENTIFIER || tokenType == PicatTokenTypes.QUOTED_ATOM
+        tokenType == PicatTokenTypes.IDENTIFIER
 
     companion object {
         // Define text attribute keys for different token types
@@ -108,62 +104,18 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             TextAttributesKey.createTextAttributesKey("PICAT_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER)
 
         val KEYWORDS_SET: TokenSet = TokenSet.create(
-            PicatTokenTypes.AND_KEYWORD,
-            PicatTokenTypes.BREAK_KEYWORD,
-            PicatTokenTypes.CASE_KEYWORD,
-            PicatTokenTypes.CATCH_KEYWORD,
-            PicatTokenTypes.CONTINUE_KEYWORD,
-            PicatTokenTypes.DIV_KEYWORD,
-            PicatTokenTypes.DO_KEYWORD,
-            PicatTokenTypes.ELSEIF_KEYWORD,
-            PicatTokenTypes.ELSE_KEYWORD,
-            PicatTokenTypes.END_KEYWORD,
-            PicatTokenTypes.END_MODULE_KEYWORD,
-            PicatTokenTypes.EXPORT_KEYWORD,
-            PicatTokenTypes.FAIL_KEYWORD,
-            PicatTokenTypes.FALSE_KEYWORD,
-            PicatTokenTypes.FINALLY_KEYWORD,
-            PicatTokenTypes.FOREACH_KEYWORD,
-            PicatTokenTypes.IF_KEYWORD,
-            PicatTokenTypes.IMPORT_KEYWORD,
-            PicatTokenTypes.INCLUDE_KEYWORD,
-            PicatTokenTypes.INDEX_KEYWORD,
-            PicatTokenTypes.IN_KEYWORD,
-            PicatTokenTypes.IS_KEYWORD,
-            PicatTokenTypes.LOOP_KEYWORD,
-            PicatTokenTypes.MODULE_KEYWORD,
-            PicatTokenTypes.MOD_KEYWORD,
-            PicatTokenTypes.NOT_KEYWORD,
-            PicatTokenTypes.OF_KEYWORD,
-            PicatTokenTypes.OR_KEYWORD,
-            PicatTokenTypes.PASS_KEYWORD,
-            PicatTokenTypes.PRIVATE_KEYWORD,
-            PicatTokenTypes.REM_KEYWORD,
-            PicatTokenTypes.RETURN_KEYWORD,
-            PicatTokenTypes.TABLE_KEYWORD,
-            PicatTokenTypes.THEN_KEYWORD,
-            PicatTokenTypes.THROW_KEYWORD,
-            PicatTokenTypes.TRUE_KEYWORD,
-            PicatTokenTypes.TRY_KEYWORD,
-            PicatTokenTypes.USING_KEYWORD,
-            PicatTokenTypes.WHILE_KEYWORD,
-            PicatTokenTypes.XOR_KEYWORD
+//  TODO
         )
 
         val OPERATORS_SET: TokenSet = TokenSet.create(
-            PicatTokenTypes.AMPERSAND,
             PicatTokenTypes.ARROW_OP,
             PicatTokenTypes.ASSIGN_OP,
             PicatTokenTypes.AT,
-            PicatTokenTypes.BACKSLASH,
             PicatTokenTypes.BACKTRACKABLE_ARROW_OP,
-            PicatTokenTypes.BACKTRACKABLE_BICONDITIONAL_OP,
             PicatTokenTypes.BICONDITIONAL_OP,
-            PicatTokenTypes.CARET,
             PicatTokenTypes.COLON,
             PicatTokenTypes.COMMA,
             PicatTokenTypes.CONCAT_OP,
-            PicatTokenTypes.CUT,
             PicatTokenTypes.DIVIDE,
             PicatTokenTypes.DOT,
             PicatTokenTypes.EQUAL,
@@ -172,9 +124,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.HASH_AND_OP,
             PicatTokenTypes.HASH_ARROW_OP,
             PicatTokenTypes.HASH_BICONDITIONAL_OP,
-            PicatTokenTypes.HASH_CARET_OP,
             PicatTokenTypes.HASH_OR_OP,
-            PicatTokenTypes.HASH_TILDE_OP,
             PicatTokenTypes.IDENTICAL,
             PicatTokenTypes.INT_DIVIDE,
             PicatTokenTypes.LESS,
@@ -187,11 +137,9 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.PLUS,
             PicatTokenTypes.POWER,
             PicatTokenTypes.RANGE_OP,
-            PicatTokenTypes.RULE_OP,
             PicatTokenTypes.SEMICOLON,
             PicatTokenTypes.SHIFT_LEFT,
-            PicatTokenTypes.SHIFT_RIGHT,
-            PicatTokenTypes.SHIFT_RIGHT_TRIPLE_OP
+            PicatTokenTypes.SHIFT_RIGHT
             // Note: LPAR, RPAR, LBRACE, RBRACE, LBRACKET, RBRACKET are handled separately
         )
     }

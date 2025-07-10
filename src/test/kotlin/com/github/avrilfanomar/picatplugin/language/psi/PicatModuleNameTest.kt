@@ -23,15 +23,15 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all import statements in the file
-        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java)
+        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportDeclaration::class.java)
 
         // Verify that there is exactly one import statement
         Assertions.assertEquals(1, importStatements.size, "There should be exactly one import statement")
 
         // Get the module names from the import statement
         val importStatement = importStatements.first()
-        val moduleNameElements = importStatement.importList?.importItemList ?: emptyList()
-        val moduleNames = moduleNameElements.mapNotNull { it.moduleName.atom.text }
+        val moduleNameElements = importStatement.importItemList
+        val moduleNames = moduleNameElements.mapNotNull { it.text }
 
 
         // Verify that there is exactly one module name
@@ -53,15 +53,15 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all import statements in the file
-        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java)
+        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportDeclaration::class.java)
 
         // Verify that there is exactly one import statement
         Assertions.assertEquals(1, importStatements.size, "There should be exactly one import statement")
 
         // Get the module names from the import statement
         val importStatement = importStatements.first()
-        val moduleNameElements = importStatement.importList?.importItemList ?: emptyList()
-        val moduleNames = moduleNameElements.mapNotNull { it.moduleName.atom.text }
+        val moduleNameElements = importStatement.importItemList
+        val moduleNames = moduleNameElements.mapNotNull { it.text }
 
         // Verify that there are exactly three module names
         Assertions.assertEquals(3, moduleNames.size, "There should be exactly three module names")
@@ -85,7 +85,7 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all import statements in the file
-        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportStatement::class.java)
+        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportDeclaration::class.java)
 
         // Verify that there are exactly three import statements
         Assertions.assertEquals(3, importStatements.size, "There should be exactly three import statements")
@@ -93,8 +93,8 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         // Verify that each import statement has exactly one module name and the correct text
         val expectedModuleNames = listOf("util", "math", "cp")
         importStatements.forEachIndexed { i, importStatement ->
-            val moduleNameElements = importStatement.importList?.importItemList ?: emptyList()
-            val moduleNames = moduleNameElements.mapNotNull { it.moduleName.atom.text }
+            val moduleNameElements = importStatement.importItemList
+            val moduleNames = moduleNameElements.mapNotNull { it.text }
 
             Assertions.assertEquals(
                 1,

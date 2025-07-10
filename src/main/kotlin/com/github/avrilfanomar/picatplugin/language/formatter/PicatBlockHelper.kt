@@ -44,10 +44,8 @@ class PicatBlockHelper {
     /**
      * Checks if the element is part of a list comprehension but not a bracket or pipe.
      */
-    fun isListComprehensionNonBracketOrPipe(parentType: IElementType?, elementType: IElementType?): Boolean {
-        return (parentType == PicatTokenTypes.LIST_COMPREHENSION_GOAL ||
-                parentType == PicatTokenTypes.LIST_COMPREHENSION_EXPRESSION) &&
-                elementType != PicatTokenTypes.LBRACKET &&
+    fun isListComprehensionNonBracketOrPipe(elementType: IElementType?): Boolean {
+        return elementType != PicatTokenTypes.LBRACKET &&
                 elementType != PicatTokenTypes.RBRACKET &&
                 elementType != PicatTokenTypes.PIPE
     }
@@ -105,20 +103,19 @@ class PicatBlockHelper {
      * Checks if a rule body should be indented based on settings.
      */
     fun shouldIndentRuleBody(parentType: IElementType?, picatSettings: PicatCodeStyleSettings): Boolean {
-        return isRuleBodyOrStatementType(parentType) && 
-               picatSettings.indentRuleBody
+        return isRuleBodyOrStatementType(parentType) &&
+                picatSettings.indentRuleBody
     }
 
     /**
      * Checks if list comprehension elements should be indented based on settings.
      */
     fun shouldIndentListComprehension(
-        parentType: IElementType?,
         elementType: IElementType?,
         picatSettings: PicatCodeStyleSettings
     ): Boolean {
-        return isListComprehensionNonBracketOrPipe(parentType, elementType) && 
-               picatSettings.indentListComprehension
+        return isListComprehensionNonBracketOrPipe(elementType) &&
+                picatSettings.indentListComprehension
     }
 
     /**
@@ -130,8 +127,9 @@ class PicatBlockHelper {
         picatSettings: PicatCodeStyleSettings
     ): Boolean {
         // Indent statements in block statements
-        if (isBlockStatementType(parentType) && 
-            picatSettings.indentBlockStatements) {
+        if (isBlockStatementType(parentType) &&
+            picatSettings.indentBlockStatements
+        ) {
             return !isBlockKeywordType(elementType)
         }
 

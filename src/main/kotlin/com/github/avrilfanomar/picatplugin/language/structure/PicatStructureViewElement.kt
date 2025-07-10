@@ -1,6 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.structure
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.structureView.StructureViewTreeElement
@@ -9,7 +8,6 @@ import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
 
 /**
  * Structure view element for Picat files.
@@ -33,45 +31,15 @@ class PicatStructureViewElement(private val element: PsiElement) :
         element is NavigatablePsiElement && element.canNavigateToSource()
 
     override fun getAlphaSortKey(): String =
-        when (element) {
-            is PicatFunctionRule -> {
-                val structure = element.head.structure
-                val atom = PsiTreeUtil.getChildOfType(structure, PicatAtom::class.java)
-                atom?.text ?: structure?.toString() ?: element.toString()
-            }
-
-            else -> element.toString()
-        }
+        element.toString()
 
     override fun getPresentation(): ItemPresentation {
-        val presentation = when (element) {
-            is PicatFunctionRule -> {
-                val structure = element.head.structure
-                val atom = PsiTreeUtil.getChildOfType(structure, PicatAtom::class.java)
-                val representation = atom?.text ?: structure?.toString() ?: "Function"
-                PresentationData(
-                    representation,
-                    "Function (${
-                        structure?.let { s ->
-                            PsiTreeUtil.getChildOfType(
-                                s,
-                                PicatAtom::class.java
-                            )?.text
-                        } ?: ""
-                    })", // More detailed location string
-                    null, // Icon can be set here
-                    null
-                )
-            }
-            // Potentially add cases for other element types like PicatPredicateRule
-            else -> PresentationData(
-                element.text ?: element.toString(),
-                null,
-                null,
-                null
-            ) // Use element.text if available
-        }
-        return presentation
+        return PresentationData(
+            element.text ?: element.toString(),
+            null,
+            null,
+            null
+        )
     }
 
     override fun getChildren(): Array<TreeElement> {

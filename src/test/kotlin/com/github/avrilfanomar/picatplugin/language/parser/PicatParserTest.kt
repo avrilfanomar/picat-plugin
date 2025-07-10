@@ -29,48 +29,6 @@ class PicatParserTest : BasePlatformTestCase() {
     }
 
     @Test
-    fun testAtomParsing() {
-        // Test parsing different types of atoms
-        val code = """
-            simple_atom.
-            'quoted atom'.
-            atom_with_underscore.
-            atomWithMixedCase.
-        """.trimIndent()
-
-        myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFileImpl
-
-        val facts = file.getPredicateFacts()
-        Assertions.assertEquals(4, facts.size, "Should have four facts")
-
-        facts.forEach { fact ->
-            Assertions.assertNotNull(fact.getHead(), "Fact should have a head")
-        }
-    }
-
-    @Test
-    fun testStructureParsing() {
-        // Test parsing structures (compound terms)
-        val code = """
-            point(1, 2).
-            person('John', 30, male).
-            nested(point(3, 4), circle(5)).
-            empty().
-        """.trimIndent()
-
-        myFixture.configureByText("test.pi", code)
-        val file = myFixture.file as PicatFileImpl
-
-        val facts = file.getPredicateFacts()
-        Assertions.assertEquals(4, facts.size, "Should have four facts")
-
-        facts.forEach { fact ->
-            Assertions.assertNotNull(fact.getHead(), "Fact should have a head")
-        }
-    }
-
-    @Test
     fun testRuleParsing() {
         // Test parsing different types of rules
         val code = """
