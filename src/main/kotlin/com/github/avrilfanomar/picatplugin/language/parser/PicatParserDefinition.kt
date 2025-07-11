@@ -26,7 +26,7 @@ import com.intellij.psi.tree.TokenSet
  */
 class PicatParserDefinition : ParserDefinition {
 
-    override fun createLexer(project: Project): Lexer = FlexAdapter(_PicatLexer(null as Reader?))
+    override fun createLexer(project: Project): Lexer = FlexAdapter(_PicatLexer())
 
     override fun createParser(project: Project): PsiParser = PicatParser()
 

@@ -1,5 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.lexer
 
+import com.github.avrilfanomar.picatplugin.language.parser._PicatLexer
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.lexer.FlexAdapter
 import com.intellij.psi.TokenType
@@ -18,7 +19,7 @@ class PicatLexerTest {
      * Helper function to tokenize a string and return the list of tokens.
      */
     private fun tokenize(text: String): List<Pair<IElementType, String>> {
-        val lexer = FlexAdapter(_PicatLexer(null as Reader?))
+        val lexer = FlexAdapter(_PicatLexer())
         lexer.start(text)
 
         val tokens = mutableListOf<Pair<IElementType, String>>()
