@@ -103,8 +103,11 @@ intellijPlatform {
     publishing {
         token = providers.environmentVariable("PUBLISH_TOKEN")
         channels = providers.gradleProperty("pluginVersion")
-            .map { listOf(it.substringAfter('-', "")
-                .substringBefore('.').ifEmpty { "default" }) }
+            .map {
+                listOf(
+                    it.substringAfter('-', "")
+                        .substringBefore('.').ifEmpty { "default" })
+            }
     }
 
     pluginVerification {
@@ -209,4 +212,15 @@ intellijPlatformTesting {
             }
         }
     }
+}
+
+tasks.generateLexer {
+    sourceFile.set(file("src/main/grammars/_PicatLexer.flex"))
+    targetOutputDir.set(file("src/main/gen/com/github/avrilfanomar/picatplugin/language/parser"))
+}
+tasks.generateParser {
+    sourceFile.set(file("src/main/grammars/Picat.bnf"));
+    targetRootOutputDir.set(file("src/main/gen"))
+    pathToParser.set("com/github/avrilfanomar/picatplugin/language/parser/PicatParser.java");
+    pathToPsiRoot.set("com/github/avrilfanomar/picatplugin/language/psi")
 }
