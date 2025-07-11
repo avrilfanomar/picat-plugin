@@ -56,7 +56,7 @@ class PicatPsiTest : BasePlatformTestCase() {
         // Verify that the include statement has the correct path
         val includeStatement = includeStatements.first()
         val path = includeStatement.text
-        Assertions.assertEquals("include \"utils.pi\"", path, "Include statement should have path utils.pi")
+        Assertions.assertEquals("include \"utils.pi\".", path, "Include statement should have path utils.pi")
     }
 
 }

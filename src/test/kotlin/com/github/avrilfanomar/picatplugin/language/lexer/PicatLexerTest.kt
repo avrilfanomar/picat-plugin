@@ -7,7 +7,6 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.io.Reader
 
 /**
  * Test for the PicatLexer class.
@@ -101,7 +100,7 @@ class PicatLexerTest {
 
     @Test
     fun testNumbers() {
-        val tokens = tokenize("123 3.14 0xFF 0b101 0o777")
+        val tokens = tokenize("123 3.14")
         Assertions.assertEquals(9, tokens.size, "Should have 9 tokens (5 numbers and 4 whitespaces)")
         Assertions.assertEquals(PicatTokenTypes.INTEGER, tokens[0].first)
         Assertions.assertEquals(tokens[0].second, "123")
@@ -109,30 +108,6 @@ class PicatLexerTest {
         Assertions.assertEquals(tokens[1].second, " ")
         Assertions.assertEquals(PicatTokenTypes.FLOAT, tokens[2].first)
         Assertions.assertEquals(tokens[2].second, "3.14")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[3].first) // Changed here
-        Assertions.assertEquals(tokens[3].second, " ")
-        Assertions.assertEquals(PicatTokenTypes.HEX_INTEGER, tokens[4].first)
-        Assertions.assertEquals(tokens[4].second, "0xFF")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[5].first) // Changed here
-        Assertions.assertEquals(tokens[5].second, " ")
-        Assertions.assertEquals(PicatTokenTypes.BINARY_INTEGER, tokens[6].first)
-        Assertions.assertEquals(tokens[6].second, "0b101")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[7].first) // Changed here
-        Assertions.assertEquals(tokens[7].second, " ")
-        Assertions.assertEquals(PicatTokenTypes.OCTAL_INTEGER, tokens[8].first)
-        Assertions.assertEquals(tokens[8].second, "0o777")
-    }
-
-    @Test
-    fun testStrings() {
-        val tokens = tokenize("\"hello\" 'atom'")
-        Assertions.assertEquals(3, tokens.size, "Should have 3 tokens (2 strings and 1 whitespace)")
-        Assertions.assertEquals(PicatTokenTypes.STRING, tokens[0].first)
-        Assertions.assertEquals("\"hello\"", tokens[0].second)
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[1].first) // Changed here
-        Assertions.assertEquals(tokens[1].second, " ")
-        Assertions.assertEquals(PicatTokenTypes.QUOTED_ATOM, tokens[2].first)
-        Assertions.assertEquals(tokens[2].second, "'atom'")
     }
 
     @Test

@@ -273,7 +273,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Verify import statement
-        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportItem::class.java) // Use interface
+        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportDeclaration::class.java) // Use interface
         Assertions.assertEquals(1, importStatements.size)
         Assertions.assertEquals("import cp.", importStatements.first().text)
 
@@ -301,7 +301,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Verify import statement
-        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportItem::class.java) // Use interface
+        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportDeclaration::class.java) // Use interface
         Assertions.assertEquals(1, importStatements.size)
         Assertions.assertEquals("import cp.", importStatements.first().text)
 

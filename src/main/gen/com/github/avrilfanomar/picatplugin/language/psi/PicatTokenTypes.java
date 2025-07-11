@@ -159,6 +159,7 @@ public interface PicatTokenTypes {
   IElementType PLUS = new PicatTokenType("+");
   IElementType POWER = new PicatTokenType("**");
   IElementType PRIVATE_KEYWORD = new PicatTokenType("private");
+  IElementType PROLOG_RULE_OP = new PicatTokenType(":-");
   IElementType QUALIFIED_ATOM = new PicatTokenType("QUALIFIED_ATOM");
   IElementType RANGE_OP = new PicatTokenType("..");
   IElementType RBRACE = new PicatTokenType("}");

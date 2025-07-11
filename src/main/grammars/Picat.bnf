@@ -86,6 +86,7 @@
     BITWISE_XOR="^"
     BITWISE_AND="/\\"
     COMPLEMENT="~"
+    PROLOG_RULE_OP=":-"
 
     // Separators
     DOT="."
@@ -138,7 +139,7 @@ predicate_definition ::= predicate_directive* predicate_clause
 
 predicate_clause ::= predicate_rule | predicate_fact
 
-predicate_rule ::= head [COMMA condition] (ARROW_OP | BACKTRACKABLE_ARROW_OP) body DOT {pin=3}
+predicate_rule ::= head [COMMA condition] (ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) body DOT {pin=3}
 
 predicate_fact ::= head DOT {pin=2}
 

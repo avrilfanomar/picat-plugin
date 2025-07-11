@@ -79,6 +79,7 @@ QUALIFIED_ATOM=[a-z][a-zA-Z0-9_]*\\.[a-z][a-zA-Z0-9_]*
   "#<"                   { return HASH_LESS_OP; }
   "#=<"                  { return HASH_LESS_EQUAL_OP; }
   "#<="                  { return HASH_LESS_EQUAL_ALT_OP; }
+  ":-"                   { return PROLOG_RULE_OP; }
   ":="                   { return ASSIGN_OP; }
   "::"                   { return DOUBLE_COLON_OP; }
   ".."                   { return RANGE_OP; }
