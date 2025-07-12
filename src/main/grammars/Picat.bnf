@@ -38,8 +38,6 @@
     REM_KEYWORD="rem"
     LAMBDA_KEYWORD="lambda"
     CARDINALITY_KEYWORD="cardinality"
-    MIN_KEYWORD="min"
-    MAX_KEYWORD="max"
 
     // Operators
     ARROW_OP="=>"
@@ -173,7 +171,7 @@ predicate_directive ::= PRIVATE_KEYWORD
                      | INDEX_KEYWORD LPAR index_mode (COMMA index_mode)* RPAR
 
 index_mode ::= PLUS | MINUS
-table_mode ::= PLUS | MINUS | MIN_KEYWORD | MAX_KEYWORD
+table_mode ::= PLUS | MINUS
 
 head ::= atom [LPAR [argument (COMMA argument)*] RPAR]
 

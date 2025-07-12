@@ -2252,15 +2252,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // PLUS | MINUS | MIN_KEYWORD | MAX_KEYWORD
+  // PLUS | MINUS
   public static boolean table_mode(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "table_mode")) return false;
+    if (!nextTokenIs(builder_, "<table mode>", MINUS, PLUS)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, TABLE_MODE, "<table mode>");
     result_ = consumeToken(builder_, PLUS);
     if (!result_) result_ = consumeToken(builder_, MINUS);
-    if (!result_) result_ = consumeToken(builder_, MIN_KEYWORD);
-    if (!result_) result_ = consumeToken(builder_, MAX_KEYWORD);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }

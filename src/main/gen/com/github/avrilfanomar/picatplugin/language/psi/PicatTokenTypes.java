@@ -149,9 +149,7 @@ public interface PicatTokenTypes {
   IElementType LESS_EQUAL_PROLOG = new PicatTokenType("=<");
   IElementType LOOP_KEYWORD = new PicatTokenType("loop");
   IElementType LPAR = new PicatTokenType("(");
-  IElementType MAX_KEYWORD = new PicatTokenType("max");
   IElementType MINUS = new PicatTokenType("-");
-  IElementType MIN_KEYWORD = new PicatTokenType("min");
   IElementType MODULE_KEYWORD = new PicatTokenType("module");
   IElementType MOD_KEYWORD = new PicatTokenType("mod");
   IElementType MULTILINE_COMMENT = new PicatTokenType("MULTILINE_COMMENT");
