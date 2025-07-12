@@ -35,8 +35,8 @@ public class PicatTermConstructorImpl extends ASTWrapperPsiElement implements Pi
 
   @Override
   @Nullable
-  public PicatGoal getGoal() {
-    return findChildByClass(PicatGoal.class);
+  public PicatExpression getExpression() {
+    return findChildByClass(PicatExpression.class);
   }
 
   @Override

@@ -11,7 +11,7 @@ public interface PicatTermConstructor extends PsiElement {
   List<PicatArgument> getArgumentList();
 
   @Nullable
-  PicatGoal getGoal();
+  PicatExpression getExpression();
 
   @Nullable
   PsiElement getIdentifier();

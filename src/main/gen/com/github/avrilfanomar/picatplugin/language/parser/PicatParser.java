@@ -2311,7 +2311,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DOLLAR goal DOLLAR | IDENTIFIER LPAR [argument (COMMA argument)*] RPAR
+  // DOLLAR expression | IDENTIFIER LPAR [argument (COMMA argument)*] RPAR
   public static boolean term_constructor(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "term_constructor")) return false;
     if (!nextTokenIs(builder_, "<term constructor>", DOLLAR, IDENTIFIER)) return false;
@@ -2323,14 +2323,13 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // DOLLAR goal DOLLAR
+  // DOLLAR expression
   private static boolean term_constructor_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "term_constructor_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, DOLLAR);
-    result_ = result_ && goal(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, DOLLAR);
+    result_ = result_ && expression(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }

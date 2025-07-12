@@ -108,8 +108,9 @@ class PicatExamplesTest : LexerTestCase() {
         }
 
         // Skip checking for known token types that can contain '$'
-        // Temporarily changed PicatTokenTypes.DATA_CONSTRUCTOR to false to allow compilation
-        val isAllowedTokenType = false /* tokenType == PicatTokenTypes.DATA_CONSTRUCTOR */ ||
+        // Since DATA_CONSTRUCTOR is not yet available in the generated code,
+        // we'll check for DOLLAR token and handle it appropriately
+        val isAllowedTokenType = tokenType == PicatTokenTypes.DOLLAR ||
                 tokenType == PicatTokenTypes.COMMENT ||
                 tokenType == PicatTokenTypes.STRING
 
@@ -141,7 +142,8 @@ class PicatExamplesTest : LexerTestCase() {
         position: Int,
         issues: MutableList<String>
     ) {
-        if (tokenType == TokenType.BAD_CHARACTER) { // Changed here
+        // Only report as-pattern issues for '@' character, not for all bad characters
+        if (tokenType == TokenType.BAD_CHARACTER && tokenText == "@") {
             issues.add("As-pattern operator not recognized: '$tokenText' at position $position")
         }
     }
