@@ -88,6 +88,8 @@
                 implementationClass="com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder"/>
         <langCodeStyleSettingsProvider
                 implementation="com.github.avrilfanomar.picatplugin.language.formatter.PicatLanguageCodeStyleSettingsProvider"/>
+        <formattingService
+                implementation="com.github.avrilfanomar.picatplugin.language.formatter.PicatDocumentFormattingStrategy"/>
 
         <!-- PSI and Parser -->
         <lang.parserDefinition

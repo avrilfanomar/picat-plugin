@@ -18,6 +18,20 @@ class PicatCustomFormatter(
         // Normalize the input code by removing leading whitespace
         val normalizedCode = code.trim()
 
+        // Check if this is a simple rule (one line with no blocks)
+        if (isSimpleRule(normalizedCode)) {
+            // For simple rules, just add spaces around operators
+            return addSpacesAroundOperators(handleSpecialOperators(normalizedCode))
+        }
+
+        // Check if this is a predicate definition
+        if (isPredicate(normalizedCode)) {
+            // For predicates, just add spaces around operators and don't add indentation
+            var result = handleSpecialOperators(normalizedCode)
+            result = addSpacesAroundOperators(result)
+            return result
+        }
+
         // Apply formatting rules
         var formattedCode = normalizedCode
 
@@ -27,16 +41,111 @@ class PicatCustomFormatter(
         // Add spaces around operators
         formattedCode = addSpacesAroundOperators(formattedCode)
 
-        // Add line breaks after rule operators
-        formattedCode = addLineBreaksAfterRuleOperators(formattedCode)
-
-        // Add indentation
-        formattedCode = addIndentation(formattedCode)
-
-        // Normalize line endings and remove trailing whitespace
-        formattedCode = normalizeLineEndings(formattedCode)
+        // Format the code with proper indentation and line breaks
+        formattedCode = formatCode(formattedCode)
 
         return formattedCode
+    }
+
+    /**
+     * Formats the code with proper indentation and line breaks.
+     */
+    private fun formatCode(code: String): String {
+        val lines = code.split("\n")
+        val result = StringBuilder()
+        var indentLevel = 0
+        var inRuleBody = false
+
+        for (i in lines.indices) {
+            val line = lines[i].trim()
+
+            // Skip empty lines but preserve them in the output
+            if (line.isEmpty()) {
+                result.append("\n")
+                continue
+            }
+
+            // Check if this line starts a rule body
+            if (line.contains(" =>") || line.contains(" ?=>")) {
+                result.append(line).append("\n")
+                inRuleBody = true
+                indentLevel = 1
+                continue
+            }
+
+            // Handle lines inside rule bodies
+            if (inRuleBody) {
+                // Check if this line starts a block with 'then'
+                if (line.contains(" then")) {
+                    result.append(getIndentation(indentLevel)).append(line).append("\n")
+                    indentLevel++
+                    continue
+                }
+
+                // Check if this line is an 'else' or 'elseif' statement
+                if (line.startsWith("else") || line.startsWith("elseif")) {
+                    indentLevel--
+                    result.append(getIndentation(indentLevel)).append(line).append("\n")
+                    indentLevel++
+                    continue
+                }
+
+                // Check if this line starts a foreach loop
+                if (line.startsWith("foreach")) {
+                    result.append(getIndentation(indentLevel)).append(line).append("\n")
+                    indentLevel++
+                    continue
+                }
+
+                // Check if this line ends a block
+                if (line == "end" || line == "end," || line == "end.") {
+                    indentLevel--
+                    result.append(getIndentation(indentLevel)).append(line).append("\n")
+
+                    // If this is the end of a rule body, reset the indentation level
+                    if (line == "end.") {
+                        inRuleBody = false
+                        indentLevel = 0
+                    }
+                    continue
+                }
+
+                // Check if this line ends a rule body
+                if (line.endsWith(".") && !line.contains("=>")) {
+                    result.append(getIndentation(indentLevel)).append(line).append("\n")
+                    inRuleBody = false
+                    indentLevel = 0
+                    continue
+                }
+
+                // Add indentation for all other lines inside the rule body
+                result.append(getIndentation(indentLevel)).append(line).append("\n")
+                continue
+            }
+
+            // For lines outside rule bodies, don't add indentation
+            result.append(line).append("\n")
+        }
+
+        return result.toString().trim()
+    }
+
+    /**
+     * Checks if the given code is a simple rule (one line with no blocks).
+     */
+    private fun isSimpleRule(code: String): Boolean {
+        // Check if the code is a simple rule (one line with no blocks)
+        return code.contains("=>") && !code.contains("then") && !code.contains("else") && 
+               !code.contains("foreach") && !code.contains("end") && !code.contains("\n")
+    }
+
+    /**
+     * Checks if the given code is a predicate definition.
+     */
+    private fun isPredicate(code: String): Boolean {
+        // Check if the code is a predicate definition
+        return (code.contains("(") && code.contains(")") && code.contains("=") && 
+                (code.endsWith(".") || code.contains(" =>")))
     }
 
     /**
@@ -46,8 +155,8 @@ class PicatCustomFormatter(
         // Split the code into lines
         val lines = code.split("\n")
 
-        // Process each line to remove trailing whitespace
-        val processedLines = lines.map { it.trimEnd() }
+        // Process each line to remove trailing whitespace and leading spaces
+        val processedLines = lines.map { it.trim() }
 
         // Join the lines back together with LF line endings
         return processedLines.joinToString("\n")
@@ -171,28 +280,28 @@ class PicatCustomFormatter(
         // Restore special operators with proper spacing
 
         // Restore rule operators
-        result = result.replace("__ARROW_OP__", " => ")
-        result = result.replace("__BACKTRACKABLE_ARROW_OP__", " ?=> ")
+        result = result.replace("__ARROW_OP__", " =>")
+        result = result.replace("__BACKTRACKABLE_ARROW_OP__", " ?=>")
 
         // Restore constraint rule operators
-        result = result.replace("__HASH_ARROW_OP__", " #=> ")
-        result = result.replace("__HASH_BICONDITIONAL_OP__", " #<=> ")
+        result = result.replace("__HASH_ARROW_OP__", " #=>")
+        result = result.replace("__HASH_BICONDITIONAL_OP__", " #<=>")
 
         // Restore term comparison operators
-        result = result.replace("__AT_LESS_OP__", " @< ")
-        result = result.replace("__AT_GREATER_OP__", " @> ")
-        result = result.replace("__AT_LESS_EQUAL_OP__", " @=< ")
-        result = result.replace("__AT_GREATER_EQUAL_OP__", " @>= ")
+        result = result.replace("__AT_LESS_OP__", " @<")
+        result = result.replace("__AT_GREATER_OP__", " @>")
+        result = result.replace("__AT_LESS_EQUAL_OP__", " @=<")
+        result = result.replace("__AT_GREATER_EQUAL_OP__", " @>=")
 
         // Restore equality operators
-        result = result.replace("__DOUBLE_EQUAL_OP__", " == ")
-        result = result.replace("__NOT_EQUAL_OP__", " != ")
+        result = result.replace("__DOUBLE_EQUAL_OP__", " ==")
+        result = result.replace("__NOT_EQUAL_OP__", " !=")
 
         // Restore type constraint operator
         result = result.replace("__DOUBLE_COLON_OP__", " :: ")
 
         // Restore concatenation operator
-        result = result.replace("__CONCAT_OP__", " ++ ")
+        result = result.replace("__CONCAT_OP__", " ++")
 
         // Fix double spaces again
         while (result.contains("  ")) {
@@ -204,12 +313,19 @@ class PicatCustomFormatter(
 
     /**
      * Adds line breaks after rule operators.
-     * Note: We don't actually add line breaks here because the addIndentation method
-     * will add them. This method is kept for clarity and potential future use.
      */
     private fun addLineBreaksAfterRuleOperators(code: String): String {
-        // Just return the code as is, since addIndentation will handle the line breaks
-        return code
+        var result = code
+
+        // Add line breaks after rule operators if they don't already have one
+        result = result.replace(" =>", " =>\n")
+        result = result.replace(" ?=>", " ?=>\n")
+
+        // Remove any double newlines that might have been created
+        result = result.replace(" =>\n\n", " =>\n")
+        result = result.replace(" ?=>\n\n", " ?=>\n")
+
+        return result
     }
 
     /**
@@ -226,7 +342,6 @@ class PicatCustomFormatter(
         val result = StringBuilder()
         var indentLevel = 0
         var inRuleBody = false
-        var lastLineWasEmpty = false
 
         for (i in processedLines.indices) {
             val line = processedLines[i]
@@ -234,86 +349,71 @@ class PicatCustomFormatter(
 
             // Handle empty lines
             if (trimmedLine.isEmpty()) {
-                // Only add a newline if the last line wasn't empty
-                // This prevents consecutive empty lines
-                if (!lastLineWasEmpty || i == 0) {
-                    result.append("\n")
-                }
-                lastLineWasEmpty = true
+                result.append("\n")
                 continue
             }
-            lastLineWasEmpty = false
 
             // Check if this line starts a rule body
             if (trimmedLine.contains(" =>") || trimmedLine.contains(" ?=>")) {
-                inRuleBody = true
+                // Don't add indentation to the rule header line
                 result.append(trimmedLine).append("\n")
+                inRuleBody = true
                 indentLevel = 1
                 continue
             }
 
-            // Check if this line ends a rule body
-            if (trimmedLine.endsWith(".")) {
-                result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
-                inRuleBody = false
-                indentLevel = 0
-                continue
-            }
-
-            // Check if this line starts a block with 'then'
-            if (trimmedLine.contains(" then")) {
-                result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
-                indentLevel++
-                continue
-            }
-
-            // Check if this line is an 'else' statement
-            if (trimmedLine.startsWith("else ") || trimmedLine == "else") {
-                // Decrease indent for the 'else' line itself
-                indentLevel--
-                result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
-                // Increase indent for the block that follows
-                indentLevel++
-                continue
-            }
-
-            // Check if this line is an 'elseif' statement
-            if (trimmedLine.startsWith("elseif ")) {
-                // Decrease indent for the 'elseif' line itself
-                indentLevel--
-                result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
-                // Increase indent for the block that follows
-                indentLevel++
-                continue
-            }
-
-            // Check if this line is a simple rule (not a rule body)
-            if (!inRuleBody && (trimmedLine.contains(" = ") || trimmedLine.contains("(") && trimmedLine.contains(")"))) {
+            // Check if this line is a comment outside a rule body
+            if (!inRuleBody && trimmedLine.startsWith("%")) {
                 result.append(trimmedLine).append("\n")
                 continue
             }
 
-            // Check if this line starts a foreach loop
-            if (trimmedLine.startsWith("foreach")) {
-                result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
-                indentLevel++
-                continue
-            }
-
-            // Check if this line ends a block
-            if (trimmedLine == "end" || trimmedLine == "end," || trimmedLine == "end.") {
-                // Decrease indent for the 'end' line itself
-                indentLevel--
-                result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
-                continue
-            }
-
-            // Add indentation to the line
+            // Check if this line is inside a rule body
             if (inRuleBody) {
+                // Check if this line starts a block with 'then'
+                if (trimmedLine.contains(" then")) {
+                    result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
+                    indentLevel += 1
+                    continue
+                }
+
+                // Check if this line is an 'else' or 'elseif' statement
+                if (trimmedLine.startsWith("else") || trimmedLine.startsWith("elseif")) {
+                    indentLevel -= 1
+                    result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
+                    indentLevel += 1
+                    continue
+                }
+
+                // Check if this line starts a foreach loop
+                if (trimmedLine.startsWith("foreach")) {
+                    result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
+                    indentLevel += 1
+                    continue
+                }
+
+                // Check if this line ends a block
+                if (trimmedLine == "end" || trimmedLine == "end," || trimmedLine == "end.") {
+                    indentLevel -= 1
+                    result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
+                    continue
+                }
+
+                // Check if this line ends a rule body
+                if (trimmedLine.endsWith(".")) {
+                    result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
+                    inRuleBody = false
+                    indentLevel = 0
+                    continue
+                }
+
+                // Add indentation for all other lines inside the rule body
                 result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
-            } else {
-                result.append(trimmedLine).append("\n")
+                continue
             }
+
+            // For lines outside rule bodies, don't add indentation
+            result.append(trimmedLine).append("\n")
         }
 
         return result.toString().trim()

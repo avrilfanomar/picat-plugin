@@ -1,11 +1,11 @@
 package com.github.avrilfanomar.picatplugin.language
 
-import com.github.avrilfanomar.picatplugin.language.formatter.PicatCustomFormatter
+import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormatterService
 import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder
 import com.github.avrilfanomar.picatplugin.language.formatter.PicatSpacingBuilder
 import com.intellij.lang.LanguageFormatting
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.psi.codeStyle.CodeStyleSettings
+import com.intellij.openapi.components.service
 import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions
@@ -32,9 +32,10 @@ class PicatFormattingTest : BasePlatformTestCase() {
         // Get the code style settings
         val settings = CodeStyleSettingsManager.getInstance(project).currentSettings
 
-        // Create a custom formatter
+        // Get the custom formatter from the service
         val spacingBuilder = PicatSpacingBuilder(settings).getSpacingBuilder()
-        val customFormatter = PicatCustomFormatter(settings, spacingBuilder)
+        val formatterService = service<PicatFormatterService>()
+        val customFormatter = formatterService.getFormatter(settings, spacingBuilder)
 
         // Format the code using our custom formatter
         val formattedText = customFormatter.format(normalizedCode)
@@ -406,7 +407,17 @@ literals_example =>
         val code = "main=>X=10,Y=20."
         val expected = "main => X = 10, Y = 20."
 
-        // Format the code
+        // Format the code using PicatCustomFormatter
+        val settings = CodeStyleSettingsManager.getInstance(project).currentSettings
+        val spacingBuilder = PicatSpacingBuilder(settings).getSpacingBuilder()
+        val formatterService = service<PicatFormatterService>()
+        val customFormatter = formatterService.getFormatter(settings, spacingBuilder)
+        val formattedText = customFormatter.format(code)
+
+        // Assert that the formatted code matches the expected output
+        Assertions.assertEquals(expected, formattedText, "Formatting should match expected output")
+
+        // Also test using the CodeStyleManager to ensure it's consistent
         myFixture.configureByText("simple.pi", code)
         WriteCommandAction.runWriteCommandAction(project) {
             val file = myFixture.file
@@ -419,7 +430,10 @@ literals_example =>
         val formatted = myFixture.editor.document.text
 
         // Assert that the formatted code matches the expected output
-        Assertions.assertEquals(expected, formatted, "Formatting should match expected output")
+        Assertions.assertEquals(expected, formatted, "Formatting with CodeStyleManager should match expected output")
+
+        // Assert that both formatting methods produce the same result
+        Assertions.assertEquals(formattedText, formatted, "Both formatting methods should produce the same result")
     }
 
     @Test
