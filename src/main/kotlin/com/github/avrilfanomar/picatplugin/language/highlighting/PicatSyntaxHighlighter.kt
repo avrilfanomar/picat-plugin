@@ -30,6 +30,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
         // Check token categories in order
         return when {
             isKeyword(tokenType) -> pack(KEYWORD)
+            isBoolean(tokenType) -> pack(KEYWORD) // Highlight boolean literals like keywords
             isComment(tokenType) -> pack(COMMENT)
             isString(tokenType) -> pack(STRING)
             isNumber(tokenType) -> pack(NUMBER)
@@ -51,11 +52,14 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
     private fun isKeyword(tokenType: IElementType): Boolean =
         tokenType in KEYWORDS_SET
 
+    private fun isBoolean(tokenType: IElementType): Boolean =
+        tokenType == PicatTokenTypes.TRUE || tokenType == PicatTokenTypes.FALSE
+
     private fun isComment(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.COMMENT
+        tokenType == PicatTokenTypes.COMMENT || tokenType == PicatTokenTypes.MULTILINE_COMMENT
 
     private fun isString(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.STRING
+        tokenType == PicatTokenTypes.STRING || tokenType == PicatTokenTypes.SINGLE_QUOTED_ATOM
 
     private fun isNumber(tokenType: IElementType): Boolean =
         tokenType == PicatTokenTypes.INTEGER ||
@@ -78,7 +82,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
         tokenType == PicatTokenTypes.VARIABLE
 
     private fun isIdentifier(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.IDENTIFIER
+        tokenType == PicatTokenTypes.IDENTIFIER || tokenType == PicatTokenTypes.QUALIFIED_ATOM
 
     companion object {
         // Define text attribute keys for different token types
@@ -104,7 +108,32 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             TextAttributesKey.createTextAttributesKey("PICAT_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER)
 
         val KEYWORDS_SET: TokenSet = TokenSet.create(
-//  TODO
+            PicatTokenTypes.MODULE_KEYWORD,
+            PicatTokenTypes.IMPORT_KEYWORD,
+            PicatTokenTypes.INCLUDE_KEYWORD,
+            PicatTokenTypes.PRIVATE_KEYWORD,
+            PicatTokenTypes.TABLE_KEYWORD,
+            PicatTokenTypes.INDEX_KEYWORD,
+            PicatTokenTypes.IF_KEYWORD,
+            PicatTokenTypes.THEN_KEYWORD,
+            PicatTokenTypes.ELSEIF_KEYWORD,
+            PicatTokenTypes.ELSE_KEYWORD,
+            PicatTokenTypes.END_KEYWORD,
+            PicatTokenTypes.FOREACH_KEYWORD,
+            PicatTokenTypes.IN_KEYWORD,
+            PicatTokenTypes.WHILE_KEYWORD,
+            PicatTokenTypes.LOOP_KEYWORD,
+            PicatTokenTypes.TRY_KEYWORD,
+            PicatTokenTypes.CATCH_KEYWORD,
+            PicatTokenTypes.FINALLY_KEYWORD,
+            PicatTokenTypes.NOT_KEYWORD,
+            PicatTokenTypes.DIV_KEYWORD,
+            PicatTokenTypes.MOD_KEYWORD,
+            PicatTokenTypes.REM_KEYWORD,
+            PicatTokenTypes.LAMBDA_KEYWORD,
+            PicatTokenTypes.CARDINALITY_KEYWORD,
+            PicatTokenTypes.TRUE,
+            PicatTokenTypes.FALSE
         )
 
         val OPERATORS_SET: TokenSet = TokenSet.create(

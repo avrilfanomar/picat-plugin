@@ -104,7 +104,7 @@ class PicatSyntaxHighlightingTest : LexerTestCase() {
     private fun verifyTokenHighlights(
         lexer: Lexer, 
         text: String, 
-        highlighter: PicatSyntaxHighlighter, 
+        highlighter: PicatSyntaxHighlighter,
         expectedHighlights: Map<String, String>
     ) {
         while (lexer.tokenType != null) {

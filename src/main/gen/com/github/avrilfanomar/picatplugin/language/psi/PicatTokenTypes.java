@@ -119,6 +119,7 @@ public interface PicatTokenTypes {
   IElementType END_KEYWORD = new PicatTokenType("end");
   IElementType EQUAL = new PicatTokenType("=");
   IElementType EXCLAMATION = new PicatTokenType("!");
+  IElementType FAIL_KEYWORD = new PicatTokenType("fail");
   IElementType FALSE = new PicatTokenType("false");
   IElementType FINALLY_KEYWORD = new PicatTokenType("finally");
   IElementType FLOAT = new PicatTokenType("FLOAT");
@@ -173,6 +174,7 @@ public interface PicatTokenTypes {
   IElementType RBRACE = new PicatTokenType("}");
   IElementType RBRACKET = new PicatTokenType("]");
   IElementType REM_KEYWORD = new PicatTokenType("rem");
+  IElementType REPEAT_KEYWORD = new PicatTokenType("repeat");
   IElementType RPAR = new PicatTokenType(")");
   IElementType SEMICOLON = new PicatTokenType(";");
   IElementType SHIFT_LEFT = new PicatTokenType("<<");
@@ -184,6 +186,7 @@ public interface PicatTokenTypes {
   IElementType THEN_KEYWORD = new PicatTokenType("then");
   IElementType TRUE = new PicatTokenType("true");
   IElementType TRY_KEYWORD = new PicatTokenType("try");
+  IElementType UNTIL_KEYWORD = new PicatTokenType("until");
   IElementType VARIABLE = new PicatTokenType("variable");
   IElementType WHILE_KEYWORD = new PicatTokenType("while");
 

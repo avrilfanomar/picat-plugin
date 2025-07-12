@@ -73,11 +73,19 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             PicatTokenTypes.REM_KEYWORD // Added REM_KEYWORD as it's similar to mod
         )
 
-        // Constraint operators (#=, #!=, etc.)
-        // Kept existing hash operators, removed others
+        // Constraint operators (#=, #!=, #>, #>=, #<, #=<, #<=, etc.)
         val CONSTRAINT_OPERATORS = TokenSet.create(
             PicatTokenTypes.HASH_AND_OP,
-            PicatTokenTypes.HASH_OR_OP
+            PicatTokenTypes.HASH_OR_OP,
+            PicatTokenTypes.HASH_XOR_OP,
+            PicatTokenTypes.HASH_NOT_OP,
+            PicatTokenTypes.HASH_EQUAL_OP,
+            PicatTokenTypes.HASH_NOT_EQUAL_OP,
+            PicatTokenTypes.HASH_GREATER_OP,
+            PicatTokenTypes.HASH_GREATER_EQUAL_OP,
+            PicatTokenTypes.HASH_LESS_OP,
+            PicatTokenTypes.HASH_LESS_EQUAL_OP,
+            PicatTokenTypes.HASH_LESS_EQUAL_ALT_OP
         )
 
         // Bitwise operators (/\, \/, <<, >>)

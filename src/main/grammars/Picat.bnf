@@ -38,6 +38,9 @@
     REM_KEYWORD="rem"
     LAMBDA_KEYWORD="lambda"
     CARDINALITY_KEYWORD="cardinality"
+    FAIL_KEYWORD="fail"
+    REPEAT_KEYWORD="repeat"
+    UNTIL_KEYWORD="until"
 
     // Operators
     ARROW_OP="=>"

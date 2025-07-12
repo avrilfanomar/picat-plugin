@@ -61,6 +61,11 @@ QUALIFIED_ATOM=[a-z][a-zA-Z0-9_]*\\.[a-z][a-zA-Z0-9_]*
   "rem"                  { return REM_KEYWORD; }
   "lambda"               { return LAMBDA_KEYWORD; }
   "cardinality"          { return CARDINALITY_KEYWORD; }
+  "true"                 { return TRUE; }
+  "false"                { return FALSE; }
+  "fail"                 { return FAIL_KEYWORD; }
+  "repeat"               { return REPEAT_KEYWORD; }
+  "until"                { return UNTIL_KEYWORD; }
   "=>"                   { return ARROW_OP; }
   "?=>"                  { return BACKTRACKABLE_ARROW_OP; }
   "<=>"                  { return BICONDITIONAL_OP; }
