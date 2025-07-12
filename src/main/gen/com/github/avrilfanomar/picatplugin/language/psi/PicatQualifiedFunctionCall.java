@@ -5,15 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PicatFunctionCall extends PsiElement {
+public interface PicatQualifiedFunctionCall extends PsiElement {
 
   @NotNull
   List<PicatArgument> getArgumentList();
-
-  @Nullable
-  PicatAtom getAtom();
-
-  @Nullable
-  PicatQualifiedFunctionCall getQualifiedFunctionCall();
 
 }

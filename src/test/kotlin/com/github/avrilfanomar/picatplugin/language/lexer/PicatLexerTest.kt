@@ -162,8 +162,35 @@ class PicatLexerTest {
     fun testComments() {
         val tokens = tokenize("% This is a comment\ncode /* Multi-line\ncomment */ code")
         Assertions.assertTrue(tokens.size > 0, "Should tokenize comments correctly")
+
+        // Verify single-line comment
         Assertions.assertEquals(PicatTokenTypes.COMMENT, tokens[0].first)
         Assertions.assertEquals(tokens[0].second, "% This is a comment")
+
+        // Verify multi-line comment
+        val multilineCommentIndex = tokens.indexOfFirst { it.first == PicatTokenTypes.MULTILINE_COMMENT }
+        Assertions.assertTrue(multilineCommentIndex >= 0, "Should contain a MULTILINE_COMMENT token")
+        Assertions.assertEquals("/* Multi-line\ncomment */", tokens[multilineCommentIndex].second)
+    }
+
+    @Test
+    fun testMultilineComments() {
+        // Test various multi-line comment patterns
+        val testCases = listOf(
+            "/* Simple comment */",
+            "/* Multi-line\ncomment */",
+            "/* Comment with * asterisk */",
+            "/* Comment with ** multiple asterisks */",
+            "/* Comment with *\n* asterisks on new lines */",
+            "/* Nested-looking /*comment*/ */"
+        )
+
+        for (testCase in testCases) {
+            val tokens = tokenize(testCase)
+            Assertions.assertEquals(1, tokens.size, "Should have exactly one token for: $testCase")
+            Assertions.assertEquals(PicatTokenTypes.MULTILINE_COMMENT, tokens[0].first, "Should be a MULTILINE_COMMENT token for: $testCase")
+            Assertions.assertEquals(testCase, tokens[0].second, "Token text should match input for: $testCase")
+        }
     }
 
     @Test

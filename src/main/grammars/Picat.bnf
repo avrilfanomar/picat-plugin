@@ -111,12 +111,14 @@
     STRING="regexp:\"([^\"\\]|\\\\.)*\""
     COMMENT="regexp:%[^\r\n]*"
     QUALIFIED_ATOM="regexp:[a-z][a-zA-Z0-9_]*\\.[a-z][a-zA-Z0-9_]*"
+    MULTILINE_COMMENT="regexp:/\\*([^*]|\\*[^/])*\\*/"
   ]
 }
 
 program ::= program_item*
 
-program_item ::= module_declaration
+program_item ::= MULTILINE_COMMENT
+               | module_declaration
                | import_declaration
                | include_declaration
                | predicate_definition
@@ -278,9 +280,6 @@ base_expression ::= parenthesized_goal
 // Separate atom without arguments from function calls
 atom_without_args ::= atom !(LPAR)
 
-// Function calls should not be followed by dot access in statement contexts
-function_call ::= atom LPAR [argument (COMMA argument)*] RPAR
-
 parenthesized_goal ::= LPAR goal RPAR
 
 type_annotation ::= VARIABLE DOUBLE_COLON_OP expression
@@ -320,5 +319,10 @@ term ::=
 variable_as_pattern ::= VARIABLE AT term [AT]
 atom_or_call_no_lambda ::= atom [LPAR [term (COMMA term)*] RPAR]
 list_expression_no_comprehension ::= LBRACKET [term (COMMA term)*] [PIPE term] RBRACKET
+qualified_function_call ::= IDENTIFIER DOLLAR IDENTIFIER LPAR [argument (COMMA argument)*] RPAR
+function_call ::= atom LPAR [argument (COMMA argument)*] RPAR
+               | qualified_function_call
 function_call_no_dot ::= atom LPAR [term (COMMA term)*] RPAR
-atom ::= IDENTIFIER
+                       | IDENTIFIER DOLLAR IDENTIFIER LPAR [term (COMMA term)*] RPAR
+atom ::= IDENTIFIER | dollar_escaped_atom
+dollar_escaped_atom ::= DOLLAR IDENTIFIER

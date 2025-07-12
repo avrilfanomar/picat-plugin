@@ -79,6 +79,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitDollarEscapedAtom(@NotNull PicatDollarEscapedAtom o) {
+    visitPsiElement(o);
+  }
+
   public void visitEnclosedGoal(@NotNull PicatEnclosedGoal o) {
     visitPsiElement(o);
   }
@@ -252,6 +256,10 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitProgramItem(@NotNull PicatProgramItem o) {
+    visitPsiElement(o);
+  }
+
+  public void visitQualifiedFunctionCall(@NotNull PicatQualifiedFunctionCall o) {
     visitPsiElement(o);
   }
 

@@ -28,9 +28,15 @@ public class PicatAtomImpl extends ASTWrapperPsiElement implements PicatAtom {
   }
 
   @Override
-  @NotNull
+  @Nullable
+  public PicatDollarEscapedAtom getDollarEscapedAtom() {
+    return findChildByClass(PicatDollarEscapedAtom.class);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getIdentifier() {
-    return findNotNullChildByType(IDENTIFIER);
+    return findChildByType(IDENTIFIER);
   }
 
 }

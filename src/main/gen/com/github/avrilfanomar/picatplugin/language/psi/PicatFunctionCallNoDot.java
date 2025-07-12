@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatFunctionCallNoDot extends PsiElement {
 
-  @NotNull
+  @Nullable
   PicatAtom getAtom();
 
   @NotNull

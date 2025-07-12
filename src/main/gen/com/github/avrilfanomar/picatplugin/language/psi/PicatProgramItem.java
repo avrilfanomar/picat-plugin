@@ -25,4 +25,7 @@ public interface PicatProgramItem extends PsiElement {
   @Nullable
   PicatPredicateDefinition getPredicateDefinition();
 
+  @Nullable
+  PsiElement getMultilineComment();
+
 }

@@ -63,4 +63,10 @@ public class PicatProgramItemImpl extends ASTWrapperPsiElement implements PicatP
     return findChildByClass(PicatPredicateDefinition.class);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getMultilineComment() {
+    return findChildByType(MULTILINE_COMMENT);
+  }
+
 }

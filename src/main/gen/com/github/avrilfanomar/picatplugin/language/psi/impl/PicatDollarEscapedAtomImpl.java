@@ -11,14 +11,14 @@ import static com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.avrilfanomar.picatplugin.language.psi.*;
 
-public class PicatFunctionCallNoDotImpl extends ASTWrapperPsiElement implements PicatFunctionCallNoDot {
+public class PicatDollarEscapedAtomImpl extends ASTWrapperPsiElement implements PicatDollarEscapedAtom {
 
-  public PicatFunctionCallNoDotImpl(@NotNull ASTNode node) {
+  public PicatDollarEscapedAtomImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PicatVisitor visitor) {
-    visitor.visitFunctionCallNoDot(this);
+    visitor.visitDollarEscapedAtom(this);
   }
 
   @Override
@@ -28,15 +28,9 @@ public class PicatFunctionCallNoDotImpl extends ASTWrapperPsiElement implements 
   }
 
   @Override
-  @Nullable
-  public PicatAtom getAtom() {
-    return findChildByClass(PicatAtom.class);
-  }
-
-  @Override
   @NotNull
-  public List<PicatTerm> getTermList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatTerm.class);
+  public PsiElement getIdentifier() {
+    return findNotNullChildByType(IDENTIFIER);
   }
 
 }

@@ -26,6 +26,7 @@ public interface PicatTokenTypes {
   IElementType CONDITION = new PicatElementType("CONDITION");
   IElementType CONJUNCTIVE_GOAL = new PicatElementType("CONJUNCTIVE_GOAL");
   IElementType DISJUNCTIVE_GOAL = new PicatElementType("DISJUNCTIVE_GOAL");
+  IElementType DOLLAR_ESCAPED_ATOM = new PicatElementType("DOLLAR_ESCAPED_ATOM");
   IElementType ENCLOSED_GOAL = new PicatElementType("ENCLOSED_GOAL");
   IElementType EQUIV_CONSTR = new PicatElementType("EQUIV_CONSTR");
   IElementType EVENT_PATTERN = new PicatElementType("EVENT_PATTERN");
@@ -70,6 +71,7 @@ public interface PicatTokenTypes {
   IElementType PREDICATE_RULE = new PicatElementType("PREDICATE_RULE");
   IElementType PRIMARY_EXPRESSION = new PicatElementType("PRIMARY_EXPRESSION");
   IElementType PROGRAM_ITEM = new PicatElementType("PROGRAM_ITEM");
+  IElementType QUALIFIED_FUNCTION_CALL = new PicatElementType("QUALIFIED_FUNCTION_CALL");
   IElementType RANGE_EXPRESSION = new PicatElementType("RANGE_EXPRESSION");
   IElementType SHIFT_EXPRESSION = new PicatElementType("SHIFT_EXPRESSION");
   IElementType TABLE_MODE = new PicatElementType("TABLE_MODE");
@@ -151,6 +153,7 @@ public interface PicatTokenTypes {
   IElementType MIN_KEYWORD = new PicatTokenType("min");
   IElementType MODULE_KEYWORD = new PicatTokenType("module");
   IElementType MOD_KEYWORD = new PicatTokenType("mod");
+  IElementType MULTILINE_COMMENT = new PicatTokenType("MULTILINE_COMMENT");
   IElementType MULTIPLY = new PicatTokenType("*");
   IElementType NOT_EQUAL = new PicatTokenType("!=");
   IElementType NOT_IDENTICAL = new PicatTokenType("!==");
@@ -233,6 +236,9 @@ public interface PicatTokenTypes {
       }
       else if (type == DISJUNCTIVE_GOAL) {
         return new PicatDisjunctiveGoalImpl(node);
+      }
+      else if (type == DOLLAR_ESCAPED_ATOM) {
+        return new PicatDollarEscapedAtomImpl(node);
       }
       else if (type == ENCLOSED_GOAL) {
         return new PicatEnclosedGoalImpl(node);
@@ -365,6 +371,9 @@ public interface PicatTokenTypes {
       }
       else if (type == PROGRAM_ITEM) {
         return new PicatProgramItemImpl(node);
+      }
+      else if (type == QUALIFIED_FUNCTION_CALL) {
+        return new PicatQualifiedFunctionCallImpl(node);
       }
       else if (type == RANGE_EXPRESSION) {
         return new PicatRangeExpressionImpl(node);

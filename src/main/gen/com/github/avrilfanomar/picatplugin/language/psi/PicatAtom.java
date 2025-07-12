@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatAtom extends PsiElement {
 
-  @NotNull
+  @Nullable
+  PicatDollarEscapedAtom getDollarEscapedAtom();
+
+  @Nullable
   PsiElement getIdentifier();
 
 }
