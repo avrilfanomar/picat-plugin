@@ -8,6 +8,12 @@ import com.intellij.psi.PsiElement;
 public interface PicatTermConstructor extends PsiElement {
 
   @NotNull
+  List<PicatArgument> getArgumentList();
+
+  @Nullable
   PicatGoal getGoal();
+
+  @Nullable
+  PsiElement getIdentifier();
 
 }

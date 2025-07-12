@@ -299,7 +299,7 @@ lambda_term ::= LAMBDA_KEYWORD LPAR variable_list COMMA argument RPAR
 
 variable_list ::= LBRACKET [variable (COMMA variable)*] RBRACKET
 
-term_constructor ::= DOLLAR goal DOLLAR
+term_constructor ::= DOLLAR goal DOLLAR | IDENTIFIER LPAR [argument (COMMA argument)*] RPAR
 
 // Iterator for comprehensions and loops
 iterator ::= variable IN_KEYWORD expression | variable EQUAL expression

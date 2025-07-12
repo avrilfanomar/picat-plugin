@@ -29,8 +29,20 @@ public class PicatTermConstructorImpl extends ASTWrapperPsiElement implements Pi
 
   @Override
   @NotNull
+  public List<PicatArgument> getArgumentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatArgument.class);
+  }
+
+  @Override
+  @Nullable
   public PicatGoal getGoal() {
-    return findNotNullChildByClass(PicatGoal.class);
+    return findChildByClass(PicatGoal.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getIdentifier() {
+    return findChildByType(IDENTIFIER);
   }
 
 }

@@ -2302,16 +2302,79 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DOLLAR goal DOLLAR
+  // DOLLAR goal DOLLAR | IDENTIFIER LPAR [argument (COMMA argument)*] RPAR
   public static boolean term_constructor(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "term_constructor")) return false;
-    if (!nextTokenIs(builder_, DOLLAR)) return false;
+    if (!nextTokenIs(builder_, "<term constructor>", DOLLAR, IDENTIFIER)) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, TERM_CONSTRUCTOR, "<term constructor>");
+    result_ = term_constructor_0(builder_, level_ + 1);
+    if (!result_) result_ = term_constructor_1(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // DOLLAR goal DOLLAR
+  private static boolean term_constructor_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "term_constructor_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, DOLLAR);
     result_ = result_ && goal(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, DOLLAR);
-    exit_section_(builder_, marker_, TERM_CONSTRUCTOR, result_);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // IDENTIFIER LPAR [argument (COMMA argument)*] RPAR
+  private static boolean term_constructor_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "term_constructor_1")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokens(builder_, 0, IDENTIFIER, LPAR);
+    result_ = result_ && term_constructor_1_2(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, RPAR);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // [argument (COMMA argument)*]
+  private static boolean term_constructor_1_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "term_constructor_1_2")) return false;
+    term_constructor_1_2_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // argument (COMMA argument)*
+  private static boolean term_constructor_1_2_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "term_constructor_1_2_0")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = argument(builder_, level_ + 1);
+    result_ = result_ && term_constructor_1_2_0_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // (COMMA argument)*
+  private static boolean term_constructor_1_2_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "term_constructor_1_2_0_1")) return false;
+    while (true) {
+      int pos_ = current_position_(builder_);
+      if (!term_constructor_1_2_0_1_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "term_constructor_1_2_0_1", pos_)) break;
+    }
+    return true;
+  }
+
+  // COMMA argument
+  private static boolean term_constructor_1_2_0_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "term_constructor_1_2_0_1_0")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, COMMA);
+    result_ = result_ && argument(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
