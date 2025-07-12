@@ -39,4 +39,10 @@ public class PicatAtomImpl extends ASTWrapperPsiElement implements PicatAtom {
     return findChildByType(IDENTIFIER);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getSingleQuotedAtom() {
+    return findChildByType(SINGLE_QUOTED_ATOM);
+  }
+
 }

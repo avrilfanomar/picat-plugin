@@ -39,7 +39,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // head [COMMA condition] COMMA LBRACE event_pattern RBRACE ARROW_OP body DOT
   public static boolean action_rule(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "action_rule")) return false;
-    if (!nextTokenIs(builder_, "<action rule>", DOLLAR, IDENTIFIER)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, ACTION_RULE, "<action rule>");
     result_ = head(builder_, level_ + 1);
@@ -293,13 +292,13 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IDENTIFIER | dollar_escaped_atom
+  // IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom
   public static boolean atom(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom")) return false;
-    if (!nextTokenIs(builder_, "<atom>", DOLLAR, IDENTIFIER)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, ATOM, "<atom>");
     result_ = consumeToken(builder_, IDENTIFIER);
+    if (!result_) result_ = consumeToken(builder_, SINGLE_QUOTED_ATOM);
     if (!result_) result_ = dollar_escaped_atom(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
@@ -309,7 +308,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // atom [LPAR [term (COMMA term)*] RPAR]
   public static boolean atom_or_call_no_lambda(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda")) return false;
-    if (!nextTokenIs(builder_, "<atom or call no lambda>", DOLLAR, IDENTIFIER)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, ATOM_OR_CALL_NO_LAMBDA, "<atom or call no lambda>");
     result_ = atom(builder_, level_ + 1);
@@ -381,7 +379,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // atom !(LPAR)
   public static boolean atom_without_args(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_without_args")) return false;
-    if (!nextTokenIs(builder_, "<atom without args>", DOLLAR, IDENTIFIER)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, ATOM_WITHOUT_ARGS, "<atom without args>");
     result_ = atom(builder_, level_ + 1);
@@ -785,7 +782,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
   //                | qualified_function_call
   public static boolean function_call(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call")) return false;
-    if (!nextTokenIs(builder_, "<function call>", DOLLAR, IDENTIFIER)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_CALL, "<function call>");
     result_ = function_call_0(builder_, level_ + 1);
@@ -852,7 +848,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
   //                        | IDENTIFIER DOLLAR IDENTIFIER LPAR [term (COMMA term)*] RPAR
   public static boolean function_call_no_dot(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot")) return false;
-    if (!nextTokenIs(builder_, "<function call no dot>", DOLLAR, IDENTIFIER)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_CALL_NO_DOT, "<function call no dot>");
     result_ = function_call_no_dot_0(builder_, level_ + 1);
@@ -970,7 +965,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // function_rule | function_fact
   public static boolean function_clause(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_clause")) return false;
-    if (!nextTokenIs(builder_, "<function clause>", DOLLAR, IDENTIFIER)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_CLAUSE, "<function clause>");
     result_ = function_rule(builder_, level_ + 1);
@@ -1019,7 +1013,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // head EQUAL argument DOT
   public static boolean function_fact(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_fact")) return false;
-    if (!nextTokenIs(builder_, "<function fact>", DOLLAR, IDENTIFIER)) return false;
     boolean result_, pinned_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_FACT, "<function fact>");
     result_ = head(builder_, level_ + 1);
@@ -1035,7 +1028,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // head EQUAL argument [COMMA condition] ARROW_OP body DOT
   public static boolean function_rule(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_rule")) return false;
-    if (!nextTokenIs(builder_, "<function rule>", DOLLAR, IDENTIFIER)) return false;
     boolean result_, pinned_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_RULE, "<function rule>");
     result_ = head(builder_, level_ + 1);
@@ -1083,7 +1075,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // atom [LPAR [argument (COMMA argument)*] RPAR]
   public static boolean head(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "head")) return false;
-    if (!nextTokenIs(builder_, "<head>", DOLLAR, IDENTIFIER)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, HEAD, "<head>");
     result_ = atom(builder_, level_ + 1);
@@ -1696,7 +1687,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // head [COMMA condition] ARROW_OP body DOT
   public static boolean nonbacktrackable_predicate_rule(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "nonbacktrackable_predicate_rule")) return false;
-    if (!nextTokenIs(builder_, "<nonbacktrackable predicate rule>", DOLLAR, IDENTIFIER)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, NONBACKTRACKABLE_PREDICATE_RULE, "<nonbacktrackable predicate rule>");
     result_ = head(builder_, level_ + 1);
@@ -1865,7 +1855,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // predicate_rule | predicate_fact
   public static boolean predicate_clause(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "predicate_clause")) return false;
-    if (!nextTokenIs(builder_, "<predicate clause>", DOLLAR, IDENTIFIER)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, PREDICATE_CLAUSE, "<predicate clause>");
     result_ = predicate_rule(builder_, level_ + 1);
@@ -2004,7 +1993,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // head DOT
   public static boolean predicate_fact(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "predicate_fact")) return false;
-    if (!nextTokenIs(builder_, "<predicate fact>", DOLLAR, IDENTIFIER)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, PREDICATE_FACT, "<predicate fact>");
     result_ = head(builder_, level_ + 1);
@@ -2017,7 +2005,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // head [COMMA condition] (ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) body DOT
   public static boolean predicate_rule(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "predicate_rule")) return false;
-    if (!nextTokenIs(builder_, "<predicate rule>", DOLLAR, IDENTIFIER)) return false;
     boolean result_, pinned_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, PREDICATE_RULE, "<predicate rule>");
     result_ = head(builder_, level_ + 1);

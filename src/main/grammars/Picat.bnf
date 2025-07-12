@@ -56,6 +56,11 @@
     HASH_LESS_OP="#<"
     HASH_LESS_EQUAL_OP="#=<"
     HASH_LESS_EQUAL_ALT_OP="#<="
+    AT_GREATER_OP="@>"
+    AT_GREATER_EQUAL_OP="@>="
+    AT_LESS_OP="@<"
+    AT_LESS_EQUAL_OP="@<="
+    AT_LESS_EQUAL_PROLOG_OP="@=<"
     ASSIGN_OP=":="
     DOUBLE_COLON_OP="::"
     RANGE_OP=".."
@@ -84,6 +89,7 @@
     BITWISE_XOR="^"
     BITWISE_AND="/\\"
     COMPLEMENT="~"
+    EXCLAMATION="!"
     PROLOG_RULE_OP=":-"
 
     // Separators
@@ -104,9 +110,10 @@
     // Literals
     IDENTIFIER="regexp:[a-z][a-zA-Z0-9_]*"
     VARIABLE="regexp:[A-Z_][a-zA-Z0-9_]*"
-    INTEGER="regexp:[0-9]+"
+    INTEGER="regexp:([0-9]+|0[xX][0-9a-fA-F]+|0[oO][0-7]+|0[bB][01]+)"
     FLOAT="regexp:[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?"
     STRING="regexp:\"([^\"\\]|\\\\.)*\""
+    SINGLE_QUOTED_ATOM="regexp:'([^'\\]|\\\\.)*'"
     COMMENT="regexp:%[^\r\n]*"
     QUALIFIED_ATOM="regexp:[a-z][a-zA-Z0-9_]*\\.[a-z][a-zA-Z0-9_]*"
     MULTILINE_COMMENT="regexp:/\\*([^*]|\\*[^/])*\\*/"
@@ -328,5 +335,5 @@ function_call ::= atom LPAR [argument (COMMA argument)*] RPAR
                | qualified_function_call
 function_call_no_dot ::= atom LPAR [term (COMMA term)*] RPAR
                        | IDENTIFIER DOLLAR IDENTIFIER LPAR [term (COMMA term)*] RPAR
-atom ::= IDENTIFIER | dollar_escaped_atom
+atom ::= IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom
 dollar_escaped_atom ::= DOLLAR IDENTIFIER

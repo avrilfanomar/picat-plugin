@@ -90,6 +90,11 @@ public interface PicatTokenTypes {
   IElementType ARROW_OP = new PicatTokenType("=>");
   IElementType ASSIGN_OP = new PicatTokenType(":=");
   IElementType AT = new PicatTokenType("@");
+  IElementType AT_GREATER_EQUAL_OP = new PicatTokenType("@>=");
+  IElementType AT_GREATER_OP = new PicatTokenType("@>");
+  IElementType AT_LESS_EQUAL_OP = new PicatTokenType("@<=");
+  IElementType AT_LESS_EQUAL_PROLOG_OP = new PicatTokenType("@=<");
+  IElementType AT_LESS_OP = new PicatTokenType("@<");
   IElementType BACKTRACKABLE_ARROW_OP = new PicatTokenType("?=>");
   IElementType BICONDITIONAL_OP = new PicatTokenType("<=>");
   IElementType BITWISE_AND = new PicatTokenType("/\\\\");
@@ -113,6 +118,7 @@ public interface PicatTokenTypes {
   IElementType ELSE_KEYWORD = new PicatTokenType("else");
   IElementType END_KEYWORD = new PicatTokenType("end");
   IElementType EQUAL = new PicatTokenType("=");
+  IElementType EXCLAMATION = new PicatTokenType("!");
   IElementType FALSE = new PicatTokenType("false");
   IElementType FINALLY_KEYWORD = new PicatTokenType("finally");
   IElementType FLOAT = new PicatTokenType("FLOAT");
@@ -172,6 +178,7 @@ public interface PicatTokenTypes {
   IElementType SHIFT_LEFT = new PicatTokenType("<<");
   IElementType SHIFT_RIGHT = new PicatTokenType(">>");
   IElementType SHIFT_RIGHT_TRIPLE = new PicatTokenType(">>>");
+  IElementType SINGLE_QUOTED_ATOM = new PicatTokenType("SINGLE_QUOTED_ATOM");
   IElementType STRING = new PicatTokenType("STRING");
   IElementType TABLE_KEYWORD = new PicatTokenType("table");
   IElementType THEN_KEYWORD = new PicatTokenType("then");

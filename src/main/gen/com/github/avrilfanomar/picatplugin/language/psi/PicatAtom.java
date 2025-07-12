@@ -13,4 +13,7 @@ public interface PicatAtom extends PsiElement {
   @Nullable
   PsiElement getIdentifier();
 
+  @Nullable
+  PsiElement getSingleQuotedAtom();
+
 }
