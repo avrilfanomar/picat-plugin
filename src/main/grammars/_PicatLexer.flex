@@ -68,9 +68,9 @@ QUALIFIED_ATOM=[a-z][a-zA-Z0-9_]*\\.[a-z][a-zA-Z0-9_]*
   "<=>"                  { return BICONDITIONAL_OP; }
   "#<=>"                 { return HASH_BICONDITIONAL_OP; }
   "#=>"                  { return HASH_ARROW_OP; }
-  "#\\\\/"               { return HASH_OR_OP; }
+  "#\\/"                 { return HASH_OR_OP; }
   "#^"                   { return HASH_XOR_OP; }
-  "#/\\\\"               { return HASH_AND_OP; }
+  "#/\\"                 { return HASH_AND_OP; }
   "#~"                   { return HASH_NOT_OP; }
   "#="                   { return HASH_EQUAL_OP; }
   "#!="                  { return HASH_NOT_EQUAL_OP; }
@@ -104,9 +104,9 @@ QUALIFIED_ATOM=[a-z][a-zA-Z0-9_]*\\.[a-z][a-zA-Z0-9_]*
   "<<"                   { return SHIFT_LEFT; }
   ">>"                   { return SHIFT_RIGHT; }
   ">>>"                  { return SHIFT_RIGHT_TRIPLE; }
-  "\\\\/"                { return BITWISE_OR; }
+  "\\/"                  { return BITWISE_OR; }
   "^"                    { return BITWISE_XOR; }
-  "/\\\\"                { return BITWISE_AND; }
+  "/\\"                  { return BITWISE_AND; }
   "~"                    { return COMPLEMENT; }
   "."                    { return DOT; }
   ","                    { return COMMA; }
