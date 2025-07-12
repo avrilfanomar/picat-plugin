@@ -188,7 +188,11 @@ class PicatLexerTest {
         for (testCase in testCases) {
             val tokens = tokenize(testCase)
             Assertions.assertEquals(1, tokens.size, "Should have exactly one token for: $testCase")
-            Assertions.assertEquals(PicatTokenTypes.MULTILINE_COMMENT, tokens[0].first, "Should be a MULTILINE_COMMENT token for: $testCase")
+            Assertions.assertEquals(
+                PicatTokenTypes.MULTILINE_COMMENT,
+                tokens[0].first,
+                "Should be a MULTILINE_COMMENT token for: $testCase"
+            )
             Assertions.assertEquals(testCase, tokens[0].second, "Token text should match input for: $testCase")
         }
     }

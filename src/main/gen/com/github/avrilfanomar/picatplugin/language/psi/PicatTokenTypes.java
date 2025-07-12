@@ -113,6 +113,7 @@ public interface PicatTokenTypes {
   IElementType ELSE_KEYWORD = new PicatTokenType("else");
   IElementType END_KEYWORD = new PicatTokenType("end");
   IElementType EQUAL = new PicatTokenType("=");
+  IElementType FALSE = new PicatTokenType("false");
   IElementType FINALLY_KEYWORD = new PicatTokenType("finally");
   IElementType FLOAT = new PicatTokenType("FLOAT");
   IElementType FOREACH_KEYWORD = new PicatTokenType("foreach");
@@ -176,6 +177,7 @@ public interface PicatTokenTypes {
   IElementType STRING = new PicatTokenType("STRING");
   IElementType TABLE_KEYWORD = new PicatTokenType("table");
   IElementType THEN_KEYWORD = new PicatTokenType("then");
+  IElementType TRUE = new PicatTokenType("true");
   IElementType TRY_KEYWORD = new PicatTokenType("try");
   IElementType VARIABLE = new PicatTokenType("variable");
   IElementType WHILE_KEYWORD = new PicatTokenType("while");

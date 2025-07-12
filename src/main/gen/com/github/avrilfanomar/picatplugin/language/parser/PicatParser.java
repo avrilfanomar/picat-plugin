@@ -407,6 +407,8 @@ public class PicatParser implements PsiParser, LightPsiParser {
   //                   | VARIABLE
   //                   | INTEGER
   //                   | FLOAT
+  //                   | TRUE
+  //                   | FALSE
   //                   | atom_without_args
   //                   | function_call
   //                   | list_expression
@@ -423,6 +425,8 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, VARIABLE);
     if (!result_) result_ = consumeToken(builder_, INTEGER);
     if (!result_) result_ = consumeToken(builder_, FLOAT);
+    if (!result_) result_ = consumeToken(builder_, TRUE);
+    if (!result_) result_ = consumeToken(builder_, FALSE);
     if (!result_) result_ = atom_without_args(builder_, level_ + 1);
     if (!result_) result_ = function_call(builder_, level_ + 1);
     if (!result_) result_ = list_expression(builder_, level_ + 1);
@@ -1028,16 +1032,17 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // head EQUAL VARIABLE [COMMA condition] ARROW_OP body DOT
+  // head EQUAL argument [COMMA condition] ARROW_OP body DOT
   public static boolean function_rule(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_rule")) return false;
     if (!nextTokenIs(builder_, "<function rule>", DOLLAR, IDENTIFIER)) return false;
     boolean result_, pinned_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_RULE, "<function rule>");
     result_ = head(builder_, level_ + 1);
-    result_ = result_ && consumeTokens(builder_, 1, EQUAL, VARIABLE);
+    result_ = result_ && consumeToken(builder_, EQUAL);
     pinned_ = result_; // pin = 2
-    result_ = result_ && report_error_(builder_, function_rule_3(builder_, level_ + 1));
+    result_ = result_ && report_error_(builder_, argument(builder_, level_ + 1));
+    result_ = pinned_ && report_error_(builder_, function_rule_3(builder_, level_ + 1)) && result_;
     result_ = pinned_ && report_error_(builder_, consumeToken(builder_, ARROW_OP)) && result_;
     result_ = pinned_ && report_error_(builder_, body(builder_, level_ + 1)) && result_;
     result_ = pinned_ && consumeToken(builder_, DOT) && result_;
@@ -2263,9 +2268,11 @@ public class PicatParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // LPAR term RPAR
   //   | variable_as_pattern
-  //   | VARIABLE
   //   | INTEGER
   //   | FLOAT
+  //   | TRUE
+  //   | FALSE
+  //   | VARIABLE
   //   | atom_or_call_no_lambda
   //   | list_expression_no_comprehension
   //   | array_expression
@@ -2277,9 +2284,11 @@ public class PicatParser implements PsiParser, LightPsiParser {
     Marker marker_ = enter_section_(builder_, level_, _NONE_, TERM, "<term>");
     result_ = term_0(builder_, level_ + 1);
     if (!result_) result_ = variable_as_pattern(builder_, level_ + 1);
-    if (!result_) result_ = consumeToken(builder_, VARIABLE);
     if (!result_) result_ = consumeToken(builder_, INTEGER);
     if (!result_) result_ = consumeToken(builder_, FLOAT);
+    if (!result_) result_ = consumeToken(builder_, TRUE);
+    if (!result_) result_ = consumeToken(builder_, FALSE);
+    if (!result_) result_ = consumeToken(builder_, VARIABLE);
     if (!result_) result_ = atom_or_call_no_lambda(builder_, level_ + 1);
     if (!result_) result_ = list_expression_no_comprehension(builder_, level_ + 1);
     if (!result_) result_ = array_expression(builder_, level_ + 1);

@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface PicatFunctionRule extends PsiElement {
 
   @Nullable
+  PicatArgument getArgument();
+
+  @Nullable
   PicatBody getBody();
 
   @Nullable
@@ -15,8 +18,5 @@ public interface PicatFunctionRule extends PsiElement {
 
   @NotNull
   PicatHead getHead();
-
-  @Nullable
-  PsiElement getVariable();
 
 }

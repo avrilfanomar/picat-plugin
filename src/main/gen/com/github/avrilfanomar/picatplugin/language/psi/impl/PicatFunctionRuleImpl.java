@@ -29,6 +29,12 @@ public class PicatFunctionRuleImpl extends ASTWrapperPsiElement implements Picat
 
   @Override
   @Nullable
+  public PicatArgument getArgument() {
+    return findChildByClass(PicatArgument.class);
+  }
+
+  @Override
+  @Nullable
   public PicatBody getBody() {
     return findChildByClass(PicatBody.class);
   }
@@ -43,12 +49,6 @@ public class PicatFunctionRuleImpl extends ASTWrapperPsiElement implements Picat
   @NotNull
   public PicatHead getHead() {
     return findNotNullChildByClass(PicatHead.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getVariable() {
-    return findChildByType(VARIABLE);
   }
 
 }

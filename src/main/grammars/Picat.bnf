@@ -112,6 +112,8 @@
     COMMENT="regexp:%[^\r\n]*"
     QUALIFIED_ATOM="regexp:[a-z][a-zA-Z0-9_]*\\.[a-z][a-zA-Z0-9_]*"
     MULTILINE_COMMENT="regexp:/\\*([^*]|\\*[^/])*\\*/"
+    TRUE="true"
+    FALSE="false"
   ]
 }
 
@@ -150,7 +152,7 @@ function_definition ::= function_directive* function_clause
 
 function_clause ::= function_rule | function_fact
 
-function_rule ::= head EQUAL VARIABLE [COMMA condition] ARROW_OP body DOT {pin=2}
+function_rule ::= head EQUAL argument [COMMA condition] ARROW_OP body DOT {pin=2}
 
 function_fact ::= head EQUAL argument DOT {pin=2}
 
@@ -270,6 +272,8 @@ base_expression ::= parenthesized_goal
                   | VARIABLE
                   | INTEGER
                   | FLOAT
+                  | TRUE
+                  | FALSE
                   | atom_without_args
                   | function_call
                   | list_expression
@@ -307,9 +311,11 @@ iterator ::= variable IN_KEYWORD expression | variable EQUAL expression
 term ::=
     LPAR term RPAR
   | variable_as_pattern
-  | VARIABLE
   | INTEGER
   | FLOAT
+  | TRUE
+  | FALSE
+  | VARIABLE
   | atom_or_call_no_lambda
   | list_expression_no_comprehension
   | array_expression
