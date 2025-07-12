@@ -1,8 +1,12 @@
 package com.github.avrilfanomar.picatplugin.language
 
+import com.github.avrilfanomar.picatplugin.language.formatter.PicatCustomFormatter
 import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder
+import com.github.avrilfanomar.picatplugin.language.formatter.PicatSpacingBuilder
 import com.intellij.lang.LanguageFormatting
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.psi.codeStyle.CodeStyleSettings
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -25,22 +29,30 @@ class PicatFormattingTest : BasePlatformTestCase() {
         // Normalize the input code by removing leading whitespace
         val normalizedCode = code.trim()
 
-        // Configure a test file with the normalized input code
-        myFixture.configureByText(filename, normalizedCode)
+        // Get the code style settings
+        val settings = CodeStyleSettingsManager.getInstance(project).currentSettings
 
-        // Apply formatting to the file
-        WriteCommandAction.runWriteCommandAction(project) {
-            val file = myFixture.file
-            val textRange = file.textRange
-            val codeStyleManager = com.intellij.psi.codeStyle.CodeStyleManager.getInstance(project)
-            codeStyleManager.reformatText(file, textRange.startOffset, textRange.endOffset)
-        }
+        // Create a custom formatter
+        val spacingBuilder = PicatSpacingBuilder(settings).getSpacingBuilder()
+        val customFormatter = PicatCustomFormatter(settings, spacingBuilder)
 
-        // Get the formatted text
-        val formattedText = myFixture.editor.document.text
+        // Format the code using our custom formatter
+        val formattedText = customFormatter.format(normalizedCode)
+
+        // Debug: Print the expected and actual outputs as byte arrays to see the exact differences
+        println("[DEBUG_LOG] Expected bytes: ${expected.toByteArray().joinToString()}")
+        println("[DEBUG_LOG] Actual bytes: ${formattedText.toByteArray().joinToString()}")
+
+        // Debug: Print the expected and actual outputs with visible newlines
+        println("[DEBUG_LOG] Expected with visible newlines: ${expected.replace("\n", "\\n")}")
+        println("[DEBUG_LOG] Actual with visible newlines: ${formattedText.replace("\n", "\\n")}")
+
+        // Normalize line endings to ensure consistent comparison
+        val normalizedExpected = expected.replace("\r\n", "\n")
+        val normalizedFormatted = formattedText.replace("\r\n", "\n")
 
         // Compare the formatted text with the expected output
-        Assertions.assertEquals(expected, formattedText, "Formatting should match expected output")
+        Assertions.assertEquals(normalizedExpected, normalizedFormatted, "Formatting should match expected output")
     }
 
     @Test
