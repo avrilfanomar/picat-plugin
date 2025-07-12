@@ -214,13 +214,17 @@ intellijPlatformTesting {
     }
 }
 
-tasks.generateLexer {
-    sourceFile.set(file("src/main/grammars/_PicatLexer.flex"))
-    targetOutputDir.set(file("src/main/gen/com/github/avrilfanomar/picatplugin/language/parser"))
-}
 tasks.generateParser {
     sourceFile.set(file("src/main/grammars/Picat.bnf"));
     targetRootOutputDir.set(file("src/main/gen"))
     pathToParser.set("com/github/avrilfanomar/picatplugin/language/parser/PicatParser.java");
     pathToPsiRoot.set("com/github/avrilfanomar/picatplugin/language/psi")
+}
+tasks.generateLexer {
+    dependsOn("generateParser")
+    sourceFile.set(file("src/main/grammars/_PicatLexer.flex"))
+    targetOutputDir.set(file("src/main/gen/com/github/avrilfanomar/picatplugin/language/parser"))
+}
+tasks.compileKotlin {
+    dependsOn("generateLexer")
 }
