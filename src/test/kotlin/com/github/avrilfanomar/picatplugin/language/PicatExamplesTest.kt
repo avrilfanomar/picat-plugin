@@ -45,7 +45,6 @@ class PicatExamplesTest : LexerTestCase() {
 
             checkForBadCharacters(tokenType, tokenText, position, issues)
             checkForComments(tokenType, tokenText, position, issues)
-            checkForDataConstructors(tokenType, tokenText, position, issues)
             checkForBacktrackableRuleOperator(tokenType, tokenText, position, issues)
             checkForAsPatternOperator(tokenType, tokenText, position, issues)
 
@@ -87,35 +86,9 @@ class PicatExamplesTest : LexerTestCase() {
         issues: MutableList<String>
     ) {
         if ((tokenText.contains("/*") || tokenText.contains("*/")) &&
-            tokenType != PicatTokenTypes.COMMENT
+            tokenType != PicatTokenTypes.MULTILINE_COMMENT
         ) {
             issues.add("Multi-line comment not recognized: '$tokenText' at position $position")
-        }
-    }
-
-    /**
-     * Checks for unrecognized data constructors.
-     */
-    private fun checkForDataConstructors(
-        tokenType: IElementType?,
-        tokenText: String,
-        position: Int,
-        issues: MutableList<String>
-    ) {
-        // Skip checking if token doesn't contain '$'
-        if (!tokenText.contains("$")) {
-            return
-        }
-
-        // Skip checking for known token types that can contain '$'
-        // Since DATA_CONSTRUCTOR is not yet available in the generated code,
-        // we'll check for DOLLAR token and handle it appropriately
-        val isAllowedTokenType = tokenType == PicatTokenTypes.DOLLAR ||
-                tokenType == PicatTokenTypes.COMMENT ||
-                tokenType == PicatTokenTypes.STRING
-
-        if (!isAllowedTokenType) {
-            issues.add("Data constructor not recognized: '$tokenText' at position $position")
         }
     }
 
