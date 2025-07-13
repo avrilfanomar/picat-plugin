@@ -28,13 +28,9 @@ class PicatFormattingTest : BasePlatformTestCase() {
         // Normalize the input code by removing leading whitespace
         val normalizedCode = code.trim()
 
-        // Get the code style settings
-        val settings = CodeStyleSettingsManager.getInstance(project).currentSettings
-
         // Get the custom formatter from the service
-        val spacingBuilder = PicatSpacingBuilder(settings).getSpacingBuilder()
         val formatterService = service<PicatFormatterService>()
-        val customFormatter = formatterService.getFormatter(settings, spacingBuilder)
+        val customFormatter = formatterService.getFormatter()
 
         // Format the code using our custom formatter
         val formattedText = customFormatter.format(normalizedCode)
@@ -407,10 +403,8 @@ literals_example =>
         val expected = "main => X = 10, Y = 20."
 
         // Format the code using PicatCustomFormatter
-        val settings = CodeStyleSettingsManager.getInstance(project).currentSettings
-        val spacingBuilder = PicatSpacingBuilder(settings).getSpacingBuilder()
         val formatterService = service<PicatFormatterService>()
-        val customFormatter = formatterService.getFormatter(settings, spacingBuilder)
+        val customFormatter = formatterService.getFormatter()
         val formattedText = customFormatter.format(code)
 
         // Assert that the formatted code matches the expected output

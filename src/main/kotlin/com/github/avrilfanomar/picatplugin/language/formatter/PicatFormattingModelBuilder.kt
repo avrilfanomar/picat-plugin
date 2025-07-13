@@ -18,8 +18,8 @@ class PicatFormatterService {
     /**
      * Gets or creates a PicatCustomFormatter for the given settings and spacing builder.
      */
-    fun getFormatter(settings: CodeStyleSettings, spacingBuilder: SpacingBuilder): PicatCustomFormatter {
-        return PicatCustomFormatter(settings, spacingBuilder)
+    fun getFormatter(): PicatCustomFormatter {
+        return PicatCustomFormatter()
     }
 }
 
@@ -36,9 +36,6 @@ class PicatFormattingModelBuilder : FormattingModelBuilder {
         val settings = formattingContext.codeStyleSettings
 
         val spacingBuilder = PicatSpacingBuilder(settings).getSpacingBuilder()
-        // Register PicatCustomFormatter through the service
-        val formatterService = service<PicatFormatterService>()
-        val customFormatter = formatterService.getFormatter(settings, spacingBuilder)
         val blockFactory = PicatBlockFactory(settings, spacingBuilder)
         val rootBlock = blockFactory.createBlock(element.node)
 

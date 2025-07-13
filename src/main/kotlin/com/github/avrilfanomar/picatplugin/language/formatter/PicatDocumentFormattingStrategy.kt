@@ -20,10 +20,8 @@ class PicatDocumentFormattingStrategy : AsyncDocumentFormattingService() {
         val file = request.context.containingFile
         if (!canFormat(file)) return null
 
-        val settings = request.context.codeStyleSettings
-        val spacingBuilder = PicatSpacingBuilder(settings).getSpacingBuilder()
         val formatterService = service<PicatFormatterService>()
-        val customFormatter = formatterService.getFormatter(settings, spacingBuilder)
+        val customFormatter = formatterService.getFormatter()
 
         return object : FormattingTask {
             override fun run() {

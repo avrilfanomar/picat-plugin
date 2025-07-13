@@ -11,6 +11,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.TokenType
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.formatter.common.AbstractBlock
+import com.intellij.psi.tree.IElementType
 
 /**
  * Configuration class for PicatBlock.
@@ -44,74 +45,71 @@ class PicatBlock(
     }
 
     override fun getIndent(): Indent? {
-        val elementType = myNode.elementType
-        val parentType = myNode.treeParent?.elementType
-        val grandParentType = myNode.treeParent?.treeParent?.elementType
-        val greatGrandParentType = myNode.treeParent?.treeParent?.treeParent?.elementType
-        val picatSettings = config.settings.getCustomSettings(PicatCodeStyleSettings::class.java)
+        val context = IndentContext(
+            elementType = myNode.elementType,
+            parentType = myNode.treeParent?.elementType,
+            grandParentType = myNode.treeParent?.treeParent?.elementType,
+            greatGrandParentType = myNode.treeParent?.treeParent?.treeParent?.elementType,
+            picatSettings = config.settings.getCustomSettings(PicatCodeStyleSettings::class.java)
+        )
 
-        // Handle whitespace
-        if (elementType == TokenType.WHITE_SPACE) {
-            return Indent.getNoneIndent()
-        }
-
-        // Handle comments at the beginning of the file
-        if (elementType == PicatTokenTypes.COMMENT && parentType == null) {
-            return Indent.getNoneIndent()
-        }
-
-        // Handle comments in rule bodies
-        if (elementType == PicatTokenTypes.COMMENT &&
-            (parentType == PicatTokenTypes.BODY ||
-                    parentType == PicatTokenTypes.PREDICATE_RULE ||
-                    parentType == PicatTokenTypes.FUNCTION_RULE)
-        ) {
-            return Indent.getNormalIndent()
-        }
-
-        // Handle rule body indentation
-        if (helper.shouldIndentRuleBody(parentType, picatSettings)) {
-            return Indent.getNormalIndent()
-        }
-
-        // Handle statement indentation
-        if (helper.shouldIndentStatements(parentType, grandParentType, greatGrandParentType)) {
-            return Indent.getNormalIndent()
-        }
-
-        // Handle block statement indentation
-        if (helper.shouldIndentBlockStatements(elementType, parentType, picatSettings)) {
-            return Indent.getNormalIndent()
-        }
-
-        // Handle list comprehension indentation
-        if (helper.shouldIndentListComprehension(elementType, picatSettings)) {
-            return Indent.getNormalIndent()
-        }
-
-        // Handle function arguments indentation
-        if (helper.shouldIndentFunctionArguments(elementType)) {
-            return Indent.getNormalIndent()
-        }
-
-        // Handle list elements indentation
-        if (helper.shouldIndentListElements(elementType, parentType)) {
-            return Indent.getNormalIndent()
-        }
-
-        // Handle nested expressions indentation
-        if (helper.shouldIndentNestedExpressions(parentType, grandParentType)) {
-            return Indent.getNormalIndent()
-        }
-
-        // Handle elements after rule operators
-        if (parentType == PicatTokenTypes.PREDICATE_RULE || parentType == PicatTokenTypes.FUNCTION_RULE) {
-            return Indent.getNormalIndent()
-        }
-
-        // Default to no indentation
-        return Indent.getNoneIndent()
+        return determineIndent(context)
     }
+
+    private fun determineIndent(context: IndentContext): Indent {
+        return when {
+            // Handle whitespace and file-level comments
+            shouldUseNoIndent(context) -> Indent.getNoneIndent()
+            // Handle cases that require normal indentation
+            shouldUseNormalIndent(context) -> Indent.getNormalIndent()
+            // Default to no indentation
+            else -> Indent.getNoneIndent()
+        }
+    }
+
+    private fun shouldUseNoIndent(context: IndentContext): Boolean {
+        return context.elementType == TokenType.WHITE_SPACE ||
+                (context.elementType == PicatTokenTypes.COMMENT && context.parentType == null)
+    }
+
+    private fun shouldUseNormalIndent(context: IndentContext): Boolean {
+        return isCommentInRuleBody(context) ||
+                helper.shouldIndentRuleBody(context.parentType, context.picatSettings) ||
+                helper.shouldIndentStatements(
+                    context.parentType, 
+                    context.grandParentType, 
+                    context.greatGrandParentType
+                ) ||
+                helper.shouldIndentBlockStatements(
+                    context.elementType, 
+                    context.parentType, 
+                    context.picatSettings
+                ) ||
+                helper.shouldIndentListComprehension(context.elementType, context.picatSettings) ||
+                helper.shouldIndentFunctionArguments(context.elementType) ||
+                helper.shouldIndentListElements(context.elementType, context.parentType) ||
+                helper.shouldIndentNestedExpressions(context.parentType, context.grandParentType) ||
+                isElementAfterRuleOperator(context.parentType)
+    }
+
+    private fun isCommentInRuleBody(context: IndentContext): Boolean {
+        return context.elementType == PicatTokenTypes.COMMENT &&
+                (context.parentType == PicatTokenTypes.BODY ||
+                        context.parentType == PicatTokenTypes.PREDICATE_RULE ||
+                        context.parentType == PicatTokenTypes.FUNCTION_RULE)
+    }
+
+    private fun isElementAfterRuleOperator(parentType: IElementType?): Boolean {
+        return parentType == PicatTokenTypes.PREDICATE_RULE || parentType == PicatTokenTypes.FUNCTION_RULE
+    }
+
+    private data class IndentContext(
+        val elementType: IElementType,
+        val parentType: IElementType?,
+        val grandParentType: IElementType?,
+        val greatGrandParentType: IElementType?,
+        val picatSettings: PicatCodeStyleSettings
+    )
 
     /**
      * Determines the indentation for child blocks.
@@ -119,33 +117,20 @@ class PicatBlock(
     override fun getChildIndent(): Indent? {
         val elementType = myNode.elementType
 
-        // Always indent rule bodies and statements
-        if (helper.isRuleBodyOrStatementType(elementType)) {
-            return Indent.getNormalIndent()
+        return if (shouldIndentChildElements(elementType)) {
+            Indent.getNormalIndent()
+        } else {
+            Indent.getNoneIndent()
         }
+    }
 
-        // Improved indentation for block statements
-        if (helper.isBlockStatementType(elementType)) {
-            return Indent.getNormalIndent()
-        }
-
-        // Consistent indentation for lists
-        if (elementType == PicatTokenTypes.LIST_EXPRESSION) {
-            return Indent.getNormalIndent()
-        }
-
-        // Appropriate indentation for expressions
-        if (elementType == PicatTokenTypes.EXPRESSION) {
-            return Indent.getNormalIndent()
-        }
-
-        // Indent rule bodies
-        if (elementType == PicatTokenTypes.PREDICATE_RULE || elementType == PicatTokenTypes.FUNCTION_RULE) {
-            return Indent.getNormalIndent()
-        }
-
-        // Default to no indentation
-        return Indent.getNoneIndent()
+    private fun shouldIndentChildElements(elementType: IElementType): Boolean {
+        return helper.isRuleBodyOrStatementType(elementType) ||
+                helper.isBlockStatementType(elementType) ||
+                elementType == PicatTokenTypes.LIST_EXPRESSION ||
+                elementType == PicatTokenTypes.EXPRESSION ||
+                elementType == PicatTokenTypes.PREDICATE_RULE ||
+                elementType == PicatTokenTypes.FUNCTION_RULE
     }
 
     override fun isLeaf(): Boolean {

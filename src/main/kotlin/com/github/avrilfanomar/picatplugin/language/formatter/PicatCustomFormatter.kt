@@ -7,10 +7,13 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
  * Custom formatter for Picat language.
  * This class provides a custom implementation of the formatting logic.
  */
-class PicatCustomFormatter(
-    private val settings: CodeStyleSettings,
-    private val spacingBuilder: SpacingBuilder
-) {
+@Suppress("TooManyFunctions")
+class PicatCustomFormatter {
+
+    companion object {
+        private const val LINE_BREAK_THRESHOLD = 20
+    }
+
     /**
      * Formats the given code according to the code style settings.
      */
@@ -26,57 +29,53 @@ class PicatCustomFormatter(
             println("[DEBUG_LOG]   Line $i: '$line' (length: ${line.length})")
         }
 
-        // Check if this is a simple rule (one line with no blocks)
-        val isSimple = isSimpleRule(normalizedCode)
-        println("[DEBUG_LOG] isSimpleRule: $isSimple")
-        if (isSimple) {
-            // For simple rules, add spaces around operators
-            println("[DEBUG_LOG] Taking simple rule path")
-            var result = handleSpecialOperators(normalizedCode)
-            result = addSpacesAroundOperators(result)
+        val result = when {
+            // Check if this is a simple rule (one line with no blocks)
+            isSimpleRule(normalizedCode) -> {
+                println("[DEBUG_LOG] isSimpleRule: true")
+                println("[DEBUG_LOG] Taking simple rule path")
+                var simpleResult = handleSpecialOperators(normalizedCode)
+                simpleResult = addSpacesAroundOperators(simpleResult)
 
-            // Only add line breaks and indentation for longer/more complex simple rules
-            val contentAfterArrow = result.substringAfter("=>").trim()
-            val shouldAddLineBreak = contentAfterArrow.length > 20 || contentAfterArrow.contains("println")
-            println("[DEBUG_LOG] Content after arrow: '$contentAfterArrow' (length: ${contentAfterArrow.length})")
-            println("[DEBUG_LOG] Should add line break: $shouldAddLineBreak")
+                // Only add line breaks and indentation for longer/more complex simple rules
+                val contentAfterArrow = simpleResult.substringAfter("=>").trim()
+                val shouldAddLineBreak = contentAfterArrow.length > LINE_BREAK_THRESHOLD || 
+                        contentAfterArrow.contains("println")
+                println("[DEBUG_LOG] Content after arrow: '$contentAfterArrow' (length: ${contentAfterArrow.length})")
+                println("[DEBUG_LOG] Should add line break: $shouldAddLineBreak")
 
-            if (shouldAddLineBreak) {
-                result = addLineBreaksAfterRuleOperators(result)
-                result = addIndentation(result)
-            } else {
-                // Ensure there's a space after => even without line breaks
-                result = result.replace("=>", "=> ")
-                // Remove any double spaces that might have been created
-                result = result.replace("=>  ", "=> ")
+                if (shouldAddLineBreak) {
+                    simpleResult = addLineBreaksAfterRuleOperators(simpleResult)
+                    simpleResult = addIndentation(simpleResult)
+                } else {
+                    // Ensure there's a space after => even without line breaks
+                    simpleResult = simpleResult.replace("=>", "=> ")
+                    // Remove any double spaces that might have been created
+                    simpleResult = simpleResult.replace("=>  ", "=> ")
+                }
+                simpleResult
             }
-            return result
+            // Check if this is a predicate definition
+            isPredicate(normalizedCode) -> {
+                println("[DEBUG_LOG] isPredicate: true")
+                println("[DEBUG_LOG] Taking predicate path")
+                var predResult = handleSpecialOperators(normalizedCode)
+                predResult = addSpacesAroundOperators(predResult)
+                predResult
+            }
+            // Apply formatting rules for complex code
+            else -> {
+                var formattedCode = normalizedCode
+                // Handle special operators first
+                formattedCode = handleSpecialOperators(formattedCode)
+                // Add spaces around operators
+                formattedCode = addSpacesAroundOperators(formattedCode)
+                // Format the code with proper indentation and line breaks
+                formatCode(formattedCode)
+            }
         }
 
-        // Check if this is a predicate definition
-        val isPred = isPredicate(normalizedCode)
-        println("[DEBUG_LOG] isPredicate: $isPred")
-        if (isPred) {
-            // For predicates, just add spaces around operators and don't add indentation
-            println("[DEBUG_LOG] Taking predicate path")
-            var result = handleSpecialOperators(normalizedCode)
-            result = addSpacesAroundOperators(result)
-            return result
-        }
-
-        // Apply formatting rules
-        var formattedCode = normalizedCode
-
-        // Handle special operators first
-        formattedCode = handleSpecialOperators(formattedCode)
-
-        // Add spaces around operators
-        formattedCode = addSpacesAroundOperators(formattedCode)
-
-        // Format the code with proper indentation and line breaks
-        formattedCode = formatCode(formattedCode)
-
-        return formattedCode
+        return result
     }
 
     /**
@@ -85,117 +84,115 @@ class PicatCustomFormatter(
     private fun formatCode(code: String): String {
         val lines = code.split("\n")
         val result = StringBuilder()
-        var indentLevel = 0
-        var inRuleBody = false
-        var ifBlockBaseLevel = 0
+        val state = FormatState()
 
         for (i in lines.indices) {
             val line = lines[i].trim()
+            println("[DEBUG_LOG] formatCode - Processing line $i: '$line' " +
+                    "(inRuleBody: ${state.inRuleBody}, indentLevel: ${state.indentLevel})")
 
-            // Debug: print line processing
-            println("[DEBUG_LOG] formatCode - Processing line $i: '$line' (inRuleBody: $inRuleBody, indentLevel: $indentLevel)")
-
-            // Skip empty lines but preserve them in the output
-            if (line.isEmpty()) {
-                result.append("\n")
-                continue
-            }
-
-            // Check if this line starts a rule body (ends with => or ?=>)
-            if (line.endsWith(" =>") || line.endsWith(" ?=>")) {
-                result.append(line).append("\n")
-                inRuleBody = true
-                indentLevel = 1
-                continue
-            }
-
-            // Handle lines inside rule bodies
-            if (inRuleBody) {
-                // Check if this line starts with 'if' and contains 'then'
-                if (line.startsWith("if ") && line.contains(" then")) {
-                    ifBlockBaseLevel = indentLevel
-                    result.append(getIndentation(indentLevel)).append(line).append("\n")
-                    indentLevel++
-                    continue
-                }
-
-                // Check if this line is an 'elseif' statement
-                if (line.startsWith("elseif")) {
-                    result.append(getIndentation(ifBlockBaseLevel)).append(line).append("\n")
-                    indentLevel = ifBlockBaseLevel + 1
-                    continue
-                }
-
-                // Check if this line is an 'else' statement
-                if (line.startsWith("else")) {
-                    // Use normal indentation logic for else statements
-                    indentLevel--
-                    result.append(getIndentation(indentLevel)).append(line).append("\n")
-                    indentLevel++
-                    continue
-                }
-
-                // Check if this line starts a block with 'then' (but not if/elseif)
-                if (line.contains(" then")) {
-                    result.append(getIndentation(indentLevel)).append(line).append("\n")
-                    indentLevel++
-                    continue
-                }
-
-                // Check if this line starts a foreach loop
-                if (line.startsWith("foreach")) {
-                    result.append(getIndentation(indentLevel)).append(line).append("\n")
-                    indentLevel++
-                    continue
-                }
-
-                // Check if this line ends a block
-                if (line == "end" || line == "end," || line == "end.") {
-                    indentLevel--
-                    result.append(getIndentation(indentLevel)).append(line).append("\n")
-
-                    // If this is the end of a rule body, reset the indentation level
-                    if (line == "end.") {
-                        inRuleBody = false
-                        indentLevel = 0
-                    }
-                    continue
-                }
-
-                // Check if this line ends a rule body or is a predicate definition
-                if (line.endsWith(".")) {
-                    // If the line contains "=>" it's a predicate definition with a condition
-                    // If it doesn't contain "=>" it's either the end of a rule body or a simple predicate
-                    if (line.contains("=>")) {
-                        // This is a predicate definition with condition - don't indent
-                        result.append(line).append("\n")
-                    } else {
-                        // Check if this looks like a predicate definition (contains function call pattern)
-                        if (line.matches(Regex(".*\\([^)]*\\)\\s*=.*\\."))) {
-                            // This is a simple predicate definition - don't indent
-                            result.append(line).append("\n")
-                        } else {
-                            // This is the end of a rule body - use indentation
-                            result.append(getIndentation(indentLevel)).append(line).append("\n")
-                        }
-                    }
-                    inRuleBody = false
-                    indentLevel = 0
-                    continue
-                }
-
-                // Add indentation for all other lines inside the rule body
-                val indent = getIndentation(indentLevel)
-                result.append(indent).append(line).append("\n")
-                continue
-            }
-
-            // For lines outside rule bodies, don't add indentation
-            result.append(line).append("\n")
+            processLine(line, result, state)
         }
 
         return result.toString().trim()
     }
+
+    private fun processLine(line: String, result: StringBuilder, state: FormatState) {
+        when {
+            line.isEmpty() -> result.append("\n")
+            isRuleBodyStart(line) -> handleRuleBodyStart(line, result, state)
+            state.inRuleBody -> handleRuleBodyLine(line, result, state)
+            else -> result.append(line).append("\n")
+        }
+    }
+
+    private fun isRuleBodyStart(line: String): Boolean {
+        return line.endsWith(" =>") || line.endsWith(" ?=>")
+    }
+
+    private fun handleRuleBodyStart(line: String, result: StringBuilder, state: FormatState) {
+        result.append(line).append("\n")
+        state.inRuleBody = true
+        state.indentLevel = 1
+    }
+
+    private fun handleRuleBodyLine(line: String, result: StringBuilder, state: FormatState) {
+        when {
+            isIfThenStatement(line) -> handleIfThenStatement(line, result, state)
+            line.startsWith("elseif") -> handleElseIfStatement(line, result, state)
+            line.startsWith("else") -> handleElseStatement(line, result, state)
+            line.contains(" then") -> handleThenStatement(line, result, state)
+            line.startsWith("foreach") -> handleForeachStatement(line, result, state)
+            isEndStatement(line) -> handleEndStatement(line, result, state)
+            line.endsWith(".") -> handleRuleBodyEnd(line, result, state)
+            else -> handleRegularRuleBodyLine(line, result, state)
+        }
+    }
+
+    private fun isIfThenStatement(line: String): Boolean {
+        return line.startsWith("if ") && line.contains(" then")
+    }
+
+    private fun handleIfThenStatement(line: String, result: StringBuilder, state: FormatState) {
+        state.ifBlockBaseLevel = state.indentLevel
+        result.append(getIndentation(state.indentLevel)).append(line).append("\n")
+        state.indentLevel++
+    }
+
+    private fun handleElseIfStatement(line: String, result: StringBuilder, state: FormatState) {
+        result.append(getIndentation(state.ifBlockBaseLevel)).append(line).append("\n")
+        state.indentLevel = state.ifBlockBaseLevel + 1
+    }
+
+    private fun handleElseStatement(line: String, result: StringBuilder, state: FormatState) {
+        state.indentLevel--
+        result.append(getIndentation(state.indentLevel)).append(line).append("\n")
+        state.indentLevel++
+    }
+
+    private fun handleThenStatement(line: String, result: StringBuilder, state: FormatState) {
+        result.append(getIndentation(state.indentLevel)).append(line).append("\n")
+        state.indentLevel++
+    }
+
+    private fun handleForeachStatement(line: String, result: StringBuilder, state: FormatState) {
+        result.append(getIndentation(state.indentLevel)).append(line).append("\n")
+        state.indentLevel++
+    }
+
+    private fun isEndStatement(line: String): Boolean {
+        return line == "end" || line == "end," || line == "end."
+    }
+
+    private fun handleEndStatement(line: String, result: StringBuilder, state: FormatState) {
+        state.indentLevel--
+        result.append(getIndentation(state.indentLevel)).append(line).append("\n")
+
+        if (line == "end.") {
+            state.inRuleBody = false
+            state.indentLevel = 0
+        }
+    }
+
+    private fun handleRuleBodyEnd(line: String, result: StringBuilder, state: FormatState) {
+        when {
+            line.contains("=>") -> result.append(line).append("\n")
+            line.matches(Regex(".*\\([^)]*\\)\\s*=.*\\.")) -> result.append(line).append("\n")
+            else -> result.append(getIndentation(state.indentLevel)).append(line).append("\n")
+        }
+        state.inRuleBody = false
+        state.indentLevel = 0
+    }
+
+    private fun handleRegularRuleBodyLine(line: String, result: StringBuilder, state: FormatState) {
+        result.append(getIndentation(state.indentLevel)).append(line).append("\n")
+    }
+
+    private data class FormatState(
+        var indentLevel: Int = 0,
+        var inRuleBody: Boolean = false,
+        var ifBlockBaseLevel: Int = 0
+    )
 
     /**
      * Checks if the given code is a simple rule (one line with no blocks).
@@ -219,19 +216,6 @@ class PicatCustomFormatter(
                 !code.contains("solve")) // solve rules are not predicates
     }
 
-    /**
-     * Normalizes line endings and removes trailing whitespace.
-     */
-    private fun normalizeLineEndings(code: String): String {
-        // Split the code into lines
-        val lines = code.split("\n")
-
-        // Process each line to remove trailing whitespace and leading spaces
-        val processedLines = lines.map { it.trim() }
-
-        // Join the lines back together with LF line endings
-        return processedLines.joinToString("\n")
-    }
 
     /**
      * Handles special operators like => and ?=> to ensure they're not broken up.
@@ -274,40 +258,49 @@ class PicatCustomFormatter(
     private fun addSpacesAroundOperators(code: String): String {
         var result = code
 
-        // First, normalize all spaces to ensure idempotency
-        // Remove all spaces around operators
-        result = result.replace(" = ", "=")
-        result = result.replace(" + ", "+")
-        result = result.replace(" - ", "-")
-        result = result.replace(" * ", "*")
-        result = result.replace(" / ", "/")
-        result = result.replace(" > ", ">")
-        result = result.replace(" < ", "<")
-        result = result.replace(" >= ", ">=")
-        result = result.replace(" <= ", "<=")
-        result = result.replace(" == ", "==")
-        result = result.replace(" != ", "!=")
-        result = result.replace(" && ", "&&")
-        result = result.replace(" || ", "||")
-        result = result.replace(" & ", "&")
-        result = result.replace(" | ", "|")
-        result = result.replace(" ^ ", "^")
-        result = result.replace(" << ", "<<")
-        result = result.replace(" >> ", ">>")
-        result = result.replace(" : ", ":")
-        result = result.replace(", ", ",")
+        result = normalizeOperatorSpaces(result)
+        result = addOperatorSpaces(result)
+        result = addSpacesAroundColonsInListComprehensions(result)
+        result = fixSpacingInStructures(result)
+        result = cleanupDoubleSpaces(result)
+        result = restoreSpecialOperators(result)
+        result = cleanupDoubleSpaces(result)
+        result = removeTrailingSpaces(result)
 
-        // Now add spaces around operators consistently
-        // Add spaces around assignment operators
+        return result
+    }
+
+    private fun normalizeOperatorSpaces(code: String): String {
+        var result = code
+        val operators = listOf(
+            " = ", " + ", " - ", " * ", " / ", " > ", " < ", " >= ", " <= ", 
+            " == ", " != ", " && ", " || ", " & ", " | ", " ^ ", " << ", " >> ", " : ", ", "
+        )
+        val normalized = listOf(
+            "=", "+", "-", "*", "/", ">", "<", ">=", "<=", 
+            "==", "!=", "&&", "||", "&", "|", "^", "<<", ">>", ":", ","
+        )
+
+        operators.zip(normalized).forEach { (spaced, clean) ->
+            result = result.replace(spaced, clean)
+        }
+
+        return result
+    }
+
+    private fun addOperatorSpaces(code: String): String {
+        var result = code
+
+        // Assignment operators
         result = result.replace("=", " = ")
 
-        // Add spaces around arithmetic operators
+        // Arithmetic operators
         result = result.replace("+", " + ")
         result = result.replace("-", " - ")
         result = result.replace("*", " * ")
         result = result.replace("/", " / ")
 
-        // Add spaces around relational operators
+        // Relational operators
         result = result.replace(">", " > ")
         result = result.replace("<", " < ")
         result = result.replace(">=", " >= ")
@@ -315,20 +308,22 @@ class PicatCustomFormatter(
         result = result.replace("==", " == ")
         result = result.replace("!=", " != ")
 
-        // Add spaces around logical operators
+        // Logical operators
         result = result.replace("&&", " && ")
         result = result.replace("||", " || ")
 
-        // Add spaces around bitwise operators
+        // Bitwise operators
         result = result.replace("&", " & ")
         result = result.replace("|", " | ")
         result = result.replace("^", " ^ ")
         result = result.replace("<<", " << ")
         result = result.replace(">>", " >> ")
 
-        // Add spaces around colons in list comprehensions (but not in strings)
-        // This is a simple heuristic: only add spaces around colons that are not inside quotes
-        result = addSpacesAroundColonsInListComprehensions(result)
+        return result
+    }
+
+    private fun fixSpacingInStructures(code: String): String {
+        var result = code
 
         // Fix spaces in list comprehensions
         result = result.replace("[ ", "[")
@@ -347,12 +342,19 @@ class PicatCustomFormatter(
         // Remove trailing spaces after commas at end of lines
         result = result.replace(", \n", ",\n")
 
-        // Fix double spaces
+        return result
+    }
+
+    private fun cleanupDoubleSpaces(code: String): String {
+        var result = code
         while (result.contains("  ")) {
             result = result.replace("  ", " ")
         }
+        return result
+    }
 
-        // Restore special operators with proper spacing
+    private fun restoreSpecialOperators(code: String): String {
+        var result = code
 
         // Restore rule operators
         result = result.replace("__ARROW_OP__", " => ")
@@ -378,15 +380,11 @@ class PicatCustomFormatter(
         // Restore concatenation operator
         result = result.replace("__CONCAT_OP__", " ++ ")
 
-        // Fix double spaces again
-        while (result.contains("  ")) {
-            result = result.replace("  ", " ")
-        }
-
-        // Remove trailing spaces at the end of lines
-        result = result.split("\n").joinToString("\n") { it.trimEnd() }
-
         return result
+    }
+
+    private fun removeTrailingSpaces(code: String): String {
+        return code.split("\n").joinToString("\n") { it.trimEnd() }
     }
 
     /**
@@ -418,99 +416,99 @@ class PicatCustomFormatter(
         // Now process the cleaned code
         val processedLines = cleanedCode.split("\n")
         val result = StringBuilder()
-        var indentLevel = 0
-        var inRuleBody = false
-        var ifBlockBaseLevel = 0
+        val state = IndentationState()
 
-        for (i in processedLines.indices) {
-            val line = processedLines[i]
+        for (line in processedLines) {
             val trimmedLine = line.trim()
-
-            // Handle empty lines
-            if (trimmedLine.isEmpty()) {
-                result.append("\n")
-                continue
-            }
-
-            // Check if this line starts a rule body
-            if (trimmedLine.contains(" =>") || trimmedLine.contains(" ?=>")) {
-                // Don't add indentation to the rule header line
-                result.append(trimmedLine).append("\n")
-                inRuleBody = true
-                indentLevel = 1
-                continue
-            }
-
-            // Check if this line is a comment outside a rule body
-            if (!inRuleBody && trimmedLine.startsWith("%")) {
-                result.append(trimmedLine).append("\n")
-                continue
-            }
-
-            // Check if this line is inside a rule body
-            if (inRuleBody) {
-                // Check if this line starts with 'if' and contains 'then'
-                if (trimmedLine.startsWith("if ") && trimmedLine.contains(" then")) {
-                    ifBlockBaseLevel = indentLevel
-                    result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
-                    indentLevel += 1
-                    continue
-                }
-
-                // Check if this line is an 'elseif' statement
-                if (trimmedLine.startsWith("elseif")) {
-                    result.append(getIndentation(ifBlockBaseLevel)).append(trimmedLine).append("\n")
-                    indentLevel = ifBlockBaseLevel + 1
-                    continue
-                }
-
-                // Check if this line is an 'else' statement
-                if (trimmedLine.startsWith("else")) {
-                    result.append(getIndentation(ifBlockBaseLevel)).append(trimmedLine).append("\n")
-                    indentLevel = ifBlockBaseLevel + 1
-                    continue
-                }
-
-                // Check if this line starts a block with 'then' (but not if/elseif)
-                if (trimmedLine.contains(" then")) {
-                    result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
-                    indentLevel += 1
-                    continue
-                }
-
-                // Check if this line starts a foreach loop
-                if (trimmedLine.startsWith("foreach")) {
-                    result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
-                    indentLevel += 1
-                    continue
-                }
-
-                // Check if this line ends a block
-                if (trimmedLine == "end" || trimmedLine == "end," || trimmedLine == "end.") {
-                    indentLevel -= 1
-                    result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
-                    continue
-                }
-
-                // Check if this line ends a rule body
-                if (trimmedLine.endsWith(".")) {
-                    result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
-                    inRuleBody = false
-                    indentLevel = 0
-                    continue
-                }
-
-                // Add indentation for all other lines inside the rule body
-                result.append(getIndentation(indentLevel)).append(trimmedLine).append("\n")
-                continue
-            }
-
-            // For lines outside rule bodies, don't add indentation
-            result.append(trimmedLine).append("\n")
+            processIndentationLine(trimmedLine, result, state)
         }
 
         return result.toString().trim()
     }
+
+    private fun processIndentationLine(line: String, result: StringBuilder, state: IndentationState) {
+        when {
+            line.isEmpty() -> result.append("\n")
+            isRuleBodyStartLine(line) -> handleIndentationRuleBodyStart(line, result, state)
+            isCommentOutsideRuleBody(line, state) -> result.append(line).append("\n")
+            state.inRuleBody -> handleIndentationRuleBodyLine(line, result, state)
+            else -> result.append(line).append("\n")
+        }
+    }
+
+    private fun isRuleBodyStartLine(line: String): Boolean {
+        return line.contains(" =>") || line.contains(" ?=>")
+    }
+
+    private fun isCommentOutsideRuleBody(line: String, state: IndentationState): Boolean {
+        return !state.inRuleBody && line.startsWith("%")
+    }
+
+    private fun handleIndentationRuleBodyStart(line: String, result: StringBuilder, state: IndentationState) {
+        result.append(line).append("\n")
+        state.inRuleBody = true
+        state.indentLevel = 1
+    }
+
+    private fun handleIndentationRuleBodyLine(line: String, result: StringBuilder, state: IndentationState) {
+        when {
+            isIfThenStatement(line) -> handleIndentationIfThen(line, result, state)
+            line.startsWith("elseif") -> handleIndentationElseIf(line, result, state)
+            line.startsWith("else") -> handleIndentationElse(line, result, state)
+            line.contains(" then") -> handleIndentationThen(line, result, state)
+            line.startsWith("foreach") -> handleIndentationForeach(line, result, state)
+            isEndStatement(line) -> handleIndentationEnd(line, result, state)
+            line.endsWith(".") -> handleIndentationRuleBodyEnd(line, result, state)
+            else -> handleIndentationRegularLine(line, result, state)
+        }
+    }
+
+    private fun handleIndentationIfThen(line: String, result: StringBuilder, state: IndentationState) {
+        state.ifBlockBaseLevel = state.indentLevel
+        result.append(getIndentation(state.indentLevel)).append(line).append("\n")
+        state.indentLevel += 1
+    }
+
+    private fun handleIndentationElseIf(line: String, result: StringBuilder, state: IndentationState) {
+        result.append(getIndentation(state.ifBlockBaseLevel)).append(line).append("\n")
+        state.indentLevel = state.ifBlockBaseLevel + 1
+    }
+
+    private fun handleIndentationElse(line: String, result: StringBuilder, state: IndentationState) {
+        result.append(getIndentation(state.ifBlockBaseLevel)).append(line).append("\n")
+        state.indentLevel = state.ifBlockBaseLevel + 1
+    }
+
+    private fun handleIndentationThen(line: String, result: StringBuilder, state: IndentationState) {
+        result.append(getIndentation(state.indentLevel)).append(line).append("\n")
+        state.indentLevel += 1
+    }
+
+    private fun handleIndentationForeach(line: String, result: StringBuilder, state: IndentationState) {
+        result.append(getIndentation(state.indentLevel)).append(line).append("\n")
+        state.indentLevel += 1
+    }
+
+    private fun handleIndentationEnd(line: String, result: StringBuilder, state: IndentationState) {
+        state.indentLevel -= 1
+        result.append(getIndentation(state.indentLevel)).append(line).append("\n")
+    }
+
+    private fun handleIndentationRuleBodyEnd(line: String, result: StringBuilder, state: IndentationState) {
+        result.append(getIndentation(state.indentLevel)).append(line).append("\n")
+        state.inRuleBody = false
+        state.indentLevel = 0
+    }
+
+    private fun handleIndentationRegularLine(line: String, result: StringBuilder, state: IndentationState) {
+        result.append(getIndentation(state.indentLevel)).append(line).append("\n")
+    }
+
+    private data class IndentationState(
+        var indentLevel: Int = 0,
+        var inRuleBody: Boolean = false,
+        var ifBlockBaseLevel: Int = 0
+    )
 
     /**
      * Returns the indentation string for the given level.
@@ -526,53 +524,66 @@ class PicatCustomFormatter(
      * Adds spaces around colons in list comprehensions but not in string literals.
      */
     private fun addSpacesAroundColonsInListComprehensions(code: String): String {
-        var result = code
-        var inString = false
-        var inListComprehension = false
-        var bracketDepth = 0
-        val chars = result.toCharArray()
+        val state = ColonSpacingState()
+        val chars = code.toCharArray()
 
         for (i in chars.indices) {
             val char = chars[i]
+            updateColonSpacingState(char, state)
 
-            when (char) {
-                '"' -> {
-                    // Toggle string state (simple heuristic, doesn't handle escaped quotes)
-                    inString = !inString
-                }
-                '[' -> {
-                    if (!inString) {
-                        bracketDepth++
-                        inListComprehension = true
-                    }
-                }
-                ']' -> {
-                    if (!inString) {
-                        bracketDepth--
-                        if (bracketDepth == 0) {
-                            inListComprehension = false
-                        }
-                    }
-                }
-                ':' -> {
-                    if (!inString && inListComprehension) {
-                        // Add spaces around colon in list comprehension
-                        val before = if (i > 0 && chars[i-1] != ' ') " " else ""
-                        val after = if (i < chars.size - 1 && chars[i+1] != ' ') " " else ""
-
-                        if (before.isNotEmpty() || after.isNotEmpty()) {
-                            // Rebuild the string with spaces around the colon
-                            val prefix = result.substring(0, i)
-                            val suffix = result.substring(i + 1)
-                            result = prefix + before + ":" + after + suffix
-                            // Update chars array for next iteration
-                            return addSpacesAroundColonsInListComprehensions(result)
-                        }
-                    }
-                }
+            if (shouldAddSpacesAroundColon(char, i, chars, state)) {
+                return processColonSpacing(code, i, chars)
             }
         }
 
-        return result
+        return code
     }
+
+    private fun updateColonSpacingState(char: Char, state: ColonSpacingState) {
+        when (char) {
+            '"' -> state.inString = !state.inString
+            '[' -> if (!state.inString) {
+                state.bracketDepth++
+                state.inListComprehension = true
+            }
+            ']' -> if (!state.inString) {
+                state.bracketDepth--
+                if (state.bracketDepth == 0) {
+                    state.inListComprehension = false
+                }
+            }
+        }
+    }
+
+    private fun shouldAddSpacesAroundColon(
+        char: Char, 
+        index: Int, 
+        chars: CharArray, 
+        state: ColonSpacingState
+    ): Boolean {
+        return char == ':' && !state.inString && state.inListComprehension && needsSpacing(index, chars)
+    }
+
+    private fun needsSpacing(index: Int, chars: CharArray): Boolean {
+        val needsBefore = index > 0 && chars[index - 1] != ' '
+        val needsAfter = index < chars.size - 1 && chars[index + 1] != ' '
+        return needsBefore || needsAfter
+    }
+
+    private fun processColonSpacing(code: String, index: Int, chars: CharArray): String {
+        val before = if (index > 0 && chars[index - 1] != ' ') " " else ""
+        val after = if (index < chars.size - 1 && chars[index + 1] != ' ') " " else ""
+
+        val prefix = code.substring(0, index)
+        val suffix = code.substring(index + 1)
+        val result = prefix + before + ":" + after + suffix
+
+        return addSpacesAroundColonsInListComprehensions(result)
+    }
+
+    private data class ColonSpacingState(
+        var inString: Boolean = false,
+        var inListComprehension: Boolean = false,
+        var bracketDepth: Int = 0
+    )
 }
