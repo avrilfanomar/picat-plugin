@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PicatIterator extends PsiElement {
+public interface PicatFunctionArgument extends PsiElement {
 
   @NotNull
-  PicatExpression getExpression();
-
-  @NotNull
-  PicatTerm getTerm();
+  PicatExpressionWithRelations getExpressionWithRelations();
 
 }

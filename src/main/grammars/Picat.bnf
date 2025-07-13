@@ -115,7 +115,7 @@
     VARIABLE="regexp:[A-Z_][a-zA-Z0-9_]*"
     INTEGER="regexp:([0-9]+|0[xX][0-9a-fA-F]+|0[oO][0-7]+|0[bB][01]+)"
     FLOAT="regexp:[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?"
-    STRING="regexp:\"([^\"\\]|\\\\.)*\""
+    STRING = "regexp:\"(\\\\.|[^\"\\])*\""
     SINGLE_QUOTED_ATOM="regexp:'([^'\\]|\\\\.)*'"
     COMMENT="regexp:%[^\r\n]*"
     QUALIFIED_ATOM="regexp:[a-z][a-zA-Z0-9_]*\\.[a-z][a-zA-Z0-9_]*"
@@ -236,11 +236,12 @@ expression_with_relations ::= expression (bin_rel_op expression)*
 
 bin_rel_op ::= EQUAL | NOT_EQUAL | ASSIGN_OP | IDENTICAL | NOT_IDENTICAL
              | GREATER | GREATER_EQUAL | LESS | LESS_EQUAL | LESS_EQUAL_PROLOG
-             | IN_KEYWORD | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | HASH_GREATER_OP
-             | HASH_GREATER_EQUAL_OP | HASH_LESS_OP | HASH_LESS_EQUAL_OP | HASH_LESS_EQUAL_ALT_OP
+             | IN_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
+             | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | HASH_GREATER_OP | HASH_LESS_OP
 
 // Arguments and expressions
-argument ::= negative_goal
+argument ::= expression
+function_argument ::= expression_with_relations
 
 expression ::= range_expression
 
@@ -275,19 +276,20 @@ primary_expression ::= base_expression
 //atom_or_call ::= atom [LPAR [argument (COMMA argument)*] RPAR]
 
 base_expression ::= parenthesized_goal
+                  | function_call
+                  | lambda_term
+                  | term_constructor
                   | variable_index
                   | as_pattern
+                  | list_expression
+                  | array_expression
+                  | STRING
                   | VARIABLE
                   | INTEGER
                   | FLOAT
                   | TRUE
                   | FALSE
                   | atom_without_args
-                  | function_call
-                  | list_expression
-                  | array_expression
-                  | lambda_term
-                  | term_constructor
 
 // Separate atom without arguments from function calls
 atom_without_args ::= atom !(LPAR)
@@ -309,12 +311,12 @@ array_expression ::= LBRACE argument (COMMA argument)* RBRACE
 
 lambda_term ::= LAMBDA_KEYWORD LPAR variable_list COMMA argument RPAR
 
-variable_list ::= LBRACKET [variable (COMMA variable)*] RBRACKET
+variable_list ::= LBRACKET [VARIABLE (COMMA VARIABLE)*] RBRACKET
 
 term_constructor ::= DOLLAR expression | IDENTIFIER LPAR [argument (COMMA argument)*] RPAR
 
 // Iterator for comprehensions and loops
-iterator ::= variable IN_KEYWORD expression | variable EQUAL expression
+iterator ::= term IN_KEYWORD expression | term EQUAL expression
 
 term ::=
     LPAR term RPAR
@@ -333,8 +335,8 @@ term ::=
 variable_as_pattern ::= VARIABLE AT term [AT]
 atom_or_call_no_lambda ::= atom [LPAR [term (COMMA term)*] RPAR]
 list_expression_no_comprehension ::= LBRACKET [term (COMMA term)*] [PIPE term] RBRACKET
-qualified_function_call ::= IDENTIFIER DOLLAR IDENTIFIER LPAR [argument (COMMA argument)*] RPAR
-function_call ::= atom LPAR [argument (COMMA argument)*] RPAR
+qualified_function_call ::= IDENTIFIER DOLLAR IDENTIFIER LPAR [function_argument (COMMA function_argument)*] RPAR
+function_call ::= atom LPAR [function_argument (COMMA function_argument)*] RPAR
                | qualified_function_call
 function_call_no_dot ::= atom LPAR [term (COMMA term)*] RPAR
                        | IDENTIFIER DOLLAR IDENTIFIER LPAR [term (COMMA term)*] RPAR

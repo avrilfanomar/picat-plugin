@@ -34,6 +34,7 @@ public interface PicatTokenTypes {
   IElementType EXPRESSION = new PicatElementType("EXPRESSION");
   IElementType EXPRESSION_WITH_RELATIONS = new PicatElementType("EXPRESSION_WITH_RELATIONS");
   IElementType FOREACH_LOOP = new PicatElementType("FOREACH_LOOP");
+  IElementType FUNCTION_ARGUMENT = new PicatElementType("FUNCTION_ARGUMENT");
   IElementType FUNCTION_CALL = new PicatElementType("FUNCTION_CALL");
   IElementType FUNCTION_CALL_NO_DOT = new PicatElementType("FUNCTION_CALL_NO_DOT");
   IElementType FUNCTION_CLAUSE = new PicatElementType("FUNCTION_CLAUSE");
@@ -187,7 +188,7 @@ public interface PicatTokenTypes {
   IElementType TRUE = new PicatTokenType("true");
   IElementType TRY_KEYWORD = new PicatTokenType("try");
   IElementType UNTIL_KEYWORD = new PicatTokenType("until");
-  IElementType VARIABLE = new PicatTokenType("variable");
+  IElementType VARIABLE = new PicatTokenType("VARIABLE");
   IElementType WHILE_KEYWORD = new PicatTokenType("while");
 
   class Factory {
@@ -270,6 +271,9 @@ public interface PicatTokenTypes {
       }
       else if (type == FOREACH_LOOP) {
         return new PicatForeachLoopImpl(node);
+      }
+      else if (type == FUNCTION_ARGUMENT) {
+        return new PicatFunctionArgumentImpl(node);
       }
       else if (type == FUNCTION_CALL) {
         return new PicatFunctionCallImpl(node);

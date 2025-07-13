@@ -29,8 +29,8 @@ public class PicatArgumentImpl extends ASTWrapperPsiElement implements PicatArgu
 
   @Override
   @NotNull
-  public PicatNegativeGoal getNegativeGoal() {
-    return findNotNullChildByClass(PicatNegativeGoal.class);
+  public PicatExpression getExpression() {
+    return findNotNullChildByClass(PicatExpression.class);
   }
 
 }

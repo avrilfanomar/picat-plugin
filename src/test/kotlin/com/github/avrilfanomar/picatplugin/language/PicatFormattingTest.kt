@@ -23,9 +23,8 @@ class PicatFormattingTest : BasePlatformTestCase() {
      *
      * @param code The input code to format
      * @param expected The expected formatted output
-     * @param filename Optional filename for the test file (defaults to "test.pi")
      */
-    private fun doFormatTest(code: String, expected: String, filename: String = "test.pi") {
+    private fun doFormatTest(code: String, expected: String) {
         // Normalize the input code by removing leading whitespace
         val normalizedCode = code.trim()
 

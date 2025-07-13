@@ -111,6 +111,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitFunctionArgument(@NotNull PicatFunctionArgument o) {
+    visitPsiElement(o);
+  }
+
   public void visitFunctionCall(@NotNull PicatFunctionCall o) {
     visitPsiElement(o);
   }

@@ -33,4 +33,10 @@ public class PicatIteratorImpl extends ASTWrapperPsiElement implements PicatIter
     return findNotNullChildByClass(PicatExpression.class);
   }
 
+  @Override
+  @NotNull
+  public PicatTerm getTerm() {
+    return findNotNullChildByClass(PicatTerm.class);
+  }
+
 }

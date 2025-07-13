@@ -7,11 +7,11 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatFunctionCall extends PsiElement {
 
-  @NotNull
-  List<PicatArgument> getArgumentList();
-
   @Nullable
   PicatAtom getAtom();
+
+  @NotNull
+  List<PicatFunctionArgument> getFunctionArgumentList();
 
   @Nullable
   PicatQualifiedFunctionCall getQualifiedFunctionCall();

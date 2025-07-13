@@ -11,14 +11,14 @@ import static com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.avrilfanomar.picatplugin.language.psi.*;
 
-public class PicatQualifiedFunctionCallImpl extends ASTWrapperPsiElement implements PicatQualifiedFunctionCall {
+public class PicatFunctionArgumentImpl extends ASTWrapperPsiElement implements PicatFunctionArgument {
 
-  public PicatQualifiedFunctionCallImpl(@NotNull ASTNode node) {
+  public PicatFunctionArgumentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PicatVisitor visitor) {
-    visitor.visitQualifiedFunctionCall(this);
+    visitor.visitFunctionArgument(this);
   }
 
   @Override
@@ -29,8 +29,8 @@ public class PicatQualifiedFunctionCallImpl extends ASTWrapperPsiElement impleme
 
   @Override
   @NotNull
-  public List<PicatFunctionArgument> getFunctionArgumentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatFunctionArgument.class);
+  public PicatExpressionWithRelations getExpressionWithRelations() {
+    return findNotNullChildByClass(PicatExpressionWithRelations.class);
   }
 
 }

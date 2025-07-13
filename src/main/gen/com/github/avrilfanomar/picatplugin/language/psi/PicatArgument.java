@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface PicatArgument extends PsiElement {
 
   @NotNull
-  PicatNegativeGoal getNegativeGoal();
+  PicatExpression getExpression();
 
 }

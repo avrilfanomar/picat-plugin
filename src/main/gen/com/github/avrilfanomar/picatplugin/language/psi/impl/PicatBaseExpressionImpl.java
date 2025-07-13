@@ -95,6 +95,12 @@ public class PicatBaseExpressionImpl extends ASTWrapperPsiElement implements Pic
 
   @Override
   @Nullable
+  public PsiElement getString() {
+    return findChildByType(STRING);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getVariable() {
     return findChildByType(VARIABLE);
   }
