@@ -132,6 +132,9 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.REM_KEYWORD,
             PicatTokenTypes.LAMBDA_KEYWORD,
             PicatTokenTypes.CARDINALITY_KEYWORD,
+            PicatTokenTypes.FAIL_KEYWORD,
+            PicatTokenTypes.REPEAT_KEYWORD,
+            PicatTokenTypes.UNTIL_KEYWORD,
             PicatTokenTypes.TRUE,
             PicatTokenTypes.FALSE
         )

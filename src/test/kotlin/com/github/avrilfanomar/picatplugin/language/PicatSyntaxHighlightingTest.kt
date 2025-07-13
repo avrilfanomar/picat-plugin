@@ -12,11 +12,10 @@ import org.junit.jupiter.api.Test
  */
 class PicatSyntaxHighlightingTest : LexerTestCase() {
 
-
     @Test
     fun testHighlighter() {
         val highlighter = PicatSyntaxHighlighter()
-        val lexer = highlighter.highlightingLexer
+        val lexer = highlighter.getHighlightingLexer()
 
         val text = getSamplePicatProgram()
         lexer.start(text)
@@ -26,6 +25,118 @@ class PicatSyntaxHighlightingTest : LexerTestCase() {
 
         // Verify that tokens are correctly identified and highlighted
         verifyTokenHighlights(lexer, text, highlighter, expectedHighlights)
+    }
+
+    @Test
+    fun testKeywordHighlighting() {
+        val highlighter = PicatSyntaxHighlighter()
+        val keywords = listOf("import", "module", "if", "then", "else", "end", "fail", "repeat", "until", 
+                             "while", "foreach", "in", "try", "catch", "finally", "not", "div", "mod", "rem")
+
+        for (keyword in keywords) {
+            val lexer = highlighter.getHighlightingLexer()
+            lexer.start(keyword)
+
+            val tokenType = lexer.tokenType
+            val attributes = tokenType?.let { highlighter.getTokenHighlights(it) } ?: emptyArray()
+            val attributeNames = attributesToString(attributes)
+
+            Assertions.assertTrue(
+                attributeNames.contains("PICAT_KEYWORD"),
+                "Keyword '$keyword' should be highlighted as PICAT_KEYWORD but has '$attributeNames'"
+            )
+        }
+    }
+
+    @Test
+    fun testOperatorHighlighting() {
+        val highlighter = PicatSyntaxHighlighter()
+        val operators = listOf("=>", "=", "+", "-", "*", "/", ">", "<", ">=", "<=", "==", "!=", ":=")
+
+        for (operator in operators) {
+            val lexer = highlighter.getHighlightingLexer()
+            lexer.start(operator)
+
+            val tokenType = lexer.tokenType
+            val attributes = tokenType?.let { highlighter.getTokenHighlights(it) } ?: emptyArray()
+            val attributeNames = attributesToString(attributes)
+
+            Assertions.assertTrue(
+                attributeNames.contains("PICAT_OPERATOR"),
+                "Operator '$operator' should be highlighted as PICAT_OPERATOR but has '$attributeNames'"
+            )
+        }
+    }
+
+    @Test
+    fun testLiteralHighlighting() {
+        val highlighter = PicatSyntaxHighlighter()
+
+        // Test string literals
+        val strings = listOf("\"hello\"", "'world'")
+        for (string in strings) {
+            val lexer = highlighter.getHighlightingLexer()
+            lexer.start(string)
+
+            val tokenType = lexer.tokenType
+            val attributes = tokenType?.let { highlighter.getTokenHighlights(it) } ?: emptyArray()
+            val attributeNames = attributesToString(attributes)
+
+            Assertions.assertTrue(
+                attributeNames.contains("PICAT_STRING"),
+                "String '$string' should be highlighted as PICAT_STRING but has '$attributeNames'"
+            )
+        }
+
+        // Test number literals
+        val numbers = listOf("42", "3.14", "0")
+        for (number in numbers) {
+            val lexer = highlighter.getHighlightingLexer()
+            lexer.start(number)
+
+            val tokenType = lexer.tokenType
+            val attributes = tokenType?.let { highlighter.getTokenHighlights(it) } ?: emptyArray()
+            val attributeNames = attributesToString(attributes)
+
+            Assertions.assertTrue(
+                attributeNames.contains("PICAT_NUMBER"),
+                "Number '$number' should be highlighted as PICAT_NUMBER but has '$attributeNames'"
+            )
+        }
+
+        // Test boolean literals
+        val booleans = listOf("true", "false")
+        for (boolean in booleans) {
+            val lexer = highlighter.getHighlightingLexer()
+            lexer.start(boolean)
+
+            val tokenType = lexer.tokenType
+            val attributes = tokenType?.let { highlighter.getTokenHighlights(it) } ?: emptyArray()
+            val attributeNames = attributesToString(attributes)
+
+            Assertions.assertTrue(
+                attributeNames.contains("PICAT_KEYWORD"),
+                "Boolean '$boolean' should be highlighted as PICAT_KEYWORD but has '$attributeNames'"
+            )
+        }
+    }
+
+    @Test
+    fun testCommentHighlighting() {
+        val highlighter = PicatSyntaxHighlighter()
+        val lexer = highlighter.getHighlightingLexer()
+
+        val commentText = "% This is a comment"
+        lexer.start(commentText)
+
+        val tokenType = lexer.tokenType
+        val attributes = tokenType?.let { highlighter.getTokenHighlights(it) } ?: emptyArray()
+        val attributeNames = attributesToString(attributes)
+
+        Assertions.assertTrue(
+            attributeNames.contains("PICAT_COMMENT"),
+            "Comment should be highlighted as PICAT_COMMENT but has '$attributeNames'"
+        )
     }
 
     /**
@@ -132,7 +243,7 @@ class PicatSyntaxHighlightingTest : LexerTestCase() {
     }
 
     override fun createLexer(): Lexer {
-        return PicatSyntaxHighlighter().highlightingLexer
+        return PicatSyntaxHighlighter().getHighlightingLexer()
     }
 
     override fun getDirPath(): String {
