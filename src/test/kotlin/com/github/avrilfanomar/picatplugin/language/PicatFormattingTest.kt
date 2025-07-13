@@ -190,7 +190,7 @@ factorial(N) = N * factorial(N - 1) => N > 0.
 fib(0) = 0.
 fib(1) = 1.
 fib(N) = fib(N - 1) + fib(N - 2) => N > 1.
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }

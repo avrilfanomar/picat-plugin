@@ -11,7 +11,6 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.TokenType
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.formatter.common.AbstractBlock
-import com.intellij.psi.tree.IElementType
 
 /**
  * Configuration class for PicatBlock.
@@ -62,10 +61,11 @@ class PicatBlock(
         }
 
         // Handle comments in rule bodies
-        if (elementType == PicatTokenTypes.COMMENT && 
-            (parentType == PicatTokenTypes.BODY || 
-             parentType == PicatTokenTypes.PREDICATE_RULE || 
-             parentType == PicatTokenTypes.FUNCTION_RULE)) {
+        if (elementType == PicatTokenTypes.COMMENT &&
+            (parentType == PicatTokenTypes.BODY ||
+                    parentType == PicatTokenTypes.PREDICATE_RULE ||
+                    parentType == PicatTokenTypes.FUNCTION_RULE)
+        ) {
             return Indent.getNormalIndent()
         }
 
