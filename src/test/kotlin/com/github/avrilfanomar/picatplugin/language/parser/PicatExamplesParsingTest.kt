@@ -21,7 +21,7 @@ private const val KAKURO_PROGRAM = """
             go => 
 
               problem(P, N, Hints, Blanks),
-              writef("Kakuro problem %d\n",P),
+              writef("Kakuro problem %d",P),
 
               X = new_array(N,N),
               X :: 0..9, 
@@ -376,7 +376,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
 
             go => 
               problem(P, N, Hints, Blanks),
-              writef("Kakuro problem %d\n",P).
+              writef("Kakuro problem %d",P).
         """.trimIndent()
 
         myFixture.configureByText("test.pi", simpleGoRule)
@@ -730,7 +730,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
 
             go => 
               problem(P, N, Hints, Blanks),
-              writef("Kakuro problem %d\n",P),
+              writef("Kakuro problem %d",P),
 
               X = new_array(N,N),
               X :: 0..9,
