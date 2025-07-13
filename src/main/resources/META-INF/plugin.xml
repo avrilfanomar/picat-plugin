@@ -104,5 +104,10 @@
         <!-- Reference Contributor -->
         <psi.referenceContributor
                 implementation="com.github.avrilfanomar.picatplugin.language.references.PicatReferenceContributor"/>
+
+        <!-- Completion Contributor -->
+        <completion.contributor
+                language="Picat"
+                implementationClass="com.github.avrilfanomar.picatplugin.language.completion.PicatCompletionContributor"/>
     </extensions>
 </idea-plugin>
