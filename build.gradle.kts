@@ -156,7 +156,6 @@ pitest {
         "kotlin.collections.CollectionsKt"
     )
     verbose = true
-    testPlugin = "junit5"
 }
 
 tasks {
