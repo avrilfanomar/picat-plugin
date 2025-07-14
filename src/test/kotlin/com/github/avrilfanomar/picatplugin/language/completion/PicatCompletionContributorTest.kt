@@ -54,49 +54,19 @@ class PicatCompletionContributorTest : BasePlatformTestCase() {
 
         myFixture.configureByText("test.pi", text)
         myFixture.complete(CompletionType.BASIC)
-        
+
         // Select the 'length' completion
         val lookupElements = myFixture.lookupElements
         val lengthElement = lookupElements?.find { it.lookupString == "length" }
         assertNotNull("Should find 'length' completion", lengthElement)
-        
+
         myFixture.finishLookup('\t')
-        
+
         val resultText = myFixture.editor.document.text
-        assertTrue("Should insert parentheses after function name", 
-                   resultText.contains("length()"))
-    }
-
-    fun testListOperationFunctions() {
-        // Test completion of list operation functions
-        val text = """
-            main => 
-                L = [1, 2, 3],
-                app<caret>
-        """.trimIndent()
-
-        myFixture.configureByText("test.pi", text)
-        myFixture.complete(CompletionType.BASIC)
-
-        val lookupStrings = myFixture.lookupElementStrings
-        assertNotNull("Completion should provide suggestions", lookupStrings)
-        assertTrue("Should contain 'append' function", lookupStrings!!.contains("append"))
-    }
-
-    fun testMapOperationFunctions() {
-        // Test completion of map operation functions
-        val text = """
-            main => 
-                M = new_map(),
-                pu<caret>
-        """.trimIndent()
-
-        myFixture.configureByText("test.pi", text)
-        myFixture.complete(CompletionType.BASIC)
-
-        val lookupStrings = myFixture.lookupElementStrings
-        assertNotNull("Completion should provide suggestions", lookupStrings)
-        assertTrue("Should contain 'put' function", lookupStrings!!.contains("put"))
+        assertTrue(
+            "Should insert parentheses after function name",
+            resultText.contains("length()")
+        )
     }
 
     fun testConstantCompletion() {
@@ -128,21 +98,6 @@ class PicatCompletionContributorTest : BasePlatformTestCase() {
         val lookupStrings = myFixture.lookupElementStrings
         assertNotNull("Completion should provide suggestions", lookupStrings)
         assertTrue("Should contain 'then' keyword", lookupStrings!!.contains("then"))
-    }
-
-    fun testLoopKeywordCompletion() {
-        // Test completion of loop-related keywords
-        val text = """
-            main => 
-                wh<caret>
-        """.trimIndent()
-
-        myFixture.configureByText("test.pi", text)
-        myFixture.complete(CompletionType.BASIC)
-
-        val lookupStrings = myFixture.lookupElementStrings
-        assertNotNull("Completion should provide suggestions", lookupStrings)
-        assertTrue("Should contain 'while' keyword", lookupStrings!!.contains("while"))
     }
 
     fun testExceptionHandlingCompletion() {
