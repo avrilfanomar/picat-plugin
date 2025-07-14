@@ -437,7 +437,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // EQUAL | NOT_EQUAL | ASSIGN_OP | IDENTICAL | NOT_IDENTICAL
+  // EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_NON_EQUAL | IDENTICAL | NOT_IDENTICAL
   //              | GREATER | GREATER_EQUAL | LESS | LESS_EQUAL | LESS_EQUAL_PROLOG
   //              | IN_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
   //              | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | HASH_GREATER_OP | HASH_LESS_OP
@@ -448,6 +448,8 @@ public class PicatParser implements PsiParser, LightPsiParser {
     result_ = consumeToken(builder_, EQUAL);
     if (!result_) result_ = consumeToken(builder_, NOT_EQUAL);
     if (!result_) result_ = consumeToken(builder_, ASSIGN_OP);
+    if (!result_) result_ = consumeToken(builder_, NUMERICALLY_EQUAL);
+    if (!result_) result_ = consumeToken(builder_, NUMERICALLY_NON_EQUAL);
     if (!result_) result_ = consumeToken(builder_, IDENTICAL);
     if (!result_) result_ = consumeToken(builder_, NOT_IDENTICAL);
     if (!result_) result_ = consumeToken(builder_, GREATER);

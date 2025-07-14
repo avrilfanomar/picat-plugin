@@ -91,6 +91,8 @@ MULTILINE_COMMENT="/"\\*([^*]|\\*[^/])*\\*"/"
   "::"                       { return DOUBLE_COLON_OP; }
   ".."                       { return RANGE_OP; }
   "="                        { return EQUAL; }
+  "=:="                      { return NUMERICALLY_EQUAL; }
+  "=\\="                     { return NUMERICALLY_NON_EQUAL; }
   "!="                       { return NOT_EQUAL; }
   "=="                       { return IDENTICAL; }
   "!=="                      { return NOT_IDENTICAL; }

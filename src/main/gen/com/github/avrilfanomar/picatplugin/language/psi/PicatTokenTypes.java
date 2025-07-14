@@ -165,6 +165,8 @@ public interface PicatTokenTypes {
   IElementType NOT_EQUAL = new PicatTokenType("!=");
   IElementType NOT_IDENTICAL = new PicatTokenType("!==");
   IElementType NOT_KEYWORD = new PicatTokenType("not");
+  IElementType NUMERICALLY_EQUAL = new PicatTokenType("=:=");
+  IElementType NUMERICALLY_NON_EQUAL = new PicatTokenType("=\\=");
   IElementType PIPE = new PicatTokenType("|");
   IElementType PLUS = new PicatTokenType("+");
   IElementType POWER = new PicatTokenType("**");
