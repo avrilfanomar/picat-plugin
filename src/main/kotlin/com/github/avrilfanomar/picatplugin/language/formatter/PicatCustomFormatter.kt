@@ -1,8 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.formatter
 
-import com.intellij.formatting.SpacingBuilder
-import com.intellij.psi.codeStyle.CodeStyleSettings
-
 /**
  * Custom formatter for Picat language.
  * This class provides a custom implementation of the formatting logic.
@@ -21,19 +18,9 @@ class PicatCustomFormatter {
         // Normalize the input code by removing leading whitespace
         val normalizedCode = code.trim()
 
-        // Debug: print input and normalized code
-        println("[DEBUG_LOG] Input code: '${code.replace("\n", "\\n")}'")
-        println("[DEBUG_LOG] Normalized code: '${normalizedCode.replace("\n", "\\n")}'")
-        println("[DEBUG_LOG] Normalized code lines:")
-        normalizedCode.split("\n").forEachIndexed { i, line ->
-            println("[DEBUG_LOG]   Line $i: '$line' (length: ${line.length})")
-        }
-
         val result = when {
             // Check if this is a simple rule (one line with no blocks)
             isSimpleRule(normalizedCode) -> {
-                println("[DEBUG_LOG] isSimpleRule: true")
-                println("[DEBUG_LOG] Taking simple rule path")
                 var simpleResult = handleSpecialOperators(normalizedCode)
                 simpleResult = addSpacesAroundOperators(simpleResult)
 
@@ -41,8 +28,6 @@ class PicatCustomFormatter {
                 val contentAfterArrow = simpleResult.substringAfter("=>").trim()
                 val shouldAddLineBreak = contentAfterArrow.length > LINE_BREAK_THRESHOLD || 
                         contentAfterArrow.contains("println")
-                println("[DEBUG_LOG] Content after arrow: '$contentAfterArrow' (length: ${contentAfterArrow.length})")
-                println("[DEBUG_LOG] Should add line break: $shouldAddLineBreak")
 
                 if (shouldAddLineBreak) {
                     simpleResult = addLineBreaksAfterRuleOperators(simpleResult)
@@ -57,8 +42,6 @@ class PicatCustomFormatter {
             }
             // Check if this is a predicate definition
             isPredicate(normalizedCode) -> {
-                println("[DEBUG_LOG] isPredicate: true")
-                println("[DEBUG_LOG] Taking predicate path")
                 var predResult = handleSpecialOperators(normalizedCode)
                 predResult = addSpacesAroundOperators(predResult)
                 predResult
@@ -88,9 +71,6 @@ class PicatCustomFormatter {
 
         for (i in lines.indices) {
             val line = lines[i].trim()
-            println("[DEBUG_LOG] formatCode - Processing line $i: '$line' " +
-                    "(inRuleBody: ${state.inRuleBody}, indentLevel: ${state.indentLevel})")
-
             processLine(line, result, state)
         }
 
@@ -209,11 +189,9 @@ class PicatCustomFormatter {
     private fun isPredicate(code: String): Boolean {
         // Check if the code is a predicate definition (single line function definition)
         // A predicate should not contain newlines and should be a simple function definition
-        return (!code.contains("\n") && 
-                code.contains("(") && code.contains(")") && code.contains("=") && 
-                (code.endsWith(".") || code.contains(" =>")) &&
-                !code.contains("main") && // main rules are not predicates
-                !code.contains("solve")) // solve rules are not predicates
+        return (!code.contains("\n") &&
+                code.contains("(") && code.contains(")") && code.contains("=") &&
+                (code.endsWith(".") || code.contains("=>")))
     }
 
 
@@ -514,10 +492,7 @@ class PicatCustomFormatter {
      * Returns the indentation string for the given level.
      */
     private fun getIndentation(level: Int): String {
-        val result = "    ".repeat(maxOf(0, level))
-        // Debug: print indentation details
-        println("[DEBUG_LOG] getIndentation($level) = '$result' (length: ${result.length})")
-        return result
+        return "    ".repeat(maxOf(0, level))
     }
 
     /**
@@ -576,7 +551,7 @@ class PicatCustomFormatter {
 
         val prefix = code.substring(0, index)
         val suffix = code.substring(index + 1)
-        val result = prefix + before + ":" + after + suffix
+        val result = "$prefix$before:$after$suffix"
 
         return addSpacesAroundColonsInListComprehensions(result)
     }
