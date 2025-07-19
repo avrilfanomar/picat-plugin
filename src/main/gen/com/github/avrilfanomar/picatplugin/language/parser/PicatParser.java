@@ -399,12 +399,12 @@ public class PicatParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // parenthesized_goal
-  //                   | function_call
   //                   | lambda_term
+  //                   | function_call
   //                   | term_constructor
-  //                   | variable_index
   //                   | as_pattern
   //                   | list_expression
+  //                   | variable_index
   //                   | array_expression
   //                   | STRING
   //                   | VARIABLE
@@ -418,12 +418,12 @@ public class PicatParser implements PsiParser, LightPsiParser {
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, BASE_EXPRESSION, "<base expression>");
     result_ = parenthesized_goal(builder_, level_ + 1);
-    if (!result_) result_ = function_call(builder_, level_ + 1);
     if (!result_) result_ = lambda_term(builder_, level_ + 1);
+    if (!result_) result_ = function_call(builder_, level_ + 1);
     if (!result_) result_ = term_constructor(builder_, level_ + 1);
-    if (!result_) result_ = variable_index(builder_, level_ + 1);
     if (!result_) result_ = as_pattern(builder_, level_ + 1);
     if (!result_) result_ = list_expression(builder_, level_ + 1);
+    if (!result_) result_ = variable_index(builder_, level_ + 1);
     if (!result_) result_ = array_expression(builder_, level_ + 1);
     if (!result_) result_ = consumeToken(builder_, STRING);
     if (!result_) result_ = consumeToken(builder_, VARIABLE);
@@ -1402,18 +1402,42 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LBRACKET argument list_expression_suffix RBRACKET
+  // LBRACKET [argument [list_expression_suffix]] RBRACKET
   public static boolean list_expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_expression")) return false;
     if (!nextTokenIs(builder_, LBRACKET)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, LBRACKET);
-    result_ = result_ && argument(builder_, level_ + 1);
-    result_ = result_ && list_expression_suffix(builder_, level_ + 1);
+    result_ = result_ && list_expression_1(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, RBRACKET);
     exit_section_(builder_, marker_, LIST_EXPRESSION, result_);
     return result_;
+  }
+
+  // [argument [list_expression_suffix]]
+  private static boolean list_expression_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_expression_1")) return false;
+    list_expression_1_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // argument [list_expression_suffix]
+  private static boolean list_expression_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_expression_1_0")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = argument(builder_, level_ + 1);
+    result_ = result_ && list_expression_1_0_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // [list_expression_suffix]
+  private static boolean list_expression_1_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_expression_1_0_1")) return false;
+    list_expression_suffix(builder_, level_ + 1);
+    return true;
   }
 
   /* ********************************************************** */

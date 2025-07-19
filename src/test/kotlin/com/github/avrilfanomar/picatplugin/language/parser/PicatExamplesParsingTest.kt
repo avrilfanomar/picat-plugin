@@ -7,11 +7,13 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.github.avrilfanomar.picatplugin.utils.PsiTestUtils
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.impl.DebugUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.io.File
 
 private const val KAKURO_PROGRAM = """
             import cp.
@@ -561,6 +563,17 @@ private const val SAT_VMTL_PROGRAM = """
 class PicatExamplesParsingTest : BasePlatformTestCase() {
 
     @Test
+    fun testExamplesPiParsing() {
+        myFixture.configureByText("examples.pi", javaClass.getResource("/examples.pi")!!.readText())
+        val file = myFixture.file as PicatFileImpl
+
+        val numOfPredicateRules = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java).size
+        println(numOfPredicateRules)
+
+        PsiTestUtils.assertNoPsiErrors(file, "examples.pi")
+    }
+
+    @Test
     fun testBQueens() {
         myFixture.configureByText("test.pi", B_QUEENS_PROGRAM.trimIndent())
         val file = myFixture.file as PicatFileImpl
@@ -622,6 +635,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
 
         // Check for comma-separated constraints
         Assertions.assertTrue(queensBodyText.contains("#="), "Queens body should contain constraint operators")
+        PsiTestUtils.assertNoPsiErrors(file, "bqueens")
     }
 
     @Test

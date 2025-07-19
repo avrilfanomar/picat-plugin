@@ -278,12 +278,12 @@ primary_expression ::= base_expression
 //atom_or_call ::= atom [LPAR [argument (COMMA argument)*] RPAR]
 
 base_expression ::= parenthesized_goal
-                  | function_call
                   | lambda_term
+                  | function_call
                   | term_constructor
-                  | variable_index
                   | as_pattern
                   | list_expression
+                  | variable_index
                   | array_expression
                   | STRING
                   | VARIABLE
@@ -304,7 +304,7 @@ variable_index ::= VARIABLE LBRACKET argument [COMMA argument] RBRACKET
 
 as_pattern ::= VARIABLE AT term [AT]
 
-list_expression ::= LBRACKET argument list_expression_suffix RBRACKET
+list_expression ::= LBRACKET [argument [list_expression_suffix]] RBRACKET
 
 list_expression_suffix ::= COLON iterator (COMMA (iterator | condition))*  // list comprehension
                         | (COMMA argument)* [PIPE argument]                // regular list

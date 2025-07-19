@@ -1,8 +1,10 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
+import com.github.avrilfanomar.picatplugin.language.psi.PicatListExpression
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
+import com.github.avrilfanomar.picatplugin.utils.PsiTestUtils
 import com.intellij.psi.impl.DebugUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -112,4 +114,16 @@ class PicatParserTest : BasePlatformTestCase() {
         Assertions.assertNotNull(body, "Rule should have a body")
     }
 
+    @Test
+    fun testListOfLists() {
+        val code = "list_of_lists(N) = [[Y : Y in 1..X] : X in 1..N]."
+
+        myFixture.configureByText("test.pi", code)
+        val file = myFixture.file as PicatFileImpl
+
+        val lists = PsiTreeUtil.collectElementsOfType(file, PicatListExpression::class.java)
+
+        Assertions.assertEquals(2, lists.size)
+        PsiTestUtils.assertNoPsiErrors(file, "test.pi")
+    }
 }
