@@ -74,6 +74,7 @@ public interface PicatTokenTypes {
   IElementType PROGRAM_ITEM = new PicatElementType("PROGRAM_ITEM");
   IElementType QUALIFIED_FUNCTION_CALL = new PicatElementType("QUALIFIED_FUNCTION_CALL");
   IElementType RANGE_EXPRESSION = new PicatElementType("RANGE_EXPRESSION");
+  IElementType RULE_HEAD = new PicatElementType("RULE_HEAD");
   IElementType SHIFT_EXPRESSION = new PicatElementType("SHIFT_EXPRESSION");
   IElementType TABLE_MODE = new PicatElementType("TABLE_MODE");
   IElementType TERM = new PicatElementType("TERM");
@@ -393,6 +394,9 @@ public interface PicatTokenTypes {
       }
       else if (type == RANGE_EXPRESSION) {
         return new PicatRangeExpressionImpl(node);
+      }
+      else if (type == RULE_HEAD) {
+        return new PicatRuleHeadImpl(node);
       }
       else if (type == SHIFT_EXPRESSION) {
         return new PicatShiftExpressionImpl(node);

@@ -153,7 +153,7 @@ predicate_definition ::= predicate_directive* predicate_clause
 
 predicate_clause ::= predicate_rule | predicate_fact
 
-predicate_rule ::= head [COMMA condition] (ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) body DOT {pin=3}
+predicate_rule ::= rule_head [COMMA condition] (ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) body DOT {pin=3}
 
 predicate_fact ::= head DOT {pin=2}
 
@@ -186,6 +186,7 @@ index_mode ::= PLUS | MINUS
 table_mode ::= PLUS | MINUS
 
 head ::= atom [LPAR [argument (COMMA argument)*] RPAR]
+rule_head ::= function_fact | (atom [LPAR [argument (COMMA argument)*] RPAR])
 
 // Condition and body
 condition ::= goal

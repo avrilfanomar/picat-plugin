@@ -271,6 +271,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitRuleHead(@NotNull PicatRuleHead o) {
+    visitPsiElement(o);
+  }
+
   public void visitShiftExpression(@NotNull PicatShiftExpression o) {
     visitPsiElement(o);
   }
