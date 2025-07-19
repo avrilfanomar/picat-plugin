@@ -160,7 +160,7 @@ predicate_fact ::= head DOT {pin=2}
 // Function definitions - fixed similar to predicates
 function_definition ::= function_directive* function_clause
 
-function_clause ::= function_rule | function_fact
+function_clause ::= function_fact | function_rule
 
 function_rule ::= head EQUAL argument [COMMA condition] ARROW_OP body DOT {pin=2}
 

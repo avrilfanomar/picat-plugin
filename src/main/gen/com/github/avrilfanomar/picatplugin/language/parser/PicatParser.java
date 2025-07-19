@@ -977,13 +977,13 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // function_rule | function_fact
+  // function_fact | function_rule
   public static boolean function_clause(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_clause")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_CLAUSE, "<function clause>");
-    result_ = function_rule(builder_, level_ + 1);
-    if (!result_) result_ = function_fact(builder_, level_ + 1);
+    result_ = function_fact(builder_, level_ + 1);
+    if (!result_) result_ = function_rule(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
