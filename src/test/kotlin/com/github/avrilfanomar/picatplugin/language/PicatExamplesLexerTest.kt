@@ -14,26 +14,17 @@ import java.io.File
  * Test for Picat syntax highlighting using examples.pi.
  * This test verifies that the lexer correctly identifies tokens in the examples.pi file.
  */
-class PicatExamplesTest : LexerTestCase() {
+class PicatExamplesLexerTest : LexerTestCase() {
 
     @Test
-    fun testExamplesPi() {
+    fun testExamplesPiLexer() {
         val highlighter = PicatSyntaxHighlighter()
         val lexer = highlighter.highlightingLexer
 
-        // Read examples.pi file
-        val examplesFile = File("examples.pi")
-        if (!examplesFile.exists()) {
-            return
-        }
-
-        val text = examplesFile.readText()
+        val sampleText = javaClass.getResource("/examples.pi")!!.readText()
 
         // Track issues
         val issues = mutableListOf<String>()
-
-        // Process the entire file
-        val sampleText = text
 
         lexer.start(sampleText)
 
