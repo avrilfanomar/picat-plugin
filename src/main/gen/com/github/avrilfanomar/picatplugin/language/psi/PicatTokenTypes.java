@@ -98,8 +98,8 @@ public interface PicatTokenTypes {
   IElementType AT_LESS_OP = new PicatTokenType("@<");
   IElementType BACKTRACKABLE_ARROW_OP = new PicatTokenType("?=>");
   IElementType BICONDITIONAL_OP = new PicatTokenType("<=>");
-  IElementType BITWISE_AND = new PicatTokenType("/\\\\");
-  IElementType BITWISE_OR = new PicatTokenType("\\\\/");
+  IElementType BITWISE_AND = new PicatTokenType("/\\");
+  IElementType BITWISE_OR = new PicatTokenType("\\/");
   IElementType BITWISE_XOR = new PicatTokenType("^");
   IElementType CARDINALITY_KEYWORD = new PicatTokenType("cardinality");
   IElementType CATCH_KEYWORD = new PicatTokenType("catch");
@@ -127,7 +127,7 @@ public interface PicatTokenTypes {
   IElementType FOREACH_KEYWORD = new PicatTokenType("foreach");
   IElementType GREATER = new PicatTokenType(">");
   IElementType GREATER_EQUAL = new PicatTokenType(">=");
-  IElementType HASH_AND_OP = new PicatTokenType("#/\\\\");
+  IElementType HASH_AND_OP = new PicatTokenType("HASH_AND_OP");
   IElementType HASH_ARROW_OP = new PicatTokenType("#=>");
   IElementType HASH_BICONDITIONAL_OP = new PicatTokenType("#<=>");
   IElementType HASH_EQUAL_OP = new PicatTokenType("#=");
@@ -138,7 +138,7 @@ public interface PicatTokenTypes {
   IElementType HASH_LESS_OP = new PicatTokenType("#<");
   IElementType HASH_NOT_EQUAL_OP = new PicatTokenType("#!=");
   IElementType HASH_NOT_OP = new PicatTokenType("#~");
-  IElementType HASH_OR_OP = new PicatTokenType("#\\\\/");
+  IElementType HASH_OR_OP = new PicatTokenType("#\\/");
   IElementType HASH_XOR_OP = new PicatTokenType("#^");
   IElementType IDENTICAL = new PicatTokenType("==");
   IElementType IDENTIFIER = new PicatTokenType("IDENTIFIER");

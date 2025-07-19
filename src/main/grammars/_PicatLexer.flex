@@ -29,11 +29,11 @@ IDENTIFIER=[a-z][a-zA-Z0-9_]*
 VARIABLE=[A-Z_][a-zA-Z0-9_]*
 INTEGER=([0-9]+|0[xX][0-9a-fA-F]+|0[oO][0-7]+|0[bB][01]+)
 FLOAT=[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?
-STRING=\"(\\\\.|[^\"\\])*\"
-SINGLE_QUOTED_ATOM='([^'\\]|\\\\.)*'
+STRING=\"(\.|[^\"\\])*\"
+SINGLE_QUOTED_ATOM='([^'\\]|\.)*'
 COMMENT=%[^\r\n]*
-QUALIFIED_ATOM=[a-z][a-zA-Z0-9_]*\\.[a-z][a-zA-Z0-9_]*
-MULTILINE_COMMENT="/"\\*([^*]|\\*[^/])*\\*"/"
+QUALIFIED_ATOM=[a-z][a-zA-Z0-9_]*\.[a-z][a-zA-Z0-9_]*
+MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
 
 %%
 <YYINITIAL> {
@@ -71,9 +71,9 @@ MULTILINE_COMMENT="/"\\*([^*]|\\*[^/])*\\*"/"
   "<=>"                      { return BICONDITIONAL_OP; }
   "#<=>"                     { return HASH_BICONDITIONAL_OP; }
   "#=>"                      { return HASH_ARROW_OP; }
-  "#\\\\/"                   { return HASH_OR_OP; }
+  "#\\/"                     { return HASH_OR_OP; }
   "#^"                       { return HASH_XOR_OP; }
-  "#/\\\\"                   { return HASH_AND_OP; }
+  "/\\"                      { return HASH_AND_OP; }
   "#~"                       { return HASH_NOT_OP; }
   "#="                       { return HASH_EQUAL_OP; }
   "#!="                      { return HASH_NOT_EQUAL_OP; }
@@ -113,9 +113,9 @@ MULTILINE_COMMENT="/"\\*([^*]|\\*[^/])*\\*"/"
   "<<"                       { return SHIFT_LEFT; }
   ">>"                       { return SHIFT_RIGHT; }
   ">>>"                      { return SHIFT_RIGHT_TRIPLE; }
-  "\\\\/"                    { return BITWISE_OR; }
+  "\\/"                      { return BITWISE_OR; }
   "^"                        { return BITWISE_XOR; }
-  "/\\\\"                    { return BITWISE_AND; }
+  "/\\"                      { return BITWISE_AND; }
   "~"                        { return COMPLEMENT; }
   "!"                        { return EXCLAMATION; }
   ":-"                       { return PROLOG_RULE_OP; }
