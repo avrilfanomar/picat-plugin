@@ -17,6 +17,6 @@ public interface PicatFunctionRule extends PsiElement {
   PicatCondition getCondition();
 
   @NotNull
-  PicatRuleHead getRuleHead();
+  PicatHead getHead();
 
 }

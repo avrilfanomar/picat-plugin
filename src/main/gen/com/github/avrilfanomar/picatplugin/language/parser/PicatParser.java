@@ -1164,12 +1164,12 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // rule_head EQUAL argument [COMMA condition] ARROW_OP body DOT
+  // head EQUAL argument [COMMA condition] ARROW_OP body DOT
   public static boolean function_rule(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_rule")) return false;
     boolean result_, pinned_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_RULE, "<function rule>");
-    result_ = rule_head(builder_, level_ + 1);
+    result_ = head(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, EQUAL);
     result_ = result_ && argument(builder_, level_ + 1);
     result_ = result_ && function_rule_3(builder_, level_ + 1);
@@ -2261,12 +2261,12 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // rule_head [COMMA condition] (ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) body DOT
+  // head [COMMA condition] (ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) body DOT
   public static boolean predicate_rule(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "predicate_rule")) return false;
     boolean result_, pinned_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, PREDICATE_RULE, "<predicate rule>");
-    result_ = rule_head(builder_, level_ + 1);
+    result_ = head(builder_, level_ + 1);
     result_ = result_ && predicate_rule_1(builder_, level_ + 1);
     result_ = result_ && predicate_rule_2(builder_, level_ + 1);
     pinned_ = result_; // pin = 3
@@ -2442,88 +2442,6 @@ public class PicatParser implements PsiParser, LightPsiParser {
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, RANGE_OP);
     result_ = result_ && or_expression(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  /* ********************************************************** */
-  // function_fact | (atom [LPAR [argument (COMMA argument)*] RPAR])
-  public static boolean rule_head(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "rule_head")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_, level_, _NONE_, RULE_HEAD, "<rule head>");
-    result_ = function_fact(builder_, level_ + 1);
-    if (!result_) result_ = rule_head_1(builder_, level_ + 1);
-    exit_section_(builder_, level_, marker_, result_, false, null);
-    return result_;
-  }
-
-  // atom [LPAR [argument (COMMA argument)*] RPAR]
-  private static boolean rule_head_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "rule_head_1")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = atom(builder_, level_ + 1);
-    result_ = result_ && rule_head_1_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // [LPAR [argument (COMMA argument)*] RPAR]
-  private static boolean rule_head_1_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "rule_head_1_1")) return false;
-    rule_head_1_1_0(builder_, level_ + 1);
-    return true;
-  }
-
-  // LPAR [argument (COMMA argument)*] RPAR
-  private static boolean rule_head_1_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "rule_head_1_1_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, LPAR);
-    result_ = result_ && rule_head_1_1_0_1(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, RPAR);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // [argument (COMMA argument)*]
-  private static boolean rule_head_1_1_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "rule_head_1_1_0_1")) return false;
-    rule_head_1_1_0_1_0(builder_, level_ + 1);
-    return true;
-  }
-
-  // argument (COMMA argument)*
-  private static boolean rule_head_1_1_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "rule_head_1_1_0_1_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = argument(builder_, level_ + 1);
-    result_ = result_ && rule_head_1_1_0_1_0_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // (COMMA argument)*
-  private static boolean rule_head_1_1_0_1_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "rule_head_1_1_0_1_0_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!rule_head_1_1_0_1_0_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "rule_head_1_1_0_1_0_1", pos_)) break;
-    }
-    return true;
-  }
-
-  // COMMA argument
-  private static boolean rule_head_1_1_0_1_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "rule_head_1_1_0_1_0_1_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && argument(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }

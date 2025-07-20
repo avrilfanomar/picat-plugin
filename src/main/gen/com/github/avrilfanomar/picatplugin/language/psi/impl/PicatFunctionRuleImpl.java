@@ -47,8 +47,8 @@ public class PicatFunctionRuleImpl extends ASTWrapperPsiElement implements Picat
 
   @Override
   @NotNull
-  public PicatRuleHead getRuleHead() {
-    return findNotNullChildByClass(PicatRuleHead.class);
+  public PicatHead getHead() {
+    return findNotNullChildByClass(PicatHead.class);
   }
 
 }
