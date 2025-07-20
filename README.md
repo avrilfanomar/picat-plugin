@@ -91,19 +91,6 @@ To rename a predicate or function:
 
 Contributions are welcome!
 
-### Development Tools
-
-#### Mutation Testing
-
-This project uses [Pitest](https://pitest.org/) for mutation testing to ensure high-quality tests. To run mutation
-tests:
-
-```bash
-./gradlew runMutationTests
-```
-
-For more information about mutation testing in this project, see [mutation-testing.md](docs/mutation-testing.md).
-
 ## License
 
 This plugin is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
