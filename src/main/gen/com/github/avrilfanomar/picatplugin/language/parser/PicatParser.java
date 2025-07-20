@@ -977,13 +977,13 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // function_fact | function_rule
+  // function_rule | function_fact
   public static boolean function_clause(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_clause")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_CLAUSE, "<function clause>");
-    result_ = function_fact(builder_, level_ + 1);
-    if (!result_) result_ = function_rule(builder_, level_ + 1);
+    result_ = function_rule(builder_, level_ + 1);
+    if (!result_) result_ = function_fact(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
@@ -1028,30 +1028,29 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // head EQUAL argument DOT
   public static boolean function_fact(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_fact")) return false;
-    boolean result_, pinned_;
+    boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_FACT, "<function fact>");
     result_ = head(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, EQUAL);
-    pinned_ = result_; // pin = 2
-    result_ = result_ && report_error_(builder_, argument(builder_, level_ + 1));
-    result_ = pinned_ && consumeToken(builder_, DOT) && result_;
-    exit_section_(builder_, level_, marker_, result_, pinned_, null);
-    return result_ || pinned_;
+    result_ = result_ && argument(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, DOT);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
   }
 
   /* ********************************************************** */
-  // head EQUAL argument [COMMA condition] ARROW_OP body DOT
+  // rule_head EQUAL argument [COMMA condition] ARROW_OP body DOT
   public static boolean function_rule(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_rule")) return false;
     boolean result_, pinned_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_RULE, "<function rule>");
-    result_ = head(builder_, level_ + 1);
+    result_ = rule_head(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, EQUAL);
-    pinned_ = result_; // pin = 2
-    result_ = result_ && report_error_(builder_, argument(builder_, level_ + 1));
-    result_ = pinned_ && report_error_(builder_, function_rule_3(builder_, level_ + 1)) && result_;
-    result_ = pinned_ && report_error_(builder_, consumeToken(builder_, ARROW_OP)) && result_;
-    result_ = pinned_ && report_error_(builder_, body(builder_, level_ + 1)) && result_;
+    result_ = result_ && argument(builder_, level_ + 1);
+    result_ = result_ && function_rule_3(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, ARROW_OP);
+    pinned_ = result_; // pin = 5
+    result_ = result_ && report_error_(builder_, body(builder_, level_ + 1));
     result_ = pinned_ && consumeToken(builder_, DOT) && result_;
     exit_section_(builder_, level_, marker_, result_, pinned_, null);
     return result_ || pinned_;

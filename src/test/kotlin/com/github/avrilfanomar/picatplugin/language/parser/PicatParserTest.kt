@@ -107,7 +107,7 @@ class PicatParserTest : BasePlatformTestCase() {
         val rules = PsiTreeUtil.collectElementsOfType(file, PicatPredicateRule::class.java)
         Assertions.assertTrue(rules.size >= 1, "Should have at least one rule")
 
-        val testExpressionsRule = rules.find { it.getHead().text == "test_expressions" }
+        val testExpressionsRule = rules.find { it.ruleHead.text == "test_expressions" }
         Assertions.assertNotNull(testExpressionsRule, "Should have a rule with head 'test_expressions'")
 
         val body = testExpressionsRule?.getBody()
@@ -124,6 +124,24 @@ class PicatParserTest : BasePlatformTestCase() {
         val lists = PsiTreeUtil.collectElementsOfType(file, PicatListExpression::class.java)
 
         Assertions.assertEquals(2, lists.size)
+        PsiTestUtils.assertNoPsiErrors(file, "test.pi")
+    }
+
+    @Test
+    fun testRuleWithFunctionHead() {
+        val code = """
+            power_set([]) = [[]].
+            power_set([H|T]) = P1++P2 =>
+                P1 = power_set(T),
+                P2 = [[H|S] : S in P1].
+        """.trimIndent()
+
+        myFixture.configureByText("test.pi", code)
+        val file = myFixture.file as PicatFileImpl
+
+        val rules = PsiTreeUtil.collectElementsOfType(file, PicatFunctionRule::class.java)
+
+        Assertions.assertEquals(1, rules.size, DebugUtil.psiToString(file, true))
         PsiTestUtils.assertNoPsiErrors(file, "test.pi")
     }
 }
