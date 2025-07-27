@@ -29,14 +29,14 @@ public class PicatExpressionWithRelationsImpl extends ASTWrapperPsiElement imple
 
   @Override
   @NotNull
-  public List<PicatBinRelOp> getBinRelOpList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatBinRelOp.class);
+  public PicatExpression getExpression() {
+    return findNotNullChildByClass(PicatExpression.class);
   }
 
   @Override
-  @NotNull
-  public List<PicatExpression> getExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatExpression.class);
+  @Nullable
+  public PicatExpressionWithRelationsTail getExpressionWithRelationsTail() {
+    return findChildByClass(PicatExpressionWithRelationsTail.class);
   }
 
 }

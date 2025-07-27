@@ -34,9 +34,15 @@ public class PicatFunctionCallImpl extends ASTWrapperPsiElement implements Picat
   }
 
   @Override
-  @NotNull
-  public List<PicatFunctionArgument> getFunctionArgumentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatFunctionArgument.class);
+  @Nullable
+  public PicatFunctionArgument getFunctionArgument() {
+    return findChildByClass(PicatFunctionArgument.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatFunctionArgumentListTail getFunctionArgumentListTail() {
+    return findChildByClass(PicatFunctionArgumentListTail.class);
   }
 
   @Override

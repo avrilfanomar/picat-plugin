@@ -19,7 +19,15 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitAdditiveExpressionTail(@NotNull PicatAdditiveExpressionTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitAndConstr(@NotNull PicatAndConstr o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAndConstrTail(@NotNull PicatAndConstrTail o) {
     visitPsiElement(o);
   }
 
@@ -27,11 +35,23 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitAndExpressionTail(@NotNull PicatAndExpressionTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitArgument(@NotNull PicatArgument o) {
     visitPsiElement(o);
   }
 
+  public void visitArgumentListTail(@NotNull PicatArgumentListTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitArrayExpression(@NotNull PicatArrayExpression o) {
+    visitPsiElement(o);
+  }
+
+  public void visitArrayItemsTail(@NotNull PicatArrayItemsTail o) {
     visitPsiElement(o);
   }
 
@@ -75,7 +95,15 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitConjunctiveGoalTail(@NotNull PicatConjunctiveGoalTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitDisjunctiveGoal(@NotNull PicatDisjunctiveGoal o) {
+    visitPsiElement(o);
+  }
+
+  public void visitDisjunctiveGoalTail(@NotNull PicatDisjunctiveGoalTail o) {
     visitPsiElement(o);
   }
 
@@ -88,6 +116,10 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitEquivConstr(@NotNull PicatEquivConstr o) {
+    visitPsiElement(o);
+  }
+
+  public void visitEquivConstrTail(@NotNull PicatEquivConstrTail o) {
     visitPsiElement(o);
   }
 
@@ -107,11 +139,19 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitExpressionWithRelationsTail(@NotNull PicatExpressionWithRelationsTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitForeachLoop(@NotNull PicatForeachLoop o) {
     visitPsiElement(o);
   }
 
   public void visitFunctionArgument(@NotNull PicatFunctionArgument o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFunctionArgumentListTail(@NotNull PicatFunctionArgumentListTail o) {
     visitPsiElement(o);
   }
 
@@ -159,6 +199,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitImplConstrTail(@NotNull PicatImplConstrTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitImportDeclaration(@NotNull PicatImportDeclaration o) {
     visitPsiElement(o);
   }
@@ -183,6 +227,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitListComprehensionTail(@NotNull PicatListComprehensionTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitListExpression(@NotNull PicatListExpression o) {
     visitPsiElement(o);
   }
@@ -195,6 +243,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitListItemsTail(@NotNull PicatListItemsTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitLoopWhile(@NotNull PicatLoopWhile o) {
     visitPsiElement(o);
   }
@@ -204,6 +256,10 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitMultiplicativeExpression(@NotNull PicatMultiplicativeExpression o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMultiplicativeExpressionTail(@NotNull PicatMultiplicativeExpressionTail o) {
     visitPsiElement(o);
   }
 
@@ -223,7 +279,15 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitOrConstrTail(@NotNull PicatOrConstrTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitOrExpression(@NotNull PicatOrExpression o) {
+    visitPsiElement(o);
+  }
+
+  public void visitOrExpressionTail(@NotNull PicatOrExpressionTail o) {
     visitPsiElement(o);
   }
 
@@ -279,6 +343,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitShiftExpressionTail(@NotNull PicatShiftExpressionTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitTableMode(@NotNull PicatTableMode o) {
     visitPsiElement(o);
   }
@@ -288,6 +356,10 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitTermConstructor(@NotNull PicatTermConstructor o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTermListTail(@NotNull PicatTermListTail o) {
     visitPsiElement(o);
   }
 
@@ -315,6 +387,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitVariableListTail(@NotNull PicatVariableListTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitWhileLoop(@NotNull PicatWhileLoop o) {
     visitPsiElement(o);
   }
@@ -323,7 +399,15 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitXorConstrTail(@NotNull PicatXorConstrTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitXorExpression(@NotNull PicatXorExpression o) {
+    visitPsiElement(o);
+  }
+
+  public void visitXorExpressionTail(@NotNull PicatXorExpressionTail o) {
     visitPsiElement(o);
   }
 

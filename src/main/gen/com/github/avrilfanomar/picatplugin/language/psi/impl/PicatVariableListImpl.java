@@ -27,4 +27,16 @@ public class PicatVariableListImpl extends ASTWrapperPsiElement implements Picat
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public PicatVariableListTail getVariableListTail() {
+    return findChildByClass(PicatVariableListTail.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getVariable() {
+    return findChildByType(VARIABLE);
+  }
+
 }

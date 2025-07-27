@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatAndExpression extends PsiElement {
 
+  @Nullable
+  PicatAndExpressionTail getAndExpressionTail();
+
   @NotNull
-  List<PicatShiftExpression> getShiftExpressionList();
+  PicatShiftExpression getShiftExpression();
 
 }

@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface PicatArrayExpression extends PsiElement {
 
   @NotNull
-  List<PicatArgument> getArgumentList();
+  PicatArgument getArgument();
+
+  @Nullable
+  PicatArrayItemsTail getArrayItemsTail();
 
 }

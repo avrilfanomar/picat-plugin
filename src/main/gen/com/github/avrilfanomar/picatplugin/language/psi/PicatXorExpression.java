@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface PicatXorExpression extends PsiElement {
 
   @NotNull
-  List<PicatAndExpression> getAndExpressionList();
+  PicatAndExpression getAndExpression();
+
+  @Nullable
+  PicatXorExpressionTail getXorExpressionTail();
 
 }

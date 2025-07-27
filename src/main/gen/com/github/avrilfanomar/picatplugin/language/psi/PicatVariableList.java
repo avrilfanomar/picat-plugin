@@ -7,4 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatVariableList extends PsiElement {
 
+  @Nullable
+  PicatVariableListTail getVariableListTail();
+
+  @Nullable
+  PsiElement getVariable();
+
 }

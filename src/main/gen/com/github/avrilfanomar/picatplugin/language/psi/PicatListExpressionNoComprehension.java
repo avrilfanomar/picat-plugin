@@ -10,4 +10,7 @@ public interface PicatListExpressionNoComprehension extends PsiElement {
   @NotNull
   List<PicatTerm> getTermList();
 
+  @Nullable
+  PicatTermListTail getTermListTail();
+
 }

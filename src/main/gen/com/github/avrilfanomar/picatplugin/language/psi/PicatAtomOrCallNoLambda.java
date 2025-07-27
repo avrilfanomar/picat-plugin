@@ -10,7 +10,10 @@ public interface PicatAtomOrCallNoLambda extends PsiElement {
   @NotNull
   PicatAtom getAtom();
 
-  @NotNull
-  List<PicatTerm> getTermList();
+  @Nullable
+  PicatTerm getTerm();
+
+  @Nullable
+  PicatTermListTail getTermListTail();
 
 }

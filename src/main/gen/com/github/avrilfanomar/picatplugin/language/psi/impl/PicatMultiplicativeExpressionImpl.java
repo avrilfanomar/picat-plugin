@@ -28,9 +28,15 @@ public class PicatMultiplicativeExpressionImpl extends ASTWrapperPsiElement impl
   }
 
   @Override
+  @Nullable
+  public PicatMultiplicativeExpressionTail getMultiplicativeExpressionTail() {
+    return findChildByClass(PicatMultiplicativeExpressionTail.class);
+  }
+
+  @Override
   @NotNull
-  public List<PicatUnaryExpression> getUnaryExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatUnaryExpression.class);
+  public PicatUnaryExpression getUnaryExpression() {
+    return findNotNullChildByClass(PicatUnaryExpression.class);
   }
 
 }

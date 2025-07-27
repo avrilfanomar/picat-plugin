@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatMultiplicativeExpression extends PsiElement {
 
+  @Nullable
+  PicatMultiplicativeExpressionTail getMultiplicativeExpressionTail();
+
   @NotNull
-  List<PicatUnaryExpression> getUnaryExpressionList();
+  PicatUnaryExpression getUnaryExpression();
 
 }

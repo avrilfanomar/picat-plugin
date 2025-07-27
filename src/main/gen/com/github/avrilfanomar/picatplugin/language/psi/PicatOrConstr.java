@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatOrConstr extends PsiElement {
 
+  @Nullable
+  PicatOrConstrTail getOrConstrTail();
+
   @NotNull
-  List<PicatXorConstr> getXorConstrList();
+  PicatXorConstr getXorConstr();
 
 }

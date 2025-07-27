@@ -10,7 +10,10 @@ public interface PicatFunctionCallNoDot extends PsiElement {
   @Nullable
   PicatAtom getAtom();
 
-  @NotNull
-  List<PicatTerm> getTermList();
+  @Nullable
+  PicatTerm getTerm();
+
+  @Nullable
+  PicatTermListTail getTermListTail();
 
 }

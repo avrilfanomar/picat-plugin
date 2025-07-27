@@ -28,9 +28,15 @@ public class PicatImplConstrImpl extends ASTWrapperPsiElement implements PicatIm
   }
 
   @Override
+  @Nullable
+  public PicatImplConstrTail getImplConstrTail() {
+    return findChildByClass(PicatImplConstrTail.class);
+  }
+
+  @Override
   @NotNull
-  public List<PicatOrConstr> getOrConstrList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatOrConstr.class);
+  public PicatOrConstr getOrConstr() {
+    return findNotNullChildByClass(PicatOrConstr.class);
   }
 
 }

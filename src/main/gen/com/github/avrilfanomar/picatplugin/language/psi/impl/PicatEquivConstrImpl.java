@@ -28,9 +28,15 @@ public class PicatEquivConstrImpl extends ASTWrapperPsiElement implements PicatE
   }
 
   @Override
+  @Nullable
+  public PicatEquivConstrTail getEquivConstrTail() {
+    return findChildByClass(PicatEquivConstrTail.class);
+  }
+
+  @Override
   @NotNull
-  public List<PicatImplConstr> getImplConstrList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatImplConstr.class);
+  public PicatImplConstr getImplConstr() {
+    return findNotNullChildByClass(PicatImplConstr.class);
   }
 
 }

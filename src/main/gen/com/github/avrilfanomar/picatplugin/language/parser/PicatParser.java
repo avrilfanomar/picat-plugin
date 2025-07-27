@@ -111,7 +111,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // multiplicative_expression ((PLUS | CONCAT_OP | MINUS) multiplicative_expression)*
+  // multiplicative_expression additive_expression_tail?
   public static boolean additive_expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "additive_expression")) return false;
     boolean result_;
@@ -122,31 +122,29 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // ((PLUS | CONCAT_OP | MINUS) multiplicative_expression)*
+  // additive_expression_tail?
   private static boolean additive_expression_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "additive_expression_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!additive_expression_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "additive_expression_1", pos_)) break;
-    }
+    additive_expression_tail(builder_, level_ + 1);
     return true;
   }
 
-  // (PLUS | CONCAT_OP | MINUS) multiplicative_expression
-  private static boolean additive_expression_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "additive_expression_1_0")) return false;
+  /* ********************************************************** */
+  // (PLUS | CONCAT_OP | MINUS) multiplicative_expression additive_expression_tail?
+  public static boolean additive_expression_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "additive_expression_tail")) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = additive_expression_1_0_0(builder_, level_ + 1);
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, ADDITIVE_EXPRESSION_TAIL, "<additive expression tail>");
+    result_ = additive_expression_tail_0(builder_, level_ + 1);
     result_ = result_ && multiplicative_expression(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && additive_expression_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
   // PLUS | CONCAT_OP | MINUS
-  private static boolean additive_expression_1_0_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "additive_expression_1_0_0")) return false;
+  private static boolean additive_expression_tail_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "additive_expression_tail_0")) return false;
     boolean result_;
     result_ = consumeToken(builder_, PLUS);
     if (!result_) result_ = consumeToken(builder_, CONCAT_OP);
@@ -154,8 +152,15 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
+  // additive_expression_tail?
+  private static boolean additive_expression_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "additive_expression_tail_2")) return false;
+    additive_expression_tail(builder_, level_ + 1);
+    return true;
+  }
+
   /* ********************************************************** */
-  // not_constr (HASH_AND_OP not_constr)*
+  // not_constr and_constr_tail?
   public static boolean and_constr(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "and_constr")) return false;
     boolean result_;
@@ -166,30 +171,36 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (HASH_AND_OP not_constr)*
+  // and_constr_tail?
   private static boolean and_constr_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "and_constr_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!and_constr_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "and_constr_1", pos_)) break;
-    }
+    and_constr_tail(builder_, level_ + 1);
     return true;
   }
 
-  // HASH_AND_OP not_constr
-  private static boolean and_constr_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "and_constr_1_0")) return false;
+  /* ********************************************************** */
+  // HASH_AND_OP not_constr and_constr_tail?
+  public static boolean and_constr_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "and_constr_tail")) return false;
+    if (!nextTokenIs(builder_, HASH_AND_OP)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, HASH_AND_OP);
     result_ = result_ && not_constr(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && and_constr_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, AND_CONSTR_TAIL, result_);
     return result_;
   }
 
+  // and_constr_tail?
+  private static boolean and_constr_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "and_constr_tail_2")) return false;
+    and_constr_tail(builder_, level_ + 1);
+    return true;
+  }
+
   /* ********************************************************** */
-  // shift_expression (BITWISE_AND shift_expression)*
+  // shift_expression and_expression_tail?
   public static boolean and_expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "and_expression")) return false;
     boolean result_;
@@ -200,26 +211,32 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (BITWISE_AND shift_expression)*
+  // and_expression_tail?
   private static boolean and_expression_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "and_expression_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!and_expression_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "and_expression_1", pos_)) break;
-    }
+    and_expression_tail(builder_, level_ + 1);
     return true;
   }
 
-  // BITWISE_AND shift_expression
-  private static boolean and_expression_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "and_expression_1_0")) return false;
+  /* ********************************************************** */
+  // BITWISE_AND shift_expression and_expression_tail?
+  public static boolean and_expression_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "and_expression_tail")) return false;
+    if (!nextTokenIs(builder_, BITWISE_AND)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, BITWISE_AND);
     result_ = result_ && shift_expression(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && and_expression_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, AND_EXPRESSION_TAIL, result_);
     return result_;
+  }
+
+  // and_expression_tail?
+  private static boolean and_expression_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "and_expression_tail_2")) return false;
+    and_expression_tail(builder_, level_ + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -234,7 +251,28 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LBRACE argument (COMMA argument)* RBRACE
+  // COMMA argument argument_list_tail?
+  public static boolean argument_list_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "argument_list_tail")) return false;
+    if (!nextTokenIs(builder_, COMMA)) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, COMMA);
+    result_ = result_ && argument(builder_, level_ + 1);
+    result_ = result_ && argument_list_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, ARGUMENT_LIST_TAIL, result_);
+    return result_;
+  }
+
+  // argument_list_tail?
+  private static boolean argument_list_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "argument_list_tail_2")) return false;
+    argument_list_tail(builder_, level_ + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // LBRACE argument array_items_tail? RBRACE
   public static boolean array_expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "array_expression")) return false;
     if (!nextTokenIs(builder_, LBRACE)) return false;
@@ -248,26 +286,32 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (COMMA argument)*
+  // array_items_tail?
   private static boolean array_expression_2(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "array_expression_2")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!array_expression_2_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "array_expression_2", pos_)) break;
-    }
+    array_items_tail(builder_, level_ + 1);
     return true;
   }
 
-  // COMMA argument
-  private static boolean array_expression_2_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "array_expression_2_0")) return false;
+  /* ********************************************************** */
+  // COMMA argument array_items_tail?
+  public static boolean array_items_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_items_tail")) return false;
+    if (!nextTokenIs(builder_, COMMA)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, COMMA);
     result_ = result_ && argument(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && array_items_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, ARRAY_ITEMS_TAIL, result_);
     return result_;
+  }
+
+  // array_items_tail?
+  private static boolean array_items_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_items_tail_2")) return false;
+    array_items_tail(builder_, level_ + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -305,7 +349,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // atom [LPAR [term (COMMA term)*] RPAR]
+  // atom [LPAR [term term_list_tail?] RPAR]
   public static boolean atom_or_call_no_lambda(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda")) return false;
     boolean result_;
@@ -316,14 +360,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [LPAR [term (COMMA term)*] RPAR]
+  // [LPAR [term term_list_tail?] RPAR]
   private static boolean atom_or_call_no_lambda_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda_1")) return false;
     atom_or_call_no_lambda_1_0(builder_, level_ + 1);
     return true;
   }
 
-  // LPAR [term (COMMA term)*] RPAR
+  // LPAR [term term_list_tail?] RPAR
   private static boolean atom_or_call_no_lambda_1_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda_1_0")) return false;
     boolean result_;
@@ -335,14 +379,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [term (COMMA term)*]
+  // [term term_list_tail?]
   private static boolean atom_or_call_no_lambda_1_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda_1_0_1")) return false;
     atom_or_call_no_lambda_1_0_1_0(builder_, level_ + 1);
     return true;
   }
 
-  // term (COMMA term)*
+  // term term_list_tail?
   private static boolean atom_or_call_no_lambda_1_0_1_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda_1_0_1_0")) return false;
     boolean result_;
@@ -353,26 +397,11 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (COMMA term)*
+  // term_list_tail?
   private static boolean atom_or_call_no_lambda_1_0_1_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda_1_0_1_0_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!atom_or_call_no_lambda_1_0_1_0_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "atom_or_call_no_lambda_1_0_1_0_1", pos_)) break;
-    }
+    term_list_tail(builder_, level_ + 1);
     return true;
-  }
-
-  // COMMA term
-  private static boolean atom_or_call_no_lambda_1_0_1_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda_1_0_1_0_1_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && term(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
   }
 
   /* ********************************************************** */
@@ -507,7 +536,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // negative_goal (COMMA conjunctive_goal)*
+  // negative_goal conjunctive_goal_tail?
   public static boolean conjunctive_goal(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "conjunctive_goal")) return false;
     boolean result_;
@@ -518,30 +547,28 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (COMMA conjunctive_goal)*
+  // conjunctive_goal_tail?
   private static boolean conjunctive_goal_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "conjunctive_goal_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!conjunctive_goal_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "conjunctive_goal_1", pos_)) break;
-    }
+    conjunctive_goal_tail(builder_, level_ + 1);
     return true;
   }
 
+  /* ********************************************************** */
   // COMMA conjunctive_goal
-  private static boolean conjunctive_goal_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "conjunctive_goal_1_0")) return false;
+  public static boolean conjunctive_goal_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "conjunctive_goal_tail")) return false;
+    if (!nextTokenIs(builder_, COMMA)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, COMMA);
     result_ = result_ && conjunctive_goal(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    exit_section_(builder_, marker_, CONJUNCTIVE_GOAL_TAIL, result_);
     return result_;
   }
 
   /* ********************************************************** */
-  // conjunctive_goal (SEMICOLON disjunctive_goal)*
+  // conjunctive_goal disjunctive_goal_tail?
   public static boolean disjunctive_goal(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "disjunctive_goal")) return false;
     boolean result_;
@@ -552,25 +579,23 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (SEMICOLON disjunctive_goal)*
+  // disjunctive_goal_tail?
   private static boolean disjunctive_goal_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "disjunctive_goal_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!disjunctive_goal_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "disjunctive_goal_1", pos_)) break;
-    }
+    disjunctive_goal_tail(builder_, level_ + 1);
     return true;
   }
 
+  /* ********************************************************** */
   // SEMICOLON disjunctive_goal
-  private static boolean disjunctive_goal_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "disjunctive_goal_1_0")) return false;
+  public static boolean disjunctive_goal_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "disjunctive_goal_tail")) return false;
+    if (!nextTokenIs(builder_, SEMICOLON)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, SEMICOLON);
     result_ = result_ && disjunctive_goal(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    exit_section_(builder_, marker_, DISJUNCTIVE_GOAL_TAIL, result_);
     return result_;
   }
 
@@ -610,7 +635,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // impl_constr (HASH_BICONDITIONAL_OP impl_constr)*
+  // impl_constr equiv_constr_tail?
   public static boolean equiv_constr(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "equiv_constr")) return false;
     boolean result_;
@@ -621,26 +646,32 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (HASH_BICONDITIONAL_OP impl_constr)*
+  // equiv_constr_tail?
   private static boolean equiv_constr_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "equiv_constr_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!equiv_constr_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "equiv_constr_1", pos_)) break;
-    }
+    equiv_constr_tail(builder_, level_ + 1);
     return true;
   }
 
-  // HASH_BICONDITIONAL_OP impl_constr
-  private static boolean equiv_constr_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "equiv_constr_1_0")) return false;
+  /* ********************************************************** */
+  // HASH_BICONDITIONAL_OP impl_constr equiv_constr_tail?
+  public static boolean equiv_constr_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "equiv_constr_tail")) return false;
+    if (!nextTokenIs(builder_, HASH_BICONDITIONAL_OP)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, HASH_BICONDITIONAL_OP);
     result_ = result_ && impl_constr(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && equiv_constr_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, EQUIV_CONSTR_TAIL, result_);
     return result_;
+  }
+
+  // equiv_constr_tail?
+  private static boolean equiv_constr_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "equiv_constr_tail_2")) return false;
+    equiv_constr_tail(builder_, level_ + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -700,7 +731,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // expression (bin_rel_op expression)*
+  // expression expression_with_relations_tail?
   public static boolean expression_with_relations(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "expression_with_relations")) return false;
     boolean result_;
@@ -711,26 +742,31 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (bin_rel_op expression)*
+  // expression_with_relations_tail?
   private static boolean expression_with_relations_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "expression_with_relations_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!expression_with_relations_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "expression_with_relations_1", pos_)) break;
-    }
+    expression_with_relations_tail(builder_, level_ + 1);
     return true;
   }
 
-  // bin_rel_op expression
-  private static boolean expression_with_relations_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "expression_with_relations_1_0")) return false;
+  /* ********************************************************** */
+  // bin_rel_op expression expression_with_relations_tail?
+  public static boolean expression_with_relations_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expression_with_relations_tail")) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_);
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, EXPRESSION_WITH_RELATIONS_TAIL, "<expression with relations tail>");
     result_ = bin_rel_op(builder_, level_ + 1);
     result_ = result_ && expression(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && expression_with_relations_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
+  }
+
+  // expression_with_relations_tail?
+  private static boolean expression_with_relations_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expression_with_relations_tail_2")) return false;
+    expression_with_relations_tail(builder_, level_ + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -793,7 +829,18 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // atom LPAR [function_argument (COMMA function_argument)*] RPAR
+  // atom
+  public static boolean function_argument_list_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_argument_list_tail")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_ARGUMENT_LIST_TAIL, "<function argument list tail>");
+    result_ = atom(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // atom LPAR [function_argument function_argument_list_tail?] RPAR
   //                | qualified_function_call
   public static boolean function_call(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call")) return false;
@@ -805,7 +852,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // atom LPAR [function_argument (COMMA function_argument)*] RPAR
+  // atom LPAR [function_argument function_argument_list_tail?] RPAR
   private static boolean function_call_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_0")) return false;
     boolean result_;
@@ -818,14 +865,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [function_argument (COMMA function_argument)*]
+  // [function_argument function_argument_list_tail?]
   private static boolean function_call_0_2(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_0_2")) return false;
     function_call_0_2_0(builder_, level_ + 1);
     return true;
   }
 
-  // function_argument (COMMA function_argument)*
+  // function_argument function_argument_list_tail?
   private static boolean function_call_0_2_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_0_2_0")) return false;
     boolean result_;
@@ -836,31 +883,16 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (COMMA function_argument)*
+  // function_argument_list_tail?
   private static boolean function_call_0_2_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_0_2_0_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!function_call_0_2_0_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "function_call_0_2_0_1", pos_)) break;
-    }
+    function_argument_list_tail(builder_, level_ + 1);
     return true;
   }
 
-  // COMMA function_argument
-  private static boolean function_call_0_2_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_call_0_2_0_1_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && function_argument(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
   /* ********************************************************** */
-  // atom LPAR [term (COMMA term)*] RPAR
-  //                        | IDENTIFIER DOLLAR IDENTIFIER LPAR [term (COMMA term)*] RPAR
+  // atom LPAR [term term_list_tail?] RPAR
+  //                        | IDENTIFIER DOLLAR IDENTIFIER LPAR [term term_list_tail?] RPAR
   public static boolean function_call_no_dot(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot")) return false;
     boolean result_;
@@ -871,7 +903,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // atom LPAR [term (COMMA term)*] RPAR
+  // atom LPAR [term term_list_tail?] RPAR
   private static boolean function_call_no_dot_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot_0")) return false;
     boolean result_;
@@ -884,14 +916,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [term (COMMA term)*]
+  // [term term_list_tail?]
   private static boolean function_call_no_dot_0_2(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot_0_2")) return false;
     function_call_no_dot_0_2_0(builder_, level_ + 1);
     return true;
   }
 
-  // term (COMMA term)*
+  // term term_list_tail?
   private static boolean function_call_no_dot_0_2_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot_0_2_0")) return false;
     boolean result_;
@@ -902,29 +934,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (COMMA term)*
+  // term_list_tail?
   private static boolean function_call_no_dot_0_2_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot_0_2_0_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!function_call_no_dot_0_2_0_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "function_call_no_dot_0_2_0_1", pos_)) break;
-    }
+    term_list_tail(builder_, level_ + 1);
     return true;
   }
 
-  // COMMA term
-  private static boolean function_call_no_dot_0_2_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_call_no_dot_0_2_0_1_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && term(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // IDENTIFIER DOLLAR IDENTIFIER LPAR [term (COMMA term)*] RPAR
+  // IDENTIFIER DOLLAR IDENTIFIER LPAR [term term_list_tail?] RPAR
   private static boolean function_call_no_dot_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot_1")) return false;
     boolean result_;
@@ -936,14 +953,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [term (COMMA term)*]
+  // [term term_list_tail?]
   private static boolean function_call_no_dot_1_4(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot_1_4")) return false;
     function_call_no_dot_1_4_0(builder_, level_ + 1);
     return true;
   }
 
-  // term (COMMA term)*
+  // term term_list_tail?
   private static boolean function_call_no_dot_1_4_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot_1_4_0")) return false;
     boolean result_;
@@ -954,26 +971,11 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (COMMA term)*
+  // term_list_tail?
   private static boolean function_call_no_dot_1_4_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot_1_4_0_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!function_call_no_dot_1_4_0_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "function_call_no_dot_1_4_0_1", pos_)) break;
-    }
+    term_list_tail(builder_, level_ + 1);
     return true;
-  }
-
-  // COMMA term
-  private static boolean function_call_no_dot_1_4_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_call_no_dot_1_4_0_1_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && term(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
   }
 
   /* ********************************************************** */
@@ -1200,7 +1202,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // or_constr (HASH_ARROW_OP or_constr)*
+  // or_constr impl_constr_tail?
   public static boolean impl_constr(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "impl_constr")) return false;
     boolean result_;
@@ -1211,26 +1213,32 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (HASH_ARROW_OP or_constr)*
+  // impl_constr_tail?
   private static boolean impl_constr_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "impl_constr_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!impl_constr_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "impl_constr_1", pos_)) break;
-    }
+    impl_constr_tail(builder_, level_ + 1);
     return true;
   }
 
-  // HASH_ARROW_OP or_constr
-  private static boolean impl_constr_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "impl_constr_1_0")) return false;
+  /* ********************************************************** */
+  // HASH_ARROW_OP or_constr impl_constr_tail?
+  public static boolean impl_constr_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "impl_constr_tail")) return false;
+    if (!nextTokenIs(builder_, HASH_ARROW_OP)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, HASH_ARROW_OP);
     result_ = result_ && or_constr(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && impl_constr_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, IMPL_CONSTR_TAIL, result_);
     return result_;
+  }
+
+  // impl_constr_tail?
+  private static boolean impl_constr_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "impl_constr_tail_2")) return false;
+    impl_constr_tail(builder_, level_ + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -1401,6 +1409,36 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // COMMA (iterator | condition) list_comprehension_tail?
+  public static boolean list_comprehension_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_comprehension_tail")) return false;
+    if (!nextTokenIs(builder_, COMMA)) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, COMMA);
+    result_ = result_ && list_comprehension_tail_1(builder_, level_ + 1);
+    result_ = result_ && list_comprehension_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, LIST_COMPREHENSION_TAIL, result_);
+    return result_;
+  }
+
+  // iterator | condition
+  private static boolean list_comprehension_tail_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_comprehension_tail_1")) return false;
+    boolean result_;
+    result_ = iterator(builder_, level_ + 1);
+    if (!result_) result_ = condition(builder_, level_ + 1);
+    return result_;
+  }
+
+  // list_comprehension_tail?
+  private static boolean list_comprehension_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_comprehension_tail_2")) return false;
+    list_comprehension_tail(builder_, level_ + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
   // LBRACKET [argument [list_expression_suffix]] RBRACKET
   public static boolean list_expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_expression")) return false;
@@ -1440,7 +1478,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LBRACKET [term (COMMA term)*] [PIPE term] RBRACKET
+  // LBRACKET [term term_list_tail?] [PIPE term] RBRACKET
   public static boolean list_expression_no_comprehension(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_expression_no_comprehension")) return false;
     if (!nextTokenIs(builder_, LBRACKET)) return false;
@@ -1454,14 +1492,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [term (COMMA term)*]
+  // [term term_list_tail?]
   private static boolean list_expression_no_comprehension_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_expression_no_comprehension_1")) return false;
     list_expression_no_comprehension_1_0(builder_, level_ + 1);
     return true;
   }
 
-  // term (COMMA term)*
+  // term term_list_tail?
   private static boolean list_expression_no_comprehension_1_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_expression_no_comprehension_1_0")) return false;
     boolean result_;
@@ -1472,26 +1510,11 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (COMMA term)*
+  // term_list_tail?
   private static boolean list_expression_no_comprehension_1_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_expression_no_comprehension_1_0_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!list_expression_no_comprehension_1_0_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "list_expression_no_comprehension_1_0_1", pos_)) break;
-    }
+    term_list_tail(builder_, level_ + 1);
     return true;
-  }
-
-  // COMMA term
-  private static boolean list_expression_no_comprehension_1_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expression_no_comprehension_1_0_1_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && term(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
   }
 
   // [PIPE term]
@@ -1513,8 +1536,8 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // COLON iterator (COMMA (iterator | condition))*  // list comprehension
-  //                         | (COMMA argument)* [PIPE argument]
+  // COLON iterator list_comprehension_tail?  // list comprehension
+  //                         | list_items_tail? [PIPE argument]
   public static boolean list_expression_suffix(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_expression_suffix")) return false;
     boolean result_;
@@ -1525,7 +1548,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // COLON iterator (COMMA (iterator | condition))*
+  // COLON iterator list_comprehension_tail?
   private static boolean list_expression_suffix_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_expression_suffix_0")) return false;
     boolean result_;
@@ -1537,38 +1560,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (COMMA (iterator | condition))*
+  // list_comprehension_tail?
   private static boolean list_expression_suffix_0_2(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_expression_suffix_0_2")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!list_expression_suffix_0_2_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "list_expression_suffix_0_2", pos_)) break;
-    }
+    list_comprehension_tail(builder_, level_ + 1);
     return true;
   }
 
-  // COMMA (iterator | condition)
-  private static boolean list_expression_suffix_0_2_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expression_suffix_0_2_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && list_expression_suffix_0_2_0_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // iterator | condition
-  private static boolean list_expression_suffix_0_2_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expression_suffix_0_2_0_1")) return false;
-    boolean result_;
-    result_ = iterator(builder_, level_ + 1);
-    if (!result_) result_ = condition(builder_, level_ + 1);
-    return result_;
-  }
-
-  // (COMMA argument)* [PIPE argument]
+  // list_items_tail? [PIPE argument]
   private static boolean list_expression_suffix_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_expression_suffix_1")) return false;
     boolean result_;
@@ -1579,26 +1578,11 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (COMMA argument)*
+  // list_items_tail?
   private static boolean list_expression_suffix_1_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_expression_suffix_1_0")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!list_expression_suffix_1_0_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "list_expression_suffix_1_0", pos_)) break;
-    }
+    list_items_tail(builder_, level_ + 1);
     return true;
-  }
-
-  // COMMA argument
-  private static boolean list_expression_suffix_1_0_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expression_suffix_1_0_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && argument(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
   }
 
   // [PIPE argument]
@@ -1617,6 +1601,27 @@ public class PicatParser implements PsiParser, LightPsiParser {
     result_ = result_ && argument(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
+  }
+
+  /* ********************************************************** */
+  // COMMA argument list_items_tail?
+  public static boolean list_items_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_items_tail")) return false;
+    if (!nextTokenIs(builder_, COMMA)) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, COMMA);
+    result_ = result_ && argument(builder_, level_ + 1);
+    result_ = result_ && list_items_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, LIST_ITEMS_TAIL, result_);
+    return result_;
+  }
+
+  // list_items_tail?
+  private static boolean list_items_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_items_tail_2")) return false;
+    list_items_tail(builder_, level_ + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -1651,7 +1656,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // unary_expression ((MULTIPLY | DIVIDE | INT_DIVIDE | DIV_RIGHT | DIV_LEFT | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD) unary_expression)*
+  // unary_expression multiplicative_expression_tail?
   public static boolean multiplicative_expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "multiplicative_expression")) return false;
     boolean result_;
@@ -1662,31 +1667,29 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // ((MULTIPLY | DIVIDE | INT_DIVIDE | DIV_RIGHT | DIV_LEFT | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD) unary_expression)*
+  // multiplicative_expression_tail?
   private static boolean multiplicative_expression_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "multiplicative_expression_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!multiplicative_expression_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "multiplicative_expression_1", pos_)) break;
-    }
+    multiplicative_expression_tail(builder_, level_ + 1);
     return true;
   }
 
-  // (MULTIPLY | DIVIDE | INT_DIVIDE | DIV_RIGHT | DIV_LEFT | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD) unary_expression
-  private static boolean multiplicative_expression_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "multiplicative_expression_1_0")) return false;
+  /* ********************************************************** */
+  // (MULTIPLY | DIVIDE | INT_DIVIDE | DIV_RIGHT | DIV_LEFT | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD) unary_expression multiplicative_expression_tail?
+  public static boolean multiplicative_expression_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "multiplicative_expression_tail")) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = multiplicative_expression_1_0_0(builder_, level_ + 1);
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, MULTIPLICATIVE_EXPRESSION_TAIL, "<multiplicative expression tail>");
+    result_ = multiplicative_expression_tail_0(builder_, level_ + 1);
     result_ = result_ && unary_expression(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && multiplicative_expression_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
   // MULTIPLY | DIVIDE | INT_DIVIDE | DIV_RIGHT | DIV_LEFT | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD
-  private static boolean multiplicative_expression_1_0_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "multiplicative_expression_1_0_0")) return false;
+  private static boolean multiplicative_expression_tail_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "multiplicative_expression_tail_0")) return false;
     boolean result_;
     result_ = consumeToken(builder_, MULTIPLY);
     if (!result_) result_ = consumeToken(builder_, DIVIDE);
@@ -1697,6 +1700,13 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, MOD_KEYWORD);
     if (!result_) result_ = consumeToken(builder_, REM_KEYWORD);
     return result_;
+  }
+
+  // multiplicative_expression_tail?
+  private static boolean multiplicative_expression_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "multiplicative_expression_tail_2")) return false;
+    multiplicative_expression_tail(builder_, level_ + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -1779,7 +1789,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // xor_constr (HASH_OR_OP xor_constr)*
+  // xor_constr or_constr_tail?
   public static boolean or_constr(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "or_constr")) return false;
     boolean result_;
@@ -1790,30 +1800,36 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (HASH_OR_OP xor_constr)*
+  // or_constr_tail?
   private static boolean or_constr_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "or_constr_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!or_constr_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "or_constr_1", pos_)) break;
-    }
+    or_constr_tail(builder_, level_ + 1);
     return true;
   }
 
-  // HASH_OR_OP xor_constr
-  private static boolean or_constr_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "or_constr_1_0")) return false;
+  /* ********************************************************** */
+  // HASH_OR_OP xor_constr or_constr_tail?
+  public static boolean or_constr_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "or_constr_tail")) return false;
+    if (!nextTokenIs(builder_, HASH_OR_OP)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, HASH_OR_OP);
     result_ = result_ && xor_constr(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && or_constr_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, OR_CONSTR_TAIL, result_);
     return result_;
   }
 
+  // or_constr_tail?
+  private static boolean or_constr_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "or_constr_tail_2")) return false;
+    or_constr_tail(builder_, level_ + 1);
+    return true;
+  }
+
   /* ********************************************************** */
-  // xor_expression (BITWISE_OR xor_expression)*
+  // xor_expression or_expression_tail?
   public static boolean or_expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "or_expression")) return false;
     boolean result_;
@@ -1824,26 +1840,32 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (BITWISE_OR xor_expression)*
+  // or_expression_tail?
   private static boolean or_expression_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "or_expression_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!or_expression_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "or_expression_1", pos_)) break;
-    }
+    or_expression_tail(builder_, level_ + 1);
     return true;
   }
 
-  // BITWISE_OR xor_expression
-  private static boolean or_expression_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "or_expression_1_0")) return false;
+  /* ********************************************************** */
+  // BITWISE_OR xor_expression or_expression_tail?
+  public static boolean or_expression_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "or_expression_tail")) return false;
+    if (!nextTokenIs(builder_, BITWISE_OR)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, BITWISE_OR);
     result_ = result_ && xor_expression(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && or_expression_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, OR_EXPRESSION_TAIL, result_);
     return result_;
+  }
+
+  // or_expression_tail?
+  private static boolean or_expression_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "or_expression_tail_2")) return false;
+    or_expression_tail(builder_, level_ + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -2131,7 +2153,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IDENTIFIER DOLLAR IDENTIFIER LPAR [function_argument (COMMA function_argument)*] RPAR
+  // IDENTIFIER DOLLAR IDENTIFIER LPAR [function_argument function_argument_list_tail?] RPAR
   public static boolean qualified_function_call(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "qualified_function_call")) return false;
     if (!nextTokenIs(builder_, IDENTIFIER)) return false;
@@ -2144,14 +2166,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [function_argument (COMMA function_argument)*]
+  // [function_argument function_argument_list_tail?]
   private static boolean qualified_function_call_4(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "qualified_function_call_4")) return false;
     qualified_function_call_4_0(builder_, level_ + 1);
     return true;
   }
 
-  // function_argument (COMMA function_argument)*
+  // function_argument function_argument_list_tail?
   private static boolean qualified_function_call_4_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "qualified_function_call_4_0")) return false;
     boolean result_;
@@ -2162,26 +2184,11 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (COMMA function_argument)*
+  // function_argument_list_tail?
   private static boolean qualified_function_call_4_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "qualified_function_call_4_0_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!qualified_function_call_4_0_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "qualified_function_call_4_0_1", pos_)) break;
-    }
+    function_argument_list_tail(builder_, level_ + 1);
     return true;
-  }
-
-  // COMMA function_argument
-  private static boolean qualified_function_call_4_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "qualified_function_call_4_0_1_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && function_argument(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
   }
 
   /* ********************************************************** */
@@ -2316,7 +2323,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // additive_expression ((SHIFT_LEFT | SHIFT_RIGHT | SHIFT_RIGHT_TRIPLE) additive_expression)*
+  // additive_expression shift_expression_tail?
   public static boolean shift_expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "shift_expression")) return false;
     boolean result_;
@@ -2327,36 +2334,41 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // ((SHIFT_LEFT | SHIFT_RIGHT | SHIFT_RIGHT_TRIPLE) additive_expression)*
+  // shift_expression_tail?
   private static boolean shift_expression_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "shift_expression_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!shift_expression_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "shift_expression_1", pos_)) break;
-    }
+    shift_expression_tail(builder_, level_ + 1);
     return true;
   }
 
-  // (SHIFT_LEFT | SHIFT_RIGHT | SHIFT_RIGHT_TRIPLE) additive_expression
-  private static boolean shift_expression_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "shift_expression_1_0")) return false;
+  /* ********************************************************** */
+  // (SHIFT_LEFT | SHIFT_RIGHT | SHIFT_RIGHT_TRIPLE) additive_expression shift_expression_tail?
+  public static boolean shift_expression_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "shift_expression_tail")) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = shift_expression_1_0_0(builder_, level_ + 1);
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, SHIFT_EXPRESSION_TAIL, "<shift expression tail>");
+    result_ = shift_expression_tail_0(builder_, level_ + 1);
     result_ = result_ && additive_expression(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && shift_expression_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
   // SHIFT_LEFT | SHIFT_RIGHT | SHIFT_RIGHT_TRIPLE
-  private static boolean shift_expression_1_0_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "shift_expression_1_0_0")) return false;
+  private static boolean shift_expression_tail_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "shift_expression_tail_0")) return false;
     boolean result_;
     result_ = consumeToken(builder_, SHIFT_LEFT);
     if (!result_) result_ = consumeToken(builder_, SHIFT_RIGHT);
     if (!result_) result_ = consumeToken(builder_, SHIFT_RIGHT_TRIPLE);
     return result_;
+  }
+
+  // shift_expression_tail?
+  private static boolean shift_expression_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "shift_expression_tail_2")) return false;
+    shift_expression_tail(builder_, level_ + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -2418,7 +2430,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DOLLAR expression | IDENTIFIER LPAR [argument (COMMA argument)*] RPAR
+  // DOLLAR expression | IDENTIFIER LPAR [argument argument_list_tail?] RPAR
   public static boolean term_constructor(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "term_constructor")) return false;
     if (!nextTokenIs(builder_, "<term constructor>", DOLLAR, IDENTIFIER)) return false;
@@ -2441,7 +2453,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // IDENTIFIER LPAR [argument (COMMA argument)*] RPAR
+  // IDENTIFIER LPAR [argument argument_list_tail?] RPAR
   private static boolean term_constructor_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "term_constructor_1")) return false;
     boolean result_;
@@ -2453,14 +2465,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [argument (COMMA argument)*]
+  // [argument argument_list_tail?]
   private static boolean term_constructor_1_2(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "term_constructor_1_2")) return false;
     term_constructor_1_2_0(builder_, level_ + 1);
     return true;
   }
 
-  // argument (COMMA argument)*
+  // argument argument_list_tail?
   private static boolean term_constructor_1_2_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "term_constructor_1_2_0")) return false;
     boolean result_;
@@ -2471,26 +2483,32 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (COMMA argument)*
+  // argument_list_tail?
   private static boolean term_constructor_1_2_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "term_constructor_1_2_0_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!term_constructor_1_2_0_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "term_constructor_1_2_0_1", pos_)) break;
-    }
+    argument_list_tail(builder_, level_ + 1);
     return true;
   }
 
-  // COMMA argument
-  private static boolean term_constructor_1_2_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "term_constructor_1_2_0_1_0")) return false;
+  /* ********************************************************** */
+  // COMMA term term_list_tail?
+  public static boolean term_list_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "term_list_tail")) return false;
+    if (!nextTokenIs(builder_, COMMA)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && argument(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && term(builder_, level_ + 1);
+    result_ = result_ && term_list_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, TERM_LIST_TAIL, result_);
     return result_;
+  }
+
+  // term_list_tail?
+  private static boolean term_list_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "term_list_tail_2")) return false;
+    term_list_tail(builder_, level_ + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -2656,7 +2674,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LBRACKET [VARIABLE (COMMA VARIABLE)*] RBRACKET
+  // LBRACKET [VARIABLE variable_list_tail?] RBRACKET
   public static boolean variable_list(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "variable_list")) return false;
     if (!nextTokenIs(builder_, LBRACKET)) return false;
@@ -2669,14 +2687,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [VARIABLE (COMMA VARIABLE)*]
+  // [VARIABLE variable_list_tail?]
   private static boolean variable_list_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "variable_list_1")) return false;
     variable_list_1_0(builder_, level_ + 1);
     return true;
   }
 
-  // VARIABLE (COMMA VARIABLE)*
+  // VARIABLE variable_list_tail?
   private static boolean variable_list_1_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "variable_list_1_0")) return false;
     boolean result_;
@@ -2687,25 +2705,31 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (COMMA VARIABLE)*
+  // variable_list_tail?
   private static boolean variable_list_1_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "variable_list_1_0_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!variable_list_1_0_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "variable_list_1_0_1", pos_)) break;
-    }
+    variable_list_tail(builder_, level_ + 1);
     return true;
   }
 
-  // COMMA VARIABLE
-  private static boolean variable_list_1_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "variable_list_1_0_1_0")) return false;
+  /* ********************************************************** */
+  // COMMA VARIABLE variable_list_tail?
+  public static boolean variable_list_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "variable_list_tail")) return false;
+    if (!nextTokenIs(builder_, COMMA)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeTokens(builder_, 0, COMMA, VARIABLE);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && variable_list_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, VARIABLE_LIST_TAIL, result_);
     return result_;
+  }
+
+  // variable_list_tail?
+  private static boolean variable_list_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "variable_list_tail_2")) return false;
+    variable_list_tail(builder_, level_ + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -2733,7 +2757,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // and_constr (HASH_XOR_OP and_constr)*
+  // and_constr xor_constr_tail?
   public static boolean xor_constr(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "xor_constr")) return false;
     boolean result_;
@@ -2744,30 +2768,36 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (HASH_XOR_OP and_constr)*
+  // xor_constr_tail?
   private static boolean xor_constr_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "xor_constr_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!xor_constr_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "xor_constr_1", pos_)) break;
-    }
+    xor_constr_tail(builder_, level_ + 1);
     return true;
   }
 
-  // HASH_XOR_OP and_constr
-  private static boolean xor_constr_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "xor_constr_1_0")) return false;
+  /* ********************************************************** */
+  // HASH_XOR_OP and_constr xor_constr_tail?
+  public static boolean xor_constr_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "xor_constr_tail")) return false;
+    if (!nextTokenIs(builder_, HASH_XOR_OP)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, HASH_XOR_OP);
     result_ = result_ && and_constr(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && xor_constr_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, XOR_CONSTR_TAIL, result_);
     return result_;
   }
 
+  // xor_constr_tail?
+  private static boolean xor_constr_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "xor_constr_tail_2")) return false;
+    xor_constr_tail(builder_, level_ + 1);
+    return true;
+  }
+
   /* ********************************************************** */
-  // and_expression (BITWISE_XOR and_expression)*
+  // and_expression xor_expression_tail?
   public static boolean xor_expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "xor_expression")) return false;
     boolean result_;
@@ -2778,26 +2808,32 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (BITWISE_XOR and_expression)*
+  // xor_expression_tail?
   private static boolean xor_expression_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "xor_expression_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!xor_expression_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "xor_expression_1", pos_)) break;
-    }
+    xor_expression_tail(builder_, level_ + 1);
     return true;
   }
 
-  // BITWISE_XOR and_expression
-  private static boolean xor_expression_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "xor_expression_1_0")) return false;
+  /* ********************************************************** */
+  // BITWISE_XOR and_expression xor_expression_tail?
+  public static boolean xor_expression_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "xor_expression_tail")) return false;
+    if (!nextTokenIs(builder_, BITWISE_XOR)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, BITWISE_XOR);
     result_ = result_ && and_expression(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = result_ && xor_expression_tail_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, XOR_EXPRESSION_TAIL, result_);
     return result_;
+  }
+
+  // xor_expression_tail?
+  private static boolean xor_expression_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "xor_expression_tail_2")) return false;
+    xor_expression_tail(builder_, level_ + 1);
+    return true;
   }
 
 }

@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface PicatShiftExpression extends PsiElement {
 
   @NotNull
-  List<PicatAdditiveExpression> getAdditiveExpressionList();
+  PicatAdditiveExpression getAdditiveExpression();
+
+  @Nullable
+  PicatShiftExpressionTail getShiftExpressionTail();
 
 }

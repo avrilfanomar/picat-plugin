@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatEquivConstr extends PsiElement {
 
+  @Nullable
+  PicatEquivConstrTail getEquivConstrTail();
+
   @NotNull
-  List<PicatImplConstr> getImplConstrList();
+  PicatImplConstr getImplConstr();
 
 }

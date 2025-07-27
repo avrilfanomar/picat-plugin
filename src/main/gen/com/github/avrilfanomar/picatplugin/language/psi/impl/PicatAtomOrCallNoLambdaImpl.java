@@ -34,9 +34,15 @@ public class PicatAtomOrCallNoLambdaImpl extends ASTWrapperPsiElement implements
   }
 
   @Override
-  @NotNull
-  public List<PicatTerm> getTermList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatTerm.class);
+  @Nullable
+  public PicatTerm getTerm() {
+    return findChildByClass(PicatTerm.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatTermListTail getTermListTail() {
+    return findChildByClass(PicatTermListTail.class);
   }
 
 }

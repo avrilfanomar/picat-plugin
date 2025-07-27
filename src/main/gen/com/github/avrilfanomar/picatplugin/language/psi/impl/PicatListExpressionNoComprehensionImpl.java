@@ -33,4 +33,10 @@ public class PicatListExpressionNoComprehensionImpl extends ASTWrapperPsiElement
     return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatTerm.class);
   }
 
+  @Override
+  @Nullable
+  public PicatTermListTail getTermListTail() {
+    return findChildByClass(PicatTermListTail.class);
+  }
+
 }

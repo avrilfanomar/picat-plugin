@@ -29,8 +29,14 @@ public class PicatXorConstrImpl extends ASTWrapperPsiElement implements PicatXor
 
   @Override
   @NotNull
-  public List<PicatAndConstr> getAndConstrList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatAndConstr.class);
+  public PicatAndConstr getAndConstr() {
+    return findNotNullChildByClass(PicatAndConstr.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatXorConstrTail getXorConstrTail() {
+    return findChildByClass(PicatXorConstrTail.class);
   }
 
 }

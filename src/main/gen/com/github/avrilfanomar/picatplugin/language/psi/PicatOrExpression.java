@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatOrExpression extends PsiElement {
 
+  @Nullable
+  PicatOrExpressionTail getOrExpressionTail();
+
   @NotNull
-  List<PicatXorExpression> getXorExpressionList();
+  PicatXorExpression getXorExpression();
 
 }

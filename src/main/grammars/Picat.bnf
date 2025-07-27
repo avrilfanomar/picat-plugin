@@ -195,21 +195,28 @@ body ::= goal
 // Goals - following the official precedence hierarchy
 goal ::= disjunctive_goal
 
-disjunctive_goal ::= conjunctive_goal (SEMICOLON disjunctive_goal)*
+disjunctive_goal ::= conjunctive_goal disjunctive_goal_tail?
+disjunctive_goal_tail ::= SEMICOLON disjunctive_goal
 
-conjunctive_goal ::= negative_goal (COMMA conjunctive_goal)*
+conjunctive_goal ::= negative_goal conjunctive_goal_tail?
+conjunctive_goal_tail ::= COMMA conjunctive_goal
 
 negative_goal ::= (NOT_KEYWORD negative_goal) | equiv_constr
 
-equiv_constr ::= impl_constr (HASH_BICONDITIONAL_OP impl_constr)*
+equiv_constr ::= impl_constr equiv_constr_tail?
+equiv_constr_tail ::= HASH_BICONDITIONAL_OP impl_constr equiv_constr_tail?
 
-impl_constr ::= or_constr (HASH_ARROW_OP or_constr)*
+impl_constr ::= or_constr impl_constr_tail?
+impl_constr_tail ::= HASH_ARROW_OP or_constr impl_constr_tail?
 
-or_constr ::= xor_constr (HASH_OR_OP xor_constr)*
+or_constr ::= xor_constr or_constr_tail?
+or_constr_tail ::= HASH_OR_OP xor_constr or_constr_tail?
 
-xor_constr ::= and_constr (HASH_XOR_OP and_constr)*
+xor_constr ::= and_constr xor_constr_tail?
+xor_constr_tail ::= HASH_XOR_OP and_constr xor_constr_tail?
 
-and_constr ::= not_constr (HASH_AND_OP not_constr)*
+and_constr ::= not_constr and_constr_tail?
+and_constr_tail ::= HASH_AND_OP not_constr and_constr_tail?
 
 not_constr ::= (HASH_NOT_OP not_constr) | enclosed_goal
 
@@ -235,7 +242,8 @@ catch_clause ::= CATCH_KEYWORD LPAR exception_pattern RPAR goal
 
 exception_pattern ::= term
 
-expression_with_relations ::= expression (bin_rel_op expression)*
+expression_with_relations ::= expression expression_with_relations_tail?
+expression_with_relations_tail ::= bin_rel_op expression expression_with_relations_tail?
 
 bin_rel_op ::= EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_NON_EQUAL | IDENTICAL | NOT_IDENTICAL
              | GREATER | GREATER_EQUAL | LESS | LESS_EQUAL | LESS_EQUAL_PROLOG
@@ -250,17 +258,23 @@ expression ::= range_expression
 
 range_expression ::= or_expression [RANGE_OP or_expression [RANGE_OP or_expression]]
 
-or_expression ::= xor_expression (BITWISE_OR xor_expression)*
+or_expression ::= xor_expression or_expression_tail?
+or_expression_tail ::= BITWISE_OR xor_expression or_expression_tail?
 
-xor_expression ::= and_expression (BITWISE_XOR and_expression)*
+xor_expression ::= and_expression xor_expression_tail?
+xor_expression_tail ::= BITWISE_XOR and_expression xor_expression_tail?
 
-and_expression ::= shift_expression (BITWISE_AND shift_expression)*
+and_expression ::= shift_expression and_expression_tail?
+and_expression_tail ::= BITWISE_AND shift_expression and_expression_tail?
 
-shift_expression ::= additive_expression ((SHIFT_LEFT | SHIFT_RIGHT | SHIFT_RIGHT_TRIPLE) additive_expression)*
+shift_expression ::= additive_expression shift_expression_tail?
+shift_expression_tail ::= (SHIFT_LEFT | SHIFT_RIGHT | SHIFT_RIGHT_TRIPLE) additive_expression shift_expression_tail?
 
-additive_expression ::= multiplicative_expression ((PLUS | CONCAT_OP | MINUS) multiplicative_expression)*
+additive_expression ::= multiplicative_expression additive_expression_tail?
+additive_expression_tail ::= (PLUS | CONCAT_OP | MINUS) multiplicative_expression additive_expression_tail?
 
-multiplicative_expression ::= unary_expression ((MULTIPLY | DIVIDE | INT_DIVIDE | DIV_RIGHT | DIV_LEFT | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD) unary_expression)*
+multiplicative_expression ::= unary_expression multiplicative_expression_tail?
+multiplicative_expression_tail ::= (MULTIPLY | DIVIDE | INT_DIVIDE | DIV_RIGHT | DIV_LEFT | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD) unary_expression multiplicative_expression_tail?
 
 unary_expression ::= power_expression
                    | PLUS unary_expression
@@ -307,16 +321,24 @@ as_pattern ::= VARIABLE AT term [AT]
 
 list_expression ::= LBRACKET [argument [list_expression_suffix]] RBRACKET
 
-list_expression_suffix ::= COLON iterator (COMMA (iterator | condition))*  // list comprehension
-                        | (COMMA argument)* [PIPE argument]                // regular list
+list_expression_suffix ::= COLON iterator list_comprehension_tail?  // list comprehension
+                        | list_items_tail? [PIPE argument]          // regular list
 
-array_expression ::= LBRACE argument (COMMA argument)* RBRACE
+list_comprehension_tail ::= COMMA (iterator | condition) list_comprehension_tail?
+
+list_items_tail ::= COMMA argument list_items_tail?
+
+array_expression ::= LBRACE argument array_items_tail? RBRACE
+
+array_items_tail ::= COMMA argument array_items_tail?
 
 lambda_term ::= LAMBDA_KEYWORD LPAR variable_list COMMA argument RPAR
 
-variable_list ::= LBRACKET [VARIABLE (COMMA VARIABLE)*] RBRACKET
+variable_list ::= LBRACKET [VARIABLE variable_list_tail?] RBRACKET
+variable_list_tail ::= COMMA VARIABLE variable_list_tail?
 
-term_constructor ::= DOLLAR expression | IDENTIFIER LPAR [argument (COMMA argument)*] RPAR
+term_constructor ::= DOLLAR expression | IDENTIFIER LPAR [argument argument_list_tail?] RPAR
+argument_list_tail ::= COMMA argument argument_list_tail?
 
 // Iterator for comprehensions and loops
 iterator ::= term IN_KEYWORD expression | term EQUAL expression
@@ -336,12 +358,14 @@ term ::=
   | term_constructor
 
 variable_as_pattern ::= VARIABLE AT term [AT]
-atom_or_call_no_lambda ::= atom [LPAR [term (COMMA term)*] RPAR]
-list_expression_no_comprehension ::= LBRACKET [term (COMMA term)*] [PIPE term] RBRACKET
-qualified_function_call ::= IDENTIFIER DOLLAR IDENTIFIER LPAR [function_argument (COMMA function_argument)*] RPAR
-function_call ::= atom LPAR [function_argument (COMMA function_argument)*] RPAR
+atom_or_call_no_lambda ::= atom [LPAR [term term_list_tail?] RPAR]
+list_expression_no_comprehension ::= LBRACKET [term term_list_tail?] [PIPE term] RBRACKET
+qualified_function_call ::= IDENTIFIER DOLLAR IDENTIFIER LPAR [function_argument function_argument_list_tail?] RPAR
+function_call ::= atom LPAR [function_argument function_argument_list_tail?] RPAR
                | qualified_function_call
-function_call_no_dot ::= atom LPAR [term (COMMA term)*] RPAR
-                       | IDENTIFIER DOLLAR IDENTIFIER LPAR [term (COMMA term)*] RPAR
+function_call_no_dot ::= atom LPAR [term term_list_tail?] RPAR
+                       | IDENTIFIER DOLLAR IDENTIFIER LPAR [term term_list_tail?] RPAR
+function_argument_list_tail ::= atom //TODO redefine it properly
+term_list_tail ::= COMMA term term_list_tail?
 atom ::= IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom
 dollar_escaped_atom ::= DOLLAR IDENTIFIER

@@ -7,8 +7,8 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatConjunctiveGoal extends PsiElement {
 
-  @NotNull
-  List<PicatConjunctiveGoal> getConjunctiveGoalList();
+  @Nullable
+  PicatConjunctiveGoalTail getConjunctiveGoalTail();
 
   @NotNull
   PicatNegativeGoal getNegativeGoal();

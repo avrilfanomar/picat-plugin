@@ -10,8 +10,11 @@ public interface PicatFunctionCall extends PsiElement {
   @Nullable
   PicatAtom getAtom();
 
-  @NotNull
-  List<PicatFunctionArgument> getFunctionArgumentList();
+  @Nullable
+  PicatFunctionArgument getFunctionArgument();
+
+  @Nullable
+  PicatFunctionArgumentListTail getFunctionArgumentListTail();
 
   @Nullable
   PicatQualifiedFunctionCall getQualifiedFunctionCall();

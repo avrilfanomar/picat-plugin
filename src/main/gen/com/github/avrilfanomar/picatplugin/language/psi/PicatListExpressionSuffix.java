@@ -7,13 +7,16 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatListExpressionSuffix extends PsiElement {
 
-  @NotNull
-  List<PicatArgument> getArgumentList();
+  @Nullable
+  PicatArgument getArgument();
 
-  @NotNull
-  List<PicatCondition> getConditionList();
+  @Nullable
+  PicatIterator getIterator();
 
-  @NotNull
-  List<PicatIterator> getIteratorList();
+  @Nullable
+  PicatListComprehensionTail getListComprehensionTail();
+
+  @Nullable
+  PicatListItemsTail getListItemsTail();
 
 }

@@ -29,8 +29,14 @@ public class PicatShiftExpressionImpl extends ASTWrapperPsiElement implements Pi
 
   @Override
   @NotNull
-  public List<PicatAdditiveExpression> getAdditiveExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatAdditiveExpression.class);
+  public PicatAdditiveExpression getAdditiveExpression() {
+    return findNotNullChildByClass(PicatAdditiveExpression.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatShiftExpressionTail getShiftExpressionTail() {
+    return findChildByClass(PicatShiftExpressionTail.class);
   }
 
 }

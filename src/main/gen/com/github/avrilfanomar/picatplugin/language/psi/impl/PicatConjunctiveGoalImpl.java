@@ -28,9 +28,9 @@ public class PicatConjunctiveGoalImpl extends ASTWrapperPsiElement implements Pi
   }
 
   @Override
-  @NotNull
-  public List<PicatConjunctiveGoal> getConjunctiveGoalList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatConjunctiveGoal.class);
+  @Nullable
+  public PicatConjunctiveGoalTail getConjunctiveGoalTail() {
+    return findChildByClass(PicatConjunctiveGoalTail.class);
   }
 
   @Override

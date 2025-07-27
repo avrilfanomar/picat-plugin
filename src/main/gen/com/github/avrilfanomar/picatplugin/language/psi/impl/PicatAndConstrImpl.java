@@ -28,9 +28,15 @@ public class PicatAndConstrImpl extends ASTWrapperPsiElement implements PicatAnd
   }
 
   @Override
+  @Nullable
+  public PicatAndConstrTail getAndConstrTail() {
+    return findChildByClass(PicatAndConstrTail.class);
+  }
+
+  @Override
   @NotNull
-  public List<PicatNotConstr> getNotConstrList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatNotConstr.class);
+  public PicatNotConstr getNotConstr() {
+    return findNotNullChildByClass(PicatNotConstr.class);
   }
 
 }

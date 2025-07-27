@@ -8,9 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface PicatExpressionWithRelations extends PsiElement {
 
   @NotNull
-  List<PicatBinRelOp> getBinRelOpList();
+  PicatExpression getExpression();
 
-  @NotNull
-  List<PicatExpression> getExpressionList();
+  @Nullable
+  PicatExpressionWithRelationsTail getExpressionWithRelationsTail();
 
 }

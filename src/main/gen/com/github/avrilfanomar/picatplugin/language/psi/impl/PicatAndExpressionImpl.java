@@ -28,9 +28,15 @@ public class PicatAndExpressionImpl extends ASTWrapperPsiElement implements Pica
   }
 
   @Override
+  @Nullable
+  public PicatAndExpressionTail getAndExpressionTail() {
+    return findChildByClass(PicatAndExpressionTail.class);
+  }
+
+  @Override
   @NotNull
-  public List<PicatShiftExpression> getShiftExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatShiftExpression.class);
+  public PicatShiftExpression getShiftExpression() {
+    return findNotNullChildByClass(PicatShiftExpression.class);
   }
 
 }

@@ -10,7 +10,7 @@ public interface PicatDisjunctiveGoal extends PsiElement {
   @NotNull
   PicatConjunctiveGoal getConjunctiveGoal();
 
-  @NotNull
-  List<PicatDisjunctiveGoal> getDisjunctiveGoalList();
+  @Nullable
+  PicatDisjunctiveGoalTail getDisjunctiveGoalTail();
 
 }

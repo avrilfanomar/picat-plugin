@@ -8,6 +8,7 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.github.avrilfanomar.picatplugin.utils.PsiTestUtils
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.impl.DebugUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -567,10 +568,70 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         myFixture.configureByText("examples.pi", javaClass.getResource("/examples.pi")!!.readText())
         val file = myFixture.file as PicatFileImpl
 
-        val numOfPredicateRules = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java).size
-        println(numOfPredicateRules)
+        // Use detailed logging to get more information about parsing errors
+        PsiTestUtils.assertNoPsiErrorsWithDetailedLogging(file, "examples.pi")
 
-        PsiTestUtils.assertNoPsiErrors(file, "examples.pi")
+        // Count predicate rules for additional verification
+        val numOfPredicateRules = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java).size
+        println("[DEBUG_LOG] Number of predicate rules: $numOfPredicateRules")
+
+        // Verify there are predicate rules
+        Assertions.assertTrue(numOfPredicateRules > 0, "Should have predicate rules")
+
+        // Verify import statements
+        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportDeclaration::class.java)
+        Assertions.assertTrue(importStatements.isNotEmpty(), "Should have import declarations")
+        println("[DEBUG_LOG] Number of import declarations: ${importStatements.size}")
+
+        // Verify import items
+        val importItems = PsiTreeUtil.findChildrenOfType(file, PicatImportItem::class.java)
+        Assertions.assertTrue(importItems.isNotEmpty(), "Should have import items")
+        println("[DEBUG_LOG] Number of import items: ${importItems.size}")
+        importItems.take(3).forEach { item ->
+            println("[DEBUG_LOG] Import item: ${item.text}")
+        }
+
+        // Verify foreach loops
+        val foreachLoops = PsiTreeUtil.findChildrenOfType(file, PicatForeachLoop::class.java)
+        Assertions.assertTrue(foreachLoops.isNotEmpty(), "Should have foreach loops")
+        println("[DEBUG_LOG] Number of foreach loops: ${foreachLoops.size}")
+        foreachLoops.take(3).forEach { loop ->
+            println("[DEBUG_LOG] Foreach loop: ${loop.text.take(100)}")
+        }
+
+        // Verify while loops
+        val whileLoops = PsiTreeUtil.findChildrenOfType(file, PicatWhileLoop::class.java)
+        Assertions.assertTrue(whileLoops.isNotEmpty(), "Should have while loops")
+        println("[DEBUG_LOG] Number of while loops: ${whileLoops.size}")
+        whileLoops.take(3).forEach { loop ->
+            println("[DEBUG_LOG] While loop: ${loop.text.take(100)}")
+        }
+
+        // Print PSI tree for debugging
+        println("[DEBUG_LOG] examples.pi PSI Tree:\n" + DebugUtil.psiToString(file, true))
+
+        // Manually find and print error elements
+        val errorElements: Collection<PsiErrorElement> =
+            PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
+        println("[DEBUG_LOG] Found ${errorElements.size} PSI parsing errors in examples.pi")
+
+        if (errorElements.isNotEmpty()) {
+            errorElements.forEachIndexed { index, error ->
+                println(
+                    "[DEBUG_LOG] Error $index: '${error.errorDescription}' at text: '${error.text}' " +
+                            "parent: '${error.parent?.javaClass?.simpleName}'"
+                )
+                // Print more context for the first few errors
+                if (index < 5) {
+                    println("[DEBUG_LOG] Error context: '${error.parent?.text?.take(100)}'")
+                    println(
+                        "[DEBUG_LOG] Error line number: ${
+                            file.viewProvider.document?.getLineNumber(error.textOffset)?.plus(1)
+                        }"
+                    )
+                }
+            }
+        }
     }
 
     @Test
@@ -601,7 +662,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         val queensBody = queensRule!!.getBody()
         Assertions.assertNotNull(queensBody, "Queens rule should have a body")
         val bodyText = queensBody?.text
-        println("[DEBUG_LOG] Queens body: " + bodyText)
+        println("[DEBUG_LOG] Queens body: $bodyText")
 
         // The parser doesn't correctly handle the dollar signs in the solve function call,
         // so we'll just check for the presence of foreach loops instead
@@ -719,7 +780,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         // The parser doesn't correctly handle the problem rule due to the dollar sign issue
         // Instead of checking for the problem rule, we'll just verify that we have the expected
         // number of predicate rules (main and go)
-        Assertions.assertTrue(allRules.size >= 1, "Should have at least main rule, found: ${allRules.size}")
+        Assertions.assertTrue(allRules.isNotEmpty(), "Should have at least main rule, found: ${allRules.size}")
 
         // Additional assertions for comma parsing
         // Check if main rule body contains comma-separated goals
@@ -764,7 +825,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
 
         // The parser doesn't correctly handle the asp rules due to the dollar sign issue
         // Instead of checking for asp rules, we'll just verify that we have at least the main rule
-        Assertions.assertTrue(allRules.size >= 1, "Should have at least the main rule")
+        Assertions.assertTrue(allRules.isNotEmpty(), "Should have at least the main rule")
 
         // The parser doesn't correctly handle the helper functions due to the dollar sign issue
         // Instead of checking for specific helper functions, we'll just verify that the main rule has a body
@@ -1017,7 +1078,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         }
 
         // We should have at least main rule (complex parsing may not work fully)
-        Assertions.assertTrue(allRules.size >= 1, "Should have at least main rule, found: ${allRules.size}")
+        Assertions.assertTrue(allRules.isNotEmpty(), "Should have at least main rule, found: ${allRules.size}")
 
         // Additional assertions for comma parsing in complex lists
         val mainRule = allRules.find { it.text.startsWith("main") }
@@ -1143,7 +1204,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         // Verify predicate rules
         val allRules = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java)
         println("[DEBUG_LOG] All predicate rules count: " + allRules.size)
-        Assertions.assertTrue(allRules.size >= 2, "Should have main and crossword rules")
+        Assertions.assertTrue(allRules.size == 2, "Should have main and crossword rules")
 
         // Verify main rule
         val mainRule = allRules.find { it.text.startsWith("main") }
@@ -1169,7 +1230,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         // Verify predicate rules
         val allRules = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java)
         println("[DEBUG_LOG] All predicate rules count: " + allRules.size)
-        Assertions.assertTrue(allRules.size >= 1, "Should have at least main rule")
+        Assertions.assertTrue(allRules.isNotEmpty(), "Should have at least main rule")
 
         // Verify foreach loops (may not be parsed correctly due to complex syntax)
         val foreachLoops = PsiTreeUtil.findChildrenOfType(file, PicatForeachLoop::class.java)
@@ -1191,7 +1252,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         // Verify predicate rules
         val allRules = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java)
         println("[DEBUG_LOG] All predicate rules count: " + allRules.size)
-        Assertions.assertTrue(allRules.size >= 1, "Should have at least main rule")
+        Assertions.assertTrue(allRules.isNotEmpty(), "Should have at least main rule")
 
         // Verify main rule
         val mainRule = allRules.find { it.text.startsWith("main") }
@@ -1213,7 +1274,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         // Verify predicate rules
         val allRules = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java)
         println("[DEBUG_LOG] All predicate rules count: " + allRules.size)
-        Assertions.assertTrue(allRules.size >= 1, "Should have at least main rule")
+        Assertions.assertTrue(allRules.isNotEmpty(), "Should have at least main rule")
 
         // Verify foreach loops (may not be parsed correctly due to complex syntax)
         val foreachLoops = PsiTreeUtil.findChildrenOfType(file, PicatForeachLoop::class.java)
@@ -1235,7 +1296,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
         // Verify predicate rules
         val allRules = PsiTreeUtil.findChildrenOfType(file, PicatPredicateRule::class.java)
         println("[DEBUG_LOG] All predicate rules count: " + allRules.size)
-        Assertions.assertTrue(allRules.size >= 1, "Should have at least main rule")
+        Assertions.assertTrue(allRules.isNotEmpty(), "Should have at least main rule")
 
         // Verify foreach loops (may not be parsed correctly due to complex syntax)
         val foreachLoops = PsiTreeUtil.findChildrenOfType(file, PicatForeachLoop::class.java)

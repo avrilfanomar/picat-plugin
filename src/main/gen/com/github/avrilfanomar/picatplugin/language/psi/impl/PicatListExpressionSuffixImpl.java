@@ -28,21 +28,27 @@ public class PicatListExpressionSuffixImpl extends ASTWrapperPsiElement implemen
   }
 
   @Override
-  @NotNull
-  public List<PicatArgument> getArgumentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatArgument.class);
+  @Nullable
+  public PicatArgument getArgument() {
+    return findChildByClass(PicatArgument.class);
   }
 
   @Override
-  @NotNull
-  public List<PicatCondition> getConditionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatCondition.class);
+  @Nullable
+  public PicatIterator getIterator() {
+    return findChildByClass(PicatIterator.class);
   }
 
   @Override
-  @NotNull
-  public List<PicatIterator> getIteratorList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatIterator.class);
+  @Nullable
+  public PicatListComprehensionTail getListComprehensionTail() {
+    return findChildByClass(PicatListComprehensionTail.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatListItemsTail getListItemsTail() {
+    return findChildByClass(PicatListItemsTail.class);
   }
 
 }

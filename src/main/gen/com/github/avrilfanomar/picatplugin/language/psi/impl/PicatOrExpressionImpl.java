@@ -28,9 +28,15 @@ public class PicatOrExpressionImpl extends ASTWrapperPsiElement implements Picat
   }
 
   @Override
+  @Nullable
+  public PicatOrExpressionTail getOrExpressionTail() {
+    return findChildByClass(PicatOrExpressionTail.class);
+  }
+
+  @Override
   @NotNull
-  public List<PicatXorExpression> getXorExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatXorExpression.class);
+  public PicatXorExpression getXorExpression() {
+    return findNotNullChildByClass(PicatXorExpression.class);
   }
 
 }
