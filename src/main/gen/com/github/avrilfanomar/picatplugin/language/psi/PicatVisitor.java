@@ -63,6 +63,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitAtomOrCall(@NotNull PicatAtomOrCall o) {
+    visitPsiElement(o);
+  }
+
   public void visitAtomOrCallNoLambda(@NotNull PicatAtomOrCallNoLambda o) {
     visitPsiElement(o);
   }
@@ -108,6 +112,10 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitDollarEscapedAtom(@NotNull PicatDollarEscapedAtom o) {
+    visitPsiElement(o);
+  }
+
+  public void visitDotAccess(@NotNull PicatDotAccess o) {
     visitPsiElement(o);
   }
 
@@ -292,6 +300,14 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitParenthesizedGoal(@NotNull PicatParenthesizedGoal o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPostfixOperation(@NotNull PicatPostfixOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPostfixOperations(@NotNull PicatPostfixOperations o) {
     visitPsiElement(o);
   }
 

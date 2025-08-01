@@ -283,14 +283,11 @@ unary_expression ::= power_expression
 
 power_expression ::= primary_expression [POWER unary_expression]
 
-primary_expression ::= base_expression
-
-//TODO space after dot access is still allowed and results in parsing issues
-//primary_expression ::= base_expression postfix_operations?
-//postfix_operations ::= postfix_operation postfix_operations?
-//postfix_operation ::= dot_access
-//dot_access ::= DOT !<<isWhitespaceNext>> atom_or_call
-//atom_or_call ::= atom [LPAR [argument (COMMA argument)*] RPAR]
+primary_expression ::= base_expression postfix_operations?
+postfix_operations ::= postfix_operation postfix_operations?
+postfix_operation ::= dot_access
+dot_access ::= DOT &<<isNonWhitespaceNext>> atom_or_call
+atom_or_call ::= atom [LPAR [argument (COMMA argument)*] RPAR]
 
 base_expression ::= parenthesized_goal
                   | lambda_term
@@ -365,7 +362,7 @@ function_call ::= atom LPAR [function_argument function_argument_list_tail?] RPA
                | qualified_function_call
 function_call_no_dot ::= atom LPAR [term term_list_tail?] RPAR
                        | IDENTIFIER DOLLAR IDENTIFIER LPAR [term term_list_tail?] RPAR
-function_argument_list_tail ::= atom //TODO redefine it properly
+function_argument_list_tail ::= COMMA function_argument function_argument_list_tail?
 term_list_tail ::= COMMA term term_list_tail?
 atom ::= IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom
 dollar_escaped_atom ::= DOLLAR IDENTIFIER

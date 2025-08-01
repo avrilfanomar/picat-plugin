@@ -7,6 +7,7 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.github.avrilfanomar.picatplugin.utils.PsiTestUtils
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.impl.DebugUtil
@@ -281,7 +282,8 @@ private const val SAT_CROSSWORD_PROGRAM = """
             table_in([{X1,X2},{X1,X3},{X5,X7},{X6,X7}], Words2),
             table_in([{X3,X4,X5},{X2,X4,X6}],Words3),
             AllSols=solve_all(Vars),
-            foreach(Sol in AllSols.sort())
+            SortedSols = AllSols.sort(),
+            foreach(Sol in SortedSols)
                 writeln([chr(Code) : Code in Sol])
             end.
         """
@@ -577,6 +579,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
 
         // Verify there are predicate rules
         Assertions.assertTrue(numOfPredicateRules > 0, "Should have predicate rules")
+        println("[DEBUG_LOG] Number of predicate rules: $numOfPredicateRules")
 
         // Verify import statements
         val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportDeclaration::class.java)
@@ -607,10 +610,7 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
             println("[DEBUG_LOG] While loop: ${loop.text.take(100)}")
         }
 
-        // Print PSI tree for debugging
-        println("[DEBUG_LOG] examples.pi PSI Tree:\n" + DebugUtil.psiToString(file, true))
-
-        // Manually find and print error elements
+        // Manually find and print error elements in more detail
         val errorElements: Collection<PsiErrorElement> =
             PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
         println("[DEBUG_LOG] Found ${errorElements.size} PSI parsing errors in examples.pi")
@@ -621,14 +621,21 @@ class PicatExamplesParsingTest : BasePlatformTestCase() {
                     "[DEBUG_LOG] Error $index: '${error.errorDescription}' at text: '${error.text}' " +
                             "parent: '${error.parent?.javaClass?.simpleName}'"
                 )
-                // Print more context for the first few errors
-                if (index < 5) {
-                    println("[DEBUG_LOG] Error context: '${error.parent?.text?.take(100)}'")
-                    println(
-                        "[DEBUG_LOG] Error line number: ${
-                            file.viewProvider.document?.getLineNumber(error.textOffset)?.plus(1)
-                        }"
-                    )
+                // Print more context for all errors
+                println("[DEBUG_LOG] Error context: '${error.parent?.text?.take(200)}'")
+                println(
+                    "[DEBUG_LOG] Error line number: ${
+                        file.viewProvider.document?.getLineNumber(error.textOffset)?.plus(1)
+                    }"
+                )
+                // Print the surrounding text
+                val document = file.viewProvider.document
+                if (document != null) {
+                    val lineNumber = document.getLineNumber(error.textOffset)
+                    val startOffset = document.getLineStartOffset(lineNumber)
+                    val endOffset = document.getLineEndOffset(lineNumber)
+                    val lineText = document.getText(TextRange(startOffset, endOffset))
+                    println("[DEBUG_LOG] Line text: '$lineText'")
                 }
             }
         }

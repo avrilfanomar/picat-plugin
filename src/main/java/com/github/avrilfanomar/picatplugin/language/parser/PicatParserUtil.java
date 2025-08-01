@@ -43,8 +43,21 @@ public class PicatParserUtil extends GeneratedParserUtilBase {
     /**
      * Alternative implementation that checks if the next character is NOT whitespace
      * This can be used with positive lookahead instead of negative lookahead
+     * For dot_access, we want to ensure there's no whitespace after the dot.
      */
     public static boolean isNonWhitespaceNext(PsiBuilder builder, int level) {
+        // Get the current token type
+        IElementType currentToken = builder.getTokenType();
+        if (currentToken == null) {
+            return false;
+        }
+
+        // Only apply this check for DOT tokens
+        String tokenText = builder.getTokenText();
+        if (tokenText == null || !tokenText.equals(".")) {
+            return true; // For non-dot tokens, always return true
+        }
+
         return !isWhitespaceNext(builder, level);
     }
 }

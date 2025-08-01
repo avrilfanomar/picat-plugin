@@ -10,4 +10,7 @@ public interface PicatPrimaryExpression extends PsiElement {
   @NotNull
   PicatBaseExpression getBaseExpression();
 
+  @Nullable
+  PicatPostfixOperations getPostfixOperations();
+
 }
