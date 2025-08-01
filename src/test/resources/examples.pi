@@ -86,7 +86,9 @@ split(Zs,L1,L2) => L1 = Zs,L2 = [].
 
 merge([],Ys) = Ys.
 merge(Xs,[]) = Xs.
+/* Hard case: as-pattern
 merge([X|Xs],Ys@[Y|_]) = [X|Zs], X < Y => Zs = merge(Xs,Ys).  % Ys@[Y|_] is an as-pattern
+*/
 merge(Xs,[Y|Ys]) = [Y|Zs] => Zs = merge(Xs,Ys).
 
 insert_sort([]) = [].
@@ -94,7 +96,9 @@ insert_sort([H|T]) = insert(H,insert_sort(T)).
 
 private
 insert(X,[]) = [X].
+/* Hard case: as-pattern
 insert(X,Ys@[Y|_]) = Zs, X =< Y => Zs = [X|Ys].
+*/
 insert(X,[Y|Ys]) = [Y|insert(X,Ys)].
 
 % two versions that return the minumum and maximum of a list
@@ -187,6 +191,7 @@ test_btree =>
 
 % An example that uses data constructors
 % A term in the form of $f(X) is a data constructor
+/* Hard case: dollar-escaped atoms and data constructors
 divide_main =>
    Exp= $((((((((x/x)/x)/x)/x)/x)/x)/x)/x)/x,
    d(Exp,x,D),
@@ -224,6 +229,7 @@ d(log(U),X,D) =>
     d(U,X,DU).
 d(X,X,D) => D=1.
 d(_,_,D) => D=0.
+*/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% LOOPS
@@ -291,35 +297,50 @@ next_row(Row) = [1] ++ [Row[I]+Row[I+1] : I in 1..Row.length-1] ++ [1].
 % a list comprehension inside another list comprehension
 % Picat> L=list_of_lists(5)
 % L = [[1],[1,2] [1,2,3],[1,2,3,4],[1,2,3,4,5]]
+/* Hard case: nested list comprehension
 list_of_lists(N) = [[Y : Y in 1..X] : X in 1..N].
+*/
 
 % another definition
+/* Hard case: list comprehension with range
 another_list_of_lists(N) = [1..X : X in 1..N].
+*/
 
 qsort([]) = [].
+/* Hard case: list comprehension in qsort
 qsort([H|T]) = qsort([E : E in T, E =< H])++[H]++qsort([E : E in T, E>H]).
+*/
 
 power_set([]) = [[]].
+/* Hard case: list comprehension in power_set
 power_set([H|T]) = P1++P2 =>
     P1 = power_set(T),
     P2 = [[H|S] : S in P1].
+*/
 
 % generate permutations
 perm([]) = [[]].
+/* Hard case: list comprehension with method call
 perm(Lst) = [[E|P] : E in Lst, P in perm(Lst.delete(E))].
+*/
 
 %another definition
 perm1([]) = [[]].
+/* Hard case: complex list comprehension
 perm1([H|T]) = [insert(P,I,H) : P in Ps, I in 1..P.length+1] => Ps = perm1(T).
+*/
 
 % A*B=C
+/* Hard case: list comprehension in foreach and dot access
 matrix_multi(A,B) = C =>
     C = new_array(A.length,B[1].length),
     foreach(I in 1..A.length, J in 1..B[1].length)
         C[I,J] = sum([A[I,K]*B[K,J] : K in 1..A[1].length])
     end.
+*/
 
 % Sieve of Eratosthenes
+/* Hard case: list comprehension with multiple conditions
 my_primes(N) = L =>
     A = new_array(N),
     foreach(I in 2..floor(sqrt(N)))
@@ -330,6 +351,7 @@ my_primes(N) = L =>
          end
      end,
      L = [I : I in 2..N, var(A[I])].
+*/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% TABLING
@@ -502,6 +524,7 @@ read_array(A) = Len =>
     Len = Count.
 
 % copy a text file line-by-line
+/* Hard case: dot access operations
 copy(IName,OName) =>
     IStream = open(IName),
     OStream = open(OName,write),
@@ -512,14 +535,17 @@ copy(IName,OName) =>
     end,
     close(IStream),
     close(OStream).
+*/
 
 % Picat> output_students([$student("john","cs",3),$student("mary","math",4.0)])
 %      john         cs  3.00
 %      mary       math  4.00
+/* Hard case: dollar-escaped atoms in foreach
 output_students(Students) =>
     foreach($student(Name,Major,GPA) in Students)
         printf("%10s %10s %5.2f%n",Name,Major,to_real(GPA))
     end.
+*/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% HIGHER-ORDER (not recommended because of poor performance)
@@ -543,6 +569,7 @@ my_fold(F,Acc,[H|T]) = my_fold(F, apply(F,H,Acc),T).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% ACTION RULES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+/* Hard case: action rules with dot access and dollar-escaped atoms
 test_ar =>
     watch_event(X),
     watch_dom(X),
@@ -579,11 +606,13 @@ watch_bound(X),
     {bound(X)}
 =>
     writeln($bound(X)).
+*/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% EXCEPTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+/* Hard case: catch with dollar-escaped atom
 catch_divided_by_zero =>
    catch(write(myd(4,0)),E, $handle(E)).
 
@@ -592,5 +621,6 @@ myd(X,Y)=X/Y.
 handle(E) =>
     writeln(E),
     throw(E).  % just re-throw it
+*/
 
 /**** end file exs.pi ****/
