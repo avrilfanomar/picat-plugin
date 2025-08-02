@@ -272,23 +272,40 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LBRACE argument array_items_tail? RBRACE
+  // LBRACE [argument array_items_tail?] RBRACE
   public static boolean array_expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "array_expression")) return false;
     if (!nextTokenIs(builder_, LBRACE)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, LBRACE);
-    result_ = result_ && argument(builder_, level_ + 1);
-    result_ = result_ && array_expression_2(builder_, level_ + 1);
+    result_ = result_ && array_expression_1(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, RBRACE);
     exit_section_(builder_, marker_, ARRAY_EXPRESSION, result_);
     return result_;
   }
 
+  // [argument array_items_tail?]
+  private static boolean array_expression_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_expression_1")) return false;
+    array_expression_1_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // argument array_items_tail?
+  private static boolean array_expression_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_expression_1_0")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = argument(builder_, level_ + 1);
+    result_ = result_ && array_expression_1_0_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
   // array_items_tail?
-  private static boolean array_expression_2(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "array_expression_2")) return false;
+  private static boolean array_expression_1_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_expression_1_0_1")) return false;
     array_items_tail(builder_, level_ + 1);
     return true;
   }

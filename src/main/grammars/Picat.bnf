@@ -326,7 +326,7 @@ list_comprehension_tail ::= COMMA (iterator | condition) list_comprehension_tail
 
 list_items_tail ::= COMMA argument list_items_tail?
 
-array_expression ::= LBRACE argument array_items_tail? RBRACE
+array_expression ::= LBRACE [argument array_items_tail?] RBRACE
 
 array_items_tail ::= COMMA argument array_items_tail?
 

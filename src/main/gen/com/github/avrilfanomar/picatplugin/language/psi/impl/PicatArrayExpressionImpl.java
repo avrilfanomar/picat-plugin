@@ -28,9 +28,9 @@ public class PicatArrayExpressionImpl extends ASTWrapperPsiElement implements Pi
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PicatArgument getArgument() {
-    return findNotNullChildByClass(PicatArgument.class);
+    return findChildByClass(PicatArgument.class);
   }
 
   @Override
