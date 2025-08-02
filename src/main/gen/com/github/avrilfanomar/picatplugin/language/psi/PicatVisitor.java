@@ -63,10 +63,6 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitAtomOrCall(@NotNull PicatAtomOrCall o) {
-    visitPsiElement(o);
-  }
-
   public void visitAtomOrCallNoLambda(@NotNull PicatAtomOrCallNoLambda o) {
     visitPsiElement(o);
   }

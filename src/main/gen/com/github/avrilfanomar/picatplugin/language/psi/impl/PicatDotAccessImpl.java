@@ -29,8 +29,20 @@ public class PicatDotAccessImpl extends ASTWrapperPsiElement implements PicatDot
 
   @Override
   @NotNull
-  public PicatAtomOrCall getAtomOrCall() {
-    return findNotNullChildByClass(PicatAtomOrCall.class);
+  public List<PicatArgument> getArgumentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatArgument.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getDotIdentifier() {
+    return findChildByType(DOT_IDENTIFIER);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getDotSingleQuotedAtom() {
+    return findChildByType(DOT_SINGLE_QUOTED_ATOM);
   }
 
 }

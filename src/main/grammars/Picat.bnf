@@ -114,11 +114,13 @@
 
     // Literals
     IDENTIFIER="regexp:[a-z][a-zA-Z0-9_]*"
+    DOT_IDENTIFIER="regexp:\.[a-z][a-zA-Z0-9_]*"
     VARIABLE="regexp:[A-Z_][a-zA-Z0-9_]*"
     INTEGER="regexp:([0-9]+|0[xX][0-9a-fA-F]+|0[oO][0-7]+|0[bB][01]+)"
     FLOAT="regexp:[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?"
     STRING = 'regexp:"(\.|[^"\\])*"'
     SINGLE_QUOTED_ATOM="regexp:'([^'\\]|\.)*'"
+    DOT_SINGLE_QUOTED_ATOM="regexp:\.'([^'\\]|\.)*'"
     COMMENT="regexp:%[^\r\n]*"
     QUALIFIED_ATOM="regexp:[a-z][a-zA-Z0-9_]*\.[a-z][a-zA-Z0-9_]*"
     MULTILINE_COMMENT="regexp:/[*]([^*]|[*][^/])*[*]/"
@@ -286,8 +288,7 @@ power_expression ::= primary_expression [POWER unary_expression]
 primary_expression ::= base_expression postfix_operations?
 postfix_operations ::= postfix_operation postfix_operations?
 postfix_operation ::= dot_access
-dot_access ::= DOT &<<isNonWhitespaceNext>> atom_or_call
-atom_or_call ::= atom [LPAR [argument (COMMA argument)*] RPAR]
+dot_access ::= DOT_IDENTIFIER | DOT_SINGLE_QUOTED_ATOM [LPAR [argument (COMMA argument)*] RPAR]
 
 base_expression ::= parenthesized_goal
                   | lambda_term

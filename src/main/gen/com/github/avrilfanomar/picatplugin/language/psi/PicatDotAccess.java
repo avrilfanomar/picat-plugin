@@ -8,6 +8,12 @@ import com.intellij.psi.PsiElement;
 public interface PicatDotAccess extends PsiElement {
 
   @NotNull
-  PicatAtomOrCall getAtomOrCall();
+  List<PicatArgument> getArgumentList();
+
+  @Nullable
+  PsiElement getDotIdentifier();
+
+  @Nullable
+  PsiElement getDotSingleQuotedAtom();
 
 }

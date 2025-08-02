@@ -22,7 +22,6 @@ public interface PicatTokenTypes {
   IElementType ARRAY_ITEMS_TAIL = new PicatElementType("ARRAY_ITEMS_TAIL");
   IElementType AS_PATTERN = new PicatElementType("AS_PATTERN");
   IElementType ATOM = new PicatElementType("ATOM");
-  IElementType ATOM_OR_CALL = new PicatElementType("ATOM_OR_CALL");
   IElementType ATOM_OR_CALL_NO_LAMBDA = new PicatElementType("ATOM_OR_CALL_NO_LAMBDA");
   IElementType ATOM_WITHOUT_ARGS = new PicatElementType("ATOM_WITHOUT_ARGS");
   IElementType BASE_EXPRESSION = new PicatElementType("BASE_EXPRESSION");
@@ -140,6 +139,8 @@ public interface PicatTokenTypes {
   IElementType DIV_RIGHT = new PicatTokenType("/>");
   IElementType DOLLAR = new PicatTokenType("$");
   IElementType DOT = new PicatTokenType(".");
+  IElementType DOT_IDENTIFIER = new PicatTokenType("DOT_IDENTIFIER");
+  IElementType DOT_SINGLE_QUOTED_ATOM = new PicatTokenType("DOT_SINGLE_QUOTED_ATOM");
   IElementType DOUBLE_COLON_OP = new PicatTokenType("::");
   IElementType ELSEIF_KEYWORD = new PicatTokenType("elseif");
   IElementType ELSE_KEYWORD = new PicatTokenType("else");
@@ -263,9 +264,6 @@ public interface PicatTokenTypes {
       }
       else if (type == ATOM) {
         return new PicatAtomImpl(node);
-      }
-      else if (type == ATOM_OR_CALL) {
-        return new PicatAtomOrCallImpl(node);
       }
       else if (type == ATOM_OR_CALL_NO_LAMBDA) {
         return new PicatAtomOrCallNoLambdaImpl(node);
