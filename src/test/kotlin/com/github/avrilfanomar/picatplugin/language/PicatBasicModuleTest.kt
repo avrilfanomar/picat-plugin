@@ -103,7 +103,7 @@ class PicatBasicModuleTest : LexerTestCase() {
         issues: MutableList<String>
     ) {
         val expectedBasicModuleFunctions = listOf(
-            "length", "append", "sort", "member", "max", "min", "reverse",
+            "length", "append", "sort", "member", "reverse",
             "flatten", "new_map", "put", "get", "keys", "values"
         )
 
