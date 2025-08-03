@@ -1,7 +1,7 @@
 /*Original examples are located at https://picat-lang.org/exs/exs.pi*/
 
 /* Several examples in Picat */
-/**** begin file exs.pi ****/
+/* begin file exs.pi */
 import cp, planner.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,7 +134,9 @@ struct_equal([H1|T1],[H2|T2]) =>
 
 is_sorted([]) => true.
 is_sorted([_]) => true.
+/* Hard case: fails to parse now
 is_sorted([X|L@[Y|_]]) =>X @<= Y, is_sorted(L).
+*/
 
 % An empty tree is represented by {}, and a non-empty binary tree is
 % represented by its root, which takes form {Val,Left,Right}.
@@ -623,4 +625,4 @@ handle(E) =>
     throw(E).  % just re-throw it
 */
 
-/**** end file exs.pi ****/
+/* end file exs.pi */
