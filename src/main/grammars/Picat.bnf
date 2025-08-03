@@ -203,7 +203,7 @@ goal ::= disjunctive_goal
 disjunctive_goal ::= conjunctive_goal disjunctive_goal_tail?
 disjunctive_goal_tail ::= SEMICOLON disjunctive_goal
 
-conjunctive_goal ::= negative_goal conjunctive_goal_tail?
+conjunctive_goal ::= negative_goal conjunctive_goal_tail*
 conjunctive_goal_tail ::= COMMA conjunctive_goal
 
 negative_goal ::= (NOT_KEYWORD negative_goal) | equiv_constr
@@ -233,7 +233,7 @@ enclosed_goal ::= if_then_else
                 | type_annotation
                 | expression_with_relations
 
-if_then_else ::= IF_KEYWORD goal THEN_KEYWORD goal (ELSEIF_KEYWORD goal THEN_KEYWORD goal)* ELSE_KEYWORD goal END_KEYWORD
+if_then_else ::= IF_KEYWORD goal THEN_KEYWORD goal (ELSEIF_KEYWORD goal THEN_KEYWORD goal)* (ELSE_KEYWORD goal)? END_KEYWORD
 
 foreach_loop ::= FOREACH_KEYWORD LPAR iterator (COMMA (iterator | condition))* RPAR goal END_KEYWORD
 

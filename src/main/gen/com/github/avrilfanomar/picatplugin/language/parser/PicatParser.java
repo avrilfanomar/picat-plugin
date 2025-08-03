@@ -562,7 +562,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // negative_goal conjunctive_goal_tail?
+  // negative_goal conjunctive_goal_tail*
   public static boolean conjunctive_goal(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "conjunctive_goal")) return false;
     boolean result_;
@@ -573,10 +573,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // conjunctive_goal_tail?
+  // conjunctive_goal_tail*
   private static boolean conjunctive_goal_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "conjunctive_goal_1")) return false;
-    conjunctive_goal_tail(builder_, level_ + 1);
+    while (true) {
+      int pos_ = current_position_(builder_);
+      if (!conjunctive_goal_tail(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "conjunctive_goal_1", pos_)) break;
+    }
     return true;
   }
 
@@ -1278,7 +1282,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IF_KEYWORD goal THEN_KEYWORD goal (ELSEIF_KEYWORD goal THEN_KEYWORD goal)* ELSE_KEYWORD goal END_KEYWORD
+  // IF_KEYWORD goal THEN_KEYWORD goal (ELSEIF_KEYWORD goal THEN_KEYWORD goal)* (ELSE_KEYWORD goal)? END_KEYWORD
   public static boolean if_then_else(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "if_then_else")) return false;
     if (!nextTokenIs(builder_, IF_KEYWORD)) return false;
@@ -1289,8 +1293,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
     result_ = result_ && consumeToken(builder_, THEN_KEYWORD);
     result_ = result_ && goal(builder_, level_ + 1);
     result_ = result_ && if_then_else_4(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, ELSE_KEYWORD);
-    result_ = result_ && goal(builder_, level_ + 1);
+    result_ = result_ && if_then_else_5(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, END_KEYWORD);
     exit_section_(builder_, marker_, IF_THEN_ELSE, result_);
     return result_;
@@ -1315,6 +1318,24 @@ public class PicatParser implements PsiParser, LightPsiParser {
     result_ = consumeToken(builder_, ELSEIF_KEYWORD);
     result_ = result_ && goal(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, THEN_KEYWORD);
+    result_ = result_ && goal(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // (ELSE_KEYWORD goal)?
+  private static boolean if_then_else_5(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_then_else_5")) return false;
+    if_then_else_5_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // ELSE_KEYWORD goal
+  private static boolean if_then_else_5_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_then_else_5_0")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, ELSE_KEYWORD);
     result_ = result_ && goal(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
