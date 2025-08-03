@@ -105,6 +105,9 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "=<"                           { return LESS_EQUAL_PROLOG; }
   "+"                            { return PLUS; }
   "-"                            { return MINUS; }
+  "min"                          { return MIN; }
+  "max"                          { return MAX; }
+  "nt"                           { return NT; }
   "*"                            { return MULTIPLY; }
   "/"                            { return DIVIDE; }
   "//"                           { return INT_DIVIDE; }

@@ -353,7 +353,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom
+  // IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX
   public static boolean atom(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom")) return false;
     boolean result_;
@@ -361,6 +361,8 @@ public class PicatParser implements PsiParser, LightPsiParser {
     result_ = consumeToken(builder_, IDENTIFIER);
     if (!result_) result_ = consumeToken(builder_, SINGLE_QUOTED_ATOM);
     if (!result_) result_ = dollar_escaped_atom(builder_, level_ + 1);
+    if (!result_) result_ = consumeToken(builder_, MIN);
+    if (!result_) result_ = consumeToken(builder_, MAX);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
@@ -2529,14 +2531,16 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // PLUS | MINUS
+  // PLUS | MINUS | MIN | MAX | NT
   public static boolean table_mode(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "table_mode")) return false;
-    if (!nextTokenIs(builder_, "<table mode>", MINUS, PLUS)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, TABLE_MODE, "<table mode>");
     result_ = consumeToken(builder_, PLUS);
     if (!result_) result_ = consumeToken(builder_, MINUS);
+    if (!result_) result_ = consumeToken(builder_, MIN);
+    if (!result_) result_ = consumeToken(builder_, MAX);
+    if (!result_) result_ = consumeToken(builder_, NT);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }

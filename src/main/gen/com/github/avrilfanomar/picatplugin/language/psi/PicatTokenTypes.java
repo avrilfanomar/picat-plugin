@@ -184,6 +184,8 @@ public interface PicatTokenTypes {
   IElementType LESS_EQUAL_PROLOG = new PicatTokenType("=<");
   IElementType LOOP_KEYWORD = new PicatTokenType("loop");
   IElementType LPAR = new PicatTokenType("(");
+  IElementType MAX = new PicatTokenType("max");
+  IElementType MIN = new PicatTokenType("min");
   IElementType MINUS = new PicatTokenType("-");
   IElementType MODULE_KEYWORD = new PicatTokenType("module");
   IElementType MOD_KEYWORD = new PicatTokenType("mod");
@@ -192,6 +194,7 @@ public interface PicatTokenTypes {
   IElementType NOT_EQUAL = new PicatTokenType("!=");
   IElementType NOT_IDENTICAL = new PicatTokenType("!==");
   IElementType NOT_KEYWORD = new PicatTokenType("not");
+  IElementType NT = new PicatTokenType("nt");
   IElementType NUMERICALLY_EQUAL = new PicatTokenType("=:=");
   IElementType NUMERICALLY_NON_EQUAL = new PicatTokenType("=\\=");
   IElementType PIPE = new PicatTokenType("|");

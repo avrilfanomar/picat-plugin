@@ -80,6 +80,9 @@
     LESS_EQUAL_PROLOG="=<"
     PLUS="+"
     MINUS="-"
+    MIN="min"
+    MAX="max"
+    NT="nt"
     MULTIPLY="*"
     DIVIDE="/"
     INT_DIVIDE="//"
@@ -185,7 +188,7 @@ predicate_directive ::= PRIVATE_KEYWORD
                      | INDEX_KEYWORD LPAR index_mode (COMMA index_mode)* RPAR
 
 index_mode ::= PLUS | MINUS
-table_mode ::= PLUS | MINUS
+table_mode ::= PLUS | MINUS | MIN | MAX | NT
 
 head ::= atom [LPAR [argument (COMMA argument)*] RPAR]
 rule_head ::= function_fact | (atom [LPAR [argument (COMMA argument)*] RPAR])
@@ -367,5 +370,5 @@ function_call_no_dot ::= atom LPAR [term term_list_tail?] RPAR
                        | IDENTIFIER DOLLAR IDENTIFIER LPAR [term term_list_tail?] RPAR
 function_argument_list_tail ::= COMMA function_argument function_argument_list_tail?
 term_list_tail ::= COMMA term term_list_tail?
-atom ::= IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom
+atom ::= IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX
 dollar_escaped_atom ::= DOLLAR IDENTIFIER
