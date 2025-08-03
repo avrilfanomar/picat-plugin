@@ -107,7 +107,7 @@ class PicatParserTest : BasePlatformTestCase() {
         val rules = PsiTreeUtil.collectElementsOfType(file, PicatPredicateRule::class.java)
         Assertions.assertTrue(rules.size >= 1, "Should have at least one rule")
 
-        val testExpressionsRule = rules.find { it.ruleHead.text == "test_expressions" }
+        val testExpressionsRule = rules.find { it.head.text == "test_expressions" }
         Assertions.assertNotNull(testExpressionsRule, "Should have a rule with head 'test_expressions'")
 
         val body = testExpressionsRule?.getBody()
