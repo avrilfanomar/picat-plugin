@@ -487,6 +487,8 @@ public class PicatParser implements PsiParser, LightPsiParser {
   //              | GREATER | GREATER_EQUAL | LESS | LESS_EQUAL | LESS_EQUAL_PROLOG
   //              | IN_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
   //              | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | HASH_GREATER_OP | HASH_LESS_OP
+  //              | AT_LESS_EQUAL_OP | AT_GREATER_EQUAL_OP
+  //              | AT_GREATER_OP | AT_LESS_OP | AT_LESS_EQUAL_PROLOG_OP
   public static boolean bin_rel_op(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "bin_rel_op")) return false;
     boolean result_;
@@ -511,6 +513,11 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, HASH_NOT_EQUAL_OP);
     if (!result_) result_ = consumeToken(builder_, HASH_GREATER_OP);
     if (!result_) result_ = consumeToken(builder_, HASH_LESS_OP);
+    if (!result_) result_ = consumeToken(builder_, AT_LESS_EQUAL_OP);
+    if (!result_) result_ = consumeToken(builder_, AT_GREATER_EQUAL_OP);
+    if (!result_) result_ = consumeToken(builder_, AT_GREATER_OP);
+    if (!result_) result_ = consumeToken(builder_, AT_LESS_OP);
+    if (!result_) result_ = consumeToken(builder_, AT_LESS_EQUAL_PROLOG_OP);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
