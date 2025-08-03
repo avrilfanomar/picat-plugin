@@ -2101,7 +2101,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // PRIVATE_KEYWORD
   //                      | TABLE_KEYWORD [LPAR table_mode (COMMA table_mode)* RPAR]
-  //                      | INDEX_KEYWORD LPAR index_mode (COMMA index_mode)* RPAR
+  //                      | INDEX_KEYWORD (LPAR index_mode (COMMA index_mode)* RPAR)+
   public static boolean predicate_directive(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "predicate_directive")) return false;
     boolean result_;
@@ -2166,33 +2166,59 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // INDEX_KEYWORD LPAR index_mode (COMMA index_mode)* RPAR
+  // INDEX_KEYWORD (LPAR index_mode (COMMA index_mode)* RPAR)+
   private static boolean predicate_directive_2(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "predicate_directive_2")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
-    result_ = consumeTokens(builder_, 0, INDEX_KEYWORD, LPAR);
+    result_ = consumeToken(builder_, INDEX_KEYWORD);
+    result_ = result_ && predicate_directive_2_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // (LPAR index_mode (COMMA index_mode)* RPAR)+
+  private static boolean predicate_directive_2_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "predicate_directive_2_1")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = predicate_directive_2_1_0(builder_, level_ + 1);
+    while (result_) {
+      int pos_ = current_position_(builder_);
+      if (!predicate_directive_2_1_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "predicate_directive_2_1", pos_)) break;
+    }
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // LPAR index_mode (COMMA index_mode)* RPAR
+  private static boolean predicate_directive_2_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "predicate_directive_2_1_0")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, LPAR);
     result_ = result_ && index_mode(builder_, level_ + 1);
-    result_ = result_ && predicate_directive_2_3(builder_, level_ + 1);
+    result_ = result_ && predicate_directive_2_1_0_2(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, RPAR);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
   // (COMMA index_mode)*
-  private static boolean predicate_directive_2_3(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "predicate_directive_2_3")) return false;
+  private static boolean predicate_directive_2_1_0_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "predicate_directive_2_1_0_2")) return false;
     while (true) {
       int pos_ = current_position_(builder_);
-      if (!predicate_directive_2_3_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "predicate_directive_2_3", pos_)) break;
+      if (!predicate_directive_2_1_0_2_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "predicate_directive_2_1_0_2", pos_)) break;
     }
     return true;
   }
 
   // COMMA index_mode
-  private static boolean predicate_directive_2_3_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "predicate_directive_2_3_0")) return false;
+  private static boolean predicate_directive_2_1_0_2_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "predicate_directive_2_1_0_2_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, COMMA);

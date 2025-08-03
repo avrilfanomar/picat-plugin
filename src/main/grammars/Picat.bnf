@@ -185,7 +185,7 @@ function_directive ::= PRIVATE_KEYWORD | TABLE_KEYWORD
 
 predicate_directive ::= PRIVATE_KEYWORD
                      | TABLE_KEYWORD [LPAR table_mode (COMMA table_mode)* RPAR]
-                     | INDEX_KEYWORD LPAR index_mode (COMMA index_mode)* RPAR
+                     | INDEX_KEYWORD (LPAR index_mode (COMMA index_mode)* RPAR)+
 
 index_mode ::= PLUS | MINUS
 table_mode ::= PLUS | MINUS | MIN | MAX | NT
