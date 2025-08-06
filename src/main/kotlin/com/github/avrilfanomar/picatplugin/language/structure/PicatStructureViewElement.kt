@@ -1,7 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.structure
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionDefinition
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
@@ -32,52 +31,37 @@ class PicatStructureViewElement(private val element: PsiElement) :
         element is NavigatablePsiElement && element.canNavigateToSource()
 
     override fun getAlphaSortKey(): String =
-        when (element) {
-            is PicatFunctionDefinition -> (element.getName() ?: "") + "/" + element.getArity()
-            else -> element.toString()
-        }
+        element.toString()
 
     override fun getPresentation(): ItemPresentation {
-        val presentation = when (element) {
-            is PicatFile -> PresentationData(
-                element.name,
-                "Picat File",
-                null,
-                null
-            )
-
-            is PicatFunctionDefinition -> {
-                val name = element.getName()
-                val arity = element.getArity()
-                PresentationData(
-                    "$name/$arity",
-                    "Function",
-                    null,
-                    null
-                )
-            }
-
-            else -> PresentationData(element.toString(), "", null, null)
-        }
-        return presentation
+        return PresentationData(
+            element.text ?: element.toString(),
+            null,
+            null,
+            null
+        )
     }
 
     override fun getChildren(): Array<TreeElement> {
-        if (element !is PicatFile) return emptyArray()
-
-        val file = element
-        val result = mutableListOf<TreeElement>()
-
-        // Add rules
-        file.getRules().forEach {
-            result.add(PicatStructureViewElement(it))
+        // For PicatFunctionRule, we might not want to show further children in the structure view,
+        // or we might want to show specific parts of its body if relevant.
+        // For a file root, you'd iterate through its top-level definitions.
+        if (element is PicatFunctionRule) {
+            return emptyArray() // Example: function rules are leaves in this view
         }
 
-        // Add functions
-        file.getFunctions().forEach {
-            result.add(PicatStructureViewElement(it))
+        // If the element is the root of the file (PicatFile), find all function rules.
+        // This part needs to be adapted based on the actual root PSI element type.
+        // For now, let's assume 'element' could be a PicatFile (or similar root)
+        // and we want to show PicatFunctionRule children.
+        val children = mutableListOf<TreeElement>()
+        element.children.forEach { child ->
+            if (child is PicatFunctionRule) {
+                children.add(PicatStructureViewElement(child))
+            }
+            // Add other top-level elements you want to see in the structure view
+            // e.g., if (child is PicatPredicateRule) { children.add(PicatStructureViewElement(child)) }
         }
-
-        return result.toTypedArray()
+        return children.toTypedArray()
     }
 }

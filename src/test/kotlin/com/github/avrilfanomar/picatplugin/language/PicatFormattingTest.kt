@@ -1,9 +1,14 @@
 package com.github.avrilfanomar.picatplugin.language
 
+import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormatterService
 import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder
+import com.github.avrilfanomar.picatplugin.language.formatter.PicatSpacingBuilder
 import com.intellij.lang.LanguageFormatting
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.components.service
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 /**
@@ -18,28 +23,32 @@ class PicatFormattingTest : BasePlatformTestCase() {
      *
      * @param code The input code to format
      * @param expected The expected formatted output
-     * @param filename Optional filename for the test file (defaults to "test.pi")
      */
-    private fun doFormatTest(code: String, expected: String, filename: String = "test.pi") {
+    private fun doFormatTest(code: String, expected: String) {
         // Normalize the input code by removing leading whitespace
         val normalizedCode = code.trim()
 
-        // Configure a test file with the normalized input code
-        myFixture.configureByText(filename, normalizedCode)
+        // Get the custom formatter from the service
+        val formatterService = service<PicatFormatterService>()
+        val customFormatter = formatterService.getFormatter()
 
-        // Apply formatting to the file
-        WriteCommandAction.runWriteCommandAction(project) {
-            val file = myFixture.file
-            val textRange = file.textRange
-            val codeStyleManager = com.intellij.psi.codeStyle.CodeStyleManager.getInstance(project)
-            codeStyleManager.reformatText(file, textRange.startOffset, textRange.endOffset)
-        }
+        // Format the code using our custom formatter
+        val formattedText = customFormatter.format(normalizedCode)
 
-        // Get the formatted text
-        val formattedText = myFixture.editor.document.text
+        // Debug: Print the expected and actual outputs as byte arrays to see the exact differences
+        println("[DEBUG_LOG] Expected bytes: ${expected.toByteArray().joinToString()}")
+        println("[DEBUG_LOG] Actual bytes: ${formattedText.toByteArray().joinToString()}")
+
+        // Debug: Print the expected and actual outputs with visible newlines
+        println("[DEBUG_LOG] Expected with visible newlines: ${expected.replace("\n", "\\n")}")
+        println("[DEBUG_LOG] Actual with visible newlines: ${formattedText.replace("\n", "\\n")}")
+
+        // Normalize line endings to ensure consistent comparison
+        val normalizedExpected = expected.replace("\r\n", "\n")
+        val normalizedFormatted = formattedText.replace("\r\n", "\n")
 
         // Compare the formatted text with the expected output
-        assertEquals("Formatting should match expected output", expected, formattedText)
+        Assertions.assertEquals(normalizedExpected, normalizedFormatted, "Formatting should match expected output")
     }
 
     @Test
@@ -48,12 +57,15 @@ class PicatFormattingTest : BasePlatformTestCase() {
         val formattingModelBuilder = LanguageFormatting.INSTANCE.forLanguage(PicatLanguage)
 
         // Assert that a FormattingModelBuilder is registered
-        assertNotNull("FormattingModelBuilder should be registered for Picat language", formattingModelBuilder)
+        Assertions.assertNotNull(
+            formattingModelBuilder,
+            "FormattingModelBuilder should be registered for Picat language"
+        )
 
         // Assert that it's an instance of PicatFormattingModelBuilder
-        assertTrue(
-            "FormattingModelBuilder should be an instance of PicatFormattingModelBuilder",
-            formattingModelBuilder is PicatFormattingModelBuilder
+        Assertions.assertTrue(
+            formattingModelBuilder is PicatFormattingModelBuilder,
+            "FormattingModelBuilder should be an instance of PicatFormattingModelBuilder"
         )
     }
 
@@ -173,7 +185,7 @@ factorial(N) = N * factorial(N - 1) => N > 0.
 fib(0) = 0.
 fib(1) = 1.
 fib(N) = fib(N - 1) + fib(N - 2) => N > 1.
-        """
+        """.trim()
 
         doFormatTest(code, expected)
     }
@@ -390,7 +402,15 @@ literals_example =>
         val code = "main=>X=10,Y=20."
         val expected = "main => X = 10, Y = 20."
 
-        // Format the code
+        // Format the code using PicatCustomFormatter
+        val formatterService = service<PicatFormatterService>()
+        val customFormatter = formatterService.getFormatter()
+        val formattedText = customFormatter.format(code)
+
+        // Assert that the formatted code matches the expected output
+        Assertions.assertEquals(expected, formattedText, "Formatting should match expected output")
+
+        // Also test using the CodeStyleManager to ensure it's consistent
         myFixture.configureByText("simple.pi", code)
         WriteCommandAction.runWriteCommandAction(project) {
             val file = myFixture.file
@@ -403,7 +423,10 @@ literals_example =>
         val formatted = myFixture.editor.document.text
 
         // Assert that the formatted code matches the expected output
-        assertEquals("Formatting should match expected output", expected, formatted)
+        Assertions.assertEquals(expected, formatted, "Formatting with CodeStyleManager should match expected output")
+
+        // Assert that both formatting methods produce the same result
+        Assertions.assertEquals(formattedText, formatted, "Both formatting methods should produce the same result")
     }
 
     @Test
@@ -475,7 +498,7 @@ constraint_rule_example =>
         // Get the text after second formatting
         val formattedTwice = myFixture.editor.document.text
 
-        assertEquals(formattedOnce, formattedTwice)
+        Assertions.assertEquals(formattedOnce, formattedTwice)
     }
 
     @Test

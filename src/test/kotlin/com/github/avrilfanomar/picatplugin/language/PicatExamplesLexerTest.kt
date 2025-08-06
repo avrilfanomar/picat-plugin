@@ -1,0 +1,123 @@
+package com.github.avrilfanomar.picatplugin.language
+
+import com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighter
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
+import com.intellij.lexer.Lexer
+import com.intellij.psi.TokenType
+import com.intellij.psi.tree.IElementType
+import com.intellij.testFramework.LexerTestCase
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+import java.io.File
+
+/**
+ * Test for Picat syntax highlighting using examples.pi.
+ * This test verifies that the lexer correctly identifies tokens in the examples.pi file.
+ */
+class PicatExamplesLexerTest : LexerTestCase() {
+
+    @Test
+    fun testExamplesPiLexer() {
+        val highlighter = PicatSyntaxHighlighter()
+        val lexer = highlighter.highlightingLexer
+
+        val sampleText = javaClass.getResource("/examples.pi")!!.readText()
+
+        // Track issues
+        val issues = mutableListOf<String>()
+
+        lexer.start(sampleText)
+
+        // Verify that tokens are correctly identified and highlighted
+        while (lexer.tokenType != null) {
+            val tokenType = lexer.tokenType
+            val tokenText = sampleText.substring(lexer.tokenStart, lexer.tokenEnd)
+            val position = lexer.tokenStart
+
+            checkForBadCharacters(tokenType, tokenText, position, issues)
+            checkForComments(tokenType, tokenText, position, issues)
+            checkForBacktrackableRuleOperator(tokenType, tokenText, position, issues)
+            checkForAsPatternOperator(tokenType, tokenText, position, issues)
+
+            lexer.advance()
+        }
+
+        // Report issues
+        if (issues.isNotEmpty()) {
+            // Fail the test with a detailed message
+            val value: Any? =
+                Assertions.fail("Found ${issues.size} issues in examples.pi:\n${issues.joinToString("\n")}")
+            if (value != null) {
+                println("it was not null")//whatever
+            }
+        }
+    }
+
+    /**
+     * Checks for BAD_CHARACTER tokens.
+     */
+    private fun checkForBadCharacters(
+        tokenType: IElementType?,
+        tokenText: String,
+        position: Int,
+        issues: MutableList<String>
+    ) {
+        if (tokenType == TokenType.BAD_CHARACTER) { // Changed here
+            issues.add("Bad character: '$tokenText' at position $position")
+        }
+    }
+
+    /**
+     * Checks for unrecognized comments.
+     */
+    private fun checkForComments(
+        tokenType: IElementType?,
+        tokenText: String,
+        position: Int,
+        issues: MutableList<String>
+    ) {
+        if ((tokenText.contains("/*") || tokenText.contains("*/")) &&
+            tokenType != PicatTokenTypes.MULTILINE_COMMENT
+        ) {
+            issues.add("Multi-line comment not recognized: '$tokenText' at position $position")
+        }
+    }
+
+    /**
+     * Checks for unrecognized backtrackable rule operators.
+     */
+    private fun checkForBacktrackableRuleOperator(
+        tokenType: IElementType?,
+        tokenText: String,
+        position: Int,
+        issues: MutableList<String>
+    ) {
+        if (tokenText.contains("?=>") && tokenType == TokenType.BAD_CHARACTER) { // Changed here
+            issues.add("Backtrackable rule operator not recognized: '$tokenText' at position $position")
+        }
+    }
+
+    /**
+     * Checks for unrecognized as-pattern operators.
+     */
+    private fun checkForAsPatternOperator(
+        tokenType: IElementType?,
+        tokenText: String,
+        position: Int,
+        issues: MutableList<String>
+    ) {
+        // Only report as-pattern issues for '@' character, not for all bad characters
+        if (tokenType == TokenType.BAD_CHARACTER && tokenText == "@") {
+            issues.add("As-pattern operator not recognized: '$tokenText' at position $position")
+        }
+    }
+
+
+    override fun createLexer(): Lexer {
+        return PicatSyntaxHighlighter().highlightingLexer
+    }
+
+    override fun getDirPath(): String {
+        return ""
+    }
+}

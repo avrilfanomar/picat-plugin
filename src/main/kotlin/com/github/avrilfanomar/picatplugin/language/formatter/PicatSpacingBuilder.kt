@@ -18,35 +18,28 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
         // Rule operators (=>, ?=>, :-, <=>, ?<=>)
         val RULE_OPERATORS = TokenSet.create(
             PicatTokenTypes.ARROW_OP,
-            PicatTokenTypes.BACKTRACKABLE_ARROW_OP,
-            PicatTokenTypes.RULE_OP,
-            PicatTokenTypes.BICONDITIONAL_OP,
-            PicatTokenTypes.BACKTRACKABLE_BICONDITIONAL_OP
+            PicatTokenTypes.BACKTRACKABLE_ARROW_OP
         )
 
         // Constraint rule operators (#=>, #<=>)
         val CONSTRAINT_RULE_OPERATORS = TokenSet.create(
-            PicatTokenTypes.CONSTRAINT_IMPL,
-            PicatTokenTypes.CONSTRAINT_EQUIV
+            PicatTokenTypes.HASH_ARROW_OP,
+            PicatTokenTypes.HASH_BICONDITIONAL_OP
         )
 
-        // Assignment operators (=, :=)
+        // Assignment operators (:=)
         val ASSIGNMENT_OPERATORS = TokenSet.create(
-            PicatTokenTypes.ASSIGN_OP,
-            PicatTokenTypes.ASSIGN_ONCE,
-            PicatTokenTypes.EQUAL
+            PicatTokenTypes.ASSIGN_OP
         )
 
         // Logical operators (&&, ||, !)
         val LOGICAL_OPERATORS = TokenSet.create(
-            PicatTokenTypes.AND,
-            PicatTokenTypes.OR,
-            PicatTokenTypes.NOT
+            PicatTokenTypes.HASH_OR_OP,
+            PicatTokenTypes.NOT_KEYWORD
         )
 
         // Equality operators (==, !=, ===, !==)
         val EQUALITY_OPERATORS = TokenSet.create(
-            PicatTokenTypes.EQUAL,
             PicatTokenTypes.NOT_EQUAL,
             PicatTokenTypes.IDENTICAL,
             PicatTokenTypes.NOT_IDENTICAL
@@ -57,8 +50,17 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             PicatTokenTypes.LESS,
             PicatTokenTypes.GREATER,
             PicatTokenTypes.LESS_EQUAL,
-            PicatTokenTypes.LESS_EQUAL_ALT,
-            PicatTokenTypes.GREATER_EQUAL
+            PicatTokenTypes.GREATER_EQUAL,
+            PicatTokenTypes.LESS_EQUAL_PROLOG
+        )
+
+        // Term comparison operators (@<, @>, @=<, @>=)
+        val TERM_COMPARISON_OPERATORS = TokenSet.create(
+            PicatTokenTypes.AT_LESS_OP,
+            PicatTokenTypes.AT_GREATER_OP,
+            PicatTokenTypes.AT_LESS_EQUAL_OP,
+            PicatTokenTypes.AT_GREATER_EQUAL_OP,
+            PicatTokenTypes.AT_LESS_EQUAL_PROLOG_OP
         )
 
         // Additive operators (+, -, ++)
@@ -73,40 +75,35 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             PicatTokenTypes.MULTIPLY,
             PicatTokenTypes.DIVIDE,
             PicatTokenTypes.INT_DIVIDE,
-            PicatTokenTypes.MODULO,
-            PicatTokenTypes.MOD_KEYWORD
+            PicatTokenTypes.DIV_KEYWORD,
+            PicatTokenTypes.MOD_KEYWORD,
+            PicatTokenTypes.REM_KEYWORD
         )
 
-        // Constraint operators (#=, #!=, etc.)
+        // Constraint operators (#=, #!=, #>, #>=, #<, #=<, #<=, etc.)
         val CONSTRAINT_OPERATORS = TokenSet.create(
-            PicatTokenTypes.CONSTRAINT_EQ,
-            PicatTokenTypes.CONSTRAINT_NEQ,
-            PicatTokenTypes.CONSTRAINT_LT,
-            PicatTokenTypes.CONSTRAINT_LE,
-            PicatTokenTypes.CONSTRAINT_LE_ALT,
-            PicatTokenTypes.CONSTRAINT_GT,
-            PicatTokenTypes.CONSTRAINT_GE,
-            PicatTokenTypes.CONSTRAINT_NOT,
-            PicatTokenTypes.CONSTRAINT_AND,
-            PicatTokenTypes.CONSTRAINT_OR,
-            PicatTokenTypes.CONSTRAINT_XOR
-        )
-
-        // Term comparison operators (@<, @=<, etc.)
-        val TERM_COMPARISON_OPERATORS = TokenSet.create(
-            PicatTokenTypes.TERM_LT,
-            PicatTokenTypes.TERM_LE,
-            PicatTokenTypes.TERM_LE_ALT,
-            PicatTokenTypes.TERM_GT,
-            PicatTokenTypes.TERM_GE
+            PicatTokenTypes.HASH_AND_OP,
+            PicatTokenTypes.HASH_OR_OP,
+            PicatTokenTypes.HASH_XOR_OP,
+            PicatTokenTypes.HASH_NOT_OP,
+            PicatTokenTypes.HASH_EQUAL_OP,
+            PicatTokenTypes.HASH_NOT_EQUAL_OP,
+            PicatTokenTypes.HASH_GREATER_OP,
+            PicatTokenTypes.HASH_GREATER_EQUAL_OP,
+            PicatTokenTypes.HASH_LESS_OP,
+            PicatTokenTypes.HASH_LESS_EQUAL_OP,
+            PicatTokenTypes.HASH_LESS_EQUAL_ALT_OP
         )
 
         // Bitwise operators (/\, \/, <<, >>)
         val BITWISE_OPERATORS = TokenSet.create(
-            PicatTokenTypes.BITWISE_AND,
             PicatTokenTypes.BITWISE_OR,
+            PicatTokenTypes.BITWISE_AND,
+            PicatTokenTypes.BITWISE_XOR,
+            PicatTokenTypes.COMPLEMENT,
             PicatTokenTypes.SHIFT_LEFT,
-            PicatTokenTypes.SHIFT_RIGHT
+            PicatTokenTypes.SHIFT_RIGHT,
+            PicatTokenTypes.SHIFT_RIGHT_TRIPLE
         )
 
         // Closing brackets/parentheses/braces
@@ -121,9 +118,14 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             PicatTokenTypes.IF_KEYWORD,
             PicatTokenTypes.THEN_KEYWORD,
             PicatTokenTypes.ELSE_KEYWORD,
+            PicatTokenTypes.ELSEIF_KEYWORD,
             PicatTokenTypes.FOREACH_KEYWORD,
             PicatTokenTypes.WHILE_KEYWORD,
-            PicatTokenTypes.RETURN_KEYWORD
+            PicatTokenTypes.LOOP_KEYWORD,
+            PicatTokenTypes.TRY_KEYWORD,
+            PicatTokenTypes.CATCH_KEYWORD,
+            PicatTokenTypes.FINALLY_KEYWORD,
+            PicatTokenTypes.IN_KEYWORD
         )
 
         // Block keywords for indentation (then, else)
@@ -148,30 +150,33 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
 
     init {
         val picatSettings = settings.getCustomSettings(PicatCodeStyleSettings::class.java)
-//        val commonSettings = settings.getCommonSettings(PicatLanguage)
 
         spacingBuilder = SpacingBuilder(settings, PicatLanguage)
-            // Assignment operators (=, :=)
+            // Assignment operators (:=)
             .around(ASSIGNMENT_OPERATORS)
             .spaces(1)
 
-            // Ensure proper spacing around operators in expressions
-            .around(PicatTokenTypes.OPERATOR)
+            // Special handling for EQUAL token (used for both assignment and equality)
+            .around(PicatTokenTypes.EQUAL)
             .spaces(1)
 
             // Logical operators (&&, ||, !)
             .around(LOGICAL_OPERATORS)
             .spaceIf(picatSettings.spaceAroundLogicalOperators)
 
-            // Equality operators (==, !=, ===, !==)
+            // Equality operators (!=, ===, !==)
             .around(EQUALITY_OPERATORS)
             .spaces(1)
 
-            // Relational operators (<, >, <=, >=)
+            // Relational operators (<, >, <=, >=, =<)
             .around(RELATIONAL_OPERATORS)
             .spaces(1)
 
-            // Additive operators (+, -)
+            // Term comparison operators (@<, @>, @=<, @>=)
+            .around(TERM_COMPARISON_OPERATORS)
+            .spaces(1)
+
+            // Additive operators (+, -, ++)
             .around(ADDITIVE_OPERATORS)
             .spaces(1)
 
@@ -180,16 +185,12 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .spaces(1)
 
             // Rule operators (=>, ?=>)
-            .before(RULE_OPERATORS)
+            .around(RULE_OPERATORS)
             .spaces(1)
-//
-//            // Add indentation for the rule body (between rule operator and end dot)
-//            .between(ruleOperators, PicatTokenTypes.DOT)
-//            .spacing(4, Integer.MAX_VALUE, 1, true, 4)
 
             // Ensure line break after rule operators
             .after(RULE_OPERATORS)
-            .spacing(0, Integer.MAX_VALUE, 1, true, 4)
+            .lineBreakInCode()
 
             // Constraint operators (#=, #!=, etc.)
             .around(CONSTRAINT_OPERATORS)
@@ -198,19 +199,13 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             // Constraint rule operators (#=>, #<=>)
             .around(CONSTRAINT_RULE_OPERATORS)
             .spaces(1)
-            .after(CONSTRAINT_RULE_OPERATORS)
-            .spacing(1, 1, 0, true, 1)
-
-            // Term comparison operators (@<, @=<, etc.)
-            .around(TERM_COMPARISON_OPERATORS)
-            .spaces(1)
 
             // Range operator (..)
-            .around(PicatTokenTypes.RANGE)
+            .around(PicatTokenTypes.RANGE_OP)
             .spaces(1)
 
             // Type constraint operator (::)
-            .around(PicatTokenTypes.TYPE_CONSTRAINT)
+            .around(PicatTokenTypes.DOUBLE_COLON_OP)
             .spaces(1)
 
             // Bitwise operators (/\, \/, <<, >>)
@@ -233,11 +228,11 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
 
             // Parentheses, brackets, braces
             .withinPair(PicatTokenTypes.LPAR, PicatTokenTypes.RPAR)
-            .spaces(0)
+            .spaceIf(false)
             .withinPair(PicatTokenTypes.LBRACKET, PicatTokenTypes.RBRACKET)
-            .spaces(0)
+            .spaceIf(false)
             .withinPair(PicatTokenTypes.LBRACE, PicatTokenTypes.RBRACE)
-            .spaces(0)
+            .spaceIf(false)
 
             // After keywords
             .after(KEYWORDS_WITH_SPACE_AFTER)
@@ -245,11 +240,15 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
 
             // Ensure proper indentation for statements after block keywords
             .between(BLOCK_KEYWORDS, BLOCK_END_KEYWORDS)
-            .spacing(1, Integer.MAX_VALUE, 1, true, 1)
+            .lineBreakInCode()
 
             // Ensure proper indentation for statements after loop keywords
             .between(LOOP_KEYWORDS, PicatTokenTypes.END_KEYWORD)
-            .spacing(1, Integer.MAX_VALUE, 1, true, 1)
+            .lineBreakInCode()
+
+            // Line break after dot
+            .after(PicatTokenTypes.DOT)
+            .lineBreakInCode()
     }
 
     /**

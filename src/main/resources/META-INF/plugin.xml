@@ -18,7 +18,7 @@
             <li>Custom file icon</li>
         </ul>
 
-        <p>This plugin is licensed under the <a href="https://github.com/avrilfanomar/picat-plugin/blob/main/LICENSE">MIT License</a>.</p>
+        <p>This plugin is licensed under the <a href="https://github.com/avrilfanomar/picat-plugin/blob/main/LICENSE">Apache License 2.0</a>.</p>
     ]]></description>
 
     <idea-version since-build="242" until-build="252.*"/>
@@ -26,12 +26,11 @@
     <depends>com.intellij.modules.platform</depends>
 
     <change-notes><![CDATA[
-        <h3>0.0.2</h3>
+        <h3>251.0</h3>
         <ul>
-            <li>Added support for 'basic' module functions and operators</li>
-            <li>Improved syntax highlighting for 'basic' module functions</li>
-            <li>Added tests for 'basic' module support</li>
-            <li>Added code formatting support with customizable settings</li>
+            <li>PSI parsing</li>
+            <li>Syntax highlighting with customizable settings</li>
+            <li>Code formatting with customizable settings</li>
         </ul>
 
         <h3>0.0.1</h3>
@@ -59,8 +58,8 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType
-                name="Picat"
-                implementationClass="com.github.avrilfanomar.picatplugin.language.psi.PicatFileType"
+                name="Picat File"
+                implementationClass="com.github.avrilfanomar.picatplugin.language.PicatFileType"
                 fieldName="INSTANCE"
                 language="Picat"
                 extensions="pi"/>
@@ -88,6 +87,8 @@
                 implementationClass="com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder"/>
         <langCodeStyleSettingsProvider
                 implementation="com.github.avrilfanomar.picatplugin.language.formatter.PicatLanguageCodeStyleSettingsProvider"/>
+        <formattingService
+                implementation="com.github.avrilfanomar.picatplugin.language.formatter.PicatDocumentFormattingStrategy"/>
 
         <!-- PSI and Parser -->
         <lang.parserDefinition
@@ -99,8 +100,17 @@
                 language="Picat"
                 implementationClass="com.github.avrilfanomar.picatplugin.language.structure.PicatStructureViewFactory"/>
 
+        <lang.commenter language="Picat"
+                        implementationClass="com.github.avrilfanomar.picatplugin.language.PicatCommenter"/>
+
         <!-- Reference Contributor -->
         <psi.referenceContributor
+                language="Picat"
                 implementation="com.github.avrilfanomar.picatplugin.language.references.PicatReferenceContributor"/>
+
+        <!-- Completion Contributor -->
+        <completion.contributor
+                language="Picat"
+                implementationClass="com.github.avrilfanomar.picatplugin.language.completion.PicatCompletionContributor"/>
     </extensions>
 </idea-plugin>

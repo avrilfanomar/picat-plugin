@@ -70,8 +70,7 @@ class PicatBlockFactory(
     private fun createSharedAlignment(nodeType: IElementType): Alignment? {
         return when (nodeType) {
             PicatTokenTypes.BODY -> Alignment.createAlignment(true)
-            PicatTokenTypes.LIST,
-            PicatTokenTypes.FUNCTION_CALL -> Alignment.createAlignment(true)
+            PicatTokenTypes.LIST_EXPRESSION -> Alignment.createAlignment(true)
 
             else -> null
         }
@@ -82,9 +81,7 @@ class PicatBlockFactory(
      */
     private fun createSharedWrap(nodeType: IElementType): Wrap? {
         return when (nodeType) {
-            PicatTokenTypes.LIST,
-            PicatTokenTypes.FUNCTION_CALL -> Wrap.createWrap(WrapType.CHOP_DOWN_IF_LONG, true)
-
+            PicatTokenTypes.LIST_EXPRESSION -> Wrap.createWrap(WrapType.CHOP_DOWN_IF_LONG, true)
             else -> null
         }
     }
@@ -101,7 +98,7 @@ class PicatBlockFactory(
             // Align elements in lists
             isListElement(nodeType, childType) -> alignment
             // Align arguments in function calls
-            isFunctionCallArgument(nodeType, childType) -> alignment
+            isFunctionCallArgument(childType) -> alignment
             // Align statements in rule bodies
             isRuleBodyStatement(nodeType, childType) -> alignment
             else -> null
@@ -120,7 +117,7 @@ class PicatBlockFactory(
             // Wrap elements in lists
             isListElement(nodeType, childType) -> wrap
             // Wrap arguments in function calls
-            isFunctionCallArgument(nodeType, childType) -> wrap
+            isFunctionCallArgument(childType) -> wrap
             else -> null
         }
     }
@@ -129,7 +126,7 @@ class PicatBlockFactory(
      * Checks if the node is a list element (not a bracket).
      */
     private fun isListElement(nodeType: IElementType, childType: IElementType): Boolean {
-        return nodeType == PicatTokenTypes.LIST &&
+        return nodeType == PicatTokenTypes.LIST_EXPRESSION &&
                 childType != PicatTokenTypes.LBRACKET &&
                 childType != PicatTokenTypes.RBRACKET
     }
@@ -137,17 +134,17 @@ class PicatBlockFactory(
     /**
      * Checks if the node is a function call argument (not a parenthesis).
      */
-    private fun isFunctionCallArgument(nodeType: IElementType, childType: IElementType): Boolean {
-        return nodeType == PicatTokenTypes.FUNCTION_CALL &&
-                childType != PicatTokenTypes.LPAR &&
-                childType != PicatTokenTypes.RPAR
+    private fun isFunctionCallArgument(childType: IElementType): Boolean {
+        return childType != PicatTokenTypes.LPAR && childType != PicatTokenTypes.RPAR
     }
 
     /**
      * Checks if the node is a statement in a rule body.
      */
     private fun isRuleBodyStatement(nodeType: IElementType, childType: IElementType): Boolean {
-        return (nodeType == PicatTokenTypes.BODY || nodeType == PicatTokenTypes.RULE) &&
-                (childType == PicatTokenTypes.STATEMENT || childType == PicatTokenTypes.COMMENT)
+        return (nodeType == PicatTokenTypes.BODY ||
+                nodeType == PicatTokenTypes.PREDICATE_RULE ||
+                nodeType == PicatTokenTypes.FUNCTION_RULE) &&
+                (childType == PicatTokenTypes.GOAL || childType == PicatTokenTypes.COMMENT)
     }
 }

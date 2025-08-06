@@ -1,17 +1,19 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
-import com.github.avrilfanomar.picatplugin.language.lexer.PicatLexer
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFile
-import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatPsiElementImpl
+import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
 import com.intellij.lexer.Lexer
+import com.intellij.lexer.FlexAdapter
+import java.io.Reader
 import com.intellij.openapi.project.Project
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 
@@ -23,33 +25,26 @@ import com.intellij.psi.tree.TokenSet
  * based on the BNF grammar file. This is a placeholder implementation.
  */
 class PicatParserDefinition : ParserDefinition {
-    // Helper for creating PSI elements
-    private val helper = PicatParserDefinitionHelper()
 
-    override fun createLexer(project: Project): Lexer = PicatLexer()
+    override fun createLexer(project: Project): Lexer = FlexAdapter(_PicatLexer())
 
     override fun createParser(project: Project): PsiParser = PicatParser()
 
     override fun getFileNodeType(): IFileElementType = FILE
 
-    override fun getCommentTokens(): TokenSet = PicatTokenSets.COMMENTS
+    override fun getWhitespaceTokens(): TokenSet = TokenSet.create(TokenType.WHITE_SPACE)
 
-    override fun getStringLiteralElements(): TokenSet = PicatTokenSets.STRINGS
+    override fun getCommentTokens(): TokenSet = TokenSet.create(
+        PicatTokenTypes.COMMENT
+    )
 
-    override fun createElement(node: ASTNode): PsiElement {
-        val type = node.elementType
+    override fun getStringLiteralElements(): TokenSet = TokenSet.create(PicatTokenTypes.STRING)
 
-        // Group elements by category
-        return when {
-            helper.isRuleElement(type) -> helper.createRuleElement(node)
-            helper.isStatementElement(type) -> helper.createStatementElement(node)
-            helper.isStructureElement(type) -> helper.createStructureElement(node)
-            helper.isLiteralElement(type) -> helper.createLiteralElement(node)
-            else -> PicatPsiElementImpl(node)
-        }
-    }
+    override fun createElement(node: ASTNode): PsiElement =
+        PicatTokenTypes.Factory.createElement(node) // Use the generated factory
 
-    override fun createFile(viewProvider: FileViewProvider): PsiFile = PicatFile(viewProvider)
+    override fun createFile(viewProvider: FileViewProvider): PsiFile =
+        PicatFileImpl(viewProvider)
 }
 
 val FILE = IFileElementType(PicatLanguage)

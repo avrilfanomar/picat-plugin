@@ -1,33 +1,36 @@
-import org.jetbrains.changelog.Changelog
-import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
     id("java") // Java support
     alias(libs.plugins.kotlin) // Kotlin support
     alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
-    alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
     id("io.gitlab.arturbosch.detekt") version "1.23.8" // Detekt for static code analysis
-    id("info.solidsoft.pitest") version "1.15.0"
+    id("org.jetbrains.grammarkit") version "2022.3.2.2" // Grammar-Kit plugin
 }
 
 group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
 
-// Set the JVM language level used to build the project.
 kotlin {
     jvmToolchain(21)
 }
 
-// Configure project's dependencies
 repositories {
     mavenCentral()
+    google()
 
-    // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
     intellijPlatform {
         defaultRepositories()
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs(layout.projectDirectory.dir("src/main/gen"))
+        }
     }
 }
 
@@ -37,6 +40,7 @@ dependencies {
     testImplementation(libs.junit.jupiter.engine)
     testImplementation(libs.junit.jupiter.params)
     testImplementation(libs.opentest4j)
+    testImplementation("org.jetbrains:grammar-kit:2022.3.2")
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
@@ -56,9 +60,7 @@ dependencies {
 intellijPlatform {
     pluginConfiguration {
         name = providers.gradleProperty("pluginName")
-        version = providers.gradleProperty("pluginVersion")
 
-        // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
         description = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map {
             val start = "<!-- Plugin description -->"
             val end = "<!-- Plugin description end -->"
@@ -67,26 +69,12 @@ intellijPlatform {
                 if (!containsAll(listOf(start, end))) {
                     throw GradleException("Plugin description section not found in README.md:\n$start ... $end")
                 }
-                subList(indexOf(start) + 1, indexOf(end)).joinToString("\n").let(::markdownToHTML)
-            }
-        }
-
-        val changelog = project.changelog // local variable for configuration cache compatibility
-        // Get the latest available change notes from the changelog file
-        changeNotes = providers.gradleProperty("pluginVersion").map { pluginVersion ->
-            with(changelog) {
-                renderItem(
-                    (getOrNull(pluginVersion) ?: getUnreleased())
-                        .withHeader(false)
-                        .withEmptySections(false),
-                    Changelog.OutputType.HTML,
-                )
+                subList(indexOf(start) + 1, indexOf(end)).joinToString("\n")
             }
         }
 
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
-            untilBuild = providers.gradleProperty("pluginUntilBuild")
         }
     }
 
@@ -98,10 +86,12 @@ intellijPlatform {
 
     publishing {
         token = providers.environmentVariable("PUBLISH_TOKEN")
-        // The pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
-        // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
-        // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
-        channels = providers.gradleProperty("pluginVersion").map { listOf(it.substringAfter('-', "").substringBefore('.').ifEmpty { "default" }) }
+        channels = providers.gradleProperty("pluginVersion")
+            .map {
+                listOf(
+                    it.substringAfter('-', "")
+                        .substringBefore('.').ifEmpty { "default" })
+            }
     }
 
     pluginVerification {
@@ -109,12 +99,6 @@ intellijPlatform {
             recommended()
         }
     }
-}
-
-// Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
-changelog {
-    groups.empty()
-    repositoryUrl = providers.gradleProperty("pluginRepositoryUrl")
 }
 
 // Configure Gradle Kover Plugin - read more: https://github.com/Kotlin/kotlinx-kover#configuration
@@ -128,62 +112,21 @@ kover {
     }
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 // Configure Detekt - read more: https://detekt.dev/docs/introduction/gradle/
 detekt {
     buildUponDefaultConfig = true // preconfigure defaults
     allRules = false // activate all available (even unstable) rules
     config.setFrom(files("$projectDir/config/detekt.yml")) // point to your custom config defining rules to run, overwriting default behavior
     baseline = file("$projectDir/config/baseline.xml") // a way of suppressing issues before introducing detekt
-
-    reports {
-        html.required.set(true) // observe findings in your browser with structure and code snippets
-    }
-}
-
-// Configure Pitest for mutation testing - read more: https://pitest.org/
-pitest {
-    junit5PluginVersion = "1.2.0"
-    targetClasses = listOf("com.github.avrilfanomar.picatplugin.*")
-    excludedClasses = listOf(
-        // Exclude generated files and UI-related classes that are hard to test
-        "com.github.avrilfanomar.picatplugin.language.psi.impl.*",
-        "com.github.avrilfanomar.picatplugin.language.PicatParserDefinition",
-        "com.github.avrilfanomar.picatplugin.language.PicatLanguage"
-    )
-    threads = Runtime.getRuntime().availableProcessors()
-    outputFormats = listOf("HTML", "XML")
-    timestampedReports = false
-    mutators = listOf(
-        "STRONGER", // Use stronger mutation operators
-        "DEFAULTS"  // Plus the defaults
-    )
-    avoidCallsTo = listOf(
-        "kotlin.jvm.internal",
-        "kotlin.collections.CollectionsKt"
-    )
-    verbose = true
-    testPlugin = "junit5"
 }
 
 tasks {
     wrapper {
         gradleVersion = providers.gradleProperty("gradleVersion").get()
-    }
-
-    publishPlugin {
-        dependsOn(patchChangelog)
-    }
-
-    // Register a task to run Pitest mutation testing
-    register<DefaultTask>("runMutationTests") {
-        group = "verification"
-        description = "Runs Pitest mutation tests"
-
-        dependsOn("pitest")
-
-        doLast {
-            println("Mutation testing completed. Reports can be found in build/reports/pitest")
-        }
     }
 }
 
@@ -206,4 +149,19 @@ intellijPlatformTesting {
             }
         }
     }
+}
+
+tasks.generateParser {
+    sourceFile.set(file("src/main/grammars/Picat.bnf"));
+    targetRootOutputDir.set(file("src/main/gen"))
+    pathToParser.set("com/github/avrilfanomar/picatplugin/language/parser/PicatParser.java");
+    pathToPsiRoot.set("com/github/avrilfanomar/picatplugin/language/psi")
+}
+tasks.generateLexer {
+    dependsOn("generateParser")
+    sourceFile.set(file("src/main/grammars/_PicatLexer.flex"))
+    targetOutputDir.set(file("src/main/gen/com/github/avrilfanomar/picatplugin/language/parser"))
+}
+tasks.compileKotlin {
+    dependsOn("generateLexer")
 }
