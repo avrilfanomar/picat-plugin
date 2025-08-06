@@ -84,8 +84,10 @@
     MAX="max"
     NT="nt"
     MULTIPLY="*"
-    DIVIDE="/"
+    BITWISE_AND='/\'
+    BITWISE_OR='\/'
     INT_DIVIDE="//"
+    DIVIDE="/"
     DIV_RIGHT="/>"
     DIV_LEFT="/<"
     POWER="**"
@@ -93,9 +95,7 @@
     SHIFT_LEFT="<<"
     SHIFT_RIGHT=">>"
     SHIFT_RIGHT_TRIPLE=">>>"
-    BITWISE_OR='\/'
     BITWISE_XOR="^"
-    BITWISE_AND='/\'
     COMPLEMENT="~"
     EXCLAMATION="!"
     PROLOG_RULE_OP=":-"

@@ -109,8 +109,10 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "max"                          { return MAX; }
   "nt"                           { return NT; }
   "*"                            { return MULTIPLY; }
-  "/"                            { return DIVIDE; }
+  "/\\"                          { return BITWISE_AND; }
+  "\\/"                          { return BITWISE_OR; }
   "//"                           { return INT_DIVIDE; }
+  "/"                            { return DIVIDE; }
   "/>"                           { return DIV_RIGHT; }
   "/<"                           { return DIV_LEFT; }
   "**"                           { return POWER; }
@@ -118,9 +120,7 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "<<"                           { return SHIFT_LEFT; }
   ">>"                           { return SHIFT_RIGHT; }
   ">>>"                          { return SHIFT_RIGHT_TRIPLE; }
-  "\\/"                          { return BITWISE_OR; }
   "^"                            { return BITWISE_XOR; }
-  "/\\"                          { return BITWISE_AND; }
   "~"                            { return COMPLEMENT; }
   "!"                            { return EXCLAMATION; }
   ":-"                           { return PROLOG_RULE_OP; }
