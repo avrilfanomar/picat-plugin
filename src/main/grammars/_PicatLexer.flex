@@ -68,62 +68,62 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "fail"                         { return FAIL_KEYWORD; }
   "repeat"                       { return REPEAT_KEYWORD; }
   "until"                        { return UNTIL_KEYWORD; }
-  "=>"                           { return ARROW_OP; }
+  ">>>"                          { return SHIFT_RIGHT_TRIPLE; }
   "?=>"                          { return BACKTRACKABLE_ARROW_OP; }
   "<=>"                          { return BICONDITIONAL_OP; }
   "#<=>"                         { return HASH_BICONDITIONAL_OP; }
+  "#!="                          { return HASH_NOT_EQUAL_OP; }
   "#=>"                          { return HASH_ARROW_OP; }
+  "#>="                          { return HASH_GREATER_EQUAL_OP; }
+  "#=<"                          { return HASH_LESS_EQUAL_OP; }
+  "#<="                          { return HASH_LESS_EQUAL_ALT_OP; }
+  "@>="                          { return AT_GREATER_EQUAL_OP; }
+  "@<="                          { return AT_LESS_EQUAL_OP; }
+  "@=<"                          { return AT_LESS_EQUAL_PROLOG_OP; }
+  "=:="                          { return NUMERICALLY_EQUAL; }
+  "=\\="                         { return NUMERICALLY_NON_EQUAL; }
+  "!=="                          { return NOT_IDENTICAL; }
   "#\\/"                         { return HASH_OR_OP; }
   "#^"                           { return HASH_XOR_OP; }
   "/\\"                          { return HASH_AND_OP; }
+  "=>"                           { return ARROW_OP; }
   "#~"                           { return HASH_NOT_OP; }
   "#="                           { return HASH_EQUAL_OP; }
-  "#!="                          { return HASH_NOT_EQUAL_OP; }
   "#>"                           { return HASH_GREATER_OP; }
-  "#>="                          { return HASH_GREATER_EQUAL_OP; }
   "#<"                           { return HASH_LESS_OP; }
-  "#=<"                          { return HASH_LESS_EQUAL_OP; }
-  "#<="                          { return HASH_LESS_EQUAL_ALT_OP; }
   "@>"                           { return AT_GREATER_OP; }
-  "@>="                          { return AT_GREATER_EQUAL_OP; }
   "@<"                           { return AT_LESS_OP; }
-  "@<="                          { return AT_LESS_EQUAL_OP; }
-  "@=<"                          { return AT_LESS_EQUAL_PROLOG_OP; }
   ":="                           { return ASSIGN_OP; }
   "::"                           { return DOUBLE_COLON_OP; }
   ".."                           { return RANGE_OP; }
-  "="                            { return EQUAL; }
-  "=:="                          { return NUMERICALLY_EQUAL; }
-  "=\\="                         { return NUMERICALLY_NON_EQUAL; }
   "!="                           { return NOT_EQUAL; }
   "=="                           { return IDENTICAL; }
-  "!=="                          { return NOT_IDENTICAL; }
-  "<"                            { return LESS; }
   ">"                            { return GREATER; }
   "<="                           { return LESS_EQUAL; }
   ">="                           { return GREATER_EQUAL; }
   "=<"                           { return LESS_EQUAL_PROLOG; }
+  "/>"                           { return DIV_RIGHT; }
+  "/<"                           { return DIV_LEFT; }
+  "**"                           { return POWER; }
+  ":-"                           { return PROLOG_RULE_OP; }
+  "++"                           { return CONCAT_OP; }
+  "<<"                           { return SHIFT_LEFT; }
+  ">>"                           { return SHIFT_RIGHT; }
+  "//"                           { return INT_DIVIDE; }
+  "/\\"                          { return BITWISE_AND; }
+  "\\/"                          { return BITWISE_OR; }
+  "/"                            { return DIVIDE; }
+  "="                            { return EQUAL; }
+  "<"                            { return LESS; }
   "+"                            { return PLUS; }
   "-"                            { return MINUS; }
   "min"                          { return MIN; }
   "max"                          { return MAX; }
   "nt"                           { return NT; }
   "*"                            { return MULTIPLY; }
-  "/\\"                          { return BITWISE_AND; }
-  "\\/"                          { return BITWISE_OR; }
-  "//"                           { return INT_DIVIDE; }
-  "/"                            { return DIVIDE; }
-  "/>"                           { return DIV_RIGHT; }
-  "/<"                           { return DIV_LEFT; }
-  "**"                           { return POWER; }
-  "++"                           { return CONCAT_OP; }
-  "<<"                           { return SHIFT_LEFT; }
-  ">>"                           { return SHIFT_RIGHT; }
-  ">>>"                          { return SHIFT_RIGHT_TRIPLE; }
   "^"                            { return BITWISE_XOR; }
   "~"                            { return COMPLEMENT; }
   "!"                            { return EXCLAMATION; }
-  ":-"                           { return PROLOG_RULE_OP; }
   "."                            { return DOT; }
   ","                            { return COMMA; }
   ";"                            { return SEMICOLON; }
