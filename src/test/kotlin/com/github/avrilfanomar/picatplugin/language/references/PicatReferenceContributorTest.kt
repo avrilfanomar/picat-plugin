@@ -3,7 +3,6 @@ package com.github.avrilfanomar.picatplugin.language.references
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.github.avrilfanomar.picatplugin.utils.PsiTestUtils
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiReference
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions
@@ -32,13 +31,13 @@ class PicatReferenceContributorTest : BasePlatformTestCase() {
 
         // Find all elements in the file
         val allElements = PsiTreeUtil.findChildrenOfAnyType(file, PsiElement::class.java)
-        
+
         // Verify that we can get references from elements (even if empty)
         var referencesFound = 0
         for (element in allElements) {
             val references = element.references
             referencesFound += references.size
-            
+
             // Each reference should be non-null
             references.forEach { reference ->
                 Assertions.assertNotNull(reference, "Reference should not be null")
@@ -47,7 +46,7 @@ class PicatReferenceContributorTest : BasePlatformTestCase() {
 
         // Log the number of references found for debugging
         println("[DEBUG_LOG] Found $referencesFound references in test file")
-        
+
         // The test passes if no exceptions are thrown and references can be obtained
         // (even if the current implementation returns empty arrays)
         Assertions.assertTrue(allElements.isNotEmpty(), "Should have found some PSI elements")
@@ -72,16 +71,16 @@ class PicatReferenceContributorTest : BasePlatformTestCase() {
 
         // Find all elements and check for references
         val allElements = PsiTreeUtil.findChildrenOfAnyType(file, PsiElement::class.java)
-        
+
         var elementsWithReferences = 0
         var totalReferences = 0
-        
+
         for (element in allElements) {
             val references = element.references
             if (references.isNotEmpty()) {
                 elementsWithReferences++
                 totalReferences += references.size
-                
+
                 // Verify each reference
                 references.forEach { reference ->
                     Assertions.assertNotNull(reference, "Reference should not be null")
@@ -92,7 +91,7 @@ class PicatReferenceContributorTest : BasePlatformTestCase() {
 
         println("[DEBUG_LOG] Found $elementsWithReferences elements with references")
         println("[DEBUG_LOG] Total references found: $totalReferences")
-        
+
         // The test passes if we can process all elements without errors
         Assertions.assertTrue(allElements.isNotEmpty(), "Should have found some PSI elements")
     }
@@ -119,23 +118,23 @@ class PicatReferenceContributorTest : BasePlatformTestCase() {
 
         // Test that we can traverse the PSI tree and get references without errors
         val allElements = PsiTreeUtil.findChildrenOfAnyType(file, PsiElement::class.java)
-        
+
         var processedElements = 0
         var referencesProcessed = 0
-        
+
         for (element in allElements) {
             processedElements++
             val references = element.references
             referencesProcessed += references.size
-            
+
             // Verify that getting references doesn't throw exceptions
             references.forEach { reference ->
                 Assertions.assertNotNull(reference, "Reference should not be null")
-                
+
                 // Test that we can call basic reference methods without errors
                 val referenceElement = reference.element
                 Assertions.assertNotNull(referenceElement, "Reference element should not be null")
-                
+
                 // Test that we can get the range text without errors
                 val rangeInElement = reference.rangeInElement
                 Assertions.assertNotNull(rangeInElement, "Reference range should not be null")
@@ -144,7 +143,7 @@ class PicatReferenceContributorTest : BasePlatformTestCase() {
 
         println("[DEBUG_LOG] Processed $processedElements elements")
         println("[DEBUG_LOG] Processed $referencesProcessed references")
-        
+
         Assertions.assertTrue(processedElements > 0, "Should have processed some elements")
     }
 
@@ -163,15 +162,15 @@ class PicatReferenceContributorTest : BasePlatformTestCase() {
 
         // Even with parsing errors, the reference contributor should not crash
         val allElements = PsiTreeUtil.findChildrenOfAnyType(file, PsiElement::class.java)
-        
+
         var elementsProcessed = 0
         var exceptionsThrown = 0
-        
+
         for (element in allElements) {
             try {
                 elementsProcessed++
                 val references = element.references
-                
+
                 // Verify references are valid even for malformed code
                 references.forEach { reference ->
                     Assertions.assertNotNull(reference, "Reference should not be null even for malformed code")
@@ -183,7 +182,7 @@ class PicatReferenceContributorTest : BasePlatformTestCase() {
         }
 
         println("[DEBUG_LOG] Processed $elementsProcessed elements with $exceptionsThrown exceptions")
-        
+
         // The reference contributor should handle errors gracefully
         Assertions.assertTrue(elementsProcessed > 0, "Should have processed some elements")
         Assertions.assertEquals(0, exceptionsThrown, "Should not throw exceptions when processing references")

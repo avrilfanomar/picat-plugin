@@ -8,7 +8,6 @@ import com.intellij.psi.tree.IElementType
 import com.intellij.testFramework.LexerTestCase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.io.File
 
 /**
  * Test for Picat syntax highlighting using examples.pi.

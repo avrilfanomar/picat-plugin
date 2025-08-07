@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Assertions
  * Utility object for common PSI testing operations
  */
 object PsiTestUtils {
-    
+
     /**
      * Checks for PSI parsing errors in the given file and asserts that no errors exist.
      * Also provides debug logging of errors and PSI tree structure.
-     * 
+     *
      * @param file The PSI file to check for errors
      * @param testContext A descriptive context for the test (e.g., "conjunctive goals", "simple function call")
      */
@@ -22,7 +22,7 @@ object PsiTestUtils {
         // Check for PSI parsing errors
         val errorElements = PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
         println("[DEBUG_LOG] Found ${errorElements.size} PSI parsing errors in $testContext")
-        
+
         if (errorElements.isNotEmpty()) {
             errorElements.forEachIndexed { index, error ->
                 println(
@@ -42,11 +42,11 @@ object PsiTestUtils {
                     "First error: ${errorElements.firstOrNull()?.errorDescription}"
         )
     }
-    
+
     /**
      * Checks for PSI parsing errors in the given file and asserts that no errors exist.
      * Also provides detailed debug logging with additional context information.
-     * 
+     *
      * @param file The PSI file to check for errors
      * @param testContext A descriptive context for the test
      */
@@ -57,7 +57,7 @@ object PsiTestUtils {
         // Check for PSI parsing errors
         val errorElements = PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
         println("[DEBUG_LOG] Found ${errorElements.size} PSI parsing errors")
-        
+
         if (errorElements.isNotEmpty()) {
             errorElements.forEachIndexed { index, error ->
                 println(
@@ -75,7 +75,7 @@ object PsiTestUtils {
                 println("[DEBUG_LOG] ---")
             }
         }
-        
+
         Assertions.assertEquals(
             0,
             errorElements.size,
