@@ -1,9 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.formatter
 
-/**
- * Custom formatter for Picat language.
- * This class provides a custom implementation of the formatting logic.
- */
 @Suppress("TooManyFunctions")
 class PicatCustomFormatter {
 
@@ -11,49 +7,32 @@ class PicatCustomFormatter {
         private const val LINE_BREAK_THRESHOLD = 20
     }
 
-    /**
-     * Formats the given code according to the code style settings.
-     */
     fun format(code: String): String {
-        // Normalize the input code by removing leading whitespace
         val normalizedCode = code.trim()
 
         val result = when {
-            // Check if this is a simple rule (one line with no blocks)
             isSimpleRule(normalizedCode) -> {
-                var simpleResult = handleSpecialOperators(normalizedCode)
-                simpleResult = addSpacesAroundOperators(simpleResult)
-
-                // Only add line breaks and indentation for longer/more complex simple rules
+                var simpleResult = formatPreservingComments(normalizedCode)
                 val contentAfterArrow = simpleResult.substringAfter("=>").trim()
-                val shouldAddLineBreak = contentAfterArrow.length > LINE_BREAK_THRESHOLD || 
+                val shouldAddLineBreak = contentAfterArrow.length > LINE_BREAK_THRESHOLD ||
                         contentAfterArrow.contains("println")
 
                 if (shouldAddLineBreak) {
                     simpleResult = addLineBreaksAfterRuleOperators(simpleResult)
                     simpleResult = addIndentation(simpleResult)
                 } else {
-                    // Ensure there's a space after => even without line breaks
                     simpleResult = simpleResult.replace("=>", "=> ")
-                    // Remove any double spaces that might have been created
                     simpleResult = simpleResult.replace("=>  ", "=> ")
                 }
                 simpleResult
             }
-            // Check if this is a predicate definition
+
             isPredicate(normalizedCode) -> {
-                var predResult = handleSpecialOperators(normalizedCode)
-                predResult = addSpacesAroundOperators(predResult)
-                predResult
+                formatPreservingComments(normalizedCode)
             }
-            // Apply formatting rules for complex code
+
             else -> {
-                var formattedCode = normalizedCode
-                // Handle special operators first
-                formattedCode = handleSpecialOperators(formattedCode)
-                // Add spaces around operators
-                formattedCode = addSpacesAroundOperators(formattedCode)
-                // Format the code with proper indentation and line breaks
+                val formattedCode = formatPreservingComments(normalizedCode)
                 formatCode(formattedCode)
             }
         }
@@ -62,16 +41,46 @@ class PicatCustomFormatter {
     }
 
     /**
-     * Formats the code with proper indentation and line breaks.
+     * Core safe formatting step: split into code/comment, protect operators, then space.
      */
+    private fun formatPreservingComments(input: String): String {
+        val lines = input.split("\n")
+        return lines.joinToString("\n") { line ->
+            val (codePart, commentPart) = splitCodeAndComment(line)
+            var formattedCode = handleSpecialOperators(codePart)
+            formattedCode = addSpacesAroundOperators(formattedCode)
+            formattedCode = cleanupDoubleSpaces(formattedCode)
+            formattedCode = restoreSpecialOperators(formattedCode)
+            formattedCode = cleanupDoubleSpaces(formattedCode)
+            formattedCode = removeTrailingSpaces(formattedCode)
+            buildString {
+                append(formattedCode.trimEnd())
+                if (commentPart != null) {
+                    if (formattedCode.isNotEmpty()) append(" ")
+                    append(commentPart)
+                }
+            }
+        }
+    }
+
+    private fun splitCodeAndComment(line: String): Pair<String, String?> {
+        val commentIndex = line.indexOf('%')
+        return if (commentIndex >= 0) {
+            val codePart = line.substring(0, commentIndex)
+            val commentPart = line.substring(commentIndex)
+            codePart to commentPart
+        } else {
+            line to null
+        }
+    }
+
     private fun formatCode(code: String): String {
         val lines = code.split("\n")
         val result = StringBuilder()
         val state = FormatState()
 
-        for (i in lines.indices) {
-            val line = lines[i].trim()
-            processLine(line, result, state)
+        for (line in lines) {
+            processLine(line.trim(), result, state)
         }
 
         return result.toString().trim()
@@ -86,9 +95,8 @@ class PicatCustomFormatter {
         }
     }
 
-    private fun isRuleBodyStart(line: String): Boolean {
-        return line.endsWith(" =>") || line.endsWith(" ?=>")
-    }
+    private fun isRuleBodyStart(line: String) =
+        line.endsWith(" =>") || line.endsWith(" ?=>")
 
     private fun handleRuleBodyStart(line: String, result: StringBuilder, state: FormatState) {
         result.append(line).append("\n")
@@ -109,9 +117,8 @@ class PicatCustomFormatter {
         }
     }
 
-    private fun isIfThenStatement(line: String): Boolean {
-        return line.startsWith("if ") && line.contains(" then")
-    }
+    private fun isIfThenStatement(line: String) =
+        line.startsWith("if ") && line.contains(" then")
 
     private fun handleIfThenStatement(line: String, result: StringBuilder, state: FormatState) {
         state.ifBlockBaseLevel = state.indentLevel
@@ -140,9 +147,8 @@ class PicatCustomFormatter {
         state.indentLevel++
     }
 
-    private fun isEndStatement(line: String): Boolean {
-        return line == "end" || line == "end," || line == "end."
-    }
+    private fun isEndStatement(line: String) =
+        line == "end" || line == "end," || line == "end."
 
     private fun handleEndStatement(line: String, result: StringBuilder, state: FormatState) {
         state.indentLevel--
@@ -174,152 +180,76 @@ class PicatCustomFormatter {
         var ifBlockBaseLevel: Int = 0
     )
 
-    /**
-     * Checks if the given code is a simple rule (one line with no blocks).
-     */
-    private fun isSimpleRule(code: String): Boolean {
-        // Check if the code is a simple rule (one line with no blocks)
-        return code.contains("=>") && !code.contains("then") && !code.contains("else") && 
-               !code.contains("foreach") && !code.contains("end") && !code.contains("\n")
-    }
+    private fun isSimpleRule(code: String) =
+        code.contains("=>") && !code.contains("then") && !code.contains("else") &&
+                !code.contains("foreach") && !code.contains("end") && !code.contains("\n")
 
-    /**
-     * Checks if the given code is a predicate definition.
-     */
-    private fun isPredicate(code: String): Boolean {
-        // Check if the code is a predicate definition (single line function definition)
-        // A predicate should not contain newlines and should be a simple function definition
-        return (!code.contains("\n") &&
+    private fun isPredicate(code: String) =
+        !code.contains("\n") &&
                 code.contains("(") && code.contains(")") && code.contains("=") &&
-                (code.endsWith(".") || code.contains("=>")))
-    }
+                (code.endsWith(".") || code.contains("=>"))
 
-
-    /**
-     * Handles special operators like => and ?=> to ensure they're not broken up.
-     */
     private fun handleSpecialOperators(code: String): String {
         var result = code
 
-        // Handle multi-character operators first (to avoid conflicts)
-
-        // Term comparison operators
+        // Term comparison
         result = result.replace("@=<", "__AT_LESS_EQUAL_OP__")
         result = result.replace("@>=", "__AT_GREATER_EQUAL_OP__")
         result = result.replace("@<", "__AT_LESS_OP__")
         result = result.replace("@>", "__AT_GREATER_OP__")
 
-        // Constraint rule operators
+        // Constraint rule
         result = result.replace("#<=>", "__HASH_BICONDITIONAL_OP__")
         result = result.replace("#=>", "__HASH_ARROW_OP__")
+        result = result.replace("#=", "__HASH_EQUAL_OP__")
+        result = result.replace("#", "__HASH_OP__")
 
-        // Equality operators
+        // Equality
         result = result.replace("==", "__DOUBLE_EQUAL_OP__")
         result = result.replace("!=", "__NOT_EQUAL_OP__")
 
-        // Type constraint operator
+        // Type constraint
         result = result.replace("::", "__DOUBLE_COLON_OP__")
 
-        // Concatenation operator
+        // Concatenation
         result = result.replace("++", "__CONCAT_OP__")
 
-        // Rule operators
+        // Rule
         result = result.replace("?=>", "__BACKTRACKABLE_ARROW_OP__")
         result = result.replace("=>", "__ARROW_OP__")
 
         return result
     }
 
-    /**
-     * Adds spaces around operators.
-     */
     private fun addSpacesAroundOperators(code: String): String {
         var result = code
 
-        result = normalizeOperatorSpaces(result)
-        result = addOperatorSpaces(result)
-        result = addSpacesAroundColonsInListComprehensions(result)
-        result = fixSpacingInStructures(result)
-        result = cleanupDoubleSpaces(result)
-        result = restoreSpecialOperators(result)
-        result = cleanupDoubleSpaces(result)
-        result = removeTrailingSpaces(result)
-
-        return result
-    }
-
-    private fun normalizeOperatorSpaces(code: String): String {
-        var result = code
-        val operators = listOf(
-            " = ", " + ", " - ", " * ", " / ", " > ", " < ", " >= ", " <= ", 
-            " == ", " != ", " && ", " || ", " & ", " | ", " ^ ", " << ", " >> ", " : ", ", "
-        )
-        val normalized = listOf(
-            "=", "+", "-", "*", "/", ">", "<", ">=", "<=", 
-            "==", "!=", "&&", "||", "&", "|", "^", "<<", ">>", ":", ","
-        )
-
-        operators.zip(normalized).forEach { (spaced, clean) ->
-            result = result.replace(spaced, clean)
+        fun spaceOperator(op: String) {
+            val escaped = Regex.escape(op)
+            result = result.replace(Regex("(?<=[^\\s])$escaped(?=[^\\s])"), " $op ")
         }
 
-        return result
-    }
+        listOf(
+            "=", "+", "-", "*", "/", ">=", "<=", ">", "<", "==", "!=", "&&", "||",
+            "&", "|", "^", "<<", ">>"
+        ).forEach { spaceOperator(it) }
 
-    private fun addOperatorSpaces(code: String): String {
-        var result = code
-
-        // Assignment operators
-        result = result.replace("=", " = ")
-
-        // Arithmetic operators
-        result = result.replace("+", " + ")
-        result = result.replace("-", " - ")
-        result = result.replace("*", " * ")
-        result = result.replace("/", " / ")
-
-        // Relational operators
-        result = result.replace(">", " > ")
-        result = result.replace("<", " < ")
-        result = result.replace(">=", " >= ")
-        result = result.replace("<=", " <= ")
-        result = result.replace("==", " == ")
-        result = result.replace("!=", " != ")
-
-        // Logical operators
-        result = result.replace("&&", " && ")
-        result = result.replace("||", " || ")
-
-        // Bitwise operators
-        result = result.replace("&", " & ")
-        result = result.replace("|", " | ")
-        result = result.replace("^", " ^ ")
-        result = result.replace("<<", " << ")
-        result = result.replace(">>", " >> ")
-
+        result = addSpacesAroundColonsInListComprehensions(result)
+        result = fixSpacingInStructures(result)
         return result
     }
 
     private fun fixSpacingInStructures(code: String): String {
         var result = code
-
-        // Fix spaces in list comprehensions
         result = result.replace("[ ", "[")
         result = result.replace(" ]", "]")
-
-        // Fix spaces in function calls
         result = result.replace("( ", "(")
         result = result.replace(" )", ")")
-
-        // Fix spaces around commas
         result = result.replace(" ,", ",")
         result = result.replace(",", ", ")
         result = result.replace(", ]", ",]")
         result = result.replace(", )", ",)")
-
-        // Remove trailing spaces after commas at end of lines
         result = result.replace(", \n", ",\n")
-
         return result
     }
 
@@ -333,74 +263,42 @@ class PicatCustomFormatter {
 
     private fun restoreSpecialOperators(code: String): String {
         var result = code
-
-        // Restore rule operators
         result = result.replace("__ARROW_OP__", " => ")
         result = result.replace("__BACKTRACKABLE_ARROW_OP__", " ?=> ")
-
-        // Restore constraint rule operators
         result = result.replace("__HASH_ARROW_OP__", " #=> ")
         result = result.replace("__HASH_BICONDITIONAL_OP__", " #<=> ")
-
-        // Restore term comparison operators
+        result = result.replace("__HASH_EQUAL_OP__", " #= ")
+        result = result.replace("__HASH_OP__", " # ")
         result = result.replace("__AT_LESS_OP__", " @< ")
         result = result.replace("__AT_GREATER_OP__", " @> ")
         result = result.replace("__AT_LESS_EQUAL_OP__", " @=< ")
         result = result.replace("__AT_GREATER_EQUAL_OP__", " @>= ")
-
-        // Restore equality operators
         result = result.replace("__DOUBLE_EQUAL_OP__", " == ")
         result = result.replace("__NOT_EQUAL_OP__", " != ")
-
-        // Restore type constraint operator
         result = result.replace("__DOUBLE_COLON_OP__", " :: ")
-
-        // Restore concatenation operator
         result = result.replace("__CONCAT_OP__", " ++ ")
-
         return result
     }
 
-    private fun removeTrailingSpaces(code: String): String {
-        return code.split("\n").joinToString("\n") { it.trimEnd() }
-    }
+    private fun removeTrailingSpaces(code: String) =
+        code.split("\n").joinToString("\n") { it.trimEnd() }
 
-    /**
-     * Adds line breaks after rule operators.
-     */
     private fun addLineBreaksAfterRuleOperators(code: String): String {
         var result = code
-
-        // Add line breaks after rule operators if they don't already have one
         result = result.replace(" =>", " =>\n")
         result = result.replace(" ?=>", " ?=>\n")
-
-        // Remove any double newlines that might have been created
         result = result.replace(" =>\n\n", " =>\n")
         result = result.replace(" ?=>\n\n", " ?=>\n")
-
         return result
     }
 
-    /**
-     * Adds indentation to the code.
-     */
     private fun addIndentation(code: String): String {
-        // First, remove any existing indentation to ensure idempotency
-        val lines = code.split("\n")
-        val cleanedLines = lines.map { it.trim() }
-        val cleanedCode = cleanedLines.joinToString("\n")
-
-        // Now process the cleaned code
-        val processedLines = cleanedCode.split("\n")
+        val lines = code.split("\n").map { it.trim() }
         val result = StringBuilder()
         val state = IndentationState()
-
-        for (line in processedLines) {
-            val trimmedLine = line.trim()
-            processIndentationLine(trimmedLine, result, state)
+        for (line in lines) {
+            processIndentationLine(line, result, state)
         }
-
         return result.toString().trim()
     }
 
@@ -414,13 +312,11 @@ class PicatCustomFormatter {
         }
     }
 
-    private fun isRuleBodyStartLine(line: String): Boolean {
-        return line.contains(" =>") || line.contains(" ?=>")
-    }
+    private fun isRuleBodyStartLine(line: String) =
+        line.contains(" =>") || line.contains(" ?=>")
 
-    private fun isCommentOutsideRuleBody(line: String, state: IndentationState): Boolean {
-        return !state.inRuleBody && line.startsWith("%")
-    }
+    private fun isCommentOutsideRuleBody(line: String, state: IndentationState) =
+        !state.inRuleBody && line.startsWith("%")
 
     private fun handleIndentationRuleBodyStart(line: String, result: StringBuilder, state: IndentationState) {
         result.append(line).append("\n")
@@ -444,7 +340,7 @@ class PicatCustomFormatter {
     private fun handleIndentationIfThen(line: String, result: StringBuilder, state: IndentationState) {
         state.ifBlockBaseLevel = state.indentLevel
         result.append(getIndentation(state.indentLevel)).append(line).append("\n")
-        state.indentLevel += 1
+        state.indentLevel++
     }
 
     private fun handleIndentationElseIf(line: String, result: StringBuilder, state: IndentationState) {
@@ -459,16 +355,16 @@ class PicatCustomFormatter {
 
     private fun handleIndentationThen(line: String, result: StringBuilder, state: IndentationState) {
         result.append(getIndentation(state.indentLevel)).append(line).append("\n")
-        state.indentLevel += 1
+        state.indentLevel++
     }
 
     private fun handleIndentationForeach(line: String, result: StringBuilder, state: IndentationState) {
         result.append(getIndentation(state.indentLevel)).append(line).append("\n")
-        state.indentLevel += 1
+        state.indentLevel++
     }
 
     private fun handleIndentationEnd(line: String, result: StringBuilder, state: IndentationState) {
-        state.indentLevel -= 1
+        state.indentLevel--
         result.append(getIndentation(state.indentLevel)).append(line).append("\n")
     }
 
@@ -488,29 +384,18 @@ class PicatCustomFormatter {
         var ifBlockBaseLevel: Int = 0
     )
 
-    /**
-     * Returns the indentation string for the given level.
-     */
-    private fun getIndentation(level: Int): String {
-        return "    ".repeat(maxOf(0, level))
-    }
+    private fun getIndentation(level: Int) = "    ".repeat(maxOf(0, level))
 
-    /**
-     * Adds spaces around colons in list comprehensions but not in string literals.
-     */
     private fun addSpacesAroundColonsInListComprehensions(code: String): String {
         val state = ColonSpacingState()
         val chars = code.toCharArray()
-
         for (i in chars.indices) {
             val char = chars[i]
             updateColonSpacingState(char, state)
-
             if (shouldAddSpacesAroundColon(char, i, chars, state)) {
                 return processColonSpacing(code, i, chars)
             }
         }
-
         return code
     }
 
@@ -521,23 +406,16 @@ class PicatCustomFormatter {
                 state.bracketDepth++
                 state.inListComprehension = true
             }
+
             ']' -> if (!state.inString) {
                 state.bracketDepth--
-                if (state.bracketDepth == 0) {
-                    state.inListComprehension = false
-                }
+                if (state.bracketDepth == 0) state.inListComprehension = false
             }
         }
     }
 
-    private fun shouldAddSpacesAroundColon(
-        char: Char, 
-        index: Int, 
-        chars: CharArray, 
-        state: ColonSpacingState
-    ): Boolean {
-        return char == ':' && !state.inString && state.inListComprehension && needsSpacing(index, chars)
-    }
+    private fun shouldAddSpacesAroundColon(char: Char, index: Int, chars: CharArray, state: ColonSpacingState) =
+        char == ':' && !state.inString && state.inListComprehension && needsSpacing(index, chars)
 
     private fun needsSpacing(index: Int, chars: CharArray): Boolean {
         val needsBefore = index > 0 && chars[index - 1] != ' '
@@ -548,11 +426,9 @@ class PicatCustomFormatter {
     private fun processColonSpacing(code: String, index: Int, chars: CharArray): String {
         val before = if (index > 0 && chars[index - 1] != ' ') " " else ""
         val after = if (index < chars.size - 1 && chars[index + 1] != ' ') " " else ""
-
         val prefix = code.substring(0, index)
         val suffix = code.substring(index + 1)
         val result = "$prefix$before:$after$suffix"
-
         return addSpacesAroundColonsInListComprehensions(result)
     }
 
