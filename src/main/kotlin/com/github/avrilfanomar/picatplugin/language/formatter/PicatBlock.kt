@@ -127,7 +127,7 @@ class PicatBlock(
     private fun shouldIndentChildElements(elementType: IElementType): Boolean {
         return helper.isRuleBodyOrStatementType(elementType) ||
                 helper.isBlockStatementType(elementType) ||
-                elementType == PicatTokenTypes.LIST_EXPRESSION ||
+                elementType == PicatTokenTypes.LIST_EXPR ||
                 elementType == PicatTokenTypes.EXPRESSION ||
                 elementType == PicatTokenTypes.PREDICATE_RULE ||
                 elementType == PicatTokenTypes.FUNCTION_RULE

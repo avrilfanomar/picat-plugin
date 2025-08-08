@@ -1,7 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.parser
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
-import com.github.avrilfanomar.picatplugin.language.psi.PicatListExpression
+import com.github.avrilfanomar.picatplugin.language.psi.PicatListExpr
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.github.avrilfanomar.picatplugin.utils.PsiTestUtils
@@ -27,7 +27,7 @@ class PicatParserTest : BasePlatformTestCase() {
         val psiString = DebugUtil.psiToString(file, true, true)
         // Verify that the rule is parsed correctly
         val rules = PsiTreeUtil.collectElementsOfType(file, PicatPredicateRule::class.java)
-        Assertions.assertTrue(rules.size >= 1, "Should have at least one rule. PSI:\n$psiString")
+        Assertions.assertTrue(rules.isNotEmpty(), "Should have at least one rule. PSI:\n$psiString")
     }
 
     @Test
@@ -121,7 +121,7 @@ class PicatParserTest : BasePlatformTestCase() {
         myFixture.configureByText("test.pi", code)
         val file = myFixture.file as PicatFileImpl
 
-        val lists = PsiTreeUtil.collectElementsOfType(file, PicatListExpression::class.java)
+        val lists = PsiTreeUtil.collectElementsOfType(file, PicatListExpr::class.java)
 
         Assertions.assertEquals(2, lists.size)
         PsiTestUtils.assertNoPsiErrors(file, "test.pi")

@@ -5,34 +5,43 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PicatTerm extends PsiElement {
+public interface PicatBaseExpr extends PsiElement {
 
   @Nullable
   PicatArrayExpr getArrayExpr();
 
   @Nullable
-  PicatAtomOrCallNoLambda getAtomOrCallNoLambda();
+  PicatAsPattern getAsPattern();
 
   @Nullable
-  PicatFunctionCallNoDot getFunctionCallNoDot();
+  PicatAtomNoArgs getAtomNoArgs();
 
   @Nullable
-  PicatListExprNoComprehension getListExprNoComprehension();
+  PicatFunctionCall getFunctionCall();
 
   @Nullable
-  PicatTerm getTerm();
+  PicatLambdaTerm getLambdaTerm();
+
+  @Nullable
+  PicatListExpr getListExpr();
+
+  @Nullable
+  PicatParenthesizedGoal getParenthesizedGoal();
 
   @Nullable
   PicatTermConstructor getTermConstructor();
 
   @Nullable
-  PicatVariableAsPattern getVariableAsPattern();
+  PicatVariableIndex getVariableIndex();
 
   @Nullable
   PsiElement getFloat();
 
   @Nullable
   PsiElement getInteger();
+
+  @Nullable
+  PsiElement getString();
 
   @Nullable
   PsiElement getVariable();

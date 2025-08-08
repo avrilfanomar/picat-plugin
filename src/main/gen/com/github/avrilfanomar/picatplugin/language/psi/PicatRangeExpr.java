@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PicatGoal extends PsiElement {
+public interface PicatRangeExpr extends PsiElement {
 
   @NotNull
-  PicatDisjunction getDisjunction();
+  List<PicatOrExpr> getOrExprList();
 
 }

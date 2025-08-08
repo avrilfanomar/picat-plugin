@@ -5,9 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PicatGoal extends PsiElement {
+public interface PicatNegated extends PsiElement {
 
-  @NotNull
-  PicatDisjunction getDisjunction();
+  @Nullable
+  PicatEnclosedGoal getEnclosedGoal();
+
+  @Nullable
+  PicatNegated getNegated();
 
 }

@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface PicatExpression extends PsiElement {
 
   @NotNull
-  PicatRangeExpression getRangeExpression();
+  PicatRangeExpr getRangeExpr();
 
 }

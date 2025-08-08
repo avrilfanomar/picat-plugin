@@ -11,14 +11,14 @@ import static com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.avrilfanomar.picatplugin.language.psi.*;
 
-public class PicatExpressionImpl extends ASTWrapperPsiElement implements PicatExpression {
+public class PicatNegationImpl extends ASTWrapperPsiElement implements PicatNegation {
 
-  public PicatExpressionImpl(@NotNull ASTNode node) {
+  public PicatNegationImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PicatVisitor visitor) {
-    visitor.visitExpression(this);
+    visitor.visitNegation(this);
   }
 
   @Override
@@ -28,9 +28,15 @@ public class PicatExpressionImpl extends ASTWrapperPsiElement implements PicatEx
   }
 
   @Override
-  @NotNull
-  public PicatRangeExpr getRangeExpr() {
-    return findNotNullChildByClass(PicatRangeExpr.class);
+  @Nullable
+  public PicatEquivalence getEquivalence() {
+    return findChildByClass(PicatEquivalence.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatNegation getNegation() {
+    return findChildByClass(PicatNegation.class);
   }
 
 }

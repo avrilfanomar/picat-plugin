@@ -11,14 +11,14 @@ import static com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.avrilfanomar.picatplugin.language.psi.*;
 
-public class PicatTermImpl extends ASTWrapperPsiElement implements PicatTerm {
+public class PicatBaseExprImpl extends ASTWrapperPsiElement implements PicatBaseExpr {
 
-  public PicatTermImpl(@NotNull ASTNode node) {
+  public PicatBaseExprImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PicatVisitor visitor) {
-    visitor.visitTerm(this);
+    visitor.visitBaseExpr(this);
   }
 
   @Override
@@ -35,26 +35,38 @@ public class PicatTermImpl extends ASTWrapperPsiElement implements PicatTerm {
 
   @Override
   @Nullable
-  public PicatAtomOrCallNoLambda getAtomOrCallNoLambda() {
-    return findChildByClass(PicatAtomOrCallNoLambda.class);
+  public PicatAsPattern getAsPattern() {
+    return findChildByClass(PicatAsPattern.class);
   }
 
   @Override
   @Nullable
-  public PicatFunctionCallNoDot getFunctionCallNoDot() {
-    return findChildByClass(PicatFunctionCallNoDot.class);
+  public PicatAtomNoArgs getAtomNoArgs() {
+    return findChildByClass(PicatAtomNoArgs.class);
   }
 
   @Override
   @Nullable
-  public PicatListExprNoComprehension getListExprNoComprehension() {
-    return findChildByClass(PicatListExprNoComprehension.class);
+  public PicatFunctionCall getFunctionCall() {
+    return findChildByClass(PicatFunctionCall.class);
   }
 
   @Override
   @Nullable
-  public PicatTerm getTerm() {
-    return findChildByClass(PicatTerm.class);
+  public PicatLambdaTerm getLambdaTerm() {
+    return findChildByClass(PicatLambdaTerm.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatListExpr getListExpr() {
+    return findChildByClass(PicatListExpr.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatParenthesizedGoal getParenthesizedGoal() {
+    return findChildByClass(PicatParenthesizedGoal.class);
   }
 
   @Override
@@ -65,8 +77,8 @@ public class PicatTermImpl extends ASTWrapperPsiElement implements PicatTerm {
 
   @Override
   @Nullable
-  public PicatVariableAsPattern getVariableAsPattern() {
-    return findChildByClass(PicatVariableAsPattern.class);
+  public PicatVariableIndex getVariableIndex() {
+    return findChildByClass(PicatVariableIndex.class);
   }
 
   @Override
@@ -79,6 +91,12 @@ public class PicatTermImpl extends ASTWrapperPsiElement implements PicatTerm {
   @Nullable
   public PsiElement getInteger() {
     return findChildByType(INTEGER);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getString() {
+    return findChildByType(STRING);
   }
 
   @Override

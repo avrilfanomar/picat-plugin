@@ -70,8 +70,7 @@ class PicatBlockFactory(
     private fun createSharedAlignment(nodeType: IElementType): Alignment? {
         return when (nodeType) {
             PicatTokenTypes.BODY -> Alignment.createAlignment(true)
-            PicatTokenTypes.LIST_EXPRESSION -> Alignment.createAlignment(true)
-
+            PicatTokenTypes.LIST_EXPR -> Alignment.createAlignment(true)
             else -> null
         }
     }
@@ -81,7 +80,7 @@ class PicatBlockFactory(
      */
     private fun createSharedWrap(nodeType: IElementType): Wrap? {
         return when (nodeType) {
-            PicatTokenTypes.LIST_EXPRESSION -> Wrap.createWrap(WrapType.CHOP_DOWN_IF_LONG, true)
+            PicatTokenTypes.LIST_EXPR -> Wrap.createWrap(WrapType.CHOP_DOWN_IF_LONG, true)
             else -> null
         }
     }
@@ -126,7 +125,7 @@ class PicatBlockFactory(
      * Checks if the node is a list element (not a bracket).
      */
     private fun isListElement(nodeType: IElementType, childType: IElementType): Boolean {
-        return nodeType == PicatTokenTypes.LIST_EXPRESSION &&
+        return nodeType == PicatTokenTypes.LIST_EXPR &&
                 childType != PicatTokenTypes.LBRACKET &&
                 childType != PicatTokenTypes.RBRACKET
     }

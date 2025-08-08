@@ -26,15 +26,15 @@ EOL=\R
 WHITE_SPACE=\s+
 
 IDENTIFIER=[a-z][a-zA-Z0-9_]*
-DOT_IDENTIFIER=\.[a-z][a-zA-Z0-9_]*
+DOT_IDENTIFIER=\\.[a-z][a-zA-Z0-9_]*
 VARIABLE=[A-Z_][a-zA-Z0-9_]*
 INTEGER=([0-9]+|0[xX][0-9a-fA-F]+|0[oO][0-7]+|0[bB][01]+)
-FLOAT=[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?
-STRING=\"(\.|[^\"\\])*\"
-SINGLE_QUOTED_ATOM='([^'\\]|\.)*'
-DOT_SINGLE_QUOTED_ATOM=\.'([^'\\]|\.)*'
-COMMENT=%[^\r\n]*
-QUALIFIED_ATOM=[a-z][a-zA-Z0-9_]*\.[a-z][a-zA-Z0-9_]*
+FLOAT=[0-9]+\\.[0-9]+([eE][+-]?[0-9]+)?
+STRING=\"(\\.|[^\"\\])*\"
+SINGLE_QUOTED_ATOM='([^'\\]|\\.)*'
+DOT_SINGLE_QUOTED_ATOM=\\.'([^'\\]|\\.)*'
+COMMENT=%.*
+QUALIFIED_ATOM=[a-z][a-zA-Z0-9_]*\\.[a-z][a-zA-Z0-9_]*
 MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
 
 %%
@@ -85,7 +85,7 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "!=="                          { return NOT_IDENTICAL; }
   "#\\/"                         { return HASH_OR_OP; }
   "#^"                           { return HASH_XOR_OP; }
-  "/\\"                          { return HASH_AND_OP; }
+  "#\\"                          { return HASH_AND_OP; }
   "=>"                           { return ARROW_OP; }
   "#~"                           { return HASH_NOT_OP; }
   "#="                           { return HASH_EQUAL_OP; }

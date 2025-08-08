@@ -82,7 +82,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
         tokenType == PicatTokenTypes.VARIABLE
 
     private fun isIdentifier(tokenType: IElementType): Boolean =
-        tokenType == PicatTokenTypes.IDENTIFIER || tokenType == PicatTokenTypes.QUALIFIED_ATOM
+        tokenType == PicatTokenTypes.IDENTIFIER
 
     companion object {
         // Define text attribute keys for different token types

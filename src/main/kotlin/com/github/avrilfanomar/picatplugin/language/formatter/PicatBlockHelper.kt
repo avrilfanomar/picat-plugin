@@ -94,7 +94,7 @@ class PicatBlockHelper {
      * Checks if the element is a list element that should be indented.
      */
     fun shouldIndentListElements(elementType: IElementType?, parentType: IElementType?): Boolean {
-        return parentType == PicatTokenTypes.LIST_EXPRESSION &&
+        return parentType == PicatTokenTypes.LIST_EXPR &&
                 elementType != PicatTokenTypes.LBRACKET &&
                 elementType != PicatTokenTypes.RBRACKET
     }

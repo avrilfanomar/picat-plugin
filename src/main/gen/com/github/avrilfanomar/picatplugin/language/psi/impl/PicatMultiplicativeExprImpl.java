@@ -11,14 +11,14 @@ import static com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.avrilfanomar.picatplugin.language.psi.*;
 
-public class PicatExpressionImpl extends ASTWrapperPsiElement implements PicatExpression {
+public class PicatMultiplicativeExprImpl extends ASTWrapperPsiElement implements PicatMultiplicativeExpr {
 
-  public PicatExpressionImpl(@NotNull ASTNode node) {
+  public PicatMultiplicativeExprImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PicatVisitor visitor) {
-    visitor.visitExpression(this);
+    visitor.visitMultiplicativeExpr(this);
   }
 
   @Override
@@ -29,8 +29,8 @@ public class PicatExpressionImpl extends ASTWrapperPsiElement implements PicatEx
 
   @Override
   @NotNull
-  public PicatRangeExpr getRangeExpr() {
-    return findNotNullChildByClass(PicatRangeExpr.class);
+  public List<PicatUnaryExpr> getUnaryExprList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatUnaryExpr.class);
   }
 
 }
