@@ -103,10 +103,6 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitDisjunctiveGoalTail(@NotNull PicatDisjunctiveGoalTail o) {
-    visitPsiElement(o);
-  }
-
   public void visitDollarEscapedAtom(@NotNull PicatDollarEscapedAtom o) {
     visitPsiElement(o);
   }
@@ -140,10 +136,6 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitExpressionWithRelations(@NotNull PicatExpressionWithRelations o) {
-    visitPsiElement(o);
-  }
-
-  public void visitExpressionWithRelationsTail(@NotNull PicatExpressionWithRelationsTail o) {
     visitPsiElement(o);
   }
 

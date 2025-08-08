@@ -32,7 +32,6 @@ public interface PicatTokenTypes {
   IElementType CONJUNCTIVE_GOAL = new PicatElementType("CONJUNCTIVE_GOAL");
   IElementType CONJUNCTIVE_GOAL_TAIL = new PicatElementType("CONJUNCTIVE_GOAL_TAIL");
   IElementType DISJUNCTIVE_GOAL = new PicatElementType("DISJUNCTIVE_GOAL");
-  IElementType DISJUNCTIVE_GOAL_TAIL = new PicatElementType("DISJUNCTIVE_GOAL_TAIL");
   IElementType DOLLAR_ESCAPED_ATOM = new PicatElementType("DOLLAR_ESCAPED_ATOM");
   IElementType DOT_ACCESS = new PicatElementType("DOT_ACCESS");
   IElementType ENCLOSED_GOAL = new PicatElementType("ENCLOSED_GOAL");
@@ -42,7 +41,6 @@ public interface PicatTokenTypes {
   IElementType EXCEPTION_PATTERN = new PicatElementType("EXCEPTION_PATTERN");
   IElementType EXPRESSION = new PicatElementType("EXPRESSION");
   IElementType EXPRESSION_WITH_RELATIONS = new PicatElementType("EXPRESSION_WITH_RELATIONS");
-  IElementType EXPRESSION_WITH_RELATIONS_TAIL = new PicatElementType("EXPRESSION_WITH_RELATIONS_TAIL");
   IElementType FOREACH_LOOP = new PicatElementType("FOREACH_LOOP");
   IElementType FUNCTION_ARGUMENT = new PicatElementType("FUNCTION_ARGUMENT");
   IElementType FUNCTION_ARGUMENT_LIST_TAIL = new PicatElementType("FUNCTION_ARGUMENT_LIST_TAIL");
@@ -297,9 +295,6 @@ public interface PicatTokenTypes {
       else if (type == DISJUNCTIVE_GOAL) {
         return new PicatDisjunctiveGoalImpl(node);
       }
-      else if (type == DISJUNCTIVE_GOAL_TAIL) {
-        return new PicatDisjunctiveGoalTailImpl(node);
-      }
       else if (type == DOLLAR_ESCAPED_ATOM) {
         return new PicatDollarEscapedAtomImpl(node);
       }
@@ -326,9 +321,6 @@ public interface PicatTokenTypes {
       }
       else if (type == EXPRESSION_WITH_RELATIONS) {
         return new PicatExpressionWithRelationsImpl(node);
-      }
-      else if (type == EXPRESSION_WITH_RELATIONS_TAIL) {
-        return new PicatExpressionWithRelationsTailImpl(node);
       }
       else if (type == FOREACH_LOOP) {
         return new PicatForeachLoopImpl(node);

@@ -124,9 +124,9 @@
     STRING = 'regexp:"(\.|[^"\\])*"'
     SINGLE_QUOTED_ATOM="regexp:'([^'\\]|\.)*'"
     DOT_SINGLE_QUOTED_ATOM="regexp:\.'([^'\\]|\.)*'"
-    COMMENT="regexp:%[^\r\n]*"
+    COMMENT="regexp:%.*"
     QUALIFIED_ATOM="regexp:[a-z][a-zA-Z0-9_]*\.[a-z][a-zA-Z0-9_]*"
-    MULTILINE_COMMENT="regexp:/[*]([^*]|[*][^/])*[*]/"
+    MULTILINE_COMMENT="regexp:(?s)/\*.*?\*/"
     TRUE="true"
     FALSE="false"
   ]
@@ -199,9 +199,7 @@ body ::= goal
 // Goals - following the official precedence hierarchy
 goal ::= disjunctive_goal
 
-disjunctive_goal ::= conjunctive_goal disjunctive_goal_tail?
-disjunctive_goal_tail ::= SEMICOLON disjunctive_goal
-
+disjunctive_goal ::= conjunctive_goal (SEMICOLON conjunctive_goal)*
 conjunctive_goal ::= negative_goal conjunctive_goal_tail*
 conjunctive_goal_tail ::= COMMA conjunctive_goal
 
@@ -246,8 +244,7 @@ catch_clause ::= CATCH_KEYWORD LPAR exception_pattern RPAR goal
 
 exception_pattern ::= term
 
-expression_with_relations ::= expression expression_with_relations_tail?
-expression_with_relations_tail ::= bin_rel_op expression expression_with_relations_tail?
+expression_with_relations ::= expression (bin_rel_op expression)*
 
 bin_rel_op ::= EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_NON_EQUAL | IDENTICAL | NOT_IDENTICAL
              | GREATER | GREATER_EQUAL | LESS | LESS_EQUAL | LESS_EQUAL_PROLOG
