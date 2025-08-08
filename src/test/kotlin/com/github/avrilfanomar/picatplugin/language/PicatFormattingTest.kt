@@ -2,11 +2,9 @@ package com.github.avrilfanomar.picatplugin.language
 
 import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormatterService
 import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder
-import com.github.avrilfanomar.picatplugin.language.formatter.PicatSpacingBuilder
 import com.intellij.lang.LanguageFormatting
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.components.service
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test

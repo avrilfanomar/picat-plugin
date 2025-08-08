@@ -30,8 +30,10 @@ class PicatSyntaxHighlightingTest : LexerTestCase() {
     @Test
     fun testKeywordHighlighting() {
         val highlighter = PicatSyntaxHighlighter()
-        val keywords = listOf("import", "module", "if", "then", "else", "end", "fail", "repeat", "until", 
-                             "while", "foreach", "in", "try", "catch", "finally", "not", "div", "mod", "rem")
+        val keywords = listOf(
+            "import", "module", "if", "then", "else", "end", "fail", "repeat", "until",
+            "while", "foreach", "in", "try", "catch", "finally", "not", "div", "mod", "rem"
+        )
 
         for (keyword in keywords) {
             val lexer = highlighter.getHighlightingLexer()
@@ -213,8 +215,8 @@ class PicatSyntaxHighlightingTest : LexerTestCase() {
      * Verifies that tokens are correctly identified and highlighted.
      */
     private fun verifyTokenHighlights(
-        lexer: Lexer, 
-        text: String, 
+        lexer: Lexer,
+        text: String,
         highlighter: PicatSyntaxHighlighter,
         expectedHighlights: Map<String, String>
     ) {

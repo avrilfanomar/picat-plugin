@@ -8,14 +8,12 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatWhileLoop
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.github.avrilfanomar.picatplugin.utils.PsiTestUtils
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.impl.DebugUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.io.File
 
 private const val KAKURO_PROGRAM = """
             import cp.

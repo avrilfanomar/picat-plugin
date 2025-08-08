@@ -41,7 +41,7 @@ class PicatBasicModuleTest : LexerTestCase() {
             }
         }
 
-        // Basic module functions found (not logged, but kept for test functionality)
+        // Basic module functions found (not logged but kept for test functionality)
     }
 
     /**

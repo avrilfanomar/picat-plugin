@@ -39,8 +39,12 @@ dependencies {
     testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.junit.jupiter.engine)
     testImplementation(libs.junit.jupiter.params)
+    //required by intellij base test classes
+    testRuntimeOnly(libs.junit3)
+    testImplementation(libs.junit3)
+    testImplementation(libs.junit4)
     testImplementation(libs.opentest4j)
-    testImplementation("org.jetbrains:grammar-kit:2022.3.2")
+    testImplementation(libs.grammarkit)
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
@@ -99,6 +103,13 @@ intellijPlatform {
             recommended()
         }
     }
+
+    intellijPlatformTesting {
+        dependencies {
+            implementation(libs.junit4)
+            implementation(libs.junit3)
+        }
+    }
 }
 
 // Configure Gradle Kover Plugin - read more: https://github.com/Kotlin/kotlinx-kover#configuration
@@ -152,9 +163,9 @@ intellijPlatformTesting {
 }
 
 tasks.generateParser {
-    sourceFile.set(file("src/main/grammars/Picat.bnf"));
+    sourceFile.set(file("src/main/grammars/Picat.bnf"))
     targetRootOutputDir.set(file("src/main/gen"))
-    pathToParser.set("com/github/avrilfanomar/picatplugin/language/parser/PicatParser.java");
+    pathToParser.set("com/github/avrilfanomar/picatplugin/language/parser/PicatParser.java")
     pathToPsiRoot.set("com/github/avrilfanomar/picatplugin/language/psi")
 }
 tasks.generateLexer {
