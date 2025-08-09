@@ -592,4 +592,146 @@ comma_bracket_example =>
 
         doFormatTest(code, expected)
     }
+
+    @Test
+    fun testSingleAndMultiLineCommentsFormatting() {
+        // Test that formatting does not touch single and multi-line comments
+        val code = """
+            % Single-line comment with+operators
+            main=>
+            % Another single line comment
+            X=10,% Inline comment
+            /*
+            Multi-line comment
+            with multiple lines
+            */
+            Y=20,
+            println(X+Y).% Final comment
+        """
+
+        val expected = """
+% Single-line comment with+operators
+main =>
+    % Another single line comment
+    X = 10, % Inline comment
+    /*
+    Multi-line comment
+    with multiple lines
+    */
+    Y = 20,
+    println(X + Y). % Final comment
+        """.trim()
+
+        doFormatTest(code, expected)
+    }
+
+    @Test
+    fun testAssignmentOperatorFormatting() {
+        // Test formatting of ":=" assignment operator
+        val code = """
+            assignment_example=>
+            X:=10,
+            Y:=X+5,
+            Z:=Y*2,
+            X:=X+1,
+            println(X),println(Y),println(Z).
+        """
+
+        val expected = """
+assignment_example =>
+    X := 10,
+    Y := X + 5,
+    Z := Y * 2,
+    X := X + 1,
+    println(X), println(Y), println(Z).
+        """.trim()
+
+        doFormatTest(code, expected)
+    }
+
+    @Test
+    fun testConstraintNotEqualOperatorFormatting() {
+        // Test formatting of "#!=" constraint not equal operator
+        val code = """
+            constraint_not_equal_example=>
+            X#!=Y,
+            A[I]#!=A[J],
+            X+Y#!=10,
+            abs(X-Y)#!=5.
+        """
+
+        val expected = """
+constraint_not_equal_example =>
+    X #!= Y,
+    A[I] #!= A[J],
+    X + Y #!= 10,
+    abs(X - Y) #!= 5.
+        """.trim()
+
+        doFormatTest(code, expected)
+    }
+
+    @Test
+    fun testConstraintEqualOperatorFormatting() {
+        // Test formatting of "#=" constraint equal operator
+        val code = """
+            constraint_equal_example=>
+            X#=Y,
+            sum(A)#=100,
+            X+Y#=Z,
+            Total#=sum([X[I]:I in 1..N]).
+        """
+
+        val expected = """
+constraint_equal_example =>
+    X #= Y,
+    sum(A) #= 100,
+    X + Y #= Z,
+    Total #= sum([X[I] : I in 1..N]).
+        """.trim()
+
+        doFormatTest(code, expected)
+    }
+
+    @Test
+    fun testConstraintOrOperatorFormatting() {
+        // Test formatting of "#\/" constraint OR operator
+        val code = """
+            constraint_or_example=>
+            B1#\/B2,
+            (X#=1)#\/(Y#=2),
+            A[I]#!=1#\/A[J]#!=1.
+        """
+
+        val expected = """
+constraint_or_example =>
+    B1 #\/ B2,
+    (X #= 1) #\/ (Y #= 2),
+    A[I] #!= 1 #\/ A[J] #!= 1.
+        """.trim()
+
+        doFormatTest(code, expected)
+    }
+
+    @Test
+    fun testNotIdenticalOperatorFormatting() {
+        // Test formatting of "!==" not identical operator
+        val code = """
+            not_identical_example=>
+            X!==Y,
+            F!==W,
+            Char!==end_of_file,
+            A[I,J]!==0.
+        """
+
+        val expected = """
+not_identical_example =>
+    X !== Y,
+    F !== W,
+    Char !== end_of_file,
+    A[I, J] !== 0.
+        """.trim()
+
+        doFormatTest(code, expected)
+    }
 }
