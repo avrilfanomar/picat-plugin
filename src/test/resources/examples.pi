@@ -301,26 +301,18 @@ next_row(Row) = [1] ++ [Row[I]+Row[I+1] : I in 1..Row.length-1] ++ [1].
 % a list comprehension inside another list comprehension
 % Picat> L=list_of_lists(5)
 % L = [[1],[1,2] [1,2,3],[1,2,3,4],[1,2,3,4,5]]
-/* Hard case: nested list comprehension
 list_of_lists(N) = [[Y : Y in 1..X] : X in 1..N].
-*/
 
 % another definition
-/* Hard case: list comprehension with range
 another_list_of_lists(N) = [1..X : X in 1..N].
-*/
 
 qsort([]) = [].
-/* Hard case: list comprehension in qsort
 qsort([H|T]) = qsort([E : E in T, E =< H])++[H]++qsort([E : E in T, E>H]).
-*/
 
 power_set([]) = [[]].
-/* Hard case: list comprehension in power_set
 power_set([H|T]) = P1++P2 =>
     P1 = power_set(T),
     P2 = [[H|S] : S in P1].
-*/
 
 % generate permutations
 perm([]) = [[]].
@@ -344,7 +336,6 @@ matrix_multi(A,B) = C =>
 */
 
 % Sieve of Eratosthenes
-/* Hard case: list comprehension with multiple conditions
 my_primes(N) = L =>
     A = new_array(N),
     foreach(I in 2..floor(sqrt(N)))
@@ -355,7 +346,6 @@ my_primes(N) = L =>
          end
      end,
      L = [I : I in 2..N, var(A[I])].
-*/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% TABLING
@@ -544,12 +534,10 @@ copy(IName,OName) =>
 % Picat> output_students([$student("john","cs",3),$student("mary","math",4.0)])
 %      john         cs  3.00
 %      mary       math  4.00
-/* Hard case: dollar-escaped atoms in foreach
 output_students(Students) =>
     foreach($student(Name,Major,GPA) in Students)
         printf("%10s %10s %5.2f%n",Name,Major,to_real(GPA))
     end.
-*/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% HIGHER-ORDER (not recommended because of poor performance)
