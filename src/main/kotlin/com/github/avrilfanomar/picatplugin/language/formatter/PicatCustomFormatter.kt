@@ -113,6 +113,7 @@ class PicatCustomFormatter {
         state.indentLevel = 1
     }
 
+    @Suppress("CyclomaticComplexMethod")//kinda false-positive
     private fun handleRuleBodyLine(line: String, result: StringBuilder, state: FormatState) {
         when {
             isIfThenStatement(line) -> handleIfThenStatement(line, result, state)
@@ -121,11 +122,8 @@ class PicatCustomFormatter {
             line.contains(" then") -> handleThenStatement(line, result, state)
             line.startsWith("foreach") || line.startsWith("for ") -> handleForeachStatement(line, result, state)
             line.startsWith("while") || line.startsWith("loop") -> handleLoopStatement(line, result, state)
-            line.startsWith("try") || line.startsWith("catch") || line.startsWith("finally") -> handleTryCatchStatement(
-                line,
-                result,
-                state
-            )
+            line.startsWith("try") || line.startsWith("catch") || line.startsWith("finally")
+                -> handleTryCatchStatement(line, result, state)
 
             isEndStatement(line) -> handleEndStatement(line, result, state)
             line.endsWith(".") -> handleRuleBodyEnd(line, result, state)
@@ -446,6 +444,7 @@ class PicatCustomFormatter {
         state.indentLevel = 1
     }
 
+    @Suppress("CyclomaticComplexMethod")//kinda false-positive
     private fun handleIndentationRuleBodyLine(line: String, result: StringBuilder, state: IndentationState) {
         when {
             isIfThenStatement(line) -> handleIndentationIfThen(line, result, state)
@@ -454,11 +453,8 @@ class PicatCustomFormatter {
             line.contains(" then") -> handleIndentationThen(line, result, state)
             line.startsWith("foreach") || line.startsWith("for ") -> handleIndentationForeach(line, result, state)
             line.startsWith("while") || line.startsWith("loop") -> handleIndentationForeach(line, result, state)
-            line.startsWith("try") || line.startsWith("catch") || line.startsWith("finally") -> handleIndentationTryCatch(
-                line,
-                result,
-                state
-            )
+            line.startsWith("try") || line.startsWith("catch") || line.startsWith("finally")
+                -> handleIndentationTryCatch(line, result, state)
 
             isEndStatement(line) -> handleIndentationEnd(line, result, state)
             line.endsWith(".") -> handleIndentationRuleBodyEnd(line, result, state)
