@@ -237,18 +237,16 @@ class PicatCustomFormatter {
         result = result.replace("#=<", "__HASH_LE_OP__")
         result = result.replace("#=", "__HASH_EQUAL_OP__")
 
+        result = result.replace("@=<", "__AT_LESS_EQUAL_OP__")
+        result = result.replace("@>=", "__AT_GREATER_EQUAL_OP__")
+        result = result.replace("@<", "__AT_LESS_OP__")
+        result = result.replace("@>", "__AT_GREATER_OP__")
+
         // Arithmetic / comparison / equality operators
-        result = result.replace("=:= ", "__EQUAL_NUM_OP_WITH_SPACE__") // rare spacing case
-        result = result.replace("=:= ", "__EQUAL_NUM_OP_WITH_SPACE__")
-        result = result.replace("=:= ", "__EQUAL_NUM_OP_WITH_SPACE__")
         result = result.replace("=\\=", "__NOT_EQUAL_NUM_OP__")
-        result = result.replace("=:= ", "__EQUAL_NUM_OP__")
-        // the above are defensive; we'll normalize the common numeric operators below as plain tokens:
-        result = result.replace("=:= ", "__EQUAL_NUM_OP__")
+        result = result.replace("=:=", "__EQUAL_NUM_OP__")
 
         // Standard multi-char ops
-        result = result.replace("=:= ", "__EQUAL_NUM_OP__")
-        result = result.replace("=\\=", "__NOT_EQUAL_NUM_OP__")
         result = result.replace("=\\=", "__NOT_EQUAL_NUM_OP__")
 
         result = result.replace("<=>", "__SPACELESS_EQUIV_OP__")
@@ -257,23 +255,20 @@ class PicatCustomFormatter {
         result = result.replace("=..", "__UNIV_OP__") // univ operator in some Prolog-like languages
         result = result.replace("===", "__TRIPLE_EQUAL_OP__")
         result = result.replace("==", "__DOUBLE_EQUAL_OP__")
-        result = result.replace("!=", "__NOT_EQUAL_OP__")
         result = result.replace("!==", "__STRICT_NOT_EQUAL_OP__")
+        result = result.replace("!=", "__NOT_EQUAL_OP__")
         result = result.replace("<<", "__LSHIFT_OP__")
-        result = result.replace(">>", "__RSHIFT_OP__")
         result = result.replace(">>>", "__URSHIFT_OP__")
+        result = result.replace(">>", "__RSHIFT_OP__")
         result = result.replace("++", "__CONCAT_OP__")
         result = result.replace("--", "__DECREMENT_OP__")
         result = result.replace("&&", "__AND_OP__")
         result = result.replace("||", "__OR_OP__")
         result = result.replace("::", "__DOUBLE_COLON_OP__")
+        result = result.replace(":=", "__ASSIGN_OP__")
         result = result.replace("?:", "__TERNARY_COLON_OP__") // defensive placeholder
 
         // @-prefixed comparison ops used in Picat BNF
-        result = result.replace("@=<", "__AT_LESS_EQUAL_OP__")
-        result = result.replace("@>=", "__AT_GREATER_EQUAL_OP__")
-        result = result.replace("@<", "__AT_LESS_OP__")
-        result = result.replace("@>", "__AT_GREATER_OP__")
 
         // Rule operators (backtrackable and normal)
         result = result.replace("?=>", "__BACKTRACKABLE_ARROW_OP__")
@@ -328,6 +323,7 @@ class PicatCustomFormatter {
         result = result.replace("__UNIV_OP__", " =.. ")
         result = result.replace("__NOT_EQUAL_NUM_OP__", " =\\= ")
         result = result.replace("__EQUAL_NUM_OP__", " =:= ")
+        result = result.replace("__ASSIGN_OP__", " := ")
 
         // defensive placeholders
         result = result.replace("__SPACELESS_EQUIV_OP__", " <=> ")
