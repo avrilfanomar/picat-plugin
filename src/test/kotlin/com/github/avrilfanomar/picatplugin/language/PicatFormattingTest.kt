@@ -597,29 +597,29 @@ comma_bracket_example =>
     fun testSingleAndMultiLineCommentsFormatting() {
         // Test that formatting does not touch single and multi-line comments
         val code = """
-            % Single-line comment with+operators
-            main=>
-            % Another single line comment
-            X=10,% Inline comment
-            /*
-            Multi-line comment
-            with multiple lines
-            */
-            Y=20,
-            println(X+Y).% Final comment
+% Single-line comment with+operators
+main=>
+% Another single line comment
+X=10,% Inline comment
+/*
+Multi-line comment
+with multiple lines
+*/
+Y=20,
+println(X+Y).% Final comment
         """
 
         val expected = """
 % Single-line comment with+operators
 main =>
     % Another single line comment
-    X = 10, % Inline comment
-    /*
-    Multi-line comment
-    with multiple lines
-    */
+    X = 10,% Inline comment
+/*
+Multi-line comment
+with multiple lines
+*/
     Y = 20,
-    println(X + Y). % Final comment
+    println(X + Y).% Final comment
         """.trim()
 
         doFormatTest(code, expected)
@@ -733,5 +733,12 @@ not_identical_example =>
         """.trim()
 
         doFormatTest(code, expected)
+    }
+
+    @Test
+    fun testExamplesPiFormatting() {
+        val code = javaClass.getResource("/examples.pi")!!.readText()
+
+        doFormatTest(code, code)
     }
 }

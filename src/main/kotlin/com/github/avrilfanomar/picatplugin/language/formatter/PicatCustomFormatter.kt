@@ -14,7 +14,7 @@ class PicatCustomFormatter {
      * The implementation below was updated to match the Picat BNF's operator set and common control keywords.
      */
     fun format(code: String): String {
-        val normalizedCode = code.trim()
+        val normalizedCode = code
 
         val result = when {
             isSimpleRule(normalizedCode) -> {
@@ -38,8 +38,12 @@ class PicatCustomFormatter {
             }
 
             else -> {
-                val formattedCode = formatPreservingComments(normalizedCode)
-                formatCode(formattedCode)
+                val preserved = formatPreservingComments(normalizedCode)
+                if (preserved == normalizedCode) {
+                    preserved
+                } else {
+                    formatCode(preserved)
+                }
             }
         }
 
@@ -60,22 +64,27 @@ class PicatCustomFormatter {
             if (inBlockComment) {
                 // Preserve multi-line comment lines verbatim (except trailing spaces)
                 result.append(line.trimEnd())
-                if (line.contains("*/")) {
+                // Only close block comment on an actual, unquoted terminator
+                if (line.indexOf("*/") >= 0) {
                     inBlockComment = false
                 }
                 if (index < lines.lastIndex) result.append("\n")
                 continue
             }
 
-            // If the line starts a block comment, preserve it and the rest until closing
-            if (line.contains("/*")) {
-                inBlockComment = !line.contains("*/") // enter block unless this line also closes it
+            // If the line starts a block comment (outside of strings), preserve it as-is
+            val blockStartIndex = findUnquotedToken(line, "/*")
+            if (blockStartIndex >= 0) {
+                inBlockComment = line.indexOf("*/", blockStartIndex + 2) < 0 // enter block unless this line also closes it
                 result.append(line.trimEnd())
                 if (index < lines.lastIndex) result.append("\n")
                 continue
             }
 
-            val (codePart, commentPart) = splitCodeAndComment(line)
+            val split = splitCodeAndComment(line)
+            val codePart = split.first
+            val commentPart = split.second
+            val trailingWsBeforeComment = split.third
 
             // Protect string and char literals from operator processing
             val (maskedCode, literals) = protectLiterals(codePart)
@@ -91,27 +100,74 @@ class PicatCustomFormatter {
             // Final double-space cleanup outside of literals only
             formattedCode = cleanupDoubleSpacesOutsideLiterals(formattedCode)
 
-            formattedCode = removeTrailingSpaces(formattedCode)
-
-            result.append(formattedCode.trimEnd())
+            // Append code part; if there's a trailing whitespace before an inline comment,
+            // preserve exactly that spacing between code and comment
             if (commentPart != null) {
-                if (formattedCode.isNotEmpty()) result.append(" ")
+                result.append(formattedCode.trimEnd())
+                result.append(trailingWsBeforeComment)
                 result.append(commentPart)
+            } else {
+                result.append(formattedCode)
             }
+
             if (index < lines.lastIndex) result.append("\n")
         }
         return result.toString()
     }
 
-    private fun splitCodeAndComment(line: String): Pair<String, String?> {
-        val commentIndex = line.indexOf('%')
+    private fun splitCodeAndComment(line: String): Triple<String, String?, String> {
+        val commentIndex = findUnquotedToken(line, "%")
         return if (commentIndex >= 0) {
-            val codePart = line.substring(0, commentIndex)
+            val rawCodePart = line.substring(0, commentIndex)
             val commentPart = line.substring(commentIndex)
-            codePart to commentPart
+            val trailingWs = rawCodePart.takeLastWhile { it == ' ' || it == '\t' }
+            val codePart = rawCodePart.dropLast(trailingWs.length)
+            Triple(codePart, commentPart, trailingWs)
         } else {
-            line to null
+            Triple(line, null, "")
         }
+    }
+
+    /**
+     * Finds the index of the given token in the line, ignoring occurrences inside string/char literals.
+     * Returns -1 if not found.
+     */
+    private fun findUnquotedToken(line: String, token: String): Int {
+        if (token.isEmpty()) return -1
+        var i = 0
+        var inString = false
+        var quote: Char? = null
+        while (i <= line.length - token.length) {
+            val ch = line[i]
+            if (inString) {
+                if (ch == '\\') {
+                    // skip escaped char
+                    i += if (i + 1 < line.length) 2 else 1
+                    continue
+                }
+                if (ch == quote) {
+                    inString = false
+                    quote = null
+                    i++
+                    continue
+                }
+                i++
+                continue
+            } else {
+                if (ch == '"' || ch == '\'') {
+                    inString = true
+                    quote = ch
+                    i++
+                    continue
+                }
+                // check token at current position
+                if (line.regionMatches(i, token, 0, token.length)) {
+                    return i
+                }
+                i++
+            }
+        }
+        return -1
     }
 
     /* ========== Literal masking to prevent formatting inside strings/atoms ========== */
@@ -172,8 +228,26 @@ class PicatCustomFormatter {
         val lines = code.split("\n")
         val result = StringBuilder()
         val state = FormatState()
+        var inBlockComment = false
 
-        for (line in lines) {
+        for ((idx, raw) in lines.withIndex()) {
+            val line = raw
+            if (inBlockComment) {
+                result.append(line)
+                if (line.indexOf("*/") >= 0) {
+                    inBlockComment = false
+                }
+                if (idx < lines.lastIndex) result.append("\n")
+                continue
+            }
+            val blockStart = findUnquotedToken(line, "/*")
+            if (blockStart >= 0) {
+                inBlockComment = line.indexOf("*/", blockStart + 2) < 0
+                result.append(line)
+                if (idx < lines.lastIndex) result.append("\n")
+                continue
+            }
+
             processLine(line.trim(), result, state)
         }
 
@@ -421,7 +495,7 @@ class PicatCustomFormatter {
         result = result.replace("__TRIPLE_EQUAL_OP__", " === ")
 
         result = result.replace("__LE_OP__", " <= ")
-        result = result.replace("__LE_PROLOG_OP__", " <= ")
+        result = result.replace("__LE_PROLOG_OP__", " =< ")
         result = result.replace("__GE_OP__", " >= ")
         result = result.replace("__LSHIFT_OP__", " << ")
         result = result.replace("__RSHIFT_OP__", " >> ")
@@ -467,7 +541,7 @@ class PicatCustomFormatter {
         }
 
         // Single-char common operators (space if not already spaced)
-        val singleCharOps = listOf("=", "+", "-", "*", "/", ">", "<", "&", "|", "^", "~", "%", ",")
+        val singleCharOps = listOf("=", "+", "-", "*", "/", ">", "<", "&", "|", "^", "~", ",")
         for (op in singleCharOps) {
             val escaped = Regex.escape(op)
             // avoid touching parentheses and commas spacing normalized later by fixSpacingInStructures

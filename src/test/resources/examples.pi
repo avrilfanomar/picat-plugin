@@ -307,12 +307,12 @@ list_of_lists(N) = [[Y : Y in 1..X] : X in 1..N].
 another_list_of_lists(N) = [1..X : X in 1..N].
 
 qsort([]) = [].
-qsort([H|T]) = qsort([E : E in T, E =< H])++[H]++qsort([E : E in T, E>H]).
+qsort([H | T]) = qsort([E : E in T, E <= H]) ++ [H] ++ qsort([E : E in T, E > H]).
 
 power_set([]) = [[]].
-power_set([H|T]) = P1++P2 =>
+power_set([H | T]) = P1 ++ P2 =>
     P1 = power_set(T),
-    P2 = [[H|S] : S in P1].
+    P2 = [[H | S] : S in P1].
 
 % generate permutations
 perm([]) = [[]].
@@ -340,12 +340,12 @@ my_primes(N) = L =>
     A = new_array(N),
     foreach(I in 2..floor(sqrt(N)))
         if (var(A[I])) then
-            foreach(J in I**2..I..N)
+            foreach(J in I ** 2..I..N)
                 A[J] = 0
             end
-         end
-     end,
-     L = [I : I in 2..N, var(A[I])].
+        end
+    end,
+    L = [I : I in 2..N, var(A[I])].
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% TABLING
@@ -511,11 +511,11 @@ read_array(A) = Len =>
     Count = 0,
     E = read_int(), % read from stdin
     while (E != 0)
-    Count := Count + 1,
-    A[Count] = E,
-    E := read_int()
-end,
-Len = Count.
+        Count := Count + 1,
+        A[Count] = E,
+        E := read_int()
+    end,
+    Len = Count.
 
 % copy a text file line-by-line
 /* Hard case: dot access operations
@@ -535,8 +535,8 @@ copy(IName,OName) =>
 %      john         cs  3.00
 %      mary       math  4.00
 output_students(Students) =>
-    foreach($student(Name,Major,GPA) in Students)
-        printf("%10s %10s %5.2f%n",Name,Major,to_real(GPA))
+    foreach($student(Name, Major, GPA) in Students)
+        printf("%10s %10s %5.2f%n", Name, Major, to_real(GPA))
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
