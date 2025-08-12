@@ -50,6 +50,7 @@ class PicatCustomFormatter {
      * Protect comments, protect multi-char/special operators, add spaces around operators,
      * then restore special operators and re-attach comments.
      */
+    @Suppress("LoopWithTooManyJumpStatements")
     private fun formatPreservingComments(input: String): String {
         val lines = input.split("\n")
         val result = StringBuilder()
@@ -114,7 +115,6 @@ class PicatCustomFormatter {
     }
 
     /* ========== Literal masking to prevent formatting inside strings/atoms ========== */
-
     private fun protectLiterals(code: String): Pair<String, List<String>> {
         if (code.isEmpty()) return code to emptyList()
         val saved = mutableListOf<String>()
@@ -124,22 +124,7 @@ class PicatCustomFormatter {
             val ch = code[i]
             if (ch == '"' || ch == '\'') {
                 val quote = ch
-                var j = i + 1
-                // scan until matching quote, honoring backslash escapes
-                while (j < code.length) {
-                    val cj = code[j]
-                    if (cj == '\\') {
-                        // skip escaped next char if any
-                        j += if (j + 1 < code.length) 2 else 1
-                        continue
-                    }
-                    if (cj == quote) {
-                        j++ // include closing quote
-                        break
-                    }
-                    j++
-                }
-                if (j > code.length) j = code.length
+                var j = findJ(i, code, quote)
                 val literal = code.substring(i, minOf(j, code.length))
                 val placeholder = "__LIT_${'$'}${saved.size}__"
                 saved += literal
@@ -153,6 +138,27 @@ class PicatCustomFormatter {
         return out.toString() to saved
     }
 
+    @Suppress("LoopWithTooManyJumpStatements")
+    private fun findJ(i: Int, code: String, quote: Char): Int {
+        var j = i + 1
+        // scan until matching quote, honoring backslash escapes
+        while (j < code.length) {
+            val cj = code[j]
+            if (cj == '\\') {
+                // skip escaped next char if any
+                j += if (j + 1 < code.length) 2 else 1
+                continue
+            }
+            if (cj == quote) {
+                j++ // include closing quote
+                break
+            }
+            j++
+        }
+        if (j > code.length) j = code.length
+        return j
+    }
+
     private fun restoreLiterals(code: String, literals: List<String>): String {
         var result = code
         for ((idx, lit) in literals.withIndex()) {
@@ -162,7 +168,6 @@ class PicatCustomFormatter {
     }
 
     /* ========== Structural formatting (indentation / block handling) ========== */
-
     private fun formatCode(code: String): String {
         val lines = code.split("\n")
         val result = StringBuilder()
@@ -185,7 +190,8 @@ class PicatCustomFormatter {
     }
 
     private fun isRuleBodyStart(line: String) =
-        line.endsWith(" =>") || line.endsWith(" ?=>") || line.endsWith(" #=>") || line.endsWith(" #<=>")
+        line.endsWith("=>") || line.endsWith(" ?=>") || line.endsWith("#=>") || line.endsWith("#<=>") ||
+                line.endsWith(" =>") || line.endsWith(" ?=>") || line.endsWith(" #=>") || line.endsWith(" #<=>")
 
     private fun handleRuleBodyStart(line: String, result: StringBuilder, state: FormatState) {
         result.append(line).append("\n")
@@ -215,20 +221,25 @@ class PicatCustomFormatter {
         (line.startsWith("if ") || line.startsWith("if(")) && line.contains(" then")
 
     private fun handleIfThenStatement(line: String, result: StringBuilder, state: FormatState) {
-        state.ifBlockBaseLevel = state.indentLevel
+        val base = state.indentLevel
+        // entering an if-block: record block type and its base level for proper else/elseif alignment
+        state.blockStack.add("if")
+        state.ifBaseStack.add(base)
         result.append(getIndentation(state.indentLevel)).append(line).append("\n")
         state.indentLevel++
     }
 
     private fun handleElseIfStatement(line: String, result: StringBuilder, state: FormatState) {
-        result.append(getIndentation(state.ifBlockBaseLevel)).append(line).append("\n")
-        state.indentLevel = state.ifBlockBaseLevel + 1
+        val base = state.ifBaseStack.lastOrNull() ?: 0
+        result.append(getIndentation(base)).append(line).append("\n")
+        state.indentLevel = base + 1
     }
 
     private fun handleElseStatement(line: String, result: StringBuilder, state: FormatState) {
         // place else at the same level as the matching if
-        result.append(getIndentation(state.ifBlockBaseLevel)).append(line).append("\n")
-        state.indentLevel = state.ifBlockBaseLevel + 1
+        val base = state.ifBaseStack.lastOrNull() ?: 0
+        result.append(getIndentation(base)).append(line).append("\n")
+        state.indentLevel = base + 1
     }
 
     private fun handleThenStatement(line: String, result: StringBuilder, state: FormatState) {
@@ -237,11 +248,13 @@ class PicatCustomFormatter {
     }
 
     private fun handleForeachStatement(line: String, result: StringBuilder, state: FormatState) {
+        state.blockStack.add("foreach")
         result.append(getIndentation(state.indentLevel)).append(line).append("\n")
         state.indentLevel++
     }
 
     private fun handleLoopStatement(line: String, result: StringBuilder, state: FormatState) {
+        state.blockStack.add("loop")
         result.append(getIndentation(state.indentLevel)).append(line).append("\n")
         state.indentLevel++
     }
@@ -255,12 +268,23 @@ class PicatCustomFormatter {
         line == "end" || line == "end," || line == "end." || line == "endif" || line == "endloop"
 
     private fun handleEndStatement(line: String, result: StringBuilder, state: FormatState) {
+        // close the last opened block (if any) and adjust stacks
+        if (state.blockStack.isNotEmpty()) {
+            val last = state.blockStack.removeAt(state.blockStack.lastIndex)
+            if (last == "if" && state.ifBaseStack.isNotEmpty()) {
+                state.ifBaseStack.removeAt(state.ifBaseStack.lastIndex)
+            }
+        }
         state.indentLevel = maxOf(0, state.indentLevel - 1)
         result.append(getIndentation(state.indentLevel)).append(line).append("\n")
 
-        if (line == "end." || line == "end") {
+        // Only terminate the rule body when we hit a final 'end.' at the outermost level.
+        // A bare 'end' closes an inner block (if/foreach/while) and must NOT leave the rule body.
+        if (line == "end.") {
             state.inRuleBody = false
             state.indentLevel = 0
+            state.blockStack.clear()
+            state.ifBaseStack.clear()
         }
     }
 
@@ -281,7 +305,9 @@ class PicatCustomFormatter {
     private data class FormatState(
         var indentLevel: Int = 0,
         var inRuleBody: Boolean = false,
-        var ifBlockBaseLevel: Int = 0
+        // Maintain stacks to properly handle nested blocks and align else/elseif
+        val blockStack: MutableList<String> = mutableListOf(),
+        val ifBaseStack: MutableList<Int> = mutableListOf()
     )
 
     /* ========== Heuristics that determine "kind" of single-line snippets ========== */
@@ -318,6 +344,7 @@ class PicatCustomFormatter {
         result = result.replace("#=", "__HASH_EQUAL_OP__")
 
         result = result.replace("@=<", "__AT_LESS_EQUAL_OP__")
+        result = result.replace("@<=", "__AT_LESS_EQUAL_PROLOG_OP__")
         result = result.replace("@>=", "__AT_GREATER_EQUAL_OP__")
         result = result.replace("@<", "__AT_LESS_OP__")
         result = result.replace("@>", "__AT_GREATER_OP__")
@@ -330,6 +357,7 @@ class PicatCustomFormatter {
 
         result = result.replace("<=>", "__SPACELESS_EQUIV_OP__")
         result = result.replace("<=", "__LE_OP__")
+        result = result.replace("=<", "__LE_PROLOG_OP__")
         result = result.replace(">=", "__GE_OP__")
         result = result.replace("=..", "__UNIV_OP__") // univ operator in some Prolog-like languages
         result = result.replace("!==", "__STRICT_NOT_EQUAL_OP__")
@@ -341,6 +369,7 @@ class PicatCustomFormatter {
         result = result.replace(">>", "__RSHIFT_OP__")
         result = result.replace("++", "__CONCAT_OP__")
         result = result.replace("--", "__DECREMENT_OP__")
+        result = result.replace("**", "__POWER_OP__")
         result = result.replace("&&", "__AND_OP__")
         result = result.replace("||", "__OR_OP__")
         result = result.replace("::", "__DOUBLE_COLON_OP__")
@@ -368,6 +397,7 @@ class PicatCustomFormatter {
 
         // @ ops
         result = result.replace("__AT_LESS_EQUAL_OP__", " @=< ")
+        result = result.replace("__AT_LESS_EQUAL_PROLOG_OP__", " @<= ")
         result = result.replace("__AT_GREATER_EQUAL_OP__", " @>= ")
         result = result.replace("__AT_LESS_OP__", " @< ")
         result = result.replace("__AT_GREATER_OP__", " @> ")
@@ -391,6 +421,7 @@ class PicatCustomFormatter {
         result = result.replace("__TRIPLE_EQUAL_OP__", " === ")
 
         result = result.replace("__LE_OP__", " <= ")
+        result = result.replace("__LE_PROLOG_OP__", " <= ")
         result = result.replace("__GE_OP__", " >= ")
         result = result.replace("__LSHIFT_OP__", " << ")
         result = result.replace("__RSHIFT_OP__", " >> ")
@@ -407,6 +438,7 @@ class PicatCustomFormatter {
         // defensive placeholders
         result = result.replace("__SPACELESS_EQUIV_OP__", " <=> ")
         result = result.replace("__DECREMENT_OP__", " -- ")
+        result = result.replace("__POWER_OP__", " ** ")
         result = result.replace("__TERNARY_COLON_OP__", " ?: ")
 
         // generic cleanup of multiple spaces introduced above
@@ -514,7 +546,8 @@ class PicatCustomFormatter {
     }
 
     private fun isRuleBodyStartLine(line: String) =
-        line.contains(" =>") || line.contains(" ?=>") || line.contains(" #=>") || line.contains(" #<=>")
+        line.contains("=>") || line.contains(" ?=>") || line.contains("#=>") || line.contains("#<=>") ||
+                line.contains(" =>") || line.contains(" ?=>") || line.contains(" #=>") || line.contains(" #<=>")
 
     private fun isCommentOutsideRuleBody(line: String, state: IndentationState) =
         !state.inRuleBody && line.startsWith("%")
@@ -544,19 +577,23 @@ class PicatCustomFormatter {
     }
 
     private fun handleIndentationIfThen(line: String, result: StringBuilder, state: IndentationState) {
-        state.ifBlockBaseLevel = state.indentLevel
+        val base = state.indentLevel
+        state.blockStack.add("if")
+        state.ifBaseStack.add(base)
         result.append(getIndentation(state.indentLevel)).append(line).append("\n")
         state.indentLevel++
     }
 
     private fun handleIndentationElseIf(line: String, result: StringBuilder, state: IndentationState) {
-        result.append(getIndentation(state.ifBlockBaseLevel)).append(line).append("\n")
-        state.indentLevel = state.ifBlockBaseLevel + 1
+        val base = state.ifBaseStack.lastOrNull() ?: 0
+        result.append(getIndentation(base)).append(line).append("\n")
+        state.indentLevel = base + 1
     }
 
     private fun handleIndentationElse(line: String, result: StringBuilder, state: IndentationState) {
-        result.append(getIndentation(state.ifBlockBaseLevel)).append(line).append("\n")
-        state.indentLevel = state.ifBlockBaseLevel + 1
+        val base = state.ifBaseStack.lastOrNull() ?: 0
+        result.append(getIndentation(base)).append(line).append("\n")
+        state.indentLevel = base + 1
     }
 
     private fun handleIndentationThen(line: String, result: StringBuilder, state: IndentationState) {
@@ -565,6 +602,7 @@ class PicatCustomFormatter {
     }
 
     private fun handleIndentationForeach(line: String, result: StringBuilder, state: IndentationState) {
+        state.blockStack.add("foreach")
         result.append(getIndentation(state.indentLevel)).append(line).append("\n")
         state.indentLevel++
     }
@@ -574,6 +612,12 @@ class PicatCustomFormatter {
     }
 
     private fun handleIndentationEnd(line: String, result: StringBuilder, state: IndentationState) {
+        if (state.blockStack.isNotEmpty()) {
+            val last = state.blockStack.removeAt(state.blockStack.lastIndex)
+            if (last == "if" && state.ifBaseStack.isNotEmpty()) {
+                state.ifBaseStack.removeAt(state.ifBaseStack.lastIndex)
+            }
+        }
         state.indentLevel = maxOf(0, state.indentLevel - 1)
         result.append(getIndentation(state.indentLevel)).append(line).append("\n")
     }
@@ -582,6 +626,8 @@ class PicatCustomFormatter {
         result.append(getIndentation(state.indentLevel)).append(line).append("\n")
         state.inRuleBody = false
         state.indentLevel = 0
+        state.blockStack.clear()
+        state.ifBaseStack.clear()
     }
 
     private fun handleIndentationRegularLine(line: String, result: StringBuilder, state: IndentationState) {
@@ -591,7 +637,9 @@ class PicatCustomFormatter {
     private data class IndentationState(
         var indentLevel: Int = 0,
         var inRuleBody: Boolean = false,
-        var ifBlockBaseLevel: Int = 0
+        // Stacks to track nested blocks and else alignment
+        val blockStack: MutableList<String> = mutableListOf(),
+        val ifBaseStack: MutableList<Int> = mutableListOf()
     )
 
     private fun getIndentation(level: Int) = "    ".repeat(maxOf(0, level))
