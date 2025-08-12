@@ -52,7 +52,28 @@ class PicatCustomFormatter {
      */
     private fun formatPreservingComments(input: String): String {
         val lines = input.split("\n")
-        return lines.joinToString("\n") { line ->
+        val result = StringBuilder()
+        var inBlockComment = false
+        for ((index, rawLine) in lines.withIndex()) {
+            val line = rawLine
+            if (inBlockComment) {
+                // Preserve multi-line comment lines verbatim (except trailing spaces)
+                result.append(line.trimEnd())
+                if (line.contains("*/")) {
+                    inBlockComment = false
+                }
+                if (index < lines.lastIndex) result.append("\n")
+                continue
+            }
+
+            // If the line starts a block comment, preserve it and the rest until closing
+            if (line.contains("/*")) {
+                inBlockComment = !line.contains("*/") // enter block unless this line also closes it
+                result.append(line.trimEnd())
+                if (index < lines.lastIndex) result.append("\n")
+                continue
+            }
+
             val (codePart, commentPart) = splitCodeAndComment(line)
             var formattedCode = handleSpecialOperators(codePart)
             formattedCode = addSpacesAroundOperators(formattedCode)
@@ -60,14 +81,15 @@ class PicatCustomFormatter {
             formattedCode = restoreSpecialOperators(formattedCode)
             formattedCode = cleanupDoubleSpaces(formattedCode)
             formattedCode = removeTrailingSpaces(formattedCode)
-            buildString {
-                append(formattedCode.trimEnd())
-                if (commentPart != null) {
-                    if (formattedCode.isNotEmpty()) append(" ")
-                    append(commentPart)
-                }
+
+            result.append(formattedCode.trimEnd())
+            if (commentPart != null) {
+                if (formattedCode.isNotEmpty()) result.append(" ")
+                result.append(commentPart)
             }
+            if (index < lines.lastIndex) result.append("\n")
         }
+        return result.toString()
     }
 
     private fun splitCodeAndComment(line: String): Pair<String, String?> {

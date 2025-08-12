@@ -69,20 +69,21 @@ class PicatBlock(
 
     private fun shouldUseNoIndent(context: IndentContext): Boolean {
         return context.elementType == TokenType.WHITE_SPACE ||
-                (context.elementType == PicatTokenTypes.COMMENT && context.parentType == null)
+                ((context.elementType == PicatTokenTypes.COMMENT ||
+                        context.elementType == PicatTokenTypes.MULTILINE_COMMENT) && context.parentType == null)
     }
 
     private fun shouldUseNormalIndent(context: IndentContext): Boolean {
         return isCommentInRuleBody(context) ||
                 helper.shouldIndentRuleBody(context.parentType, context.picatSettings) ||
                 helper.shouldIndentStatements(
-                    context.parentType, 
-                    context.grandParentType, 
+                    context.parentType,
+                    context.grandParentType,
                     context.greatGrandParentType
                 ) ||
                 helper.shouldIndentBlockStatements(
-                    context.elementType, 
-                    context.parentType, 
+                    context.elementType,
+                    context.parentType,
                     context.picatSettings
                 ) ||
                 helper.shouldIndentListComprehension(context.elementType, context.picatSettings) ||
@@ -93,7 +94,9 @@ class PicatBlock(
     }
 
     private fun isCommentInRuleBody(context: IndentContext): Boolean {
-        return context.elementType == PicatTokenTypes.COMMENT &&
+        val isCommentToken =
+            context.elementType == PicatTokenTypes.COMMENT || context.elementType == PicatTokenTypes.MULTILINE_COMMENT
+        return isCommentToken &&
                 (context.parentType == PicatTokenTypes.BODY ||
                         context.parentType == PicatTokenTypes.PREDICATE_RULE ||
                         context.parentType == PicatTokenTypes.FUNCTION_RULE)

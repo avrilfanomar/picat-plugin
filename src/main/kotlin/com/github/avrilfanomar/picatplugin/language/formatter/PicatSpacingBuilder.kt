@@ -218,6 +218,10 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .after(PicatTokenTypes.COMMA)
             .spaces(1)
 
+            // Ensure a space before inline single-line comments when attached to code
+            .before(PicatTokenTypes.COMMENT)
+            .spaces(1)
+
             // No space after comma when followed by closing brackets/parentheses/braces
             .between(PicatTokenTypes.COMMA, CLOSING_BRACKETS)
             .spaces(0)
@@ -246,7 +250,11 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .between(LOOP_KEYWORDS, PicatTokenTypes.END_KEYWORD)
             .lineBreakInCode()
 
-            // Line break after dot
+            // Allow inline EOL comments after a dot: ensure a space before '%'
+            .between(PicatTokenTypes.DOT, PicatTokenTypes.COMMENT)
+            .spaces(1)
+
+            // Line break after dot in code (but not before inline comments due to the rule above)
             .after(PicatTokenTypes.DOT)
             .lineBreakInCode()
     }

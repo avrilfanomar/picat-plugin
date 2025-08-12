@@ -144,6 +144,7 @@ class PicatBlockFactory(
         return (nodeType == PicatTokenTypes.BODY ||
                 nodeType == PicatTokenTypes.PREDICATE_RULE ||
                 nodeType == PicatTokenTypes.FUNCTION_RULE) &&
-                (childType == PicatTokenTypes.GOAL || childType == PicatTokenTypes.COMMENT)
+                (childType == PicatTokenTypes.GOAL || childType == PicatTokenTypes.COMMENT ||
+                        childType == PicatTokenTypes.MULTILINE_COMMENT)
     }
 }
