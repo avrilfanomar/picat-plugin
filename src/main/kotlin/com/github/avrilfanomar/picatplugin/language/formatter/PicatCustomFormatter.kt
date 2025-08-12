@@ -268,17 +268,16 @@ class PicatCustomFormatter {
         result = result.replace("=\\=", "__NOT_EQUAL_NUM_OP__")
         result = result.replace("=:=", "__EQUAL_NUM_OP__")
 
-        // Standard multi-char ops
-        result = result.replace("=\\=", "__NOT_EQUAL_NUM_OP__")
+        // Standard multi-char ops (order matters: protect ops starting with '!' before plain equality)
 
         result = result.replace("<=>", "__SPACELESS_EQUIV_OP__")
         result = result.replace("<=", "__LE_OP__")
         result = result.replace(">=", "__GE_OP__")
         result = result.replace("=..", "__UNIV_OP__") // univ operator in some Prolog-like languages
-        result = result.replace("===", "__TRIPLE_EQUAL_OP__")
-        result = result.replace("==", "__DOUBLE_EQUAL_OP__")
         result = result.replace("!==", "__STRICT_NOT_EQUAL_OP__")
         result = result.replace("!=", "__NOT_EQUAL_OP__")
+        result = result.replace("===", "__TRIPLE_EQUAL_OP__")
+        result = result.replace("==", "__DOUBLE_EQUAL_OP__")
         result = result.replace("<<", "__LSHIFT_OP__")
         result = result.replace(">>>", "__URSHIFT_OP__")
         result = result.replace(">>", "__RSHIFT_OP__")
