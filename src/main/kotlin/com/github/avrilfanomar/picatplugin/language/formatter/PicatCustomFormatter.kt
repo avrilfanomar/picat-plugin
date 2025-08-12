@@ -75,11 +75,21 @@ class PicatCustomFormatter {
             }
 
             val (codePart, commentPart) = splitCodeAndComment(line)
-            var formattedCode = handleSpecialOperators(codePart)
+
+            // Protect string and char literals from operator processing
+            val (maskedCode, literals) = protectLiterals(codePart)
+
+            var formattedCode = handleSpecialOperators(maskedCode)
             formattedCode = addSpacesAroundOperators(formattedCode)
             formattedCode = cleanupDoubleSpaces(formattedCode)
             formattedCode = restoreSpecialOperators(formattedCode)
-            formattedCode = cleanupDoubleSpaces(formattedCode)
+
+            // Restore literals before any final whitespace cleanup to avoid touching their content
+            formattedCode = restoreLiterals(formattedCode, literals)
+
+            // Final double-space cleanup outside of literals only
+            formattedCode = cleanupDoubleSpacesOutsideLiterals(formattedCode)
+
             formattedCode = removeTrailingSpaces(formattedCode)
 
             result.append(formattedCode.trimEnd())
@@ -101,6 +111,54 @@ class PicatCustomFormatter {
         } else {
             line to null
         }
+    }
+
+    /* ========== Literal masking to prevent formatting inside strings/atoms ========== */
+
+    private fun protectLiterals(code: String): Pair<String, List<String>> {
+        if (code.isEmpty()) return code to emptyList()
+        val saved = mutableListOf<String>()
+        val out = StringBuilder()
+        var i = 0
+        while (i < code.length) {
+            val ch = code[i]
+            if (ch == '"' || ch == '\'') {
+                val quote = ch
+                var j = i + 1
+                // scan until matching quote, honoring backslash escapes
+                while (j < code.length) {
+                    val cj = code[j]
+                    if (cj == '\\') {
+                        // skip escaped next char if any
+                        j += if (j + 1 < code.length) 2 else 1
+                        continue
+                    }
+                    if (cj == quote) {
+                        j++ // include closing quote
+                        break
+                    }
+                    j++
+                }
+                if (j > code.length) j = code.length
+                val literal = code.substring(i, minOf(j, code.length))
+                val placeholder = "__LIT_${'$'}${saved.size}__"
+                saved += literal
+                out.append(placeholder)
+                i = j
+            } else {
+                out.append(ch)
+                i++
+            }
+        }
+        return out.toString() to saved
+    }
+
+    private fun restoreLiterals(code: String, literals: List<String>): String {
+        var result = code
+        for ((idx, lit) in literals.withIndex()) {
+            result = result.replace("__LIT_${'$'}${idx}__", lit)
+        }
+        return result
     }
 
     /* ========== Structural formatting (indentation / block handling) ========== */
@@ -410,6 +468,12 @@ class PicatCustomFormatter {
             result = result.replace("  ", " ")
         }
         return result
+    }
+
+    private fun cleanupDoubleSpacesOutsideLiterals(code: String): String {
+        val (masked, lits) = protectLiterals(code)
+        val cleaned = cleanupDoubleSpaces(masked)
+        return restoreLiterals(cleaned, lits)
     }
 
     private fun removeTrailingSpaces(code: String) =
