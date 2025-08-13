@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test
  * This test verifies that the code formatter is correctly registered for Picat language
  * and that it formats code according to the code style settings.
  */
+@Suppress("LargeClass")
 class PicatFormattingTest : BasePlatformTestCase() {
 
     /**
@@ -398,11 +399,17 @@ literals_example =>
     fun testSimpleFormatting() {
         // A very simple test to see what the formatter does
         val code = "main=>X=10,Y=20."
-        val expected = "main => X = 10, Y = 20."
+        val expected = "main =>\n" +
+                "    X = 10, Y = 20."
 
-        // Format the code using PicatCustomFormatter
+        // Configure settings to keep rule body on the same line
+        val cs = com.intellij.psi.codeStyle.CodeStyleSettings()
+        val picatSettings = cs.getCustomSettings(com.github.avrilfanomar.picatplugin.language.formatter.PicatCodeStyleSettings::class.java)
+        picatSettings.keepLineBreakAfterRuleOperators = true
+
+        // Format the code using PicatCustomFormatter with custom settings
         val formatterService = service<PicatFormatterService>()
-        val customFormatter = formatterService.getFormatter()
+        val customFormatter = formatterService.getFormatter(cs)
         val formattedText = customFormatter.format(code)
 
         // Assert that the formatted code matches the expected output
@@ -740,5 +747,100 @@ not_identical_example =>
         val code = javaClass.getResource("/examples.pi")!!.readText()
 
         doFormatTest(code, code)
+    }
+
+    @Test
+    fun testIndentSizeSetting() {
+        val code = """
+            main=>
+            if X>10 then
+            println(X)
+            end.
+        """
+        val expectedTwoSpaces = """
+main =>
+  if X > 10 then
+    println(X)
+  end.
+        """.trim()
+
+        val cs = com.intellij.psi.codeStyle.CodeStyleSettings()
+        // Set indent size to 2 for Picat
+        val common = cs.getCommonSettings(PicatLanguage)
+        if (common.indentOptions == null) {
+            common.initIndentOptions()
+        }
+        common.indentOptions!!.INDENT_SIZE = 2
+
+        val formatter = service<PicatFormatterService>().getFormatter(cs)
+        val formatted = formatter.format(code.trim())
+        Assertions.assertEquals(expectedTwoSpaces, formatted)
+    }
+
+    @Test
+    fun testColonSpacingSetting() {
+        val code = """
+            list_example=>
+            L=[X:X in 1..10],
+            println(L).
+        """
+        val expectedNoSpaces = """
+list_example =>
+    L = [X:X in 1..10],
+    println(L).
+        """.trim()
+
+        val cs = com.intellij.psi.codeStyle.CodeStyleSettings()
+        val picatSettings = cs.getCustomSettings(com.github.avrilfanomar.picatplugin.language.formatter.PicatCodeStyleSettings::class.java)
+        picatSettings.spaceAroundColon = false
+
+        val formatter = service<PicatFormatterService>().getFormatter(cs)
+        val formatted = formatter.format(code.trim())
+        Assertions.assertEquals(expectedNoSpaces, formatted)
+    }
+    @Test
+    fun testAdditiveSpacingSettingToggle() {
+        val code = """
+            toggle_additive=>
+            X=1+2-3,
+            Y=(A+B)-(C-D),
+            println(X+Y).
+        """
+        val expectedNoSpaces = """
+toggle_additive =>
+    X = 1+2-3,
+    Y = (A+B)-(C-D),
+    println(X+Y).
+        """.trim()
+
+        val cs = com.intellij.psi.codeStyle.CodeStyleSettings()
+        val picatSettings = cs.getCustomSettings(com.github.avrilfanomar.picatplugin.language.formatter.PicatCodeStyleSettings::class.java)
+        picatSettings.spaceAroundAdditiveOperators = false
+
+        val formatter = service<PicatFormatterService>().getFormatter(cs)
+        val formatted = formatter.format(code.trim())
+        Assertions.assertEquals(expectedNoSpaces, formatted)
+    }
+
+    @Test
+    fun testRangeOperatorSpacingSetting() {
+        val code = """
+            ranges=>
+            A=1..9,
+            B=[X:X in 1..10].
+        """
+        val expectedSpaces = """
+ranges =>
+    A = 1 .. 9,
+    B = [X : X in 1 .. 10].
+        """.trim()
+
+        val cs = com.intellij.psi.codeStyle.CodeStyleSettings()
+        val picatSettings = cs.getCustomSettings(com.github.avrilfanomar.picatplugin.language.formatter.PicatCodeStyleSettings::class.java)
+        picatSettings.spaceAroundRangeOperator = true
+
+        val formatter = service<PicatFormatterService>().getFormatter(cs)
+        val formatted = formatter.format(code.trim())
+        Assertions.assertEquals(expectedSpaces, formatted)
     }
 }

@@ -31,7 +31,7 @@ class PicatCodeStyleSettings(settings: CodeStyleSettings) :
     @JvmField
     var spaceAroundTermComparisonOperators = true
     @JvmField
-    var spaceAroundRangeOperator = true
+    var spaceAroundRangeOperator = false
     @JvmField
     var spaceAroundTypeConstraintOperator = true
     @JvmField

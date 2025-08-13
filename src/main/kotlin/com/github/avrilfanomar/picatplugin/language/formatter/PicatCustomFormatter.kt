@@ -1,7 +1,13 @@
 package com.github.avrilfanomar.picatplugin.language.formatter
 
-@Suppress("TooManyFunctions")
-class PicatCustomFormatter {
+import com.github.avrilfanomar.picatplugin.language.PicatLanguage
+import com.intellij.psi.codeStyle.CodeStyleSettings
+
+@Suppress("TooManyFunctions", "LargeClass", "NestedBlockDepth", "ReturnCount", "LoopWithTooManyJumpStatements")
+class PicatCustomFormatter(
+    private val settings: CodeStyleSettings,
+) {
+    private val picatSettings: PicatCodeStyleSettings = settings.getCustomSettings(PicatCodeStyleSettings::class.java)
 
     companion object {
         private const val LINE_BREAK_THRESHOLD = 20
@@ -20,8 +26,12 @@ class PicatCustomFormatter {
             isSimpleRule(normalizedCode) -> {
                 var simpleResult = formatPreservingComments(normalizedCode)
                 val contentAfterArrow = simpleResult.substringAfter("=>").trim()
-                val shouldAddLineBreak = contentAfterArrow.length > LINE_BREAK_THRESHOLD ||
-                        contentAfterArrow.contains("println")
+                val shouldAddLineBreak = if (picatSettings.keepLineBreakAfterRuleOperators) {
+                    true
+                } else {
+                    // Keep previous heuristic when setting is disabled
+                    contentAfterArrow.length > LINE_BREAK_THRESHOLD || contentAfterArrow.contains("println")
+                }
 
                 if (shouldAddLineBreak) {
                     simpleResult = addLineBreaksAfterRuleOperators(simpleResult)
@@ -75,7 +85,8 @@ class PicatCustomFormatter {
             // If the line starts a block comment (outside of strings), preserve it as-is
             val blockStartIndex = findUnquotedToken(line, "/*")
             if (blockStartIndex >= 0) {
-                inBlockComment = line.indexOf("*/", blockStartIndex + 2) < 0 // enter block unless this line also closes it
+                inBlockComment =
+                    line.indexOf("*/", blockStartIndex + 2) < 0 // enter block unless this line also closes it
                 result.append(line.trimEnd())
                 if (index < lines.lastIndex) result.append("\n")
                 continue
@@ -180,7 +191,7 @@ class PicatCustomFormatter {
             val ch = code[i]
             if (ch == '"' || ch == '\'') {
                 val quote = ch
-                var j = findJ(i, code, quote)
+                val j = findJ(i, code, quote)
                 val literal = code.substring(i, minOf(j, code.length))
                 val placeholder = "__LIT_${'$'}${saved.size}__"
                 saved += literal
@@ -264,8 +275,7 @@ class PicatCustomFormatter {
     }
 
     private fun isRuleBodyStart(line: String) =
-        line.endsWith("=>") || line.endsWith(" ?=>") || line.endsWith("#=>") || line.endsWith("#<=>") ||
-                line.endsWith(" =>") || line.endsWith(" ?=>") || line.endsWith(" #=>") || line.endsWith(" #<=>")
+        line.endsWith("=>") || line.endsWith(" ?=>") || line.endsWith("#=>") || line.endsWith("#<=>")
 
     private fun handleRuleBodyStart(line: String, result: StringBuilder, state: FormatState) {
         result.append(line).append("\n")
@@ -465,57 +475,56 @@ class PicatCustomFormatter {
     private fun restoreSpecialOperators(code: String): String {
         var result = code
 
-        // restore in reverse/normalized form (with a single spaying around them)
-        result = result.replace("__BACKTRACKABLE_ARROW_OP__", " ?=> ")
-        result = result.replace("__ARROW_OP__", " => ")
+        // Restore tokens without forcing spaces; spacing will be applied according to settings later.
+        result = result.replace("__BACKTRACKABLE_ARROW_OP__", "?=>")
+        result = result.replace("__ARROW_OP__", "=>")
 
         // @ ops
-        result = result.replace("__AT_LESS_EQUAL_OP__", " @=< ")
-        result = result.replace("__AT_LESS_EQUAL_PROLOG_OP__", " @<= ")
-        result = result.replace("__AT_GREATER_EQUAL_OP__", " @>= ")
-        result = result.replace("__AT_LESS_OP__", " @< ")
-        result = result.replace("__AT_GREATER_OP__", " @> ")
+        result = result.replace("__AT_LESS_EQUAL_OP__", "@=<")
+        result = result.replace("__AT_LESS_EQUAL_PROLOG_OP__", "@<=")
+        result = result.replace("__AT_GREATER_EQUAL_OP__", "@>=")
+        result = result.replace("__AT_LESS_OP__", "@<")
+        result = result.replace("__AT_GREATER_OP__", "@>")
 
         // Hash ops
-        result = result.replace("__HASH_BICONDITIONAL_OP__", " #<=> ")
-        result = result.replace("__HASH_ARROW_OP__", " #=> ")
-        result = result.replace("__HASH_EQUAL_OP__", " #= ")
-        result = result.replace("__HASH_NOT_EQUAL_OP__", " #!= ")
-        result = result.replace("__HASH_GE_OP__", " #>= ")
-        result = result.replace("__HASH_LE_OP__", " #=< ")
-        result = result.replace("__HASH_OP__", " # ")
-        result = result.replace("__HASH_OR_OP__", " #\\/ ")
-        result = result.replace("__HASH_XOR_OP__", " #^ ")
-        result = result.replace("__HASH_NOT_OP__", " #~ ")
+        result = result.replace("__HASH_BICONDITIONAL_OP__", "#<=>")
+        result = result.replace("__HASH_ARROW_OP__", "#=>")
+        result = result.replace("__HASH_EQUAL_OP__", "#=")
+        result = result.replace("__HASH_NOT_EQUAL_OP__", "#!=")
+        result = result.replace("__HASH_GE_OP__", "#>=")
+        result = result.replace("__HASH_LE_OP__", "#=<")
+        result = result.replace("__HASH_OP__", "#")
+        result = result.replace("__HASH_OR_OP__", "#\\/")
+        result = result.replace("__HASH_XOR_OP__", "#^")
+        result = result.replace("__HASH_NOT_OP__", "#~")
 
         // common comparisons
-        result = result.replace("__DOUBLE_EQUAL_OP__", " == ")
-        result = result.replace("__NOT_EQUAL_OP__", " != ")
-        result = result.replace("__STRICT_NOT_EQUAL_OP__", " !== ")
-        result = result.replace("__TRIPLE_EQUAL_OP__", " === ")
+        result = result.replace("__DOUBLE_EQUAL_OP__", "==")
+        result = result.replace("__NOT_EQUAL_OP__", "!=")
+        result = result.replace("__STRICT_NOT_EQUAL_OP__", "!==")
+        result = result.replace("__TRIPLE_EQUAL_OP__", "===")
 
-        result = result.replace("__LE_OP__", " <= ")
-        result = result.replace("__LE_PROLOG_OP__", " =< ")
-        result = result.replace("__GE_OP__", " >= ")
-        result = result.replace("__LSHIFT_OP__", " << ")
-        result = result.replace("__RSHIFT_OP__", " >> ")
-        result = result.replace("__URSHIFT_OP__", " >>> ")
-        result = result.replace("__CONCAT_OP__", " ++ ")
-        result = result.replace("__DOUBLE_COLON_OP__", " :: ")
-        result = result.replace("__AND_OP__", " && ")
-        result = result.replace("__OR_OP__", " || ")
-        result = result.replace("__UNIV_OP__", " =.. ")
-        result = result.replace("__NOT_EQUAL_NUM_OP__", " =\\= ")
-        result = result.replace("__EQUAL_NUM_OP__", " =:= ")
-        result = result.replace("__ASSIGN_OP__", " := ")
+        result = result.replace("__LE_OP__", "<=")
+        result = result.replace("__LE_PROLOG_OP__", "=<")
+        result = result.replace("__GE_OP__", ">=")
+        result = result.replace("__LSHIFT_OP__", "<<")
+        result = result.replace("__RSHIFT_OP__", ">>")
+        result = result.replace("__URSHIFT_OP__", ">>>")
+        result = result.replace("__CONCAT_OP__", "++")
+        result = result.replace("__DOUBLE_COLON_OP__", "::")
+        result = result.replace("__AND_OP__", "&&")
+        result = result.replace("__OR_OP__", "||")
+        result = result.replace("__UNIV_OP__", "=..")
+        result = result.replace("__NOT_EQUAL_NUM_OP__", "=\\=")
+        result = result.replace("__EQUAL_NUM_OP__", "=:=")
+        result = result.replace("__ASSIGN_OP__", ":=")
 
         // defensive placeholders
-        result = result.replace("__SPACELESS_EQUIV_OP__", " <=> ")
-        result = result.replace("__DECREMENT_OP__", " -- ")
-        result = result.replace("__POWER_OP__", " ** ")
-        result = result.replace("__TERNARY_COLON_OP__", " ?: ")
+        result = result.replace("__SPACELESS_EQUIV_OP__", "<=>")
+        result = result.replace("__DECREMENT_OP__", "--")
+        result = result.replace("__POWER_OP__", "**")
+        result = result.replace("__TERNARY_COLON_OP__", "?:")
 
-        // generic cleanup of multiple spaces introduced above
         return result
     }
 
@@ -523,31 +532,77 @@ class PicatCustomFormatter {
     private fun addSpacesAroundOperators(code: String): String {
         var result = code
 
-        // A prioritized list: multi-char operators first (longer first), then single-char
-        val operators = arrayOf(
-            ">>>", "?=>", "<=>", "#<=>", "#!=", "#>=", "#=<", "#<=", "@>=", "@<=", "@=<", "=:=", "=\\=", "!==",
-            "#\\/", "#\\^", "#'", "=>", "#~", "#=", "==", "!=", "=<", ">=", "<=", "<", ">", "\\+", "-", "\\*", "/", "%",
-            "=", "!", "\\?", "\\^", "\\|", "&", "~"
+        fun applyForOps(text: String, ops: List<String>, space: Boolean): String {
+            var t = text
+            // Sort longer first to avoid partial overlaps
+            val sorted = ops.sortedByDescending { it.replace("\\\\", "").length }
+            for (raw in sorted) {
+                val op = raw
+                val pattern = Regex("\\s*(" + op + ")\\s*")
+                t = if (space) {
+                    t.replace(pattern, " $1 ")
+                } else {
+                    t.replace(pattern, "$1")
+                }
+            }
+            return t
+        }
+
+        // Operator groups
+        val assignmentOps = listOf("__ASSIGN_OP__", "=")
+        val equalityOps = listOf(
+            "__TRIPLE_EQUAL_OP__",
+            "__STRICT_NOT_EQUAL_OP__",
+            "__DOUBLE_EQUAL_OP__",
+            "__NOT_EQUAL_OP__",
+            "__EQUAL_NUM_OP__",
+            "__NOT_EQUAL_NUM_OP__"
         )
+        val relationalOps = listOf("__LE_OP__", "__GE_OP__", "__LE_PROLOG_OP__", "<", ">")
+        val additiveOps = listOf("__CONCAT_OP__", "\\+", "-")
+        val multiplicativeOps = listOf("\\*", "/", "%")
+        val logicalOps = listOf("__AND_OP__", "__OR_OP__")
+        val bitwiseOps = listOf("__URSHIFT_OP__", "__RSHIFT_OP__", "__LSHIFT_OP__", "&", "\\|", "\\^", "~")
+        // Use placeholders because operators are protected before spacing is applied
+        val ruleOps =
+            listOf("__BACKTRACKABLE_ARROW_OP__", "__ARROW_OP__", "__HASH_ARROW_OP__", "__HASH_BICONDITIONAL_OP__")
+        val constraintOps = listOf(
+            "__HASH_EQUAL_OP__",
+            "__HASH_NOT_EQUAL_OP__",
+            "__HASH_GE_OP__",
+            "__HASH_LE_OP__",
+            "__HASH_BICONDITIONAL_OP__",
+            "__HASH_OR_OP__",
+            "__HASH_XOR_OP__",
+            "__HASH_NOT_OP__"
+        )
+        val termOps = listOf(
+            "__AT_LESS_EQUAL_PROLOG_OP__",
+            "__AT_LESS_EQUAL_OP__",
+            "__AT_GREATER_EQUAL_OP__",
+            "__AT_LESS_OP__",
+            "__AT_GREATER_OP__"
+        )
+        val typeConstraintOps = listOf("__DOUBLE_COLON_OP__")
+        val rangeOps = listOf("\\.\\.")
 
-        // create a regex-safe list and apply spacing in a way that avoids splitting already protected tokens
-        for (op in operators) {
-            val escaped = Regex.escape(op.trim())
-            // place spaces around operator occurrences that don't already have spaces
-            // use lookbehind/lookahead to avoid touching string boundaries that already have spaces
-            result = result.replace(Regex("(?<!\\s)$escaped(?!\\s)"), " $op ")
-            result = result.replace(Regex("(?<!\\s)$escaped(?=\\s)"), " $op ")
-            result = result.replace(Regex("(?<=\\s)$escaped(?!\\s)"), " $op ")
-        }
+        // Apply per-setting spacing
+        result = applyForOps(result, assignmentOps, picatSettings.spaceAroundAssignmentOperators)
+        result = applyForOps(result, equalityOps, picatSettings.spaceAroundEqualityOperators)
+        result = applyForOps(result, relationalOps, picatSettings.spaceAroundRelationalOperators)
+        result = applyForOps(result, additiveOps, picatSettings.spaceAroundAdditiveOperators)
+        result = applyForOps(result, multiplicativeOps, picatSettings.spaceAroundMultiplicativeOperators)
+        result = applyForOps(result, logicalOps, picatSettings.spaceAroundLogicalOperators)
+        result = applyForOps(result, bitwiseOps, picatSettings.spaceAroundBitwiseOperators)
 
-        // Single-char common operators (space if not already spaced)
-        val singleCharOps = listOf("=", "+", "-", "*", "/", ">", "<", "&", "|", "^", "~", ",")
-        for (op in singleCharOps) {
-            val escaped = Regex.escape(op)
-            // avoid touching parentheses and commas spacing normalized later by fixSpacingInStructures
-            result = result.replace(Regex("(?<!\\s)$escaped(?!\\s)"), " $op ")
-        }
+        // Rule operators: interpret setting as spacing around rule operators
+        result = applyForOps(result, ruleOps, picatSettings.spaceBeforeRuleOperators)
+        result = applyForOps(result, constraintOps, picatSettings.spaceAroundConstraintOperators)
+        result = applyForOps(result, termOps, picatSettings.spaceAroundTermComparisonOperators)
+        result = applyForOps(result, typeConstraintOps, picatSettings.spaceAroundTypeConstraintOperator)
+        result = applyForOps(result, rangeOps, picatSettings.spaceAroundRangeOperator)
 
+        // Colon in list comprehensions handled separately
         result = addSpacesAroundColonsInListComprehensions(result)
         result = fixSpacingInStructures(result)
         return result
@@ -555,16 +610,21 @@ class PicatCustomFormatter {
 
     private fun fixSpacingInStructures(code: String): String {
         var result = code
-        // normalize common structure spacing
+        // normalize brackets and parentheses spacing
         result = result.replace("[ ", "[")
         result = result.replace(" ]", "]")
         result = result.replace("( ", "(")
         result = result.replace(" )", ")")
-        result = result.replace(" ,", ",")
-        result = result.replace(",", ", ")
+
+        // comma spacing based on settings
+        val before = if (picatSettings.spaceBeforeComma) " " else ""
+        val after = if (picatSettings.spaceAfterComma) " " else ""
+        result = result.replace(Regex("\\s*,\\s*"), "$before,$after")
+        // but do not keep space before closing bracket/paren or before newline
         result = result.replace(", ]", ",]")
         result = result.replace(", )", ",)")
         result = result.replace(", \n", ",\n")
+
         return result
     }
 
@@ -582,8 +642,6 @@ class PicatCustomFormatter {
         return restoreLiterals(cleaned, lits)
     }
 
-    private fun removeTrailingSpaces(code: String) =
-        code.split("\n").joinToString("\n") { it.trimEnd() }
 
     /* ========== Helpers for splitting long rule lines into a body with indentation ========== */
 
@@ -620,8 +678,7 @@ class PicatCustomFormatter {
     }
 
     private fun isRuleBodyStartLine(line: String) =
-        line.contains("=>") || line.contains(" ?=>") || line.contains("#=>") || line.contains("#<=>") ||
-                line.contains(" =>") || line.contains(" ?=>") || line.contains(" #=>") || line.contains(" #<=>")
+        line.contains("=>") || line.contains("?=>") || line.contains("#=>") || line.contains("#<=>")
 
     private fun isCommentOutsideRuleBody(line: String, state: IndentationState) =
         !state.inRuleBody && line.startsWith("%")
@@ -716,7 +773,11 @@ class PicatCustomFormatter {
         val ifBaseStack: MutableList<Int> = mutableListOf()
     )
 
-    private fun getIndentation(level: Int) = "    ".repeat(maxOf(0, level))
+    private fun getIndentation(level: Int): String {
+        val common = settings.getCommonSettings(PicatLanguage)
+        val size = common.indentOptions?.INDENT_SIZE ?: 4
+        return " ".repeat(size * maxOf(0, level))
+    }
 
     /* ========== Colon spacing inside list comprehensions / brackets (kept from previous logic) ========== */
 
@@ -726,8 +787,12 @@ class PicatCustomFormatter {
         for (i in chars.indices) {
             val char = chars[i]
             updateColonSpacingState(char, state)
-            if (shouldAddSpacesAroundColon(char, i, chars, state)) {
-                return processColonSpacing(code, i, chars)
+            if (char == ':' && !state.inString && state.inListComprehension) {
+                return if (picatSettings.spaceAroundColon) {
+                    if (needsSpacing(i, chars)) processColonSpacingAdd(code, i, chars) else code
+                } else {
+                    if (hasSpacesAroundColon(i, chars)) processColonSpacingRemove(code, i, chars) else code
+                }
             }
         }
         return code
@@ -749,21 +814,35 @@ class PicatCustomFormatter {
         }
     }
 
-    private fun shouldAddSpacesAroundColon(char: Char, index: Int, chars: CharArray, state: ColonSpacingState) =
-        char == ':' && !state.inString && state.inListComprehension && needsSpacing(index, chars)
-
     private fun needsSpacing(index: Int, chars: CharArray): Boolean {
         val needsBefore = index > 0 && chars[index - 1] != ' '
         val needsAfter = index < chars.size - 1 && chars[index + 1] != ' '
         return needsBefore || needsAfter
     }
 
-    private fun processColonSpacing(code: String, index: Int, chars: CharArray): String {
+    private fun hasSpacesAroundColon(index: Int, chars: CharArray): Boolean {
+        val hasBefore = index > 0 && chars[index - 1] == ' '
+        val hasAfter = index < chars.size - 1 && chars[index + 1] == ' '
+        return hasBefore || hasAfter
+    }
+
+    private fun processColonSpacingAdd(code: String, index: Int, chars: CharArray): String {
         val before = if (index > 0 && chars[index - 1] != ' ') " " else ""
         val after = if (index < chars.size - 1 && chars[index + 1] != ' ') " " else ""
         val prefix = code.substring(0, index)
         val suffix = code.substring(index + 1)
         val result = "$prefix$before:$after$suffix"
+        return addSpacesAroundColonsInListComprehensions(result)
+    }
+
+    private fun processColonSpacingRemove(code: String, index: Int, chars: CharArray): String {
+        var start = index - 1
+        while (start >= 0 && chars[start] == ' ') start--
+        var end = index + 1
+        while (end < chars.size && chars[end] == ' ') end++
+        val prefix = code.substring(0, start + 1)
+        val suffix = code.substring(end)
+        val result = "$prefix:$suffix"
         return addSpacesAroundColonsInListComprehensions(result)
     }
 

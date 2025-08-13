@@ -242,21 +242,20 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .after(KEYWORDS_WITH_SPACE_AFTER)
             .spaces(1)
 
-            // Ensure proper indentation for statements after block keywords
-            .between(BLOCK_KEYWORDS, BLOCK_END_KEYWORDS)
-            .lineBreakInCode()
-
-            // Ensure proper indentation for statements after loop keywords
-            .between(LOOP_KEYWORDS, PicatTokenTypes.END_KEYWORD)
-            .lineBreakInCode()
-
             // Allow inline EOL comments after a dot: ensure a space before '%'
             .between(PicatTokenTypes.DOT, PicatTokenTypes.COMMENT)
             .spaces(1)
 
-            // Line break after dot in code (but not before inline comments due to the rule above)
-            .after(PicatTokenTypes.DOT)
-            .lineBreakInCode()
+        // Conditional line-break rules controlled by code style settings
+        if (picatSettings.lineBreakAfterBlockKeywords) {
+            spacingBuilder.after(BLOCK_KEYWORDS).lineBreakInCode()
+        }
+        if (picatSettings.lineBreakAfterDot) {
+            spacingBuilder.after(PicatTokenTypes.DOT).lineBreakInCode()
+        }
+        if (picatSettings.lineBreakAfterEndKeyword) {
+            spacingBuilder.after(PicatTokenTypes.END_KEYWORD).lineBreakInCode()
+        }
     }
 
     /**

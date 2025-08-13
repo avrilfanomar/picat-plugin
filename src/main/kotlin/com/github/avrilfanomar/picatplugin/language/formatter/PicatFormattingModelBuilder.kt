@@ -16,7 +16,13 @@ class PicatFormatterService {
      * Gets or creates a PicatCustomFormatter for the given settings and spacing builder.
      */
     fun getFormatter(): PicatCustomFormatter {
-        return PicatCustomFormatter()
+        // Fallback to default IDE settings when project settings are not provided
+        val defaultSettings = com.intellij.psi.codeStyle.CodeStyleSettings()
+        return PicatCustomFormatter(defaultSettings)
+    }
+
+    fun getFormatter(settings: com.intellij.psi.codeStyle.CodeStyleSettings): PicatCustomFormatter {
+        return PicatCustomFormatter(settings)
     }
 }
 
