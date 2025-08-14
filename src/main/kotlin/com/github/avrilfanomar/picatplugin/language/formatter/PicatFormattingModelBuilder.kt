@@ -5,6 +5,7 @@ import com.intellij.formatting.FormattingModel
 import com.intellij.formatting.FormattingModelBuilder
 import com.intellij.formatting.FormattingModelProvider
 import com.intellij.openapi.components.Service
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 
 /**
  * Service that provides access to the PicatCustomFormatter.
@@ -16,8 +17,7 @@ class PicatFormatterService {
      * Gets or creates a PicatCustomFormatter for the given settings and spacing builder.
      */
     fun getFormatter(): PicatCustomFormatter {
-        // Fallback to default IDE settings when project settings are not provided
-        val defaultSettings = com.intellij.psi.codeStyle.CodeStyleSettings()
+        val defaultSettings = CodeStyleSettingsManager.getInstance().createSettings()
         return PicatCustomFormatter(defaultSettings)
     }
 

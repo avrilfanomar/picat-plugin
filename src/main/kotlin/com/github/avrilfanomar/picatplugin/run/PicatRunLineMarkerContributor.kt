@@ -14,7 +14,7 @@ class PicatRunLineMarkerContributor : RunLineMarkerContributor() {
     override fun getInfo(element: PsiElement): Info? {
         val file = element.containingFile
 
-        // Only add run marker to the first element in Picat files
+        // Only add a run marker to the first element in Picat files
         if (file != null && file.fileType is PicatFileType && element.textOffset == 0) {
             return Info(
                 AllIcons.RunConfigurations.TestState.Run,

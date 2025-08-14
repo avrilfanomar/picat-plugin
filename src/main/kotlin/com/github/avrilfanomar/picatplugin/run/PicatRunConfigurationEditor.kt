@@ -19,17 +19,17 @@ class PicatRunConfigurationEditor(project: Project) : SettingsEditor<PicatRunCon
 
     init {
         picatFilePathField.addBrowseFolderListener(
-            "Select Picat File",
-            "Please select a Picat file to run",
             project,
-            FileChooserDescriptorFactory.createSingleFileDescriptor("pi")
+            FileChooserDescriptorFactory.singleFile().withExtensionFilter("pi")
+                .withTitle("Select Picat File")
+                .withDescription("Please select a Picat file to run")
         )
 
         workingDirectoryField.addBrowseFolderListener(
-            "Select Working Directory",
-            "Please select a working directory",
             project,
             FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                .withTitle("Select Working Directory")
+                .withDescription("Please select a working directory")
         )
     }
 
