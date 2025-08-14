@@ -3,7 +3,6 @@ package com.github.avrilfanomar.picatplugin.language.formatter
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
 import com.intellij.psi.codeStyle.CodeStyleSettings
 
-@Suppress("TooManyFunctions", "LargeClass", "NestedBlockDepth", "ReturnCount", "LoopWithTooManyJumpStatements")
 class PicatCustomFormatter(
     private val settings: CodeStyleSettings,
 ) {
@@ -64,7 +63,6 @@ class PicatCustomFormatter(
      * Protect comments, protect multi-char/special operators, add spaces around operators,
      * then restore special operators and re-attach comments.
      */
-    @Suppress("LoopWithTooManyJumpStatements")
     private fun formatPreservingComments(input: String): String {
         val lines = input.split("\n")
         val result = StringBuilder()
@@ -205,7 +203,6 @@ class PicatCustomFormatter(
         return out.toString() to saved
     }
 
-    @Suppress("LoopWithTooManyJumpStatements")
     private fun findJ(i: Int, code: String, quote: Char): Int {
         var j = i + 1
         // scan until matching quote, honoring backslash escapes
@@ -417,18 +414,22 @@ class PicatCustomFormatter(
         // Logical / constraint ops with # prefix
         result = result.replace("#<=>", "__HASH_BICONDITIONAL_OP__")
         result = result.replace("#=>", "__HASH_ARROW_OP__")
-        result = result.replace("#/\\", "__HASH_OR_ESC__") // placeholder if present in grammar; harmless no-op
+        // Hash-based boolean/bitwise ops
         result = result.replace("#\\/", "__HASH_OR_OP__")
-        result = result.replace("#\\^", "__HASH_XOR_OP__")
-        result = result.replace("#\\'", "__HASH_SLASH_OP__")
+        result = result.replace("#^", "__HASH_XOR_OP__")
+        result = result.replace("#\\", "__HASH_AND_OP__")
         result = result.replace("#~", "__HASH_NOT_OP__")
         result = result.replace("#!=", "__HASH_NOT_EQUAL_OP__")
         result = result.replace("#>=", "__HASH_GE_OP__")
         result = result.replace("#=<", "__HASH_LE_OP__")
+        result = result.replace("#<=", "__HASH_LE_ALT_OP__")
+        result = result.replace("#>", "__HASH_GT_OP__")
+        result = result.replace("#<", "__HASH_LT_OP__")
         result = result.replace("#=", "__HASH_EQUAL_OP__")
 
-        result = result.replace("@=<", "__AT_LESS_EQUAL_OP__")
-        result = result.replace("@<=", "__AT_LESS_EQUAL_PROLOG_OP__")
+        // @-prefixed term comparison ops
+        result = result.replace("@<=", "__AT_LESS_EQUAL_OP__")
+        result = result.replace("@=<", "__AT_LESS_EQUAL_PROLOG_OP__")
         result = result.replace("@>=", "__AT_GREATER_EQUAL_OP__")
         result = result.replace("@<", "__AT_LESS_OP__")
         result = result.replace("@>", "__AT_GREATER_OP__")
@@ -438,6 +439,13 @@ class PicatCustomFormatter(
         result = result.replace("=:=", "__EQUAL_NUM_OP__")
 
         // Standard multi-char ops (order matters: protect ops starting with '!' before plain equality)
+        // Division-like multi-char (protect before single '/'): int divide and relational variations
+        result = result.replace("//", "__INT_DIV_OP__")
+        result = result.replace("/>", "__DIV_RIGHT_OP__")
+        result = result.replace("/<", "__DIV_LEFT_OP__")
+        // Bitwise or/and in Picat syntax (protect before single '/')
+        result = result.replace("\\/", "__BIT_OR_OP__")
+        result = result.replace("/\\", "__BIT_AND_OP__")
 
         result = result.replace("<=>", "__SPACELESS_EQUIV_OP__")
         result = result.replace("<=", "__LE_OP__")
@@ -460,11 +468,10 @@ class PicatCustomFormatter(
         result = result.replace(":=", "__ASSIGN_OP__")
         result = result.replace("?:", "__TERNARY_COLON_OP__") // defensive placeholder
 
-        // @-prefixed comparison ops used in Picat BNF
-
         // Rule operators (backtrackable and normal)
         result = result.replace("?=>", "__BACKTRACKABLE_ARROW_OP__")
         result = result.replace("=>", "__ARROW_OP__")
+        result = result.replace(":-", "__PROLOG_RULE_OP__")
 
         // '#' alone as operator (ensure it's protected after the multi-char # ops above)
         result = result.replace("#", "__HASH_OP__")
@@ -480,8 +487,8 @@ class PicatCustomFormatter(
         result = result.replace("__ARROW_OP__", "=>")
 
         // @ ops
-        result = result.replace("__AT_LESS_EQUAL_OP__", "@=<")
-        result = result.replace("__AT_LESS_EQUAL_PROLOG_OP__", "@<=")
+        result = result.replace("__AT_LESS_EQUAL_OP__", "@<=")
+        result = result.replace("__AT_LESS_EQUAL_PROLOG_OP__", "@=<")
         result = result.replace("__AT_GREATER_EQUAL_OP__", "@>=")
         result = result.replace("__AT_LESS_OP__", "@<")
         result = result.replace("__AT_GREATER_OP__", "@>")
@@ -493,9 +500,13 @@ class PicatCustomFormatter(
         result = result.replace("__HASH_NOT_EQUAL_OP__", "#!=")
         result = result.replace("__HASH_GE_OP__", "#>=")
         result = result.replace("__HASH_LE_OP__", "#=<")
+        result = result.replace("__HASH_LE_ALT_OP__", "#<=")
+        result = result.replace("__HASH_GT_OP__", "#>")
+        result = result.replace("__HASH_LT_OP__", "#<")
         result = result.replace("__HASH_OP__", "#")
         result = result.replace("__HASH_OR_OP__", "#\\/")
         result = result.replace("__HASH_XOR_OP__", "#^")
+        result = result.replace("__HASH_AND_OP__", "#\\")
         result = result.replace("__HASH_NOT_OP__", "#~")
 
         // common comparisons
@@ -518,6 +529,11 @@ class PicatCustomFormatter(
         result = result.replace("__NOT_EQUAL_NUM_OP__", "=\\=")
         result = result.replace("__EQUAL_NUM_OP__", "=:=")
         result = result.replace("__ASSIGN_OP__", ":=")
+        result = result.replace("__INT_DIV_OP__", "//")
+        result = result.replace("__DIV_RIGHT_OP__", "/>")
+        result = result.replace("__DIV_LEFT_OP__", "/<")
+        result = result.replace("__BIT_OR_OP__", "\\/")
+        result = result.replace("__BIT_AND_OP__", "/\\")
 
         // defensive placeholders
         result = result.replace("__SPACELESS_EQUIV_OP__", "<=>")
@@ -551,6 +567,7 @@ class PicatCustomFormatter(
         // Operator groups
         val assignmentOps = listOf("__ASSIGN_OP__", "=")
         val equalityOps = listOf(
+            "__SPACELESS_EQUIV_OP__",
             "__TRIPLE_EQUAL_OP__",
             "__STRICT_NOT_EQUAL_OP__",
             "__DOUBLE_EQUAL_OP__",
@@ -558,22 +575,42 @@ class PicatCustomFormatter(
             "__EQUAL_NUM_OP__",
             "__NOT_EQUAL_NUM_OP__"
         )
-        val relationalOps = listOf("__LE_OP__", "__GE_OP__", "__LE_PROLOG_OP__", "<", ">")
+        val relationalOps = listOf(
+            "__LE_OP__",
+            "__GE_OP__",
+            "__LE_PROLOG_OP__",
+            "__DIV_LEFT_OP__",
+            "__DIV_RIGHT_OP__",
+            "<",
+            ">"
+        )
         val additiveOps = listOf("__CONCAT_OP__", "\\+", "-")
-        val multiplicativeOps = listOf("\\*", "/", "%")
+        val multiplicativeOps = listOf("__INT_DIV_OP__", "\\*", "/", "%")
         val logicalOps = listOf("__AND_OP__", "__OR_OP__")
-        val bitwiseOps = listOf("__URSHIFT_OP__", "__RSHIFT_OP__", "__LSHIFT_OP__", "&", "\\|", "\\^", "~")
+        val bitwiseOps = listOf(
+            "__URSHIFT_OP__",
+            "__RSHIFT_OP__",
+            "__LSHIFT_OP__",
+            "__BIT_AND_OP__",
+            "__BIT_OR_OP__",
+            "\\^",
+            "~"
+        )
         // Use placeholders because operators are protected before spacing is applied
         val ruleOps =
-            listOf("__BACKTRACKABLE_ARROW_OP__", "__ARROW_OP__", "__HASH_ARROW_OP__", "__HASH_BICONDITIONAL_OP__")
+            listOf("__BACKTRACKABLE_ARROW_OP__", "__ARROW_OP__", "__PROLOG_RULE_OP__", "__HASH_ARROW_OP__", "__HASH_BICONDITIONAL_OP__")
         val constraintOps = listOf(
             "__HASH_EQUAL_OP__",
             "__HASH_NOT_EQUAL_OP__",
             "__HASH_GE_OP__",
             "__HASH_LE_OP__",
+            "__HASH_LE_ALT_OP__",
+            "__HASH_GT_OP__",
+            "__HASH_LT_OP__",
             "__HASH_BICONDITIONAL_OP__",
             "__HASH_OR_OP__",
             "__HASH_XOR_OP__",
+            "__HASH_AND_OP__",
             "__HASH_NOT_OP__"
         )
         val termOps = listOf(
@@ -652,6 +689,7 @@ class PicatCustomFormatter(
         result = result.replace(" ?=>", " ?=>\n")
         result = result.replace(" #=>", " #=>\n")
         result = result.replace(" #<=>", " #<=>\n")
+        result = result.replace(" :-", " :-\n")
         // remove accidental double blank lines
         result = result.replace("\n\n", "\n")
         return result
@@ -678,7 +716,7 @@ class PicatCustomFormatter(
     }
 
     private fun isRuleBodyStartLine(line: String) =
-        line.contains("=>") || line.contains("?=>") || line.contains("#=>") || line.contains("#<=>")
+        line.contains("=>") || line.contains("?=>") || line.contains("#=>") || line.contains("#<=>") || line.contains(":-")
 
     private fun isCommentOutsideRuleBody(line: String, state: IndentationState) =
         !state.inRuleBody && line.startsWith("%")

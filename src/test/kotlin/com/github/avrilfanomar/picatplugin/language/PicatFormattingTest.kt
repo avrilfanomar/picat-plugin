@@ -47,7 +47,7 @@ class PicatFormattingTest : BasePlatformTestCase() {
         val normalizedFormatted = formattedText.replace("\r\n", "\n")
 
         // Compare the formatted text with the expected output
-        Assertions.assertEquals(normalizedExpected, normalizedFormatted, "Formatting should match expected output")
+        Assertions.assertEquals(normalizedExpected, normalizedFormatted, "Expected:\n$normalizedExpected\nActual:\n$normalizedFormatted")
     }
 
     @Test
@@ -842,5 +842,57 @@ ranges =>
         val formatter = service<PicatFormatterService>().getFormatter(cs)
         val formatted = formatter.format(code.trim())
         Assertions.assertEquals(expectedSpaces, formatted)
+    }
+
+    @Test
+    fun testAdditionalOperatorsFormatting() {
+        val code = """
+            ops_example=>
+            A=:=B, % numeric equal
+            C=\=D, % numeric not equal
+            E=<F, % Prolog less-or-equal
+            G@<H, G@=<H, G@>H, G@>=H, % term comparisons
+            I<<J, K>>L, M>>>N, % shifts
+            P**Q. % power
+        """
+        val expected = """
+ops_example =>
+    A =:= B, % numeric equal
+    C =\= D, % numeric not equal
+    E =< F, % Prolog less-or-equal
+    G @< H, G @=< H, G @> H, G @>= H, % term comparisons
+    I << J, K >> L, M >>> N, % shifts
+    P**Q. % power
+        """.trim()
+        doFormatTest(code, expected)
+    }
+
+    @Test
+    fun testDirectivesAndLiteralsFormatting() {
+        val code = """
+            module my_mod.
+            include "path/to/file.pi".
+
+            literals_and_access=>
+            X=0xFF,Y=0o77,Z=0b1010,F=1.2e-3,
+            B1=true,B2=false,
+            A='single quoted atom',
+            Obj=object,'ok',
+            Obj.'method'(1,2),
+            println(X+Y+Z+F), println(B1), println(B2), println(A).
+        """
+        val expected = """
+module my_mod.
+include "path/to/file.pi".
+
+literals_and_access =>
+    X = 0xFF, Y = 0o77, Z = 0b1010, F = 1.2e - 3,
+    B1 = true, B2 = false,
+    A = 'single quoted atom',
+    Obj = object, 'ok',
+    Obj.'method'(1, 2),
+    println(X + Y + Z + F), println(B1), println(B2), println(A).
+        """.trimIndent()
+        doFormatTest(code, expected)
     }
 }
