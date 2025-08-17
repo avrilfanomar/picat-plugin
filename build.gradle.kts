@@ -4,9 +4,9 @@ plugins {
     id("java") // Java support
     alias(libs.plugins.kotlin) // Kotlin support
     alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
+    alias(libs.plugins.grammarkit)
     alias(libs.plugins.kover) // Gradle Kover Plugin
-    id("io.gitlab.arturbosch.detekt") version "1.23.8" // Detekt for static code analysis
-    id("org.jetbrains.grammarkit") version "2022.3.2.2" // Grammar-Kit plugin
+    alias(libs.plugins.detekt) // Detekt for static code analysis
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -43,7 +43,6 @@ dependencies {
     testImplementation(libs.junit3)
     testImplementation(libs.junit4)
     testImplementation(libs.opentest4j)
-    testImplementation(libs.grammarkit)
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
