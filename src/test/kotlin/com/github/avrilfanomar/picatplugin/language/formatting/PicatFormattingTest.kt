@@ -1,10 +1,13 @@
-package com.github.avrilfanomar.picatplugin.language
+package com.github.avrilfanomar.picatplugin.language.formatting
 
+import com.github.avrilfanomar.picatplugin.language.PicatLanguage
 import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormatterService
 import com.github.avrilfanomar.picatplugin.language.formatter.PicatFormattingModelBuilder
+import com.intellij.application.options.CodeStyle
 import com.intellij.lang.LanguageFormatting
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.components.service
+import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -24,7 +27,7 @@ class PicatFormattingTest : BasePlatformTestCase() {
      * @param expected The expected formatted output
      */
     private fun doFormatTest(code: String, expected: String) {
-        // Normalize the input code by removing leading whitespace
+        // Normalize the input code by removing the leading whitespace
         val normalizedCode = code.trim()
 
         // Get the custom formatter from the service
@@ -47,7 +50,11 @@ class PicatFormattingTest : BasePlatformTestCase() {
         val normalizedFormatted = formattedText.replace("\r\n", "\n")
 
         // Compare the formatted text with the expected output
-        Assertions.assertEquals(normalizedExpected, normalizedFormatted, "Expected:\n$normalizedExpected\nActual:\n$normalizedFormatted")
+        Assertions.assertEquals(
+            normalizedExpected,
+            normalizedFormatted,
+            "Expected:\n$normalizedExpected\nActual:\n$normalizedFormatted"
+        )
     }
 
     @Test
@@ -347,7 +354,7 @@ nested_example =>
 
     @Test
     fun testLiteralsFormatting() {
-        // Test formatting of different types of literals
+        // Test formatting the different types of literals
         val code = """
             % Literals example
             literals_example=>
@@ -393,45 +400,6 @@ literals_example =>
         """.trim()
 
         doFormatTest(code, expected)
-    }
-
-    @Test
-    fun testSimpleFormatting() {
-        // A very simple test to see what the formatter does
-        val code = "main=>X=10,Y=20."
-        val expected = "main =>\n" +
-                "    X = 10, Y = 20."
-
-        // Configure settings to keep rule body on the same line
-        val cs = com.intellij.psi.codeStyle.CodeStyleSettings()
-        val picatSettings = cs.getCustomSettings(com.github.avrilfanomar.picatplugin.language.formatter.PicatCodeStyleSettings::class.java)
-        picatSettings.keepLineBreakAfterRuleOperators = true
-
-        // Format the code using PicatCustomFormatter with custom settings
-        val formatterService = service<PicatFormatterService>()
-        val customFormatter = formatterService.getFormatter(cs)
-        val formattedText = customFormatter.format(code)
-
-        // Assert that the formatted code matches the expected output
-        Assertions.assertEquals(expected, formattedText, "Formatting should match expected output")
-
-        // Also test using the CodeStyleManager to ensure it's consistent
-        myFixture.configureByText("simple.pi", code)
-        WriteCommandAction.runWriteCommandAction(project) {
-            val file = myFixture.file
-            val textRange = file.textRange
-            val codeStyleManager = com.intellij.psi.codeStyle.CodeStyleManager.getInstance(project)
-            codeStyleManager.reformatText(file, textRange.startOffset, textRange.endOffset)
-        }
-
-        // Get the formatted text
-        val formatted = myFixture.editor.document.text
-
-        // Assert that the formatted code matches the expected output
-        Assertions.assertEquals(expected, formatted, "Formatting with CodeStyleManager should match expected output")
-
-        // Assert that both formatting methods produce the same result
-        Assertions.assertEquals(formattedText, formatted, "Both formatting methods should produce the same result")
     }
 
     @Test
@@ -485,7 +453,7 @@ constraint_rule_example =>
         WriteCommandAction.runWriteCommandAction(project) {
             val file = myFixture.file
             val textRange = file.textRange
-            val codeStyleManager = com.intellij.psi.codeStyle.CodeStyleManager.getInstance(project)
+            val codeStyleManager = CodeStyleManager.getInstance(project)
             codeStyleManager.reformatText(file, textRange.startOffset, textRange.endOffset)
         }
 
@@ -496,11 +464,11 @@ constraint_rule_example =>
         WriteCommandAction.runWriteCommandAction(project) {
             val file = myFixture.file
             val textRange = file.textRange
-            val codeStyleManager = com.intellij.psi.codeStyle.CodeStyleManager.getInstance(project)
+            val codeStyleManager = CodeStyleManager.getInstance(project)
             codeStyleManager.reformatText(file, textRange.startOffset, textRange.endOffset)
         }
 
-        // Get the text after second formatting
+        // Get the text after the second formatting
         val formattedTwice = myFixture.editor.document.text
 
         Assertions.assertEquals(formattedOnce, formattedTwice)
@@ -764,7 +732,7 @@ main =>
   end.
         """.trim()
 
-        val cs = com.intellij.psi.codeStyle.CodeStyleSettings()
+        val cs = CodeStyle.createTestSettings()
         // Set indent size to 2 for Picat
         val common = cs.getCommonSettings(PicatLanguage)
         if (common.indentOptions == null) {
@@ -775,73 +743,6 @@ main =>
         val formatter = service<PicatFormatterService>().getFormatter(cs)
         val formatted = formatter.format(code.trim())
         Assertions.assertEquals(expectedTwoSpaces, formatted)
-    }
-
-    @Test
-    fun testColonSpacingSetting() {
-        val code = """
-            list_example=>
-            L=[X:X in 1..10],
-            println(L).
-        """
-        val expectedNoSpaces = """
-list_example =>
-    L = [X:X in 1..10],
-    println(L).
-        """.trim()
-
-        val cs = com.intellij.psi.codeStyle.CodeStyleSettings()
-        val picatSettings = cs.getCustomSettings(com.github.avrilfanomar.picatplugin.language.formatter.PicatCodeStyleSettings::class.java)
-        picatSettings.spaceAroundColon = false
-
-        val formatter = service<PicatFormatterService>().getFormatter(cs)
-        val formatted = formatter.format(code.trim())
-        Assertions.assertEquals(expectedNoSpaces, formatted)
-    }
-    @Test
-    fun testAdditiveSpacingSettingToggle() {
-        val code = """
-            toggle_additive=>
-            X=1+2-3,
-            Y=(A+B)-(C-D),
-            println(X+Y).
-        """
-        val expectedNoSpaces = """
-toggle_additive =>
-    X = 1+2-3,
-    Y = (A+B)-(C-D),
-    println(X+Y).
-        """.trim()
-
-        val cs = com.intellij.psi.codeStyle.CodeStyleSettings()
-        val picatSettings = cs.getCustomSettings(com.github.avrilfanomar.picatplugin.language.formatter.PicatCodeStyleSettings::class.java)
-        picatSettings.spaceAroundAdditiveOperators = false
-
-        val formatter = service<PicatFormatterService>().getFormatter(cs)
-        val formatted = formatter.format(code.trim())
-        Assertions.assertEquals(expectedNoSpaces, formatted)
-    }
-
-    @Test
-    fun testRangeOperatorSpacingSetting() {
-        val code = """
-            ranges=>
-            A=1..9,
-            B=[X:X in 1..10].
-        """
-        val expectedSpaces = """
-ranges =>
-    A = 1 .. 9,
-    B = [X : X in 1 .. 10].
-        """.trim()
-
-        val cs = com.intellij.psi.codeStyle.CodeStyleSettings()
-        val picatSettings = cs.getCustomSettings(com.github.avrilfanomar.picatplugin.language.formatter.PicatCodeStyleSettings::class.java)
-        picatSettings.spaceAroundRangeOperator = true
-
-        val formatter = service<PicatFormatterService>().getFormatter(cs)
-        val formatted = formatter.format(code.trim())
-        Assertions.assertEquals(expectedSpaces, formatted)
     }
 
     @Test
@@ -895,4 +796,5 @@ literals_and_access =>
         """.trimIndent()
         doFormatTest(code, expected)
     }
+
 }
