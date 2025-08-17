@@ -11,7 +11,6 @@ changelog = "2.2.1"
 intelliJPlatform = "2.7.1"
 kotlin = "2.2.0"
 kover = "0.9.1"
-qodana = "2025.1.1"
 
 [libraries]
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit5" }
@@ -27,4 +26,3 @@ changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 intelliJPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
-qodana = { id = "org.jetbrains.qodana", version.ref = "qodana" }

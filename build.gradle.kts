@@ -4,7 +4,6 @@ plugins {
     id("java") // Java support
     alias(libs.plugins.kotlin) // Kotlin support
     alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
-    alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
     id("io.gitlab.arturbosch.detekt") version "1.23.8" // Detekt for static code analysis
     id("org.jetbrains.grammarkit") version "2022.3.2.2" // Grammar-Kit plugin
