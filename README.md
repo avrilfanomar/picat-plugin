@@ -49,8 +49,6 @@ To customize the formatting settings:
 2. Adjust the settings to match your preferences
 3. Click "Apply" or "OK"
 
-For detailed documentation on the code formatter, see [formatting.md](docs/formatting.md).
-
 ### Structure View
 
 The Structure View shows the structure of your Picat file, including predicates, functions, and rules. To open the
@@ -87,9 +85,21 @@ To rename a predicate or function:
 - Right-click on a predicate or function name and select "Refactor > Rename"
 - Or place the cursor on a name and press Shift+F6
 
+## Development
+
+- Prerequisites:
+  - JDK 21
+  - Gradle 8.13 (use the provided wrapper: ./gradlew)
+- Build the plugin and run tests: ./gradlew build
+- Run tests: ./gradlew test
+- Static code analysis (Detekt): ./gradlew detekt
+  - Reports are generated in build/reports/detekt/
+- Run the IDE with the plugin: ./gradlew runIde
+- Generate grammar sources manually (normally runs automatically): ./gradlew generateParser generateLexer
+
 ## Contributing
 
-Contributions are welcome!
+Contributions are welcome! Please follow the Development guidelines above and ensure all tests and Detekt pass before submitting a PR.
 
 ## License
 
