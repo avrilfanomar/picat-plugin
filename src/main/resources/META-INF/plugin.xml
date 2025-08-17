@@ -112,5 +112,10 @@
         <completion.contributor
                 language="Picat"
                 implementationClass="com.github.avrilfanomar.picatplugin.language.completion.PicatCompletionContributor"/>
+
+        <!-- Find Usages Provider -->
+        <lang.findUsagesProvider
+                language="Picat"
+                implementationClass="com.github.avrilfanomar.picatplugin.language.references.PicatFindUsagesProvider"/>
     </extensions>
 </idea-plugin>
