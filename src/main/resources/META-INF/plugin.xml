@@ -115,5 +115,19 @@
                 implementation="com.github.avrilfanomar.picatplugin.language.PicatFileTypeBasedContextType"/>
         <defaultLiveTemplates file="/liveTemplates/Picat.xml"/>
 
+        <!-- Reference Contributor -->
+        <psi.referenceContributor
+                language="Picat"
+                implementation="com.github.avrilfanomar.picatplugin.language.references.PicatReferenceContributor"/>
+
+        <!-- Find Usages Provider -->
+        <lang.findUsagesProvider
+                language="Picat"
+                implementationClass="com.github.avrilfanomar.picatplugin.language.references.PicatFindUsagesProvider"/>
+
+        <!-- Find Usages Handler Factory (fallback name-based search) -->
+        <findUsagesHandlerFactory
+                implementation="com.github.avrilfanomar.picatplugin.language.references.PicatFindUsagesHandlerFactory"/>
+
     </extensions>
 </idea-plugin>
