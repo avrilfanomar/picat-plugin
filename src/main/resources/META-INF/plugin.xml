@@ -24,6 +24,7 @@
     <idea-version since-build="251" until-build="252.*"/>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
 
     <change-notes><![CDATA[
         <h3>251.0</h3>
@@ -103,19 +104,10 @@
         <lang.commenter language="Picat"
                         implementationClass="com.github.avrilfanomar.picatplugin.language.PicatCommenter"/>
 
-        <!-- Reference Contributor -->
-        <psi.referenceContributor
-                language="Picat"
-                implementation="com.github.avrilfanomar.picatplugin.language.references.PicatReferenceContributor"/>
-
         <!-- Completion Contributor -->
         <completion.contributor
                 language="Picat"
                 implementationClass="com.github.avrilfanomar.picatplugin.language.completion.PicatCompletionContributor"/>
 
-        <!-- Find Usages Provider -->
-        <lang.findUsagesProvider
-                language="Picat"
-                implementationClass="com.github.avrilfanomar.picatplugin.language.references.PicatFindUsagesProvider"/>
     </extensions>
 </idea-plugin>
