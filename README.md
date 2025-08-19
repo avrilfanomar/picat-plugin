@@ -57,6 +57,18 @@ Structure View:
 - Use the keyboard shortcut: Alt+7 (Windows/Linux) or Cmd+7 (Mac)
 - Or select View > Tool Windows > Structure from the menu
 
+### Live Templates
+
+Common Picat constructs are available as live templates (type the key and press Tab):
+- if: if-then block
+- ife: if-then-else block
+- ifel: if-elseif-else block
+- foreach: foreach loop (foreach (X in L) ... end)
+- while: while loop (while (Cond) ... end)
+- loopw: loop ... while pattern
+- try: try-catch block
+- tryf: try-catch-finally block
+
 ### Code Completion
 
 The plugin provides code completion for Picat keywords, built-in predicates, and user-defined predicates and functions.

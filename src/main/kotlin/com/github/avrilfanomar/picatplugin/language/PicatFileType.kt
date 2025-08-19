@@ -5,6 +5,8 @@ import javax.swing.Icon
 
 object PicatFileType : LanguageFileType(PicatLanguage) { // Assuming PicatLanguage is an object
 
+    val INSTANCE = PicatFileType
+
     override fun getName(): String = "Picat File"
 
     override fun getDescription(): String = "Picat language file"

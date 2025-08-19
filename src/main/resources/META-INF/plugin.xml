@@ -109,5 +109,11 @@
                 language="Picat"
                 implementationClass="com.github.avrilfanomar.picatplugin.language.completion.PicatCompletionContributor"/>
 
+        <!-- Live Templates -->
+        <liveTemplateContext
+                contextId="PICAT"
+                implementation="com.github.avrilfanomar.picatplugin.language.PicatFileTypeBasedContextType"/>
+        <defaultLiveTemplates file="/liveTemplates/Picat.xml"/>
+
     </extensions>
 </idea-plugin>

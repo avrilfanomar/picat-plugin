@@ -1,0 +1,80 @@
+<templateSet group="Picat">
+  <!-- if-then -->
+  <template name="if" value="if $COND$ then&#10;    $END$&#10;end" description="if-then" toReformat="true" toShortenFQNames="false">
+    <variable name="COND" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+
+  <!-- if-then-else -->
+  <template name="ife" value="if $COND$ then&#10;    $THEN$&#10;else&#10;    $ELSE$&#10;end" description="if-then-else" toReformat="true" toShortenFQNames="false">
+    <variable name="COND" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="THEN" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="ELSE" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+
+  <!-- if-elseif-else -->
+  <template name="ifel" value="if $COND$ then&#10;    $THEN$&#10;elseif $COND2$ then&#10;    $THEN2$&#10;else&#10;    $ELSE$&#10;end" description="if-elseif-else" toReformat="true" toShortenFQNames="false">
+    <variable name="COND" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="THEN" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="COND2" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="THEN2" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="ELSE" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+
+  <!-- foreach loop -->
+  <template name="foreach" value="foreach ($ITER$ in $COLL$)&#10;    $BODY$&#10;end" description="foreach loop" toReformat="true" toShortenFQNames="false">
+    <variable name="ITER" expression="" defaultValue="X" alwaysStopAt="true" />
+    <variable name="COLL" expression="" defaultValue="L" alwaysStopAt="true" />
+    <variable name="BODY" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+
+  <!-- while loop -->
+  <template name="while" value="while ($COND$)&#10;    $BODY$&#10;end" description="while loop" toReformat="true" toShortenFQNames="false">
+    <variable name="COND" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="BODY" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+
+  <!-- loop ... while -->
+  <template name="loopw" value="loop&#10;    $BODY$&#10;while ($COND$)" description="loop ... while" toReformat="true" toShortenFQNames="false">
+    <variable name="BODY" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="COND" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+
+  <!-- try-catch -->
+  <template name="try" value="try&#10;    $BODY$&#10;catch ($EXC$)&#10;    $CATCH$&#10;end" description="try-catch" toReformat="true" toShortenFQNames="false">
+    <variable name="BODY" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="EXC" expression="" defaultValue="E" alwaysStopAt="true" />
+    <variable name="CATCH" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+
+  <!-- try-catch-finally -->
+  <template name="tryf" value="try&#10;    $BODY$&#10;catch ($EXC$)&#10;    $CATCH$&#10;finally&#10;    $FINALLY$&#10;end" description="try-catch-finally" toReformat="true" toShortenFQNames="false">
+    <variable name="BODY" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="EXC" expression="" defaultValue="E" alwaysStopAt="true" />
+    <variable name="CATCH" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="FINALLY" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+</templateSet>
