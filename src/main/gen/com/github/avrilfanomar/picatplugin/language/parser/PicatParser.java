@@ -659,80 +659,78 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DOT_IDENTIFIER | DOT_SINGLE_QUOTED_ATOM [LPAR [argument (COMMA argument)*] RPAR]
+  // (DOT_IDENTIFIER | DOT_SINGLE_QUOTED_ATOM) [LPAR [argument (COMMA argument)*] RPAR]
   public static boolean dot_access(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "dot_access")) return false;
     if (!nextTokenIs(builder_, "<dot access>", DOT_IDENTIFIER, DOT_SINGLE_QUOTED_ATOM)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, DOT_ACCESS, "<dot access>");
-    result_ = consumeToken(builder_, DOT_IDENTIFIER);
-    if (!result_) result_ = dot_access_1(builder_, level_ + 1);
+    result_ = dot_access_0(builder_, level_ + 1);
+    result_ = result_ && dot_access_1(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
-  // DOT_SINGLE_QUOTED_ATOM [LPAR [argument (COMMA argument)*] RPAR]
-  private static boolean dot_access_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "dot_access_1")) return false;
+  // DOT_IDENTIFIER | DOT_SINGLE_QUOTED_ATOM
+  private static boolean dot_access_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "dot_access_0")) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, DOT_SINGLE_QUOTED_ATOM);
-    result_ = result_ && dot_access_1_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = consumeToken(builder_, DOT_IDENTIFIER);
+    if (!result_) result_ = consumeToken(builder_, DOT_SINGLE_QUOTED_ATOM);
     return result_;
   }
 
   // [LPAR [argument (COMMA argument)*] RPAR]
-  private static boolean dot_access_1_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "dot_access_1_1")) return false;
-    dot_access_1_1_0(builder_, level_ + 1);
+  private static boolean dot_access_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "dot_access_1")) return false;
+    dot_access_1_0(builder_, level_ + 1);
     return true;
   }
 
   // LPAR [argument (COMMA argument)*] RPAR
-  private static boolean dot_access_1_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "dot_access_1_1_0")) return false;
+  private static boolean dot_access_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "dot_access_1_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, LPAR);
-    result_ = result_ && dot_access_1_1_0_1(builder_, level_ + 1);
+    result_ = result_ && dot_access_1_0_1(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, RPAR);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
   // [argument (COMMA argument)*]
-  private static boolean dot_access_1_1_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "dot_access_1_1_0_1")) return false;
-    dot_access_1_1_0_1_0(builder_, level_ + 1);
+  private static boolean dot_access_1_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "dot_access_1_0_1")) return false;
+    dot_access_1_0_1_0(builder_, level_ + 1);
     return true;
   }
 
   // argument (COMMA argument)*
-  private static boolean dot_access_1_1_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "dot_access_1_1_0_1_0")) return false;
+  private static boolean dot_access_1_0_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "dot_access_1_0_1_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = argument(builder_, level_ + 1);
-    result_ = result_ && dot_access_1_1_0_1_0_1(builder_, level_ + 1);
+    result_ = result_ && dot_access_1_0_1_0_1(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
   // (COMMA argument)*
-  private static boolean dot_access_1_1_0_1_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "dot_access_1_1_0_1_0_1")) return false;
+  private static boolean dot_access_1_0_1_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "dot_access_1_0_1_0_1")) return false;
     while (true) {
       int pos_ = current_position_(builder_);
-      if (!dot_access_1_1_0_1_0_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "dot_access_1_1_0_1_0_1", pos_)) break;
+      if (!dot_access_1_0_1_0_1_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "dot_access_1_0_1_0_1", pos_)) break;
     }
     return true;
   }
 
   // COMMA argument
-  private static boolean dot_access_1_1_0_1_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "dot_access_1_1_0_1_0_1_0")) return false;
+  private static boolean dot_access_1_0_1_0_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "dot_access_1_0_1_0_1_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, COMMA);
@@ -1711,8 +1709,8 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // COLON iterator list_comprehension_tail?  // list comprehension
-  //                    | list_items_tail? [PIPE argument]
+  // (COLON iterator list_comprehension_tail?)   // list comprehension
+  //                    | (list_items_tail? [PIPE argument])
   public static boolean list_expr_suffix(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_expr_suffix")) return false;
     boolean result_;

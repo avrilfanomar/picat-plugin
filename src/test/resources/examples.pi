@@ -88,9 +88,7 @@ split(Zs, L1, L2) => L1 = Zs, L2 = [].
 
 merge([], Ys) = Ys.
 merge(Xs, []) = Xs.
-/* Hard case: as - pattern
 merge([X | Xs], Ys@[Y | _]) = [X | Zs], X < Y => Zs = merge(Xs, Ys). % Ys@[Y | _] is an as - pattern
-*/
 merge(Xs, [Y | Ys]) = [Y | Zs] => Zs = merge(Xs, Ys).
 
 insert_sort([]) = [].
@@ -98,9 +96,7 @@ insert_sort([H | T]) = insert(H, insert_sort(T)).
 
 private
 insert(X, []) = [X].
-/* Hard case: as - pattern
-insert(X, Ys@[Y | _]) = Zs, X = < Y => Zs = [X | Ys].
-* /
+insert(X, Ys@[Y | _]) = Zs, X =< Y => Zs = [X | Ys].
 insert(X, [Y | Ys]) = [Y | insert(X, Ys)].
 
 % two versions that return the minumum and maximum of a list
@@ -136,9 +132,7 @@ struct_equal([H1 | T1], [H2 | T2]) =>
 
 is_sorted([]) => true.
 is_sorted([_]) => true.
-/* Hard case: fails to parse now
-is_sorted([X|L@[Y|_]]) =>X @<= Y, is_sorted(L).
-*/
+is_sorted([X|L@[Y|_]]) => X @<= Y, is_sorted(L).
 
 % An empty tree is represented by {}, and a non-empty binary tree is
 % represented by its root, which takes form {Val,Left,Right}.

@@ -280,7 +280,7 @@ postfix_ops ::= postfix_op postfix_ops?
 
 postfix_op ::= dot_access
 
-dot_access ::= DOT_IDENTIFIER | DOT_SINGLE_QUOTED_ATOM [LPAR [argument (COMMA argument)*] RPAR]
+dot_access ::= (DOT_IDENTIFIER | DOT_SINGLE_QUOTED_ATOM) [LPAR [argument (COMMA argument)*] RPAR]
 
 base_expr ::= parenthesized_goal
             | lambda_term
@@ -310,8 +310,8 @@ as_pattern ::= VARIABLE AT term [AT]
 
 list_expr ::= LBRACKET [argument list_expr_suffix?] RBRACKET
 
-list_expr_suffix ::= COLON iterator list_comprehension_tail?  // list comprehension
-                   | list_items_tail? [PIPE argument]          // standard list tail
+list_expr_suffix ::= (COLON iterator list_comprehension_tail?)   // list comprehension
+                   | (list_items_tail? [PIPE argument])          // standard list tail
 
 list_comprehension_tail ::= COMMA (iterator | condition) list_comprehension_tail?
 
