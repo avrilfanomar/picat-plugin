@@ -1,6 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.references
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
 import com.intellij.openapi.util.TextRange
 import com.intellij.patterns.PlatformPatterns.psiElement
@@ -8,7 +7,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.psi.PsiReferenceContributor
 import com.intellij.psi.PsiReferenceRegistrar
-import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.util.ProcessingContext
 
 /**
@@ -26,7 +24,9 @@ class PicatReferenceContributor : PsiReferenceContributor() {
                     context: ProcessingContext
                 ): Array<PsiReference> {
                     val type = element.node?.elementType
-                    if (type != PicatTokenTypes.IDENTIFIER && type != PicatTokenTypes.SINGLE_QUOTED_ATOM) return PsiReference.EMPTY_ARRAY
+                    if (type != PicatTokenTypes.IDENTIFIER && type != PicatTokenTypes.SINGLE_QUOTED_ATOM) {
+                        return PsiReference.EMPTY_ARRAY
+                    }
                     val range = TextRange(0, element.textLength)
                     return arrayOf(PicatReference(element, range))
                 }

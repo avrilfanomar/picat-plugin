@@ -22,10 +22,11 @@ import com.intellij.util.Processor
  */
 class PicatFindUsagesHandlerFactory : FindUsagesHandlerFactory() {
     override fun canFindUsages(element: PsiElement): Boolean {
-        if (element.language != PicatLanguage) return false
-        val text = element.text ?: return false
-        // Basic Picat identifier pattern: starts with a lowercase letter, then letters/digits/_
-        return text.matches(Regex("[a-z][a-zA-Z0-9_]*"))
+        if (element.language == PicatLanguage) {
+            // Basic Picat identifier pattern: starts with a lowercase letter, then letters/digits/_
+            return element.text?.matches(Regex("[a-z][a-zA-Z0-9_]*")) ?: false
+        }
+        return false
     }
 
     override fun createFindUsagesHandler(element: PsiElement, forHighlightUsages: Boolean): FindUsagesHandler {
