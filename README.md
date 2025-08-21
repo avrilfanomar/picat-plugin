@@ -1,6 +1,26 @@
 # Picat Plugin for IntelliJ IDEA
 
 This plugin provides support for the [Picat](http://picat-lang.org/) programming language in IntelliJ IDEA.
+<!-- Plugin description -->
+<![CDATA[
+        Support for the Picat programming language in IntelliJ IDEA.
+
+        <p>Picat is a multi-paradigm programming language that integrates logic-based and function-based programming with constraint solving capabilities.</p>
+
+        <h3>Features:</h3>
+        <ul>
+            <li>Syntax highlighting for Picat files (.pi)</li>
+            <li>Code formatting with customizable settings</li>
+            <li>Run configuration for Picat programs</li>
+            <li>Live templates</li>
+            <li>Autocompletion</li>
+            <li>File type recognition</li>
+            <li>Custom file icon</li>
+        </ul>
+
+        <p>This plugin is licensed under the <a href="https://github.com/avrilfanomar/picat-plugin/blob/main/LICENSE">Apache License 2.0</a>.</p>
+    ]]>
+<!-- Plugin description end -->
 
 ## Features
 
@@ -54,6 +74,7 @@ Structure View:
 ### Live Templates
 
 Common Picat constructs are available as live templates (type the key and press Tab):
+
 - if: if-then block
 - ife: if-then-else block
 - ifel: if-elseif-else block
@@ -94,32 +115,42 @@ To rename a predicate or function:
 ## Development
 
 - Prerequisites:
-  - JDK 21
-  - Gradle 8.13 (use the provided wrapper: ./gradlew)
+    - JDK 21
+    - Gradle 8.13 (use the provided wrapper: ./gradlew)
 - Build the plugin and run tests: ./gradlew build
 - Run tests: ./gradlew test
 - Static code analysis (Detekt): ./gradlew detekt
-  - Reports are generated in build/reports/detekt/
+    - Reports are generated in build/reports/detekt/
 - Run the IDE with the plugin: ./gradlew runIde
 
 This project uses GrammarKit/JFlex to generate the parser and lexer from grammars:
-- Parser is generated from `src/main/grammars/Picat.bnf` into `src/main/gen` as `com.github.avrilfanomar.picatplugin.language.parser.PicatParser` and related PSI/element types.
-- Lexer is generated from `src/main/grammars/_PicatLexer.flex` into `src/main/gen` as `com.github.avrilfanomar.picatplugin.language.parser._PicatLexer`.
+
+- Parser is generated from `src/main/grammars/Picat.bnf` into `src/main/gen` as
+  `com.github.avrilfanomar.picatplugin.language.parser.PicatParser` and related PSI/element types.
+- Lexer is generated from `src/main/grammars/_PicatLexer.flex` into `src/main/gen` as
+  `com.github.avrilfanomar.picatplugin.language.parser._PicatLexer`.
 
 Important:
-- Do not manually modify generated files under `src/main/gen`, as well as `_PicatLexer.flex`. Changes to parsing behavior must be done in `Picat.bnf`, then the sources regenerated.
+
+- Do not manually modify generated files under `src/main/gen`, as well as `_PicatLexer.flex`. Changes to parsing
+  behavior must be done in `Picat.bnf`, then the sources regenerated.
 - Commit regenerated sources as part of your change if you modify the grammar definitions.
 
 Regeneration instructions (local development):
-- Gradle tasks for generation are provided and included in the build by default (./gradlew generateParser generateLexer); alternatively, use IDE generators as below.
-- Lexer: Use "Run JFlex Generator" on `_PicatLexer.flex` (Tools | JFlex | Run JFlex Generator) targeting `src/main/grammars`.
-- Parser/PSI: Open the project in IntelliJ IDEA with GrammarKit installed, open `Picat.bnf`, and use "Generate Parser Code" (Tools | Grammar-Kit | Generate Parser Code) targeting `src/main/gen`.
+
+- Gradle tasks for generation are provided and included in the build by default (./gradlew generateParser
+  generateLexer); alternatively, use IDE generators as below.
+- Lexer: Use "Run JFlex Generator" on `_PicatLexer.flex` (Tools | JFlex | Run JFlex Generator) targeting
+  `src/main/grammars`.
+- Parser/PSI: Open the project in IntelliJ IDEA with GrammarKit installed, open `Picat.bnf`, and use "Generate Parser
+  Code" (Tools | Grammar-Kit | Generate Parser Code) targeting `src/main/gen`.
 
 The canonical rule: PicatParser is generated from BNF and should not be manually modified.
 
 ## Contributing
 
-Contributions are welcome! Please follow the Development guidelines above and ensure all tests and Detekt pass before submitting a PR.
+Contributions are welcome! Please follow the Development guidelines above and ensure all tests and Detekt pass before
+submitting a PR.
 
 ## License
 

@@ -14,6 +14,8 @@
             <li>Syntax highlighting for Picat files (.pi)</li>
             <li>Code formatting with customizable settings</li>
             <li>Run configuration for Picat programs</li>
+            <li>Live templates</li>
+            <li>Autocompletion</li>
             <li>File type recognition</li>
             <li>Custom file icon</li>
         </ul>
