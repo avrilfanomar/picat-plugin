@@ -2,12 +2,6 @@
 
 This plugin provides support for the [Picat](http://picat-lang.org/) programming language in IntelliJ IDEA.
 
-<!-- Plugin description -->
-The Picat Plugin for IntelliJ IDEA provides comprehensive support for the Picat programming language, a logic-based
-multi-paradigm language. It offers syntax highlighting, code formatting, structure view, code completion, navigation,
-refactoring, and more to enhance your Picat development experience.
-<!-- Plugin description end -->
-
 ## Features
 
 - Syntax highlighting for Picat files
@@ -107,7 +101,21 @@ To rename a predicate or function:
 - Static code analysis (Detekt): ./gradlew detekt
   - Reports are generated in build/reports/detekt/
 - Run the IDE with the plugin: ./gradlew runIde
-- Generate grammar sources manually (normally runs automatically): ./gradlew generateParser generateLexer
+
+This project uses GrammarKit/JFlex to generate the parser and lexer from grammars:
+- Parser is generated from `src/main/grammars/Picat.bnf` into `src/main/gen` as `com.github.avrilfanomar.picatplugin.language.parser.PicatParser` and related PSI/element types.
+- Lexer is generated from `src/main/grammars/_PicatLexer.flex` into `src/main/gen` as `com.github.avrilfanomar.picatplugin.language.parser._PicatLexer`.
+
+Important:
+- Do not manually modify generated files under `src/main/gen`, as well as `_PicatLexer.flex`. Changes to parsing behavior must be done in `Picat.bnf`, then the sources regenerated.
+- Commit regenerated sources as part of your change if you modify the grammar definitions.
+
+Regeneration instructions (local development):
+- Gradle tasks for generation are provided and included in the build by default (./gradlew generateParser generateLexer); alternatively, use IDE generators as below.
+- Lexer: Use "Run JFlex Generator" on `_PicatLexer.flex` (Tools | JFlex | Run JFlex Generator) targeting `src/main/grammars`.
+- Parser/PSI: Open the project in IntelliJ IDEA with GrammarKit installed, open `Picat.bnf`, and use "Generate Parser Code" (Tools | Grammar-Kit | Generate Parser Code) targeting `src/main/gen`.
+
+The canonical rule: PicatParser is generated from BNF and should not be manually modified.
 
 ## Contributing
 

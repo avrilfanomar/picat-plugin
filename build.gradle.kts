@@ -175,3 +175,6 @@ tasks.generateLexer {
 tasks.compileKotlin {
     dependsOn("generateLexer")
 }
+tasks.named("patchPluginXml") {
+    enabled = false
+}
