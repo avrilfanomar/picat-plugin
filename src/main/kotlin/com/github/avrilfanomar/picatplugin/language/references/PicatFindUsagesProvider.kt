@@ -14,15 +14,11 @@ import com.intellij.psi.tree.TokenSet
 /**
  * Find usages provider for Picat language.
  *
- * The implementation is intentionally simple:
- * - Provides a word scanner for identifiers, comments, and strings.
- * - Enables "Find Usages" primarily for identifiers that represent predicate/function names
- *   (identifiers under PicatAtom elements and generally identifiers).
+ * Narrowed to predicate/function atoms to improve relevance.
  */
 class PicatFindUsagesProvider : FindUsagesProvider {
 
     override fun getWordsScanner(): WordsScanner {
-        // Use the generated lexer wrapped with FlexAdapter.
         val idTokens = TokenSet.create(
             PicatTokenTypes.IDENTIFIER,
             PicatTokenTypes.SINGLE_QUOTED_ATOM
@@ -44,16 +40,23 @@ class PicatFindUsagesProvider : FindUsagesProvider {
     }
 
     override fun canFindUsagesFor(psiElement: PsiElement): Boolean {
-        // Allow finding usages for any PSI element text; our scanner narrows to identifiers.
-        return true
+        // We allow usages for Picat atoms or their leaf tokens.
+        return when (psiElement) {
+            is PicatAtom -> true
+            else -> {
+                val type = psiElement.node?.elementType
+                val isAtomLeaf = type == PicatTokenTypes.IDENTIFIER ||
+                    type == PicatTokenTypes.SINGLE_QUOTED_ATOM
+                isAtomLeaf && psiElement.parent is PicatAtom
+            }
+        }
     }
 
     override fun getHelpId(psiElement: PsiElement): String? = null
 
     override fun getType(element: PsiElement): String {
-        // If the element appears within a head, it is likely a predicate/function.
-        val inHead = element.parent is PicatHead || element.ancestorsAny { it is PicatHead }
-        return if (inHead) "predicate/function" else "symbol"
+        val isHead = element.hasAncestor<PicatHead>()
+        return if (isHead) "predicate/function" else "symbol"
     }
 
     override fun getDescriptiveName(element: PsiElement): String = element.text
@@ -61,10 +64,10 @@ class PicatFindUsagesProvider : FindUsagesProvider {
     override fun getNodeText(element: PsiElement, useFullName: Boolean): String = element.text
 }
 
-private inline fun PsiElement.ancestorsAny(predicate: (PsiElement) -> Boolean): Boolean {
+private inline fun <reified T : PsiElement> PsiElement.hasAncestor(): Boolean {
     var curr: PsiElement? = this
     while (curr != null) {
-        if (predicate(curr)) return true
+        if (curr is T) return true
         curr = curr.parent
     }
     return false
