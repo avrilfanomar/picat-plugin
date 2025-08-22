@@ -2,7 +2,7 @@
 
 This plugin provides support for the [Picat](http://picat-lang.org/) programming language in IntelliJ IDEA.
 <!-- Plugin description -->
-<![CDATA[
+
         Support for the Picat programming language in IntelliJ IDEA.
 
         <p>Picat is a multi-paradigm programming language that integrates logic-based and function-based programming with constraint solving capabilities.</p>
@@ -19,7 +19,7 @@ This plugin provides support for the [Picat](http://picat-lang.org/) programming
         </ul>
 
         <p>This plugin is licensed under the <a href="https://github.com/avrilfanomar/picat-plugin/blob/main/LICENSE">Apache License 2.0</a>.</p>
-    ]]>
+
 <!-- Plugin description end -->
 
 ## Features
