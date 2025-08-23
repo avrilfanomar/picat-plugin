@@ -131,5 +131,10 @@
         <findUsagesHandlerFactory
                 implementation="com.github.avrilfanomar.picatplugin.language.references.PicatFindUsagesHandlerFactory"/>
 
+        <!-- Refactoring Support (in-place rename) -->
+        <lang.refactoringSupport
+                language="Picat"
+                implementationClass="com.github.avrilfanomar.picatplugin.language.psi.PicatRefactoringSupportProvider"/>
+
     </extensions>
 </idea-plugin>

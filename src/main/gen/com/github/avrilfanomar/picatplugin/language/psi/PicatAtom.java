@@ -4,8 +4,9 @@ package com.github.avrilfanomar.picatplugin.language.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.github.avrilfanomar.picatplugin.language.references.PicatNameIdentifierOwner;
 
-public interface PicatAtom extends PsiElement {
+public interface PicatAtom extends PicatNameIdentifierOwner {
 
   @Nullable
   PicatDollarEscapedAtom getDollarEscapedAtom();

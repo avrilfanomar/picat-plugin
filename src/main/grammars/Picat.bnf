@@ -5,6 +5,7 @@
   parserUtilClass="com.github.avrilfanomar.picatplugin.language.parser.PicatParserUtil"
   psiClassPrefix="Picat"
   psiImplClassSuffix="Impl"
+  psiImplUtilClass="com.github.avrilfanomar.picatplugin.language.psi.PicatPsiImplUtil"
   psiPackage="com.github.avrilfanomar.picatplugin.language.psi"
   psiImplPackage="com.github.avrilfanomar.picatplugin.language.psi.impl"
 
@@ -369,6 +370,6 @@ function_argument_list_tail ::= COMMA function_argument function_argument_list_t
 
 term_list_tail ::= COMMA term term_list_tail?
 
-atom ::= IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX
+atom ::= IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX {implements="com.github.avrilfanomar.picatplugin.language.references.PicatNameIdentifierOwner" mixin="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatAtomMixin" methods=["getName" "setName" "getNameIdentifier"]}
 
 dollar_escaped_atom ::= DOLLAR IDENTIFIER

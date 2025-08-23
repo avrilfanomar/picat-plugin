@@ -4,6 +4,7 @@ package com.github.avrilfanomar.picatplugin.language.psi;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
+import com.github.avrilfanomar.picatplugin.language.references.PicatNameIdentifierOwner;
 
 public class PicatVisitor extends PsiElementVisitor {
 
@@ -44,7 +45,7 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitAtom(@NotNull PicatAtom o) {
-    visitPsiElement(o);
+    visitNameIdentifierOwner(o);
   }
 
   public void visitAtomNoArgs(@NotNull PicatAtomNoArgs o) {
@@ -360,6 +361,10 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitXorExpr(@NotNull PicatXorExpr o) {
+    visitPsiElement(o);
+  }
+
+  public void visitNameIdentifierOwner(@NotNull PicatNameIdentifierOwner o) {
     visitPsiElement(o);
   }
 

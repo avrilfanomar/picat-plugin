@@ -5,49 +5,73 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatAtomOrCallNoLambda
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionArgument
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionArgumentListTail
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCall
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCallNoDot
 import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTerm
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTermListTail
+import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiReferenceBase
+import com.intellij.psi.PsiPolyVariantReferenceBase
+import com.intellij.psi.ResolveResult
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.PsiElementResolveResult
 
 /**
  * Reference for Picat predicate/function atoms.
  *
- * Resolves to a matching head (predicate/function) in the same file by
- * name AND arity. This improves correctness when multiple clauses exist
- * with different arities (e.g., p/0 vs p/1).
+ * Resolves to matching heads (predicate/function) in the same file by
+ * name AND arity. multiResolve() returns all candidates; resolve() prefers
+ * a single candidate when available.
  */
 class PicatReference(element: PsiElement, rangeInElement: TextRange) :
-    PsiReferenceBase<PsiElement>(element, rangeInElement, false) {
+    PsiPolyVariantReferenceBase<PsiElement>(element, rangeInElement, false) {
 
-    override fun resolve(): PsiElement? {
+    override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
+        val results: Array<ResolveResult>
         val name = element.text
         val file = element.containingFile
-        if (name.isBlank() || file == null) return null
-
-        val usageArity = computeUsageArity(element)
-        val heads = PsiTreeUtil.findChildrenOfType(file, PicatHead::class.java)
-            .sortedBy { it.textOffset }
-
-        val matchedHead = if (usageArity != null) {
-            heads.firstOrNull { it.atomName() == name && it.arity() == usageArity }
+        if (name.isBlank() || file == null) {
+            results = ResolveResult.EMPTY_ARRAY
         } else {
-            heads.firstOrNull { it.atomName() == name }
+            val usageArity = computeUsageArity(element)
+            val heads = PsiTreeUtil.findChildrenOfType(file, PicatHead::class.java)
+                .sortedBy { it.textOffset }
+            val matches = heads.filter { h ->
+                h.atomName() == name && (usageArity?.let { it == h.arity() } ?: true)
+            }
+            results = if (matches.isEmpty()) {
+                ResolveResult.EMPTY_ARRAY
+            } else {
+                matches.mapNotNull { h ->
+                    val target: PsiElement? =
+                        h.argumentList.firstOrNull()?.let { it as PsiElement }
+                            ?: h.atom.identifier
+                            ?: h.atom
+                    target?.let { PsiElementResolveResult(it) }
+                }.toTypedArray()
+            }
         }
+        return results
+    }
 
-        return matchedHead?.let { it.atom.identifier ?: it.atom }
+    override fun resolve(): PsiElement? {
+        val results = multiResolve(false)
+        return if (results.size == 1) results[0].element else null
     }
 
     override fun getVariants(): Array<Any> {
         val file = element.containingFile ?: return emptyArray()
         val heads = PsiTreeUtil.findChildrenOfType(file, PicatHead::class.java)
-        val names = heads.mapNotNull { head ->
-            head.atomName()?.let { n -> "$n/${head.arity()}" }
+        val nameArityPairs = heads.mapNotNull { head ->
+            val name = head.atomName() ?: return@mapNotNull null
+            name to head.arity()
         }.distinct()
-        return names.toTypedArray()
+        val variants = nameArityPairs.map { (name, arity) ->
+            LookupElementBuilder.create(name)
+                .withTypeText("/$arity", true)
+        }
+        return variants.toTypedArray()
     }
 }
 
@@ -64,7 +88,10 @@ private fun PicatHead.atomName(): String? {
  * (e.g., standalone atom that could be 0-arity or part of a different construct).
  */
 private fun computeUsageArity(leaf: PsiElement): Int? {
-    val atom = leaf.parent as? PicatAtom ?: return null
+    val atom = when (leaf) {
+        is PicatAtom -> leaf
+        else -> leaf.parent as? PicatAtom
+    } ?: return null
 
     val headArity = atom.parentOfType<PicatHead>()?.arity()
     val result = when {
@@ -73,12 +100,10 @@ private fun computeUsageArity(leaf: PsiElement): Int? {
             val call = atom.parentOfType<PicatAtomOrCallNoLambda>()
             countCallArgs(call?.term, call?.termListTail)
         }
-
         atom.parentOfType<PicatFunctionCall>() != null -> {
             val fn = atom.parentOfType<PicatFunctionCall>()
             countFunctionArgs(fn?.functionArgument, fn?.functionArgumentListTail)
         }
-
         else -> null
     }
     return result

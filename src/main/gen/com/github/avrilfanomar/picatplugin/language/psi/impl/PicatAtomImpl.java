@@ -8,12 +8,11 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.avrilfanomar.picatplugin.language.psi.*;
 
-public class PicatAtomImpl extends ASTWrapperPsiElement implements PicatAtom {
+public class PicatAtomImpl extends PicatAtomMixin implements PicatAtom {
 
-  public PicatAtomImpl(@NotNull ASTNode node) {
+  public PicatAtomImpl(ASTNode node) {
     super(node);
   }
 

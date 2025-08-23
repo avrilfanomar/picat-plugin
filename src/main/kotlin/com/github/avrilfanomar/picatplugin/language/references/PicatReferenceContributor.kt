@@ -22,9 +22,7 @@ import com.intellij.util.ProcessingContext
  * unrelated identifiers (e.g., variables).
  */
 class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openapi.project.DumbAware {
-    companion object {
-        init { println("[DEBUG_LOG] PicatReferenceContributor loaded") }
-    }
+
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
         val atomLeafTokens = TokenSet.create(
             PicatTokenTypes.IDENTIFIER,
@@ -36,8 +34,10 @@ class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openap
         registrar.registerReferenceProvider(
             psiElement().withElementType(atomLeafTokens).withLanguage(PicatLanguage),
             object : PsiReferenceProvider() {
-                override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
-                    println("[DEBUG_LOG] leafProvider for '${'$'}{element.text}' type='${'$'}{element.node?.elementType}'")
+                override fun getReferencesByElement(
+                    element: PsiElement,
+                    context: ProcessingContext
+                ): Array<PsiReference> {
                     return arrayOf(PicatReference(element, TextRange(0, element.textLength)))
                 }
             }
@@ -47,10 +47,12 @@ class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openap
         registrar.registerReferenceProvider(
             psiElement(),
             object : PsiReferenceProvider(), com.intellij.openapi.project.DumbAware {
-                override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
+                override fun getReferencesByElement(
+                    element: PsiElement,
+                    context: ProcessingContext
+                ): Array<PsiReference> {
                     val type = element.node?.elementType
                     val isAtomLeaf = (type == PicatTokenTypes.IDENTIFIER || type == PicatTokenTypes.SINGLE_QUOTED_ATOM)
-                    if (isAtomLeaf) println("[DEBUG_LOG] fallbackLeafProvider for '${'$'}{element.text}' type='${'$'}type'")
                     return if (isAtomLeaf) {
                         arrayOf(PicatReference(element, TextRange(0, element.textLength)))
                     } else PsiReference.EMPTY_ARRAY
@@ -62,13 +64,15 @@ class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openap
         registrar.registerReferenceProvider(
             psiElement(PicatAtom::class.java).withLanguage(PicatLanguage),
             object : PsiReferenceProvider() {
-                override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
+                override fun getReferencesByElement(
+                    element: PsiElement,
+                    context: ProcessingContext
+                ): Array<PsiReference> {
                     val atom = element as PicatAtom
                     val id = atom.identifier ?: atom.singleQuotedAtom
                     return if (id != null) {
                         val startInParent = id.startOffsetInParent
                         val range = TextRange(startInParent, startInParent + id.textLength)
-                        println("[DEBUG_LOG] atomProvider for '${'$'}{id.text}' at range ${'$'}range")
                         arrayOf(PicatReference(atom, range))
                     } else PsiReference.EMPTY_ARRAY
                 }
@@ -79,14 +83,16 @@ class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openap
         registrar.registerReferenceProvider(
             psiElement(PicatAtomOrCallNoLambda::class.java).withLanguage(PicatLanguage),
             object : PsiReferenceProvider() {
-                override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
+                override fun getReferencesByElement(
+                    element: PsiElement,
+                    context: ProcessingContext
+                ): Array<PsiReference> {
                     val call = element as PicatAtomOrCallNoLambda
                     val atom = call.atom
                     val id = atom.identifier ?: atom.singleQuotedAtom
                     return if (id != null) {
                         val startInParent = id.textOffset - call.textOffset
                         val range = TextRange(startInParent, startInParent + id.textLength)
-                        println("[DEBUG_LOG] callProvider for '${'$'}{id.text}' at range ${'$'}range")
                         arrayOf(PicatReference(call, range))
                     } else PsiReference.EMPTY_ARRAY
                 }
@@ -97,14 +103,17 @@ class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openap
         registrar.registerReferenceProvider(
             psiElement(),
             object : PsiReferenceProvider(), com.intellij.openapi.project.DumbAware {
-                override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
+                @Suppress("ReturnCount")
+                override fun getReferencesByElement(
+                    element: PsiElement,
+                    context: ProcessingContext
+                ): Array<PsiReference> {
                     val atomAncestor = element.parentOfTypeLocal<PicatAtom>()
                     if (atomAncestor != null) {
                         val id = atomAncestor.identifier ?: atomAncestor.singleQuotedAtom
                         if (id != null) {
                             val startInParent = id.startOffsetInParent
                             val range = TextRange(startInParent, startInParent + id.textLength)
-                            println("[DEBUG_LOG] fallbackAtomAncestor for '${'$'}{id.text}' at range ${'$'}range")
                             return arrayOf(PicatReference(atomAncestor, range))
                         }
                     }
@@ -114,7 +123,6 @@ class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openap
                         if (id != null) {
                             val startInParent = id.textOffset - callAncestor.textOffset
                             val range = TextRange(startInParent, startInParent + id.textLength)
-                            println("[DEBUG_LOG] fallbackCallAncestor for '${'$'}{id.text}' at range ${'$'}range")
                             return arrayOf(PicatReference(callAncestor, range))
                         }
                     }
@@ -123,16 +131,6 @@ class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openap
             }
         )
     }
-}
-
-
-private inline fun <reified T : PsiElement> PsiElement.hasAncestor(): Boolean {
-    var curr: PsiElement? = this.parent
-    while (curr != null) {
-        if (curr is T) return true
-        curr = curr.parent
-    }
-    return false
 }
 
 private inline fun <reified T : PsiElement> PsiElement.parentOfTypeLocal(): T? {
