@@ -28,9 +28,9 @@ public class PicatFunctionFactImpl extends ASTWrapperPsiElement implements Picat
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PicatArgument getArgument() {
-    return findNotNullChildByClass(PicatArgument.class);
+    return findChildByClass(PicatArgument.class);
   }
 
   @Override

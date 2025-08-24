@@ -5,16 +5,10 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PicatListExprSuffix extends PsiElement {
+public interface PicatListExprStandard extends PsiElement {
 
-  @Nullable
-  PicatArgument getArgument();
-
-  @Nullable
-  PicatIterator getIterator();
-
-  @Nullable
-  PicatListComprehensionTail getListComprehensionTail();
+  @NotNull
+  List<PicatArgument> getArgumentList();
 
   @Nullable
   PicatListItemsTail getListItemsTail();

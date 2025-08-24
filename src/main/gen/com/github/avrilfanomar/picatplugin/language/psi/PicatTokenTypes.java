@@ -60,8 +60,10 @@ public interface PicatTokenTypes {
   IElementType LAMBDA_TERM = new PicatElementType("LAMBDA_TERM");
   IElementType LIST_COMPREHENSION_TAIL = new PicatElementType("LIST_COMPREHENSION_TAIL");
   IElementType LIST_EXPR = new PicatElementType("LIST_EXPR");
+  IElementType LIST_EXPR_COMPREHENSION = new PicatElementType("LIST_EXPR_COMPREHENSION");
+  IElementType LIST_EXPR_EMPTY = new PicatElementType("LIST_EXPR_EMPTY");
   IElementType LIST_EXPR_NO_COMPREHENSION = new PicatElementType("LIST_EXPR_NO_COMPREHENSION");
-  IElementType LIST_EXPR_SUFFIX = new PicatElementType("LIST_EXPR_SUFFIX");
+  IElementType LIST_EXPR_STANDARD = new PicatElementType("LIST_EXPR_STANDARD");
   IElementType LIST_ITEMS_TAIL = new PicatElementType("LIST_ITEMS_TAIL");
   IElementType LOOP_WHILE = new PicatElementType("LOOP_WHILE");
   IElementType MODULE_DECLARATION = new PicatElementType("MODULE_DECLARATION");
@@ -367,11 +369,17 @@ public interface PicatTokenTypes {
       else if (type == LIST_EXPR) {
         return new PicatListExprImpl(node);
       }
+      else if (type == LIST_EXPR_COMPREHENSION) {
+        return new PicatListExprComprehensionImpl(node);
+      }
+      else if (type == LIST_EXPR_EMPTY) {
+        return new PicatListExprEmptyImpl(node);
+      }
       else if (type == LIST_EXPR_NO_COMPREHENSION) {
         return new PicatListExprNoComprehensionImpl(node);
       }
-      else if (type == LIST_EXPR_SUFFIX) {
-        return new PicatListExprSuffixImpl(node);
+      else if (type == LIST_EXPR_STANDARD) {
+        return new PicatListExprStandardImpl(node);
       }
       else if (type == LIST_ITEMS_TAIL) {
         return new PicatListItemsTailImpl(node);

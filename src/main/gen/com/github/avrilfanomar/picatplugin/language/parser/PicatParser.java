@@ -1191,14 +1191,15 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // head EQUAL argument DOT
   public static boolean function_fact(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_fact")) return false;
-    boolean result_;
+    boolean result_, pinned_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_FACT, "<function fact>");
     result_ = head(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, EQUAL);
-    result_ = result_ && argument(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, DOT);
-    exit_section_(builder_, level_, marker_, result_, false, null);
-    return result_;
+    pinned_ = result_; // pin = 2
+    result_ = result_ && report_error_(builder_, argument(builder_, level_ + 1));
+    result_ = pinned_ && consumeToken(builder_, DOT) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
   }
 
   /* ********************************************************** */
@@ -1612,42 +1613,53 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LBRACKET [argument list_expr_suffix?] RBRACKET
+  // list_expr_comprehension | list_expr_standard | list_expr_empty
   public static boolean list_expr(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_expr")) return false;
     if (!nextTokenIs(builder_, LBRACKET)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, LBRACKET);
-    result_ = result_ && list_expr_1(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, RBRACKET);
+    result_ = list_expr_comprehension(builder_, level_ + 1);
+    if (!result_) result_ = list_expr_standard(builder_, level_ + 1);
+    if (!result_) result_ = list_expr_empty(builder_, level_ + 1);
     exit_section_(builder_, marker_, LIST_EXPR, result_);
     return result_;
   }
 
-  // [argument list_expr_suffix?]
-  private static boolean list_expr_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expr_1")) return false;
-    list_expr_1_0(builder_, level_ + 1);
-    return true;
-  }
-
-  // argument list_expr_suffix?
-  private static boolean list_expr_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expr_1_0")) return false;
+  /* ********************************************************** */
+  // LBRACKET argument COLON iterator list_comprehension_tail? RBRACKET
+  public static boolean list_expr_comprehension(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_expr_comprehension")) return false;
+    if (!nextTokenIs(builder_, LBRACKET)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
-    result_ = argument(builder_, level_ + 1);
-    result_ = result_ && list_expr_1_0_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = consumeToken(builder_, LBRACKET);
+    result_ = result_ && argument(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, COLON);
+    result_ = result_ && iterator(builder_, level_ + 1);
+    result_ = result_ && list_expr_comprehension_4(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, RBRACKET);
+    exit_section_(builder_, marker_, LIST_EXPR_COMPREHENSION, result_);
     return result_;
   }
 
-  // list_expr_suffix?
-  private static boolean list_expr_1_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expr_1_0_1")) return false;
-    list_expr_suffix(builder_, level_ + 1);
+  // list_comprehension_tail?
+  private static boolean list_expr_comprehension_4(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_expr_comprehension_4")) return false;
+    list_comprehension_tail(builder_, level_ + 1);
     return true;
+  }
+
+  /* ********************************************************** */
+  // LBRACKET RBRACKET
+  public static boolean list_expr_empty(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_expr_empty")) return false;
+    if (!nextTokenIs(builder_, LBRACKET)) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokens(builder_, 0, LBRACKET, RBRACKET);
+    exit_section_(builder_, marker_, LIST_EXPR_EMPTY, result_);
+    return result_;
   }
 
   /* ********************************************************** */
@@ -1709,65 +1721,49 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (COLON iterator list_comprehension_tail?)   // list comprehension
-  //                    | (list_items_tail? [PIPE argument])
-  public static boolean list_expr_suffix(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expr_suffix")) return false;
+  // LBRACKET argument !COLON list_items_tail? [PIPE argument] RBRACKET
+  public static boolean list_expr_standard(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_expr_standard")) return false;
+    if (!nextTokenIs(builder_, LBRACKET)) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_, level_, _NONE_, LIST_EXPR_SUFFIX, "<list expr suffix>");
-    result_ = list_expr_suffix_0(builder_, level_ + 1);
-    if (!result_) result_ = list_expr_suffix_1(builder_, level_ + 1);
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, LBRACKET);
+    result_ = result_ && argument(builder_, level_ + 1);
+    result_ = result_ && list_expr_standard_2(builder_, level_ + 1);
+    result_ = result_ && list_expr_standard_3(builder_, level_ + 1);
+    result_ = result_ && list_expr_standard_4(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, RBRACKET);
+    exit_section_(builder_, marker_, LIST_EXPR_STANDARD, result_);
+    return result_;
+  }
+
+  // !COLON
+  private static boolean list_expr_standard_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_expr_standard_2")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !consumeToken(builder_, COLON);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
-  // COLON iterator list_comprehension_tail?
-  private static boolean list_expr_suffix_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expr_suffix_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, COLON);
-    result_ = result_ && iterator(builder_, level_ + 1);
-    result_ = result_ && list_expr_suffix_0_2(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // list_comprehension_tail?
-  private static boolean list_expr_suffix_0_2(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expr_suffix_0_2")) return false;
-    list_comprehension_tail(builder_, level_ + 1);
-    return true;
-  }
-
-  // list_items_tail? [PIPE argument]
-  private static boolean list_expr_suffix_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expr_suffix_1")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = list_expr_suffix_1_0(builder_, level_ + 1);
-    result_ = result_ && list_expr_suffix_1_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
   // list_items_tail?
-  private static boolean list_expr_suffix_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expr_suffix_1_0")) return false;
+  private static boolean list_expr_standard_3(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_expr_standard_3")) return false;
     list_items_tail(builder_, level_ + 1);
     return true;
   }
 
   // [PIPE argument]
-  private static boolean list_expr_suffix_1_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expr_suffix_1_1")) return false;
-    list_expr_suffix_1_1_0(builder_, level_ + 1);
+  private static boolean list_expr_standard_4(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_expr_standard_4")) return false;
+    list_expr_standard_4_0(builder_, level_ + 1);
     return true;
   }
 
   // PIPE argument
-  private static boolean list_expr_suffix_1_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "list_expr_suffix_1_1_0")) return false;
+  private static boolean list_expr_standard_4_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_expr_standard_4_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, PIPE);
@@ -2319,22 +2315,24 @@ public class PicatParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // MULTILINE_COMMENT
+  //                | COMMENT
   //                | module_declaration
   //                | import_declaration
   //                | include_declaration
-  //                | predicate_definition
   //                | function_definition
+  //                | predicate_definition
   //                | actor_definition
   public static boolean program_item(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "program_item")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, PROGRAM_ITEM, "<program item>");
     result_ = consumeToken(builder_, MULTILINE_COMMENT);
+    if (!result_) result_ = consumeToken(builder_, COMMENT);
     if (!result_) result_ = module_declaration(builder_, level_ + 1);
     if (!result_) result_ = import_declaration(builder_, level_ + 1);
     if (!result_) result_ = include_declaration(builder_, level_ + 1);
-    if (!result_) result_ = predicate_definition(builder_, level_ + 1);
     if (!result_) result_ = function_definition(builder_, level_ + 1);
+    if (!result_) result_ = predicate_definition(builder_, level_ + 1);
     if (!result_) result_ = actor_definition(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;

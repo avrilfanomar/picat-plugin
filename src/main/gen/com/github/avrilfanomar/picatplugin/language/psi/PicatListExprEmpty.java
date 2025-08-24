@@ -5,12 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PicatFunctionFact extends PsiElement {
-
-  @Nullable
-  PicatArgument getArgument();
-
-  @NotNull
-  PicatHead getHead();
+public interface PicatListExprEmpty extends PsiElement {
 
 }

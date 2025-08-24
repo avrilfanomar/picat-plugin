@@ -102,7 +102,6 @@
     EXCLAMATION="!"
 
     // Separators
-    DOT="."
     COMMA=","
     SEMICOLON=";"
     COLON=":"
@@ -125,6 +124,7 @@
     STRING="regexp:\"(\\.|[^\"\\])*\""
     SINGLE_QUOTED_ATOM="regexp:'([^'\\]|\\.)*'"
     DOT_SINGLE_QUOTED_ATOM="regexp:\\.'([^'\\]|\\.)*'"
+    DOT="."
     COMMENT="regexp:%.*"
     QUALIFIED_ATOM="regexp:[a-z][a-zA-Z0-9_]*\\.[a-z][a-zA-Z0-9_]*"
     MULTILINE_COMMENT="regexp:/[*]([^*]|[*][^/])*[*]/"
@@ -137,11 +137,12 @@
 program ::= program_item*
 
 program_item ::= MULTILINE_COMMENT
+               | COMMENT
                | module_declaration
                | import_declaration
                | include_declaration
-               | predicate_definition
                | function_definition
+               | predicate_definition
                | actor_definition
 
 // === Module & Imports ===
@@ -168,7 +169,7 @@ function_clause ::= function_rule | function_fact
 
 function_rule ::= head EQUAL argument [COMMA condition] ARROW_OP body DOT {pin=5}
 
-function_fact ::= head EQUAL argument DOT
+function_fact ::= head EQUAL argument DOT {pin=2}
 
 // === Actor Definitions ===
 actor_definition ::= [PRIVATE_KEYWORD] action_rule (action_rule | nonbacktrackable_predicate_rule)*
@@ -309,10 +310,13 @@ variable_index ::= VARIABLE LBRACKET argument (COMMA argument)* RBRACKET
 
 as_pattern ::= VARIABLE AT term [AT]
 
-list_expr ::= LBRACKET [argument list_expr_suffix?] RBRACKET
+list_expr ::= list_expr_comprehension | list_expr_standard | list_expr_empty
 
-list_expr_suffix ::= (COLON iterator list_comprehension_tail?)   // list comprehension
-                   | (list_items_tail? [PIPE argument])          // standard list tail
+list_expr_comprehension ::= LBRACKET argument COLON iterator list_comprehension_tail? RBRACKET
+
+list_expr_standard ::= LBRACKET argument !COLON list_items_tail? [PIPE argument] RBRACKET
+
+list_expr_empty ::= LBRACKET RBRACKET
 
 list_comprehension_tail ::= COMMA (iterator | condition) list_comprehension_tail?
 

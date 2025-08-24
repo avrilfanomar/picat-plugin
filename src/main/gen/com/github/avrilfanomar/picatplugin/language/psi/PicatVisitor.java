@@ -216,11 +216,19 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitListExprComprehension(@NotNull PicatListExprComprehension o) {
+    visitPsiElement(o);
+  }
+
+  public void visitListExprEmpty(@NotNull PicatListExprEmpty o) {
+    visitPsiElement(o);
+  }
+
   public void visitListExprNoComprehension(@NotNull PicatListExprNoComprehension o) {
     visitPsiElement(o);
   }
 
-  public void visitListExprSuffix(@NotNull PicatListExprSuffix o) {
+  public void visitListExprStandard(@NotNull PicatListExprStandard o) {
     visitPsiElement(o);
   }
 

@@ -8,9 +8,12 @@ import com.intellij.psi.PsiElement;
 public interface PicatListExpr extends PsiElement {
 
   @Nullable
-  PicatArgument getArgument();
+  PicatListExprComprehension getListExprComprehension();
 
   @Nullable
-  PicatListExprSuffix getListExprSuffix();
+  PicatListExprEmpty getListExprEmpty();
+
+  @Nullable
+  PicatListExprStandard getListExprStandard();
 
 }
