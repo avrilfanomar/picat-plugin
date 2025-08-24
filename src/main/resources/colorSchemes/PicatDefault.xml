@@ -1,0 +1,64 @@
+<list>
+  <option name="PICAT_KEYWORD">
+    <value>
+      <option name="FOREGROUND" value="0033B3"/>
+      <option name="FONT_TYPE" value="1"/>
+    </value>
+  </option>
+  <option name="PICAT_COMMENT">
+    <value>
+      <option name="FOREGROUND" value="808080"/>
+      <option name="FONT_TYPE" value="2"/>
+    </value>
+  </option>
+  <option name="PICAT_STRING">
+    <value>
+      <option name="FOREGROUND" value="008000"/>
+    </value>
+  </option>
+  <option name="PICAT_NUMBER">
+    <value>
+      <option name="FOREGROUND" value="AF00DB"/>
+    </value>
+  </option>
+  <option name="PICAT_OPERATOR">
+    <value>
+      <option name="FOREGROUND" value="000000"/>
+      <option name="FONT_TYPE" value="1"/>
+    </value>
+  </option>
+  <option name="PICAT_PARENTHESES">
+    <value>
+      <option name="FOREGROUND" value="000000"/>
+    </value>
+  </option>
+  <option name="PICAT_BRACES">
+    <value>
+      <option name="FOREGROUND" value="000000"/>
+    </value>
+  </option>
+  <option name="PICAT_BRACKETS">
+    <value>
+      <option name="FOREGROUND" value="000000"/>
+    </value>
+  </option>
+  <option name="PICAT_IDENTIFIER">
+    <value>
+      <option name="FOREGROUND" value="001080"/>
+    </value>
+  </option>
+  <option name="PICAT_VARIABLE">
+    <value>
+      <option name="FOREGROUND" value="795E26"/>
+      <option name="FONT_TYPE" value="1"/>
+    </value>
+  </option>
+  <option name="PICAT_BAD_CHARACTER">
+    <value>
+      <option name="EFFECT_COLOR" value="FF0000"/>
+      <option name="EFFECT_TYPE" value="2"/>
+      <option name="FOREGROUND" value="FFFFFF"/>
+      <option name="BACKGROUND" value="FF0000"/>
+    </value>
+  </option>
+</list>

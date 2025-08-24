@@ -10,6 +10,7 @@ This plugin provides support for the [Picat](http://picat-lang.org/) programming
         <h3>Features:</h3>
         <ul>
             <li>Syntax highlighting for Picat files (.pi)</li>
+            <li>Default color themes for Picat elements (customizable per IDE scheme)</li>
             <li>Code formatting with customizable settings</li>
             <li>Run configuration for Picat programs</li>
             <li>Live templates</li>

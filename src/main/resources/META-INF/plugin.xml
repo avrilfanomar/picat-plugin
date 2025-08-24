@@ -12,6 +12,7 @@
         <h3>Features:</h3>
         <ul>
             <li>Syntax highlighting for Picat files (.pi)</li>
+            <li>Default color themes for Picat elements (customizable per IDE scheme)</li>
             <li>Code formatting with customizable settings</li>
             <li>Run configuration for Picat programs</li>
             <li>Live templates</li>
@@ -71,6 +72,8 @@
                 implementationClass="com.github.avrilfanomar.picatplugin.language.highlighting.PicatSyntaxHighlighterFactory"/>
         <colorSettingsPage
                 implementation="com.github.avrilfanomar.picatplugin.language.highlighting.PicatColorSettingsPage"/>
+        <additionalTextAttributes scheme="Default" file="/colorSchemes/PicatDefault.xml"/>
+        <additionalTextAttributes scheme="Darcula" file="/colorSchemes/PicatDarcula.xml"/>
         <projectConfigurable
                 parentId="tools"
                 instance="com.github.avrilfanomar.picatplugin.settings.PicatSettingsConfigurable"
