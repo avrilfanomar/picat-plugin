@@ -28,9 +28,15 @@ public class PicatGoalImpl extends ASTWrapperPsiElement implements PicatGoal {
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PicatDisjunction getDisjunction() {
-    return findNotNullChildByClass(PicatDisjunction.class);
+    return findChildByClass(PicatDisjunction.class);
+  }
+
+  @Override
+  @NotNull
+  public List<PicatGoal> getGoalList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatGoal.class);
   }
 
 }

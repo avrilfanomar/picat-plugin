@@ -436,7 +436,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_NON_EQUAL | IDENTICAL | NOT_IDENTICAL
   //              | GREATER | GREATER_EQUAL | LESS | LESS_EQUAL | LESS_EQUAL_PROLOG
-  //              | IN_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
+  //              | IN_KEYWORD | NOT_IN_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
   //              | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | HASH_GREATER_OP | HASH_LESS_OP
   //              | AT_LESS_EQUAL_OP | AT_GREATER_EQUAL_OP
   //              | AT_GREATER_OP | AT_LESS_OP | AT_LESS_EQUAL_PROLOG_OP
@@ -457,6 +457,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, LESS_EQUAL);
     if (!result_) result_ = consumeToken(builder_, LESS_EQUAL_PROLOG);
     if (!result_) result_ = consumeToken(builder_, IN_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, NOT_IN_KEYWORD);
     if (!result_) result_ = consumeToken(builder_, HASH_LESS_EQUAL_ALT_OP);
     if (!result_) result_ = consumeToken(builder_, HASH_LESS_EQUAL_OP);
     if (!result_) result_ = consumeToken(builder_, HASH_GREATER_EQUAL_OP);
@@ -1240,12 +1241,59 @@ public class PicatParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // disjunction
+  //        | FAIL_KEYWORD
+  //        | REPEAT_KEYWORD [goal UNTIL_KEYWORD goal]
+  //        | ONCE_KEYWORD goal
   public static boolean goal(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "goal")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, GOAL, "<goal>");
     result_ = disjunction(builder_, level_ + 1);
+    if (!result_) result_ = consumeToken(builder_, FAIL_KEYWORD);
+    if (!result_) result_ = goal_2(builder_, level_ + 1);
+    if (!result_) result_ = goal_3(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // REPEAT_KEYWORD [goal UNTIL_KEYWORD goal]
+  private static boolean goal_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "goal_2")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, REPEAT_KEYWORD);
+    result_ = result_ && goal_2_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // [goal UNTIL_KEYWORD goal]
+  private static boolean goal_2_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "goal_2_1")) return false;
+    goal_2_1_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // goal UNTIL_KEYWORD goal
+  private static boolean goal_2_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "goal_2_1_0")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = goal(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, UNTIL_KEYWORD);
+    result_ = result_ && goal(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // ONCE_KEYWORD goal
+  private static boolean goal_3(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "goal_3")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, ONCE_KEYWORD);
+    result_ = result_ && goal(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 

@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatGoal extends PsiElement {
 
-  @NotNull
+  @Nullable
   PicatDisjunction getDisjunction();
+
+  @NotNull
+  List<PicatGoal> getGoalList();
 
 }

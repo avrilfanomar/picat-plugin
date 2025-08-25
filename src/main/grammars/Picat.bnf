@@ -28,6 +28,7 @@
     END_KEYWORD="end"
     FOREACH_KEYWORD="foreach"
     IN_KEYWORD="in"
+    NOT_IN_KEYWORD="notin"
     WHILE_KEYWORD="while"
     LOOP_KEYWORD="loop"
     TRY_KEYWORD="try"
@@ -199,6 +200,9 @@ body ::= goal
 
 // === Goal (Expressions and Control) ===
 goal ::= disjunction
+       | FAIL_KEYWORD
+       | REPEAT_KEYWORD [goal UNTIL_KEYWORD goal]
+       | ONCE_KEYWORD goal
 
 disjunction ::= conjunction (SEMICOLON conjunction)*
 
@@ -245,7 +249,7 @@ expression_with_relations ::= expression (bin_rel_op expression)*
 
 bin_rel_op ::= EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_NON_EQUAL | IDENTICAL | NOT_IDENTICAL
              | GREATER | GREATER_EQUAL | LESS | LESS_EQUAL | LESS_EQUAL_PROLOG
-             | IN_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
+             | IN_KEYWORD | NOT_IN_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
              | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | HASH_GREATER_OP | HASH_LESS_OP
              | AT_LESS_EQUAL_OP | AT_GREATER_EQUAL_OP
              | AT_GREATER_OP | AT_LESS_OP | AT_LESS_EQUAL_PROLOG_OP
