@@ -15,6 +15,7 @@ This plugin provides support for the [Picat](http://picat-lang.org/) programming
             <li>Run configuration for Picat programs</li>
             <li>Live templates</li>
             <li>Autocompletion</li>
+            <li>Navigate | Symbol for predicates/functions</li>
             <li>File type recognition</li>
             <li>Custom file icon</li>
         </ul>

@@ -17,6 +17,7 @@
             <li>Run configuration for Picat programs</li>
             <li>Live templates</li>
             <li>Autocompletion</li>
+            <li>Navigate | Symbol for predicates/functions</li>
             <li>File type recognition</li>
             <li>Custom file icon</li>
         </ul>
@@ -30,6 +31,9 @@
     <depends>com.intellij.modules.lang</depends>
 
     <change-notes><![CDATA[
+        <h3>252.0</h3>
+        <li>Navigate | Symbol for predicates/functions</li>
+
         <h3>251.0</h3>
         <ul>
             <li>PSI parsing</li>
@@ -143,7 +147,12 @@
         <iconProvider implementation="com.github.avrilfanomar.picatplugin.language.PicatIconProvider"/>
 
         <!-- Documentation Provider -->
-        <lang.documentationProvider language="Picat" implementationClass="com.github.avrilfanomar.picatplugin.language.PicatDocumentationProvider"/>
+        <lang.documentationProvider language="Picat"
+                                    implementationClass="com.github.avrilfanomar.picatplugin.language.PicatDocumentationProvider"/>
+
+        <!-- Goto Symbol Contributor -->
+        <gotoSymbolContributor
+                implementation="com.github.avrilfanomar.picatplugin.language.PicatGotoSymbolContributor"/>
 
     </extensions>
 </idea-plugin>
