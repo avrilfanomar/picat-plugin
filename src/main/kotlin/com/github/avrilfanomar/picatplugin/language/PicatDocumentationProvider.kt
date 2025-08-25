@@ -17,12 +17,12 @@ import com.intellij.psi.PsiElement
 class PicatDocumentationProvider : DocumentationProvider {
 
     override fun getQuickNavigateInfo(element: PsiElement, originalElement: PsiElement?): String? {
-        // Provide a short, one-line description for status bar/quick popup.
+        // Provide a short, one-line description for the status bar /quick popup.
         val target = resolveIfReference(element) ?: element
         return buildSummary(target)
     }
 
-    override fun generateDoc(element: PsiElement, originalElement: PsiElement?): String? {
+    override fun generateDoc(element: PsiElement, originalElement: PsiElement?): String {
         val target = resolveIfReference(element) ?: element
         val builder = HtmlBuilder()
         val summary = buildSummary(target)
@@ -36,6 +36,7 @@ class PicatDocumentationProvider : DocumentationProvider {
                 val name = StringUtil.escapeXmlEntities(element.name ?: "")
                 if (name.isNotEmpty()) "<b>Picat symbol:</b> $name" else null
             }
+
             else -> null
         }
     }
