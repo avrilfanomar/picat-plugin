@@ -139,5 +139,11 @@
                 language="Picat"
                 implementationClass="com.github.avrilfanomar.picatplugin.language.psi.PicatRefactoringSupportProvider"/>
 
+        <!-- Icon Provider -->
+        <iconProvider implementation="com.github.avrilfanomar.picatplugin.language.PicatIconProvider"/>
+
+        <!-- Documentation Provider -->
+        <lang.documentationProvider language="Picat" implementationClass="com.github.avrilfanomar.picatplugin.language.PicatDocumentationProvider"/>
+
     </extensions>
 </idea-plugin>
