@@ -124,7 +124,7 @@ To rename a predicate or function:
 
 - Prerequisites:
     - JDK 21
-    - Gradle 8.13 (use the provided wrapper: ./gradlew)
+    - Gradle 9.0 (use the provided wrapper: ./gradlew)
 - Build the plugin and run tests: ./gradlew build
 - Run tests: ./gradlew test
 - Static code analysis (Detekt): ./gradlew detekt
