@@ -18,6 +18,10 @@
             <li>Live templates</li>
             <li>Autocompletion</li>
             <li>Navigate | Symbol for predicates/functions</li>
+            <li>Quick Documentation (Ctrl+Q) for symbols</li>
+            <li>Navigation Bar breadcrumbs for rules</li>
+            <li>Spellchecking limited to comments and string literals</li>
+            <li>Code folding</li>
             <li>File type recognition</li>
             <li>Custom file icon</li>
         </ul>
@@ -33,6 +37,10 @@
     <change-notes><![CDATA[
         <h3>252.0</h3>
         <li>Navigate | Symbol for predicates/functions</li>
+        <li>Quick Documentation (Ctrl+Q) for symbols</li>
+        <li>Navigation Bar breadcrumbs for rules</li>
+        <li>Spellchecking limited to comments and string literals</li>
+        <li>Code folding</li>
 
         <h3>251.0</h3>
         <ul>
@@ -153,6 +161,21 @@
         <!-- Goto Symbol Contributor -->
         <gotoSymbolContributor
                 implementation="com.github.avrilfanomar.picatplugin.language.PicatGotoSymbolContributor"/>
+
+        <!-- Folding Builder -->
+        <lang.foldingBuilder language="Picat"
+                             implementationClass="com.github.avrilfanomar.picatplugin.language.PicatFoldingBuilder"/>
+
+        <!-- Annotator -->
+        <annotator language="Picat"
+                   implementationClass="com.github.avrilfanomar.picatplugin.language.PicatAnnotator"/>
+
+        <!-- Navbar Contributor -->
+        <navbar implementation="com.github.avrilfanomar.picatplugin.language.PicatStructureAwareNavbar"/>
+
+        <!-- General Code Style Settings Provider -->
+        <codeStyleSettingsProvider implementation="com.github.avrilfanomar.picatplugin.language.formatter.PicatCodeStyleSettingsProvider"/>
+
 
     </extensions>
 </idea-plugin>

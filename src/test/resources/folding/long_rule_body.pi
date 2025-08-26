@@ -1,0 +1,12 @@
+module m.
+
+% Body spans multiple lines; it should be folded with placeholder …
+p(X) :-
+    <fold text='…'>q(X),
+    r(X),
+    s(1)
+</fold>.
+
+q(_).
+r(_).
+s(_).

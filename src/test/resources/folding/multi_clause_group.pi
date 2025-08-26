@@ -1,0 +1,11 @@
+module m.
+
+% Two clauses for the same predicate p/1; the second clause should be folded as a group
+p(a).
+<fold text='+1 clause'>p(b).
+</fold>
+
+% Interleaved different predicate resets the group
+q(1).
+<fold text='+1 clause'>q(2).
+</fold>

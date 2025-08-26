@@ -13,15 +13,18 @@ import com.intellij.psi.PsiElement
 class PicatRunLineMarkerContributor : RunLineMarkerContributor() {
     override fun getInfo(element: PsiElement): Info? {
         val file = element.containingFile
+        val isLeaf = element.firstChild == null
+        val isPicat = file?.fileType is PicatFileType
+        val isFirstLeaf = element.textOffset == 0
 
-        // Only add a run marker to the first element in Picat files
-        if (file != null && file.fileType is PicatFileType && element.textOffset == 0) {
-            return Info(
+        val shouldShow = isLeaf && isPicat && isFirstLeaf
+        return if (shouldShow) {
+            Info(
                 AllIcons.RunConfigurations.TestState.Run,
                 ExecutorAction.getActions(1)
             ) { "Run Picat program" }
+        } else {
+            null
         }
-
-        return null
     }
 }

@@ -18,6 +18,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 )
 class PicatSettings : PersistentStateComponent<PicatSettings> {
     var picatExecutablePath: String = ""
+    var enableAnnotations: Boolean = true
 
     override fun getState(): PicatSettings = this
 

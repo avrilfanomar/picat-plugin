@@ -1,0 +1,10 @@
+module m.
+
+% Nonbacktrackable rule (?=>) body folds
+p(X) ?=>
+    <fold text='…'>q(X),
+    r(X)
+</fold>.
+
+q(_).
+r(_).

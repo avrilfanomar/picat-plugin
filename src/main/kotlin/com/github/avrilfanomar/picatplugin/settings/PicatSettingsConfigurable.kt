@@ -6,6 +6,7 @@ import com.intellij.openapi.options.BoundSearchableConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
 
 /**
@@ -35,6 +36,13 @@ class PicatSettingsConfigurable(private val project: Project) :
                     { settings.picatExecutablePath = it }
                 )
                 .resizableColumn()
+        }
+        row {
+            checkBox("Enable basic code annotations (unresolved references, style hints)")
+                .bindSelected(
+                    { settings.enableAnnotations },
+                    { settings.enableAnnotations = it }
+                )
         }
     }
 

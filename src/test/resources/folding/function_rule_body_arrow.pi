@@ -1,0 +1,10 @@
+module m.
+
+% Function rule body spans multiple lines; should fold after =>
+f(X) = Y =>
+    <fold text='…'>g(X),
+    h(X)
+</fold>.
+
+g(_).
+h(_).

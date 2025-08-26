@@ -267,4 +267,28 @@ class PicatLexerTest {
         Assertions.assertEquals(PicatTokenTypes.COLON, tokens[4].first)
         Assertions.assertEquals(":", tokens[4].second)
     }
+
+    @Test
+    fun testNewOperatorsAndOnceTokens() {
+        val text = "once && || =.. \\+"
+        val tokens = tokenize(text)
+        val types = tokens.map { it.first }
+        val texts = tokens.map { it.second }
+        Assertions.assertEquals(
+            listOf(
+                PicatTokenTypes.ONCE_KEYWORD,
+                TokenType.WHITE_SPACE,
+                PicatTokenTypes.AND_AND,
+                TokenType.WHITE_SPACE,
+                PicatTokenTypes.OR_OR,
+                TokenType.WHITE_SPACE,
+                PicatTokenTypes.UNIV_OP,
+                TokenType.WHITE_SPACE,
+                PicatTokenTypes.BACKSLASH_PLUS
+            ),
+            types,
+            "Token types should match for once, &&, ||, =.., \\+. Got: $types / $texts"
+        )
+    }
+
 }

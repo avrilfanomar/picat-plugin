@@ -135,6 +135,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.FAIL_KEYWORD,
             PicatTokenTypes.REPEAT_KEYWORD,
             PicatTokenTypes.UNTIL_KEYWORD,
+            PicatTokenTypes.ONCE_KEYWORD,
             PicatTokenTypes.TRUE,
             PicatTokenTypes.FALSE
         )
@@ -171,7 +172,11 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.RANGE_OP,
             PicatTokenTypes.SEMICOLON,
             PicatTokenTypes.SHIFT_LEFT,
-            PicatTokenTypes.SHIFT_RIGHT
+            PicatTokenTypes.SHIFT_RIGHT,
+            PicatTokenTypes.AND_AND,
+            PicatTokenTypes.OR_OR,
+            PicatTokenTypes.UNIV_OP,
+            PicatTokenTypes.BACKSLASH_PLUS
             // Note: LPAR, RPAR, LBRACE, RBRACE, LBRACKET, RBRACKET are handled separately
         )
     }

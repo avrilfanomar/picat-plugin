@@ -1,0 +1,7 @@
+module m.
+
+% Three clauses for p/1; second and third should be folded as a group with +2 clauses
+p(1).
+<fold text='+2 clauses'>p(2).
+p(3).
+</fold>

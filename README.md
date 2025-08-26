@@ -16,6 +16,10 @@ This plugin provides support for the [Picat](http://picat-lang.org/) programming
             <li>Live templates</li>
             <li>Autocompletion</li>
             <li>Navigate | Symbol for predicates/functions</li>
+            <li>Quick Documentation (Ctrl+Q) for symbols</li>
+            <li>Navigation Bar breadcrumbs for rules</li>
+            <li>Spellchecking limited to comments and string literals</li>
+            <li>Code folding</li>
             <li>File type recognition</li>
             <li>Custom file icon</li>
         </ul>
@@ -33,7 +37,9 @@ This plugin provides support for the [Picat](http://picat-lang.org/) programming
 - Navigation to declarations
 - Find usages
 - Rename refactoring
-- Code folding
+- Code folding (rule bodies, multi-clause groups)
+- Navigation Bar breadcrumbs
+- Quick Documentation (Ctrl+Q)
 - Brace matching
 - Comment/uncomment actions
 - Basic error highlighting
@@ -148,6 +154,10 @@ Regeneration instructions (local development):
   Code" (Tools | Grammar-Kit | Generate Parser Code) targeting `src/main/gen`.
 
 The canonical rule: PicatParser is generated from BNF and should not be manually modified.
+
+## Roadmap
+
+A living plan of implemented features and pending improvements (grammar tokens, additional navigation markers, etc.) is maintained in doc/feature-gap-plan.md. Recently completed: Goto Symbol, Folding, Documentation Provider, Annotator, Navbar, and Spellchecking Strategy registration.
 
 ## Contributing
 
