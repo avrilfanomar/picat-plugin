@@ -77,12 +77,6 @@ public class PicatBaseExprImpl extends ASTWrapperPsiElement implements PicatBase
 
   @Override
   @Nullable
-  public PicatVariableIndex getVariableIndex() {
-    return findChildByClass(PicatVariableIndex.class);
-  }
-
-  @Override
-  @Nullable
   public PsiElement getFloat() {
     return findChildByType(FLOAT);
   }

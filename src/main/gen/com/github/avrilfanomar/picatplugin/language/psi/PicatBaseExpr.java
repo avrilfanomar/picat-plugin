@@ -32,9 +32,6 @@ public interface PicatBaseExpr extends PsiElement {
   PicatTermConstructor getTermConstructor();
 
   @Nullable
-  PicatVariableIndex getVariableIndex();
-
-  @Nullable
   PsiElement getFloat();
 
   @Nullable

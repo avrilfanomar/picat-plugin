@@ -68,6 +68,7 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "fail"                         { return FAIL_KEYWORD; }
   "repeat"                       { return REPEAT_KEYWORD; }
   "until"                        { return UNTIL_KEYWORD; }
+  "once"                         { return ONCE_KEYWORD; }
   ">>>"                          { return SHIFT_RIGHT_TRIPLE; }
   "?=>"                          { return BACKTRACKABLE_ARROW_OP; }
   "<=>"                          { return BICONDITIONAL_OP; }
@@ -98,6 +99,7 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   ".."                           { return RANGE_OP; }
   "!="                           { return NOT_EQUAL; }
   "=="                           { return IDENTICAL; }
+  "=.."                          { return UNIV_OP; }
   ">"                            { return GREATER; }
   "<="                           { return LESS_EQUAL; }
   ">="                           { return GREATER_EQUAL; }
@@ -107,6 +109,8 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "**"                           { return POWER; }
   ":-"                           { return PROLOG_RULE_OP; }
   "++"                           { return CONCAT_OP; }
+  "&&"                           { return AND_AND; }
+  "||"                           { return OR_OR; }
   "<<"                           { return SHIFT_LEFT; }
   ">>"                           { return SHIFT_RIGHT; }
   "//"                           { return INT_DIVIDE; }
@@ -123,6 +127,7 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "*"                            { return MULTIPLY; }
   "^"                            { return BITWISE_XOR; }
   "~"                            { return COMPLEMENT; }
+  "\\+"                          { return BACKSLASH_PLUS; }
   "!"                            { return EXCLAMATION; }
   "."                            { return DOT; }
   ","                            { return COMMA; }

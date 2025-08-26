@@ -28,9 +28,15 @@ public class PicatPostfixOpImpl extends ASTWrapperPsiElement implements PicatPos
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PicatDotAccess getDotAccess() {
-    return findNotNullChildByClass(PicatDotAccess.class);
+    return findChildByClass(PicatDotAccess.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatIndexAccess getIndexAccess() {
+    return findChildByClass(PicatIndexAccess.class);
   }
 
 }

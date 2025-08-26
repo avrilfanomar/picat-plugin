@@ -55,6 +55,7 @@ public interface PicatTokenTypes {
   IElementType IMPORT_DECLARATION = new PicatElementType("IMPORT_DECLARATION");
   IElementType IMPORT_ITEM = new PicatElementType("IMPORT_ITEM");
   IElementType INCLUDE_DECLARATION = new PicatElementType("INCLUDE_DECLARATION");
+  IElementType INDEX_ACCESS = new PicatElementType("INDEX_ACCESS");
   IElementType INDEX_MODE = new PicatElementType("INDEX_MODE");
   IElementType ITERATOR = new PicatElementType("ITERATOR");
   IElementType LAMBDA_TERM = new PicatElementType("LAMBDA_TERM");
@@ -94,12 +95,12 @@ public interface PicatTokenTypes {
   IElementType TYPE_ANNOTATION = new PicatElementType("TYPE_ANNOTATION");
   IElementType UNARY_EXPR = new PicatElementType("UNARY_EXPR");
   IElementType VARIABLE_AS_PATTERN = new PicatElementType("VARIABLE_AS_PATTERN");
-  IElementType VARIABLE_INDEX = new PicatElementType("VARIABLE_INDEX");
   IElementType VARIABLE_LIST = new PicatElementType("VARIABLE_LIST");
   IElementType VARIABLE_LIST_TAIL = new PicatElementType("VARIABLE_LIST_TAIL");
   IElementType WHILE_LOOP = new PicatElementType("WHILE_LOOP");
   IElementType XOR_EXPR = new PicatElementType("XOR_EXPR");
 
+  IElementType AND_AND = new PicatTokenType("&&");
   IElementType ARROW_OP = new PicatTokenType("=>");
   IElementType ASSIGN_OP = new PicatTokenType(":=");
   IElementType AT = new PicatTokenType("@");
@@ -108,6 +109,7 @@ public interface PicatTokenTypes {
   IElementType AT_LESS_EQUAL_OP = new PicatTokenType("@<=");
   IElementType AT_LESS_EQUAL_PROLOG_OP = new PicatTokenType("@=<");
   IElementType AT_LESS_OP = new PicatTokenType("@<");
+  IElementType BACKSLASH_PLUS = new PicatTokenType("\\\\+");
   IElementType BACKTRACKABLE_ARROW_OP = new PicatTokenType("?=>");
   IElementType BICONDITIONAL_OP = new PicatTokenType("<=>");
   IElementType BITWISE_AND = new PicatTokenType("/\\");
@@ -185,7 +187,8 @@ public interface PicatTokenTypes {
   IElementType NT = new PicatTokenType("nt");
   IElementType NUMERICALLY_EQUAL = new PicatTokenType("=:=");
   IElementType NUMERICALLY_NON_EQUAL = new PicatTokenType("=\\=");
-  IElementType ONCE_KEYWORD = new PicatTokenType("ONCE_KEYWORD");
+  IElementType ONCE_KEYWORD = new PicatTokenType("once");
+  IElementType OR_OR = new PicatTokenType("||");
   IElementType PIPE = new PicatTokenType("|");
   IElementType PLUS = new PicatTokenType("+");
   IElementType POWER = new PicatTokenType("**");
@@ -208,6 +211,7 @@ public interface PicatTokenTypes {
   IElementType THEN_KEYWORD = new PicatTokenType("then");
   IElementType TRUE = new PicatTokenType("true");
   IElementType TRY_KEYWORD = new PicatTokenType("try");
+  IElementType UNIV_OP = new PicatTokenType("=..");
   IElementType UNTIL_KEYWORD = new PicatTokenType("until");
   IElementType VARIABLE = new PicatTokenType("VARIABLE");
   IElementType WHILE_KEYWORD = new PicatTokenType("while");
@@ -356,6 +360,9 @@ public interface PicatTokenTypes {
       else if (type == INCLUDE_DECLARATION) {
         return new PicatIncludeDeclarationImpl(node);
       }
+      else if (type == INDEX_ACCESS) {
+        return new PicatIndexAccessImpl(node);
+      }
       else if (type == INDEX_MODE) {
         return new PicatIndexModeImpl(node);
       }
@@ -472,9 +479,6 @@ public interface PicatTokenTypes {
       }
       else if (type == VARIABLE_AS_PATTERN) {
         return new PicatVariableAsPatternImpl(node);
-      }
-      else if (type == VARIABLE_INDEX) {
-        return new PicatVariableIndexImpl(node);
       }
       else if (type == VARIABLE_LIST) {
         return new PicatVariableListImpl(node);

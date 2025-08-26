@@ -196,6 +196,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitIndexAccess(@NotNull PicatIndexAccess o) {
+    visitPsiElement(o);
+  }
+
   public void visitIndexMode(@NotNull PicatIndexMode o) {
     visitPsiElement(o);
   }
@@ -349,10 +353,6 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitVariableAsPattern(@NotNull PicatVariableAsPattern o) {
-    visitPsiElement(o);
-  }
-
-  public void visitVariableIndex(@NotNull PicatVariableIndex o) {
     visitPsiElement(o);
   }
 

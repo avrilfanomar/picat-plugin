@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PicatPostfixOp extends PsiElement {
+public interface PicatIndexAccess extends PsiElement {
 
-  @Nullable
-  PicatDotAccess getDotAccess();
-
-  @Nullable
-  PicatIndexAccess getIndexAccess();
+  @NotNull
+  List<PicatArgument> getArgumentList();
 
 }

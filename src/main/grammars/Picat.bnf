@@ -43,6 +43,7 @@
     FAIL_KEYWORD="fail"
     REPEAT_KEYWORD="repeat"
     UNTIL_KEYWORD="until"
+    ONCE_KEYWORD="once"
 
     // Operators
     SHIFT_RIGHT_TRIPLE=">>>"
@@ -101,6 +102,10 @@
     BITWISE_XOR="^"
     COMPLEMENT="~"
     EXCLAMATION="!"
+    AND_AND="&&"
+    OR_OR="||"
+    UNIV_OP="=.."
+    BACKSLASH_PLUS="\\+"
 
     // Separators
     COMMA=","
@@ -204,11 +209,11 @@ goal ::= disjunction
        | REPEAT_KEYWORD [goal UNTIL_KEYWORD goal]
        | ONCE_KEYWORD goal
 
-disjunction ::= conjunction (SEMICOLON conjunction)*
+disjunction ::= conjunction ((SEMICOLON | OR_OR) conjunction)*
 
-conjunction ::= negation (COMMA negation)*
+conjunction ::= negation ((COMMA | AND_AND) negation)*
 
-negation ::= NOT_KEYWORD negation | equivalence
+negation ::= (NOT_KEYWORD | BACKSLASH_PLUS) negation | equivalence
 
 equivalence ::= implication (HASH_BICONDITIONAL_OP implication)*
 
@@ -247,7 +252,7 @@ exception_pattern ::= term
 
 expression_with_relations ::= expression (bin_rel_op expression)*
 
-bin_rel_op ::= EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_NON_EQUAL | IDENTICAL | NOT_IDENTICAL
+bin_rel_op ::= EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_NON_EQUAL | IDENTICAL | NOT_IDENTICAL | UNIV_OP
              | GREATER | GREATER_EQUAL | LESS | LESS_EQUAL | LESS_EQUAL_PROLOG
              | IN_KEYWORD | NOT_IN_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
              | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | HASH_GREATER_OP | HASH_LESS_OP
@@ -284,9 +289,10 @@ primary_expr ::= base_expr postfix_ops?
 
 postfix_ops ::= postfix_op postfix_ops?
 
-postfix_op ::= dot_access
+postfix_op ::= dot_access | index_access
 
 dot_access ::= (DOT_IDENTIFIER | DOT_SINGLE_QUOTED_ATOM) [LPAR [argument (COMMA argument)*] RPAR]
+index_access ::= LBRACKET argument (COMMA argument)* RBRACKET
 
 base_expr ::= parenthesized_goal
             | lambda_term
@@ -294,7 +300,6 @@ base_expr ::= parenthesized_goal
             | term_constructor
             | as_pattern
             | list_expr
-            | variable_index
             | array_expr
             | STRING
             | VARIABLE
@@ -309,8 +314,6 @@ atom_no_args ::= atom !LPAR
 parenthesized_goal ::= LPAR goal RPAR
 
 type_annotation ::= VARIABLE DOUBLE_COLON_OP expression
-
-variable_index ::= VARIABLE LBRACKET argument (COMMA argument)* RBRACKET
 
 as_pattern ::= VARIABLE AT term [AT]
 
