@@ -23,27 +23,19 @@ class PicatStructureAwareNavbar : StructureAwareNavBarModelExtension() {
     override val language: Language
         get() = PicatLanguage
 
-    @Suppress("ReturnCount")
     override fun getParent(psiElement: PsiElement?): PsiElement? {
-        val element = psiElement ?: return null
-        if (element is PicatFileImpl) return null
+        return if (psiElement == null || psiElement is PicatFileImpl) {
+            null
+        } else {
+            // Prefer enclosing rule containers
+            val container = psiElement.parentOfType(PicatFunctionRule::class.java)
+                ?: psiElement.parentOfType(PicatPredicateRule::class.java)
+                ?: psiElement.parentOfType(PicatPredicateFact::class.java)
+                ?: psiElement.parentOfType(PicatActionRule::class.java)
+                ?: psiElement.parentOfType(PicatNonbacktrackablePredicateRule::class.java)
 
-        // Prefer enclosing rule containers
-        val container = element.parentOfType(PicatFunctionRule::class.java)
-            ?: element.parentOfType(PicatPredicateRule::class.java)
-            ?: element.parentOfType(PicatPredicateFact::class.java)
-            ?: element.parentOfType(PicatActionRule::class.java)
-            ?: element.parentOfType(PicatNonbacktrackablePredicateRule::class.java)
-
-        // If we found a container:
-        // - if the current element IS that container, return its parent (usually the file) to avoid self-cycle
-        // - otherwise, return the container to include it in the chain
-        if (container != null) {
-            return if (container === element) element.parent else container
+            if (container == null || container === psiElement) psiElement.parent else container
         }
-
-        // Fallback: direct PSI parent (null or file will terminate the chain)
-        return element.parent
     }
 
     override fun getPresentableText(obj: Any?): String? {

@@ -116,60 +116,70 @@ class PicatFoldingBuilder : FoldingBuilderEx(), com.intellij.openapi.project.Dum
         return endLine > startLine
     }
 
-    @Suppress("SameParameterValue", "ReturnCount")
+    @Suppress("SameParameterValue")
     private fun moveToNextChar(fromOffset: Int, document: Document, target: Char): Int {
         val text = document.charsSequence
         var i = fromOffset
-        while (i < text.length) {
-            if (text[i] == target) return i
-            if (!text[i].isWhitespace()) return fromOffset // no target ahead on this line; keep original
-            i++
+        var result = fromOffset
+        var done = false
+        while (i < text.length && !done) {
+            when {
+                text[i] == target -> {
+                    result = i
+                    done = true
+                }
+                !text[i].isWhitespace() -> {
+                    // no target ahead on this line; keep original
+                    result = fromOffset
+                    done = true
+                }
+                else -> i++
+            }
         }
-        return fromOffset
+        return result
     }
 
-    @Suppress("ReturnCount")
     private fun moveStartAfterRuleOperator(bodyStart: Int, document: Document): Int {
         // Look backwards a few characters to find the rule operator (":-", "=>", or "?=>")
         val text = document.charsSequence
         val lookBack = 4
         val from = (bodyStart - lookBack).coerceAtLeast(0)
         val segment = text.subSequence(from, bodyStart).toString()
-        val idxQ = segment.lastIndexOf("?=>")
-        if (idxQ >= 0) return from + idxQ + 3
-        val idxArrow = segment.lastIndexOf("=>")
-        if (idxArrow >= 0) return from + idxArrow + 2
-        val idxProlog = segment.lastIndexOf(":-")
-        if (idxProlog >= 0) return from + idxProlog + 2
-        return bodyStart
+        val idx = when {
+            segment.lastIndexOf("?=>") >= 0 -> from + segment.lastIndexOf("?=>") + 3
+            segment.lastIndexOf("=>") >= 0 -> from + segment.lastIndexOf("=>") + 2
+            segment.lastIndexOf(":-") >= 0 -> from + segment.lastIndexOf(":-") + 2
+            else -> bodyStart
+        }
+        return idx
     }
 
-    @Suppress("ReturnCount")
     override fun getPlaceholderText(node: ASTNode): String {
-        when (val psi = node.psi) {
-            is PicatBody -> return ELLIPSIS
+        val result = when (val psi = node.psi) {
+            is PicatBody -> ELLIPSIS
             is PicatPredicateDefinition -> {
-                // If this definition is the 2nd (or later) clause in a same-head group, compute placeholder
-                val parent = psi.parent ?: return ELLIPSIS
-                val defs = PsiTreeUtil.getChildrenOfTypeAsList(parent, PicatPredicateDefinition::class.java)
-                val idx = defs.indexOf(psi)
-                if (idx > 0) {
-                    val sig = headSignature(defs[idx])
-                    val prevSig = headSignature(defs[idx - 1])
-                    if (sig != null && sig == prevSig) {
-                        // We're at least the 2nd in a group; count how many are in this contiguous group
-                        var j = idx
-                        while (j < defs.size && headSignature(defs[j]) == sig) j++
-                        val groupSize = j - (idx - 1)
-                        val folded = groupSize - 1
-                        return "+$folded " + if (folded == 1) "clause" else "clauses"
-                    }
+                val parent = psi.parent
+                if (parent == null) {
+                    ELLIPSIS
+                } else {
+                    val defs = PsiTreeUtil.getChildrenOfTypeAsList(parent, PicatPredicateDefinition::class.java)
+                    val idx = defs.indexOf(psi)
+                    if (idx > 0) {
+                        val sig = headSignature(defs[idx])
+                        val prevSig = headSignature(defs[idx - 1])
+                        if (sig != null && sig == prevSig) {
+                            var j = idx
+                            while (j < defs.size && headSignature(defs[j]) == sig) j++
+                            val groupSize = j - (idx - 1)
+                            val folded = groupSize - 1
+                            "+$folded " + if (folded == 1) "clause" else "clauses"
+                        } else ELLIPSIS
+                    } else ELLIPSIS
                 }
-                return ELLIPSIS
             }
+            else -> ELLIPSIS
         }
-        // Default
-        return ELLIPSIS
+        return result
     }
 
     override fun isCollapsedByDefault(node: ASTNode): Boolean = false
