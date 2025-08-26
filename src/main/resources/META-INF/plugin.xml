@@ -36,12 +36,13 @@
 
     <change-notes><![CDATA[
         <h3>252.0</h3>
-        <li>Navigate | Symbol for predicates/functions</li>
-        <li>Quick Documentation (Ctrl+Q) for symbols</li>
-        <li>Navigation Bar breadcrumbs for rules</li>
-        <li>Spellchecking limited to comments and string literals</li>
-        <li>Code folding</li>
-
+        <ul>
+            <li>Navigate | Symbol for predicates/functions</li>
+            <li>Quick Documentation (Ctrl+Q) for symbols</li>
+            <li>Navigation Bar breadcrumbs for rules</li>
+            <li>Spellchecking limited to comments and string literals</li>
+            <li>Code folding</li>
+        </ul>
         <h3>251.0</h3>
         <ul>
             <li>PSI parsing</li>
