@@ -1,6 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.navigation
 
-import com.github.avrilfanomar.picatplugin.language.PicatStructureAwareNavbar
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
 class PicatNavbarContributorTest : BasePlatformTestCase() {

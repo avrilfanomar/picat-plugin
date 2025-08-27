@@ -1,4 +1,4 @@
-package com.github.avrilfanomar.picatplugin.language
+package com.github.avrilfanomar.picatplugin.language.navigation
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatActionRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
@@ -8,6 +8,7 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateFact
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.ide.navigationToolbar.StructureAwareNavBarModelExtension
+import com.github.avrilfanomar.picatplugin.language.PicatLanguage
 import com.intellij.lang.Language
 import com.intellij.psi.PsiElement
 import javax.swing.Icon

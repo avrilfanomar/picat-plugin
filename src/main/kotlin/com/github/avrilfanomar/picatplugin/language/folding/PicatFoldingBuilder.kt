@@ -1,4 +1,4 @@
-package com.github.avrilfanomar.picatplugin.language
+package com.github.avrilfanomar.picatplugin.language.folding
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatActionRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatBody

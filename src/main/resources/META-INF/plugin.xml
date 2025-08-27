@@ -161,18 +161,18 @@
 
         <!-- Goto Symbol Contributor -->
         <gotoSymbolContributor
-                implementation="com.github.avrilfanomar.picatplugin.language.PicatGotoSymbolContributor"/>
+                implementation="com.github.avrilfanomar.picatplugin.language.navigation.PicatGotoSymbolContributor"/>
 
         <!-- Folding Builder -->
         <lang.foldingBuilder language="Picat"
-                             implementationClass="com.github.avrilfanomar.picatplugin.language.PicatFoldingBuilder"/>
+                             implementationClass="com.github.avrilfanomar.picatplugin.language.folding.PicatFoldingBuilder"/>
 
         <!-- Annotator -->
         <annotator language="Picat"
-                   implementationClass="com.github.avrilfanomar.picatplugin.language.PicatAnnotator"/>
+                   implementationClass="com.github.avrilfanomar.picatplugin.language.highlighting.PicatAnnotator"/>
 
         <!-- Navbar Contributor -->
-        <navbar implementation="com.github.avrilfanomar.picatplugin.language.PicatStructureAwareNavbar"/>
+        <navbar implementation="com.github.avrilfanomar.picatplugin.language.navigation.PicatStructureAwareNavbar"/>
 
         <!-- General Code Style Settings Provider -->
         <codeStyleSettingsProvider implementation="com.github.avrilfanomar.picatplugin.language.formatter.PicatCodeStyleSettingsProvider"/>

@@ -1,5 +1,6 @@
-package com.github.avrilfanomar.picatplugin.language
+package com.github.avrilfanomar.picatplugin.language.navigation
 
+import com.github.avrilfanomar.picatplugin.language.PicatFileType
 import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
 import com.intellij.navigation.ChooseByNameContributor
 import com.intellij.navigation.NavigationItem

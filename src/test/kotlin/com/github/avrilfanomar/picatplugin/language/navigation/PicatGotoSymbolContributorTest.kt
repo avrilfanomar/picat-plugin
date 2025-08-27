@@ -1,6 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.navigation
 
-import com.github.avrilfanomar.picatplugin.language.PicatGotoSymbolContributor
+import com.github.avrilfanomar.picatplugin.language.navigation.PicatGotoSymbolContributor
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
 class PicatGotoSymbolContributorTest : BasePlatformTestCase() {

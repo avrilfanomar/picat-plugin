@@ -1,4 +1,4 @@
-package com.github.avrilfanomar.picatplugin.language
+package com.github.avrilfanomar.picatplugin.language.highlighting
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtomOrCallNoLambda
