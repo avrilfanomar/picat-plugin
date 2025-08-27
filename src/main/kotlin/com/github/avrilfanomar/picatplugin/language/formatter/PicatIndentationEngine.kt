@@ -8,18 +8,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 internal class PicatIndentationEngine(private val settings: CodeStyleSettings) {
 
     fun addLineBreaksAfterRuleOperators(code: String): String {
-        var result = code
-        // Ensure we handle both spaced and unspaced operators, e.g., X=>Y and X => Y
-        result = result.replace("=>", "=>\n")
-        result = result.replace("?=>", "?=>\n")
-        result = result.replace("#=>", "#=>\n")
-        result = result.replace("#<=>", "#<=>\n")
-        result = result.replace(":-", ":-\n")
-        // Collapse accidental double new lines
-        result = result.replace("\n\n", "\n")
-        // Avoid introducing spaces around the operator; the operator spacing is handled elsewhere
-        result = result.replace("  \n", "\n")
-        return result
+        return PicatWrappingRules().addLineBreaksAfterRuleOperators(code)
     }
 
     fun addIndentation(code: String): String {

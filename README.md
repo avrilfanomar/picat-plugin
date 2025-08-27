@@ -155,10 +155,6 @@ Regeneration instructions (local development):
 
 The canonical rule: PicatParser is generated from BNF and should not be manually modified.
 
-## Roadmap
-
-A living plan of implemented features and pending improvements (grammar tokens, additional navigation markers, etc.) is maintained in doc/feature-gap-plan.md. Recently completed: Goto Symbol, Folding, Documentation Provider, Annotator, Navbar, and Spellchecking Strategy registration.
-
 ## Contributing
 
 Contributions are welcome! Please follow the Development guidelines above and ensure all tests and Detekt pass before
