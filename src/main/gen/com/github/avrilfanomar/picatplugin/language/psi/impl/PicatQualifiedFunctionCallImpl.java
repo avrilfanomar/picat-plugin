@@ -29,14 +29,14 @@ public class PicatQualifiedFunctionCallImpl extends ASTWrapperPsiElement impleme
 
   @Override
   @Nullable
-  public PicatFunctionArgument getFunctionArgument() {
-    return findChildByClass(PicatFunctionArgument.class);
+  public PicatArgument getArgument() {
+    return findChildByClass(PicatArgument.class);
   }
 
   @Override
   @Nullable
-  public PicatFunctionArgumentListTail getFunctionArgumentListTail() {
-    return findChildByClass(PicatFunctionArgumentListTail.class);
+  public PicatArgumentListTail getArgumentListTail() {
+    return findChildByClass(PicatArgumentListTail.class);
   }
 
 }

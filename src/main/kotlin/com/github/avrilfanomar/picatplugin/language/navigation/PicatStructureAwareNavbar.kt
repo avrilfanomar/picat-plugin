@@ -62,7 +62,7 @@ class PicatStructureAwareNavbar : StructureAwareNavBarModelExtension() {
         val name = head.atom.identifier?.text
             ?: head.atom.singleQuotedAtom?.text?.trim('"', '\'', '`')
             ?: "<head>"
-        val arity = head.argumentList.size
+        val arity = head.headArgs?.argumentList?.size ?: 0
         return "$name/$arity"
     }
 }

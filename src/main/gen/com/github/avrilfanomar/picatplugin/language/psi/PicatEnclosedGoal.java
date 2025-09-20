@@ -8,10 +8,16 @@ import com.intellij.psi.PsiElement;
 public interface PicatEnclosedGoal extends PsiElement {
 
   @Nullable
+  PicatEquivalence getEquivalence();
+
+  @Nullable
   PicatExpressionWithRelations getExpressionWithRelations();
 
   @Nullable
   PicatForeachLoop getForeachLoop();
+
+  @Nullable
+  PicatGoal getGoal();
 
   @Nullable
   PicatIfThenElse getIfThenElse();

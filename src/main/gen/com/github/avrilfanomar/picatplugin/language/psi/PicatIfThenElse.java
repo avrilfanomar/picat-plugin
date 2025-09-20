@@ -10,4 +10,7 @@ public interface PicatIfThenElse extends PsiElement {
   @NotNull
   List<PicatGoal> getGoalList();
 
+  @NotNull
+  List<PicatIfGoal> getIfGoalList();
+
 }

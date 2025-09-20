@@ -29,6 +29,12 @@ public class PicatEnclosedGoalImpl extends ASTWrapperPsiElement implements Picat
 
   @Override
   @Nullable
+  public PicatEquivalence getEquivalence() {
+    return findChildByClass(PicatEquivalence.class);
+  }
+
+  @Override
+  @Nullable
   public PicatExpressionWithRelations getExpressionWithRelations() {
     return findChildByClass(PicatExpressionWithRelations.class);
   }
@@ -37,6 +43,12 @@ public class PicatEnclosedGoalImpl extends ASTWrapperPsiElement implements Picat
   @Nullable
   public PicatForeachLoop getForeachLoop() {
     return findChildByClass(PicatForeachLoop.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatGoal getGoal() {
+    return findChildByClass(PicatGoal.class);
   }
 
   @Override

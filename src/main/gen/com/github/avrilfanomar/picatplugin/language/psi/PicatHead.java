@@ -8,9 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface PicatHead extends PsiElement {
 
   @NotNull
-  List<PicatArgument> getArgumentList();
-
-  @NotNull
   PicatAtom getAtom();
+
+  @Nullable
+  PicatHeadArgs getHeadArgs();
 
 }

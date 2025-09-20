@@ -29,20 +29,20 @@ public class PicatFunctionCallNoDotImpl extends ASTWrapperPsiElement implements 
 
   @Override
   @Nullable
-  public PicatAtom getAtom() {
-    return findChildByClass(PicatAtom.class);
+  public PicatArgument getArgument() {
+    return findChildByClass(PicatArgument.class);
   }
 
   @Override
   @Nullable
-  public PicatTerm getTerm() {
-    return findChildByClass(PicatTerm.class);
+  public PicatArgumentListTail getArgumentListTail() {
+    return findChildByClass(PicatArgumentListTail.class);
   }
 
   @Override
   @Nullable
-  public PicatTermListTail getTermListTail() {
-    return findChildByClass(PicatTermListTail.class);
+  public PicatFunctionCallNoDotSimple getFunctionCallNoDotSimple() {
+    return findChildByClass(PicatFunctionCallNoDotSimple.class);
   }
 
 }

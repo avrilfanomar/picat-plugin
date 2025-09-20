@@ -53,6 +53,12 @@ public class PicatBaseExprImpl extends ASTWrapperPsiElement implements PicatBase
 
   @Override
   @Nullable
+  public PicatFunctionCallNoDot getFunctionCallNoDot() {
+    return findChildByClass(PicatFunctionCallNoDot.class);
+  }
+
+  @Override
+  @Nullable
   public PicatLambdaTerm getLambdaTerm() {
     return findChildByClass(PicatLambdaTerm.class);
   }

@@ -150,6 +150,7 @@ program_item ::= MULTILINE_COMMENT
                | function_definition
                | predicate_definition
                | actor_definition
+               | DOT
 
 // === Module & Imports ===
 module_declaration ::= MODULE_KEYWORD atom DOT {pin=1}
@@ -165,7 +166,7 @@ predicate_definition ::= predicate_directive* predicate_clause
 
 predicate_clause ::= predicate_rule | predicate_fact
 
-predicate_rule ::= head [COMMA condition] (ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) body DOT {pin=3}
+predicate_rule ::= head &(COMMA | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) [COMMA condition] (ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) body DOT {pin=4}
 
 predicate_fact ::= head DOT {pin=2}
 
@@ -173,7 +174,9 @@ function_definition ::= function_directive* function_clause
 
 function_clause ::= function_rule | function_fact
 
-function_rule ::= head EQUAL argument [COMMA condition] ARROW_OP body DOT {pin=5}
+function_rule ::= head EQUAL argument function_rule_tail DOT
+function_rule_tail ::= [COMMA condition] ARROW_OP body {pin=2}
+private function_rule_tail_recover ::= !DOT
 
 function_fact ::= head EQUAL argument DOT {pin=2}
 
@@ -197,7 +200,8 @@ index_mode ::= PLUS | MINUS
 table_mode ::= PLUS | MINUS | MIN | MAX | NT
 
 // === Heads ===
-head ::= atom [LPAR [argument (COMMA argument)*] RPAR]
+head ::= atom head_args?
+head_args ::= LPAR [argument (COMMA argument)*] RPAR {pin=1}
 
 // === Conditions & Bodies ===
 condition ::= goal
@@ -211,7 +215,9 @@ goal ::= disjunction
 
 disjunction ::= conjunction ((SEMICOLON | OR_OR) conjunction)*
 
-conjunction ::= negation ((COMMA | AND_AND) negation)*
+conjunction ::= enclosed_goal conjunction_tail?
+
+conjunction_tail ::= (COMMA | AND_AND) !RPAR goal conjunction_tail? {pin=1 recoverWhile=conjunction_recover}
 
 negation ::= (NOT_KEYWORD | BACKSLASH_PLUS) negation | equivalence
 
@@ -225,7 +231,7 @@ exclusive_or ::= conjunction_and (HASH_XOR_OP conjunction_and)*
 
 conjunction_and ::= negated (HASH_AND_OP negated)*
 
-negated ::= HASH_NOT_OP negated | enclosed_goal
+negated ::= HASH_NOT_OP negated | expression_with_relations
 
 // Control structures and annotated expressions
 enclosed_goal ::= if_then_else
@@ -234,11 +240,26 @@ enclosed_goal ::= if_then_else
                 | loop_while
                 | try_catch
                 | type_annotation
+                | NOT_KEYWORD goal
+                | BACKSLASH_PLUS goal
+                | equivalence
                 | expression_with_relations
 
-if_then_else ::= IF_KEYWORD goal THEN_KEYWORD goal (ELSEIF_KEYWORD goal THEN_KEYWORD goal)* (ELSE_KEYWORD goal)? END_KEYWORD
+if_then_else ::= IF_KEYWORD goal THEN_KEYWORD if_goal (ELSEIF_KEYWORD goal THEN_KEYWORD if_goal)* (ELSE_KEYWORD if_goal)? END_KEYWORD {pin=1}
+if_goal ::= goal {recoverWhile=if_goal_recover}
+private if_goal_recover ::= !(ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD)
 
-foreach_loop ::= FOREACH_KEYWORD LPAR iterator (COMMA (iterator | condition))* RPAR goal END_KEYWORD
+foreach_goal ::= goal {recoverWhile=foreach_goal_recover}
+private foreach_goal_recover ::= !END_KEYWORD
+
+foreach_body ::= foreach_goal END_KEYWORD
+
+foreach_loop ::= FOREACH_KEYWORD LPAR foreach_items RPAR foreach_body {pin=2}
+
+// foreach header items with recovery
+foreach_items ::= iterator foreach_items_tail?
+foreach_items_tail ::= COMMA (iterator | condition) foreach_items_tail? {pin=1 recoverWhile=foreach_items_recover}
+private foreach_items_recover ::= !RPAR
 
 while_loop ::= WHILE_KEYWORD LPAR goal RPAR [LOOP_KEYWORD] goal END_KEYWORD
 
@@ -252,7 +273,7 @@ exception_pattern ::= term
 
 expression_with_relations ::= expression (bin_rel_op expression)*
 
-bin_rel_op ::= EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_NON_EQUAL | IDENTICAL | NOT_IDENTICAL | UNIV_OP
+bin_rel_op ::= EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_NON_EQUAL | IDENTICAL | NOT_IDENTICAL | UNIV_OP | DOUBLE_COLON_OP
              | GREATER | GREATER_EQUAL | LESS | LESS_EQUAL | LESS_EQUAL_PROLOG
              | IN_KEYWORD | NOT_IN_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
              | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | HASH_GREATER_OP | HASH_LESS_OP
@@ -260,7 +281,7 @@ bin_rel_op ::= EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_N
              | AT_GREATER_OP | AT_LESS_OP | AT_LESS_EQUAL_PROLOG_OP
 
 // === Arguments & Expressions ===
-argument ::= expression
+argument ::= expression_with_relations
 
 expression ::= range_expr
 
@@ -294,9 +315,10 @@ postfix_op ::= dot_access | index_access
 dot_access ::= (DOT_IDENTIFIER | DOT_SINGLE_QUOTED_ATOM) [LPAR [argument (COMMA argument)*] RPAR]
 index_access ::= LBRACKET argument (COMMA argument)* RBRACKET
 
-base_expr ::= parenthesized_goal
+base_expr ::= function_call
+            | function_call_no_dot
+            | parenthesized_goal
             | lambda_term
-            | function_call
             | term_constructor
             | as_pattern
             | list_expr
@@ -311,7 +333,7 @@ base_expr ::= parenthesized_goal
 
 atom_no_args ::= atom !LPAR
 
-parenthesized_goal ::= LPAR goal RPAR
+parenthesized_goal ::= LPAR goal RPAR {pin=1}
 
 type_annotation ::= VARIABLE DOUBLE_COLON_OP expression
 
@@ -325,23 +347,23 @@ list_expr_standard ::= LBRACKET argument !COLON list_items_tail? [PIPE argument]
 
 list_expr_empty ::= LBRACKET RBRACKET
 
-list_comprehension_tail ::= COMMA (iterator | condition) list_comprehension_tail?
+list_comprehension_tail ::= COMMA (iterator | condition) list_comprehension_tail? {pin=1 recoverWhile=list_comp_recover}
 
-list_items_tail ::= COMMA argument list_items_tail?
+list_items_tail ::= COMMA argument list_items_tail? {pin=1 recoverWhile=list_items_recover}
 
 array_expr ::= LBRACE [argument array_items_tail?] RBRACE
 
-array_items_tail ::= COMMA argument array_items_tail?
+array_items_tail ::= COMMA argument array_items_tail? {pin=1 recoverWhile=array_items_recover}
 
 lambda_term ::= LAMBDA_KEYWORD LPAR variable_list COMMA argument RPAR
 
 variable_list ::= LBRACKET [VARIABLE variable_list_tail?] RBRACKET
 
-variable_list_tail ::= COMMA VARIABLE variable_list_tail?
+variable_list_tail ::= COMMA VARIABLE variable_list_tail? {pin=1 recoverWhile=var_list_recover}
 
 term_constructor ::= DOLLAR expression | IDENTIFIER LPAR [argument argument_list_tail?] RPAR
 
-argument_list_tail ::= COMMA argument argument_list_tail?
+argument_list_tail ::= COMMA argument argument_list_tail? {pin=1 recoverWhile=args_recover}
 
 // === Iterators ===
 iterator ::= term IN_KEYWORD expression
@@ -354,6 +376,7 @@ term ::= LPAR term RPAR
        | FLOAT
        | TRUE
        | FALSE
+       | STRING
        | VARIABLE
        | atom_or_call_no_lambda
        | list_expr_no_comprehension
@@ -363,24 +386,36 @@ term ::= LPAR term RPAR
 
 variable_as_pattern ::= VARIABLE AT term [AT]
 
-atom_or_call_no_lambda ::= atom [LPAR [term term_list_tail?] RPAR]
+atom_or_call_no_lambda ::= atom [LPAR [argument argument_list_tail?] RPAR] {pin=2}
 
 list_expr_no_comprehension ::= LBRACKET [term term_list_tail?] [PIPE term] RBRACKET
 
-qualified_function_call ::= IDENTIFIER DOLLAR IDENTIFIER LPAR [function_argument function_argument_list_tail?] RPAR
+qualified_function_call ::= IDENTIFIER DOLLAR IDENTIFIER LPAR [argument argument_list_tail?] RPAR
 
-function_call ::= atom LPAR [function_argument function_argument_list_tail?] RPAR
-               | qualified_function_call
+function_call_simple ::= atom LPAR [argument argument_list_tail?] RPAR {pin=2}
+private function_call_recover ::= !(RPAR | COMMA | PLUS | CONCAT_OP | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP | SEMICOLON | OR_OR | RBRACKET | RBRACE)
+function_call ::= function_call_simple | qualified_function_call
 
 function_argument ::= expression_with_relations
 
-function_call_no_dot ::= atom LPAR [term term_list_tail?] RPAR
-                       | IDENTIFIER DOLLAR IDENTIFIER LPAR [term term_list_tail?] RPAR
+function_call_no_dot_simple ::= atom LPAR [argument argument_list_tail?] RPAR {pin=2}
+private function_call_no_dot_recover ::= !(RPAR | COMMA | PLUS | CONCAT_OP | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP | SEMICOLON | OR_OR | RBRACKET | RBRACE)
+function_call_no_dot ::= function_call_no_dot_simple | IDENTIFIER DOLLAR IDENTIFIER LPAR [argument argument_list_tail?] RPAR {pin=4}
 
-function_argument_list_tail ::= COMMA function_argument function_argument_list_tail?
+function_argument_list_tail ::= COMMA function_argument function_argument_list_tail? {pin=1 recoverWhile=args_recover}
 
-term_list_tail ::= COMMA term term_list_tail?
+term_list_tail ::= COMMA term term_list_tail? {pin=1 recoverWhile=term_list_recover}
 
 atom ::= IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX {implements="com.github.avrilfanomar.picatplugin.language.references.PicatNameIdentifierOwner" mixin="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatAtomMixin" methods=["getName" "setName" "getNameIdentifier"]}
 
 dollar_escaped_atom ::= DOLLAR IDENTIFIER
+
+
+// === Recovery predicates ===
+private list_items_recover ::= !(RBRACKET | PIPE)
+private array_items_recover ::= !RBRACE
+private list_comp_recover ::= !(RBRACKET | PIPE)
+private args_recover ::= !RPAR
+private term_list_recover ::= !(RPAR | RBRACKET | PIPE)
+private var_list_recover ::= !RBRACKET
+private conjunction_recover ::= !(SEMICOLON | OR_OR | RPAR | RBRACKET | RBRACE | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP)

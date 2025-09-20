@@ -29,8 +29,8 @@ public class PicatNegatedImpl extends ASTWrapperPsiElement implements PicatNegat
 
   @Override
   @Nullable
-  public PicatEnclosedGoal getEnclosedGoal() {
-    return findChildByClass(PicatEnclosedGoal.class);
+  public PicatExpressionWithRelations getExpressionWithRelations() {
+    return findChildByClass(PicatExpressionWithRelations.class);
   }
 
   @Override

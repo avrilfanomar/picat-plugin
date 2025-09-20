@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatTermListTail extends PsiElement {
 
-  @NotNull
+  @Nullable
   PicatTerm getTerm();
 
   @Nullable

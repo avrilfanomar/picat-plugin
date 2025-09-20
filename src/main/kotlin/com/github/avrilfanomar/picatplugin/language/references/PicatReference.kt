@@ -2,20 +2,17 @@ package com.github.avrilfanomar.picatplugin.language.references
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtomOrCallNoLambda
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionArgument
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionArgumentListTail
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCall
-import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCallNoDot
 import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
-import com.github.avrilfanomar.picatplugin.language.psi.PicatTerm
-import com.github.avrilfanomar.picatplugin.language.psi.PicatTermListTail
+import com.github.avrilfanomar.picatplugin.language.psi.PicatArgument
+import com.github.avrilfanomar.picatplugin.language.psi.PicatArgumentListTail
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.PsiPolyVariantReferenceBase
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.PsiElementResolveResult
 
 /**
  * Reference for Picat predicate/function atoms.
@@ -44,11 +41,11 @@ class PicatReference(element: PsiElement, rangeInElement: TextRange) :
                 ResolveResult.EMPTY_ARRAY
             } else {
                 matches.mapNotNull { h ->
-                    val target: PsiElement? =
-                        h.argumentList.firstOrNull()?.let { it as PsiElement }
+                    val target: PsiElement =
+                        h.headArgs?.argumentList?.firstOrNull()?.let { it as PsiElement }
                             ?: h.atom.identifier
                             ?: h.atom
-                    target?.let { PsiElementResolveResult(it) }
+                    PsiElementResolveResult(target)
                 }.toTypedArray()
             }
         }
@@ -75,7 +72,7 @@ class PicatReference(element: PsiElement, rangeInElement: TextRange) :
     }
 }
 
-private fun PicatHead.arity(): Int = this.argumentList.size
+private fun PicatHead.arity(): Int = this.headArgs?.argumentList?.size ?: 0
 
 private fun PicatHead.atomName(): String? {
     val a = this.atom
@@ -98,28 +95,29 @@ private fun computeUsageArity(leaf: PsiElement): Int? {
         headArity != null -> headArity
         atom.parentOfType<PicatAtomOrCallNoLambda>() != null -> {
             val call = atom.parentOfType<PicatAtomOrCallNoLambda>()
-            countCallArgs(call?.term, call?.termListTail)
+            countCallArgs(call?.argument, call?.argumentListTail)
         }
+
         atom.parentOfType<PicatFunctionCall>() != null -> {
             val fn = atom.parentOfType<PicatFunctionCall>()
-            countFunctionArgs(fn?.functionArgument, fn?.functionArgumentListTail)
+            val simple = fn?.functionCallSimple
+            val qualified = fn?.qualifiedFunctionCall
+            val first = simple?.argument ?: qualified?.argument
+            val tail = simple?.argumentListTail ?: qualified?.argumentListTail
+            countCallArgs(first, tail)
         }
+
         else -> null
     }
     return result
 }
 
-private tailrec fun countTermTail(tail: PicatTermListTail?, acc: Int): Int =
-    if (tail == null) acc else countTermTail(tail.termListTail, acc + 1)
+private tailrec fun countArgTail(tail: PicatArgumentListTail?, acc: Int): Int =
+    if (tail == null) acc else countArgTail(tail.argumentListTail, acc + 1)
 
-private fun countCallArgs(first: PicatTerm?, tail: PicatTermListTail?): Int? =
-    if (first == null) 0 else 1 + countTermTail(tail, 0)
+private fun countCallArgs(first: PicatArgument?, tail: PicatArgumentListTail?): Int? =
+    if (first == null) 0 else 1 + countArgTail(tail, 0)
 
-private tailrec fun countFunctionTail(tail: PicatFunctionArgumentListTail?, acc: Int): Int =
-    if (tail == null) acc else countFunctionTail(tail.functionArgumentListTail, acc + 1)
-
-private fun countFunctionArgs(first: PicatFunctionArgument?, tail: PicatFunctionArgumentListTail?): Int? =
-    if (first == null) 0 else 1 + countFunctionTail(tail, 0)
 
 private inline fun <reified T : PsiElement> PsiElement.parentOfType(): T? {
     var curr: PsiElement? = this.parent

@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatParenthesizedGoal extends PsiElement {
 
-  @NotNull
+  @Nullable
   PicatGoal getGoal();
 
 }

@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatFunctionArgumentListTail extends PsiElement {
 
-  @NotNull
+  @Nullable
   PicatFunctionArgument getFunctionArgument();
 
   @Nullable

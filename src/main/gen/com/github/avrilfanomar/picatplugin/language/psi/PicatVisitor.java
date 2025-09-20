@@ -84,6 +84,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitConjunctionTail(@NotNull PicatConjunctionTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitDisjunction(@NotNull PicatDisjunction o) {
     visitPsiElement(o);
   }
@@ -128,6 +132,22 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitForeachBody(@NotNull PicatForeachBody o) {
+    visitPsiElement(o);
+  }
+
+  public void visitForeachGoal(@NotNull PicatForeachGoal o) {
+    visitPsiElement(o);
+  }
+
+  public void visitForeachItems(@NotNull PicatForeachItems o) {
+    visitPsiElement(o);
+  }
+
+  public void visitForeachItemsTail(@NotNull PicatForeachItemsTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitForeachLoop(@NotNull PicatForeachLoop o) {
     visitPsiElement(o);
   }
@@ -145,6 +165,14 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitFunctionCallNoDot(@NotNull PicatFunctionCallNoDot o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFunctionCallNoDotSimple(@NotNull PicatFunctionCallNoDotSimple o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFunctionCallSimple(@NotNull PicatFunctionCallSimple o) {
     visitPsiElement(o);
   }
 
@@ -168,11 +196,23 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitFunctionRuleTail(@NotNull PicatFunctionRuleTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitGoal(@NotNull PicatGoal o) {
     visitPsiElement(o);
   }
 
   public void visitHead(@NotNull PicatHead o) {
+    visitPsiElement(o);
+  }
+
+  public void visitHeadArgs(@NotNull PicatHeadArgs o) {
+    visitPsiElement(o);
+  }
+
+  public void visitIfGoal(@NotNull PicatIfGoal o) {
     visitPsiElement(o);
   }
 

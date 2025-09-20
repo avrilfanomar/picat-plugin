@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatConjunction extends PsiElement {
 
+  @Nullable
+  PicatConjunctionTail getConjunctionTail();
+
   @NotNull
-  List<PicatNegation> getNegationList();
+  PicatEnclosedGoal getEnclosedGoal();
 
 }

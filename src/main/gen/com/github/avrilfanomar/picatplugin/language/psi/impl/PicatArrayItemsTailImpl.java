@@ -28,9 +28,9 @@ public class PicatArrayItemsTailImpl extends ASTWrapperPsiElement implements Pic
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PicatArgument getArgument() {
-    return findNotNullChildByClass(PicatArgument.class);
+    return findChildByClass(PicatArgument.class);
   }
 
   @Override

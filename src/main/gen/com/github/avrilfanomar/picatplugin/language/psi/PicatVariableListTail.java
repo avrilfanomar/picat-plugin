@@ -10,7 +10,7 @@ public interface PicatVariableListTail extends PsiElement {
   @Nullable
   PicatVariableListTail getVariableListTail();
 
-  @NotNull
+  @Nullable
   PsiElement getVariable();
 
 }

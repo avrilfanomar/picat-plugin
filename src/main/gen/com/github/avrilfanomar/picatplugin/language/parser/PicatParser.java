@@ -189,12 +189,23 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // expression
+  // !RPAR
+  static boolean args_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "args_recover")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !consumeToken(builder_, RPAR);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // expression_with_relations
   public static boolean argument(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "argument")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, ARGUMENT, "<argument>");
-    result_ = expression(builder_, level_ + 1);
+    result_ = expression_with_relations(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
@@ -203,14 +214,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // COMMA argument argument_list_tail?
   public static boolean argument_list_tail(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "argument_list_tail")) return false;
-    if (!nextTokenIs(builder_, COMMA)) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, ARGUMENT_LIST_TAIL, "<argument list tail>");
     result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && argument(builder_, level_ + 1);
-    result_ = result_ && argument_list_tail_2(builder_, level_ + 1);
-    exit_section_(builder_, marker_, ARGUMENT_LIST_TAIL, result_);
-    return result_;
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, argument(builder_, level_ + 1));
+    result_ = pinned_ && argument_list_tail_2(builder_, level_ + 1) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, PicatParser::args_recover);
+    return result_ || pinned_;
   }
 
   // argument_list_tail?
@@ -260,17 +271,28 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // !RBRACE
+  static boolean array_items_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_items_recover")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !consumeToken(builder_, RBRACE);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  /* ********************************************************** */
   // COMMA argument array_items_tail?
   public static boolean array_items_tail(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "array_items_tail")) return false;
-    if (!nextTokenIs(builder_, COMMA)) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, ARRAY_ITEMS_TAIL, "<array items tail>");
     result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && argument(builder_, level_ + 1);
-    result_ = result_ && array_items_tail_2(builder_, level_ + 1);
-    exit_section_(builder_, marker_, ARRAY_ITEMS_TAIL, result_);
-    return result_;
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, argument(builder_, level_ + 1));
+    result_ = pinned_ && array_items_tail_2(builder_, level_ + 1) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, PicatParser::array_items_recover);
+    return result_ || pinned_;
   }
 
   // array_items_tail?
@@ -339,7 +361,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // atom [LPAR [term term_list_tail?] RPAR]
+  // atom [LPAR [argument argument_list_tail?] RPAR]
   public static boolean atom_or_call_no_lambda(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda")) return false;
     boolean result_;
@@ -350,14 +372,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [LPAR [term term_list_tail?] RPAR]
+  // [LPAR [argument argument_list_tail?] RPAR]
   private static boolean atom_or_call_no_lambda_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda_1")) return false;
     atom_or_call_no_lambda_1_0(builder_, level_ + 1);
     return true;
   }
 
-  // LPAR [term term_list_tail?] RPAR
+  // LPAR [argument argument_list_tail?] RPAR
   private static boolean atom_or_call_no_lambda_1_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda_1_0")) return false;
     boolean result_;
@@ -369,35 +391,36 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [term term_list_tail?]
+  // [argument argument_list_tail?]
   private static boolean atom_or_call_no_lambda_1_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda_1_0_1")) return false;
     atom_or_call_no_lambda_1_0_1_0(builder_, level_ + 1);
     return true;
   }
 
-  // term term_list_tail?
+  // argument argument_list_tail?
   private static boolean atom_or_call_no_lambda_1_0_1_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda_1_0_1_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
-    result_ = term(builder_, level_ + 1);
+    result_ = argument(builder_, level_ + 1);
     result_ = result_ && atom_or_call_no_lambda_1_0_1_0_1(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
-  // term_list_tail?
+  // argument_list_tail?
   private static boolean atom_or_call_no_lambda_1_0_1_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_or_call_no_lambda_1_0_1_0_1")) return false;
-    term_list_tail(builder_, level_ + 1);
+    argument_list_tail(builder_, level_ + 1);
     return true;
   }
 
   /* ********************************************************** */
-  // parenthesized_goal
+  // function_call
+  //             | function_call_no_dot
+  //             | parenthesized_goal
   //             | lambda_term
-  //             | function_call
   //             | term_constructor
   //             | as_pattern
   //             | list_expr
@@ -413,9 +436,10 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(builder_, level_, "base_expr")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, BASE_EXPR, "<base expr>");
-    result_ = parenthesized_goal(builder_, level_ + 1);
+    result_ = function_call(builder_, level_ + 1);
+    if (!result_) result_ = function_call_no_dot(builder_, level_ + 1);
+    if (!result_) result_ = parenthesized_goal(builder_, level_ + 1);
     if (!result_) result_ = lambda_term(builder_, level_ + 1);
-    if (!result_) result_ = function_call(builder_, level_ + 1);
     if (!result_) result_ = term_constructor(builder_, level_ + 1);
     if (!result_) result_ = as_pattern(builder_, level_ + 1);
     if (!result_) result_ = list_expr(builder_, level_ + 1);
@@ -432,7 +456,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_NON_EQUAL | IDENTICAL | NOT_IDENTICAL | UNIV_OP
+  // EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_NON_EQUAL | IDENTICAL | NOT_IDENTICAL | UNIV_OP | DOUBLE_COLON_OP
   //              | GREATER | GREATER_EQUAL | LESS | LESS_EQUAL | LESS_EQUAL_PROLOG
   //              | IN_KEYWORD | NOT_IN_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
   //              | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | HASH_GREATER_OP | HASH_LESS_OP
@@ -450,6 +474,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, IDENTICAL);
     if (!result_) result_ = consumeToken(builder_, NOT_IDENTICAL);
     if (!result_) result_ = consumeToken(builder_, UNIV_OP);
+    if (!result_) result_ = consumeToken(builder_, DOUBLE_COLON_OP);
     if (!result_) result_ = consumeToken(builder_, GREATER);
     if (!result_) result_ = consumeToken(builder_, GREATER_EQUAL);
     if (!result_) result_ = consumeToken(builder_, LESS);
@@ -511,46 +536,22 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // negation ((COMMA | AND_AND) negation)*
+  // enclosed_goal conjunction_tail?
   public static boolean conjunction(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "conjunction")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, CONJUNCTION, "<conjunction>");
-    result_ = negation(builder_, level_ + 1);
+    result_ = enclosed_goal(builder_, level_ + 1);
     result_ = result_ && conjunction_1(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
-  // ((COMMA | AND_AND) negation)*
+  // conjunction_tail?
   private static boolean conjunction_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "conjunction_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!conjunction_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "conjunction_1", pos_)) break;
-    }
+    conjunction_tail(builder_, level_ + 1);
     return true;
-  }
-
-  // (COMMA | AND_AND) negation
-  private static boolean conjunction_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "conjunction_1_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = conjunction_1_0_0(builder_, level_ + 1);
-    result_ = result_ && negation(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // COMMA | AND_AND
-  private static boolean conjunction_1_0_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "conjunction_1_0_0")) return false;
-    boolean result_;
-    result_ = consumeToken(builder_, COMMA);
-    if (!result_) result_ = consumeToken(builder_, AND_AND);
-    return result_;
   }
 
   /* ********************************************************** */
@@ -585,6 +586,78 @@ public class PicatParser implements PsiParser, LightPsiParser {
     result_ = result_ && negated(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
+  }
+
+  /* ********************************************************** */
+  // !(SEMICOLON | OR_OR | RPAR | RBRACKET | RBRACE | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP)
+  static boolean conjunction_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "conjunction_recover")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !conjunction_recover_0(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // SEMICOLON | OR_OR | RPAR | RBRACKET | RBRACE | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP
+  private static boolean conjunction_recover_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "conjunction_recover_0")) return false;
+    boolean result_;
+    result_ = consumeToken(builder_, SEMICOLON);
+    if (!result_) result_ = consumeToken(builder_, OR_OR);
+    if (!result_) result_ = consumeToken(builder_, RPAR);
+    if (!result_) result_ = consumeToken(builder_, RBRACKET);
+    if (!result_) result_ = consumeToken(builder_, RBRACE);
+    if (!result_) result_ = consumeToken(builder_, DOT);
+    if (!result_) result_ = consumeToken(builder_, THEN_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, ELSEIF_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, ELSE_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, END_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, ARROW_OP);
+    if (!result_) result_ = consumeToken(builder_, BACKTRACKABLE_ARROW_OP);
+    if (!result_) result_ = consumeToken(builder_, PROLOG_RULE_OP);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // (COMMA | AND_AND) !RPAR goal conjunction_tail?
+  public static boolean conjunction_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "conjunction_tail")) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _COLLAPSE_, CONJUNCTION_TAIL, "<conjunction tail>");
+    result_ = conjunction_tail_0(builder_, level_ + 1);
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, conjunction_tail_1(builder_, level_ + 1));
+    result_ = pinned_ && report_error_(builder_, goal(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && conjunction_tail_3(builder_, level_ + 1) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, PicatParser::conjunction_recover);
+    return result_ || pinned_;
+  }
+
+  // COMMA | AND_AND
+  private static boolean conjunction_tail_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "conjunction_tail_0")) return false;
+    boolean result_;
+    result_ = consumeToken(builder_, COMMA);
+    if (!result_) result_ = consumeToken(builder_, AND_AND);
+    return result_;
+  }
+
+  // !RPAR
+  private static boolean conjunction_tail_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "conjunction_tail_1")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !consumeToken(builder_, RPAR);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // conjunction_tail?
+  private static boolean conjunction_tail_3(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "conjunction_tail_3")) return false;
+    conjunction_tail(builder_, level_ + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -764,6 +837,9 @@ public class PicatParser implements PsiParser, LightPsiParser {
   //                 | loop_while
   //                 | try_catch
   //                 | type_annotation
+  //                 | NOT_KEYWORD goal
+  //                 | BACKSLASH_PLUS goal
+  //                 | equivalence
   //                 | expression_with_relations
   public static boolean enclosed_goal(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "enclosed_goal")) return false;
@@ -775,8 +851,33 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = loop_while(builder_, level_ + 1);
     if (!result_) result_ = try_catch(builder_, level_ + 1);
     if (!result_) result_ = type_annotation(builder_, level_ + 1);
+    if (!result_) result_ = enclosed_goal_6(builder_, level_ + 1);
+    if (!result_) result_ = enclosed_goal_7(builder_, level_ + 1);
+    if (!result_) result_ = equivalence(builder_, level_ + 1);
     if (!result_) result_ = expression_with_relations(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // NOT_KEYWORD goal
+  private static boolean enclosed_goal_6(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "enclosed_goal_6")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, NOT_KEYWORD);
+    result_ = result_ && goal(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // BACKSLASH_PLUS goal
+  private static boolean enclosed_goal_7(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "enclosed_goal_7")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, BACKSLASH_PLUS);
+    result_ = result_ && goal(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
@@ -939,51 +1040,113 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // FOREACH_KEYWORD LPAR iterator (COMMA (iterator | condition))* RPAR goal END_KEYWORD
-  public static boolean foreach_loop(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "foreach_loop")) return false;
-    if (!nextTokenIs(builder_, FOREACH_KEYWORD)) return false;
+  // foreach_goal END_KEYWORD
+  public static boolean foreach_body(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "foreach_body")) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeTokens(builder_, 0, FOREACH_KEYWORD, LPAR);
-    result_ = result_ && iterator(builder_, level_ + 1);
-    result_ = result_ && foreach_loop_3(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, RPAR);
-    result_ = result_ && goal(builder_, level_ + 1);
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, FOREACH_BODY, "<foreach body>");
+    result_ = foreach_goal(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, END_KEYWORD);
-    exit_section_(builder_, marker_, FOREACH_LOOP, result_);
+    exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
-  // (COMMA (iterator | condition))*
-  private static boolean foreach_loop_3(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "foreach_loop_3")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!foreach_loop_3_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "foreach_loop_3", pos_)) break;
-    }
+  /* ********************************************************** */
+  // goal
+  public static boolean foreach_goal(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "foreach_goal")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, FOREACH_GOAL, "<foreach goal>");
+    result_ = goal(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, PicatParser::foreach_goal_recover);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // !END_KEYWORD
+  static boolean foreach_goal_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "foreach_goal_recover")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !consumeToken(builder_, END_KEYWORD);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // iterator foreach_items_tail?
+  public static boolean foreach_items(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "foreach_items")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, FOREACH_ITEMS, "<foreach items>");
+    result_ = iterator(builder_, level_ + 1);
+    result_ = result_ && foreach_items_1(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // foreach_items_tail?
+  private static boolean foreach_items_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "foreach_items_1")) return false;
+    foreach_items_tail(builder_, level_ + 1);
     return true;
   }
 
-  // COMMA (iterator | condition)
-  private static boolean foreach_loop_3_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "foreach_loop_3_0")) return false;
+  /* ********************************************************** */
+  // !RPAR
+  static boolean foreach_items_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "foreach_items_recover")) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && foreach_loop_3_0_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !consumeToken(builder_, RPAR);
+    exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
+  /* ********************************************************** */
+  // COMMA (iterator | condition) foreach_items_tail?
+  public static boolean foreach_items_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "foreach_items_tail")) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, FOREACH_ITEMS_TAIL, "<foreach items tail>");
+    result_ = consumeToken(builder_, COMMA);
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, foreach_items_tail_1(builder_, level_ + 1));
+    result_ = pinned_ && foreach_items_tail_2(builder_, level_ + 1) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, PicatParser::foreach_items_recover);
+    return result_ || pinned_;
+  }
+
   // iterator | condition
-  private static boolean foreach_loop_3_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "foreach_loop_3_0_1")) return false;
+  private static boolean foreach_items_tail_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "foreach_items_tail_1")) return false;
     boolean result_;
     result_ = iterator(builder_, level_ + 1);
     if (!result_) result_ = condition(builder_, level_ + 1);
     return result_;
+  }
+
+  // foreach_items_tail?
+  private static boolean foreach_items_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "foreach_items_tail_2")) return false;
+    foreach_items_tail(builder_, level_ + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // FOREACH_KEYWORD LPAR foreach_items RPAR foreach_body
+  public static boolean foreach_loop(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "foreach_loop")) return false;
+    if (!nextTokenIs(builder_, FOREACH_KEYWORD)) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, FOREACH_LOOP, null);
+    result_ = consumeTokens(builder_, 2, FOREACH_KEYWORD, LPAR);
+    pinned_ = result_; // pin = 2
+    result_ = result_ && report_error_(builder_, foreach_items(builder_, level_ + 1));
+    result_ = pinned_ && report_error_(builder_, consumeToken(builder_, RPAR)) && result_;
+    result_ = pinned_ && foreach_body(builder_, level_ + 1) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
   }
 
   /* ********************************************************** */
@@ -1001,14 +1164,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // COMMA function_argument function_argument_list_tail?
   public static boolean function_argument_list_tail(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_argument_list_tail")) return false;
-    if (!nextTokenIs(builder_, COMMA)) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_ARGUMENT_LIST_TAIL, "<function argument list tail>");
     result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && function_argument(builder_, level_ + 1);
-    result_ = result_ && function_argument_list_tail_2(builder_, level_ + 1);
-    exit_section_(builder_, marker_, FUNCTION_ARGUMENT_LIST_TAIL, result_);
-    return result_;
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, function_argument(builder_, level_ + 1));
+    result_ = pinned_ && function_argument_list_tail_2(builder_, level_ + 1) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, PicatParser::args_recover);
+    return result_ || pinned_;
   }
 
   // function_argument_list_tail?
@@ -1019,108 +1182,30 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // atom LPAR [function_argument function_argument_list_tail?] RPAR
-  //                | qualified_function_call
+  // function_call_simple | qualified_function_call
   public static boolean function_call(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_CALL, "<function call>");
-    result_ = function_call_0(builder_, level_ + 1);
+    result_ = function_call_simple(builder_, level_ + 1);
     if (!result_) result_ = qualified_function_call(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
-  // atom LPAR [function_argument function_argument_list_tail?] RPAR
-  private static boolean function_call_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_call_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = atom(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, LPAR);
-    result_ = result_ && function_call_0_2(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, RPAR);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // [function_argument function_argument_list_tail?]
-  private static boolean function_call_0_2(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_call_0_2")) return false;
-    function_call_0_2_0(builder_, level_ + 1);
-    return true;
-  }
-
-  // function_argument function_argument_list_tail?
-  private static boolean function_call_0_2_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_call_0_2_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = function_argument(builder_, level_ + 1);
-    result_ = result_ && function_call_0_2_0_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // function_argument_list_tail?
-  private static boolean function_call_0_2_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_call_0_2_0_1")) return false;
-    function_argument_list_tail(builder_, level_ + 1);
-    return true;
-  }
-
   /* ********************************************************** */
-  // atom LPAR [term term_list_tail?] RPAR
-  //                        | IDENTIFIER DOLLAR IDENTIFIER LPAR [term term_list_tail?] RPAR
+  // function_call_no_dot_simple | IDENTIFIER DOLLAR IDENTIFIER LPAR [argument argument_list_tail?] RPAR
   public static boolean function_call_no_dot(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_CALL_NO_DOT, "<function call no dot>");
-    result_ = function_call_no_dot_0(builder_, level_ + 1);
+    result_ = function_call_no_dot_simple(builder_, level_ + 1);
     if (!result_) result_ = function_call_no_dot_1(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
-  // atom LPAR [term term_list_tail?] RPAR
-  private static boolean function_call_no_dot_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_call_no_dot_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = atom(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, LPAR);
-    result_ = result_ && function_call_no_dot_0_2(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, RPAR);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // [term term_list_tail?]
-  private static boolean function_call_no_dot_0_2(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_call_no_dot_0_2")) return false;
-    function_call_no_dot_0_2_0(builder_, level_ + 1);
-    return true;
-  }
-
-  // term term_list_tail?
-  private static boolean function_call_no_dot_0_2_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_call_no_dot_0_2_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = term(builder_, level_ + 1);
-    result_ = result_ && function_call_no_dot_0_2_0_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // term_list_tail?
-  private static boolean function_call_no_dot_0_2_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_call_no_dot_0_2_0_1")) return false;
-    term_list_tail(builder_, level_ + 1);
-    return true;
-  }
-
-  // IDENTIFIER DOLLAR IDENTIFIER LPAR [term term_list_tail?] RPAR
+  // IDENTIFIER DOLLAR IDENTIFIER LPAR [argument argument_list_tail?] RPAR
   private static boolean function_call_no_dot_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot_1")) return false;
     boolean result_;
@@ -1132,28 +1217,176 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [term term_list_tail?]
+  // [argument argument_list_tail?]
   private static boolean function_call_no_dot_1_4(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot_1_4")) return false;
     function_call_no_dot_1_4_0(builder_, level_ + 1);
     return true;
   }
 
-  // term term_list_tail?
+  // argument argument_list_tail?
   private static boolean function_call_no_dot_1_4_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot_1_4_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
-    result_ = term(builder_, level_ + 1);
+    result_ = argument(builder_, level_ + 1);
     result_ = result_ && function_call_no_dot_1_4_0_1(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
-  // term_list_tail?
+  // argument_list_tail?
   private static boolean function_call_no_dot_1_4_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_call_no_dot_1_4_0_1")) return false;
-    term_list_tail(builder_, level_ + 1);
+    argument_list_tail(builder_, level_ + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // !(RPAR | COMMA | PLUS | CONCAT_OP | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP | SEMICOLON | OR_OR | RBRACKET | RBRACE)
+  static boolean function_call_no_dot_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_call_no_dot_recover")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !function_call_no_dot_recover_0(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // RPAR | COMMA | PLUS | CONCAT_OP | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP | SEMICOLON | OR_OR | RBRACKET | RBRACE
+  private static boolean function_call_no_dot_recover_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_call_no_dot_recover_0")) return false;
+    boolean result_;
+    result_ = consumeToken(builder_, RPAR);
+    if (!result_) result_ = consumeToken(builder_, COMMA);
+    if (!result_) result_ = consumeToken(builder_, PLUS);
+    if (!result_) result_ = consumeToken(builder_, CONCAT_OP);
+    if (!result_) result_ = consumeToken(builder_, DOT);
+    if (!result_) result_ = consumeToken(builder_, THEN_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, ELSEIF_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, ELSE_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, END_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, ARROW_OP);
+    if (!result_) result_ = consumeToken(builder_, BACKTRACKABLE_ARROW_OP);
+    if (!result_) result_ = consumeToken(builder_, PROLOG_RULE_OP);
+    if (!result_) result_ = consumeToken(builder_, SEMICOLON);
+    if (!result_) result_ = consumeToken(builder_, OR_OR);
+    if (!result_) result_ = consumeToken(builder_, RBRACKET);
+    if (!result_) result_ = consumeToken(builder_, RBRACE);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // atom LPAR [argument argument_list_tail?] RPAR
+  public static boolean function_call_no_dot_simple(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_call_no_dot_simple")) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_CALL_NO_DOT_SIMPLE, "<function call no dot simple>");
+    result_ = atom(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, LPAR);
+    pinned_ = result_; // pin = 2
+    result_ = result_ && report_error_(builder_, function_call_no_dot_simple_2(builder_, level_ + 1));
+    result_ = pinned_ && consumeToken(builder_, RPAR) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  // [argument argument_list_tail?]
+  private static boolean function_call_no_dot_simple_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_call_no_dot_simple_2")) return false;
+    function_call_no_dot_simple_2_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // argument argument_list_tail?
+  private static boolean function_call_no_dot_simple_2_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_call_no_dot_simple_2_0")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = argument(builder_, level_ + 1);
+    result_ = result_ && function_call_no_dot_simple_2_0_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // argument_list_tail?
+  private static boolean function_call_no_dot_simple_2_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_call_no_dot_simple_2_0_1")) return false;
+    argument_list_tail(builder_, level_ + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // !(RPAR | COMMA | PLUS | CONCAT_OP | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP | SEMICOLON | OR_OR | RBRACKET | RBRACE)
+  static boolean function_call_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_call_recover")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !function_call_recover_0(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // RPAR | COMMA | PLUS | CONCAT_OP | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP | SEMICOLON | OR_OR | RBRACKET | RBRACE
+  private static boolean function_call_recover_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_call_recover_0")) return false;
+    boolean result_;
+    result_ = consumeToken(builder_, RPAR);
+    if (!result_) result_ = consumeToken(builder_, COMMA);
+    if (!result_) result_ = consumeToken(builder_, PLUS);
+    if (!result_) result_ = consumeToken(builder_, CONCAT_OP);
+    if (!result_) result_ = consumeToken(builder_, DOT);
+    if (!result_) result_ = consumeToken(builder_, THEN_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, ELSEIF_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, ELSE_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, END_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, ARROW_OP);
+    if (!result_) result_ = consumeToken(builder_, BACKTRACKABLE_ARROW_OP);
+    if (!result_) result_ = consumeToken(builder_, PROLOG_RULE_OP);
+    if (!result_) result_ = consumeToken(builder_, SEMICOLON);
+    if (!result_) result_ = consumeToken(builder_, OR_OR);
+    if (!result_) result_ = consumeToken(builder_, RBRACKET);
+    if (!result_) result_ = consumeToken(builder_, RBRACE);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // atom LPAR [argument argument_list_tail?] RPAR
+  public static boolean function_call_simple(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_call_simple")) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_CALL_SIMPLE, "<function call simple>");
+    result_ = atom(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, LPAR);
+    pinned_ = result_; // pin = 2
+    result_ = result_ && report_error_(builder_, function_call_simple_2(builder_, level_ + 1));
+    result_ = pinned_ && consumeToken(builder_, RPAR) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  // [argument argument_list_tail?]
+  private static boolean function_call_simple_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_call_simple_2")) return false;
+    function_call_simple_2_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // argument argument_list_tail?
+  private static boolean function_call_simple_2_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_call_simple_2_0")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = argument(builder_, level_ + 1);
+    result_ = result_ && function_call_simple_2_0_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // argument_list_tail?
+  private static boolean function_call_simple_2_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_call_simple_2_0_1")) return false;
+    argument_list_tail(builder_, level_ + 1);
     return true;
   }
 
@@ -1221,38 +1454,61 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // head EQUAL argument [COMMA condition] ARROW_OP body DOT
+  // head EQUAL argument function_rule_tail DOT
   public static boolean function_rule(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_rule")) return false;
-    boolean result_, pinned_;
+    boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_RULE, "<function rule>");
     result_ = head(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, EQUAL);
     result_ = result_ && argument(builder_, level_ + 1);
-    result_ = result_ && function_rule_3(builder_, level_ + 1);
+    result_ = result_ && function_rule_tail(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, DOT);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // [COMMA condition] ARROW_OP body
+  public static boolean function_rule_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_rule_tail")) return false;
+    if (!nextTokenIs(builder_, "<function rule tail>", ARROW_OP, COMMA)) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, FUNCTION_RULE_TAIL, "<function rule tail>");
+    result_ = function_rule_tail_0(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, ARROW_OP);
-    pinned_ = result_; // pin = 5
-    result_ = result_ && report_error_(builder_, body(builder_, level_ + 1));
-    result_ = pinned_ && consumeToken(builder_, DOT) && result_;
+    pinned_ = result_; // pin = 2
+    result_ = result_ && body(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, pinned_, null);
     return result_ || pinned_;
   }
 
   // [COMMA condition]
-  private static boolean function_rule_3(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_rule_3")) return false;
-    function_rule_3_0(builder_, level_ + 1);
+  private static boolean function_rule_tail_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_rule_tail_0")) return false;
+    function_rule_tail_0_0(builder_, level_ + 1);
     return true;
   }
 
   // COMMA condition
-  private static boolean function_rule_3_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_rule_3_0")) return false;
+  private static boolean function_rule_tail_0_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_rule_tail_0_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, COMMA);
     result_ = result_ && condition(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // !DOT
+  static boolean function_rule_tail_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "function_rule_tail_recover")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !consumeToken(builder_, DOT);
+    exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
@@ -1315,7 +1571,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // atom [LPAR [argument (COMMA argument)*] RPAR]
+  // atom head_args?
   public static boolean head(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "head")) return false;
     boolean result_;
@@ -1326,57 +1582,60 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [LPAR [argument (COMMA argument)*] RPAR]
+  // head_args?
   private static boolean head_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "head_1")) return false;
-    head_1_0(builder_, level_ + 1);
+    head_args(builder_, level_ + 1);
     return true;
   }
 
+  /* ********************************************************** */
   // LPAR [argument (COMMA argument)*] RPAR
-  private static boolean head_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "head_1_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
+  public static boolean head_args(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "head_args")) return false;
+    if (!nextTokenIs(builder_, LPAR)) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, HEAD_ARGS, null);
     result_ = consumeToken(builder_, LPAR);
-    result_ = result_ && head_1_0_1(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, RPAR);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, head_args_1(builder_, level_ + 1));
+    result_ = pinned_ && consumeToken(builder_, RPAR) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
   }
 
   // [argument (COMMA argument)*]
-  private static boolean head_1_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "head_1_0_1")) return false;
-    head_1_0_1_0(builder_, level_ + 1);
+  private static boolean head_args_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "head_args_1")) return false;
+    head_args_1_0(builder_, level_ + 1);
     return true;
   }
 
   // argument (COMMA argument)*
-  private static boolean head_1_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "head_1_0_1_0")) return false;
+  private static boolean head_args_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "head_args_1_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = argument(builder_, level_ + 1);
-    result_ = result_ && head_1_0_1_0_1(builder_, level_ + 1);
+    result_ = result_ && head_args_1_0_1(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
   // (COMMA argument)*
-  private static boolean head_1_0_1_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "head_1_0_1_0_1")) return false;
+  private static boolean head_args_1_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "head_args_1_0_1")) return false;
     while (true) {
       int pos_ = current_position_(builder_);
-      if (!head_1_0_1_0_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "head_1_0_1_0_1", pos_)) break;
+      if (!head_args_1_0_1_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "head_args_1_0_1", pos_)) break;
     }
     return true;
   }
 
   // COMMA argument
-  private static boolean head_1_0_1_0_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "head_1_0_1_0_1_0")) return false;
+  private static boolean head_args_1_0_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "head_args_1_0_1_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, COMMA);
@@ -1386,24 +1645,57 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IF_KEYWORD goal THEN_KEYWORD goal (ELSEIF_KEYWORD goal THEN_KEYWORD goal)* (ELSE_KEYWORD goal)? END_KEYWORD
-  public static boolean if_then_else(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "if_then_else")) return false;
-    if (!nextTokenIs(builder_, IF_KEYWORD)) return false;
+  // goal
+  public static boolean if_goal(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_goal")) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, IF_KEYWORD);
-    result_ = result_ && goal(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, THEN_KEYWORD);
-    result_ = result_ && goal(builder_, level_ + 1);
-    result_ = result_ && if_then_else_4(builder_, level_ + 1);
-    result_ = result_ && if_then_else_5(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, END_KEYWORD);
-    exit_section_(builder_, marker_, IF_THEN_ELSE, result_);
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, IF_GOAL, "<if goal>");
+    result_ = goal(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, PicatParser::if_goal_recover);
     return result_;
   }
 
-  // (ELSEIF_KEYWORD goal THEN_KEYWORD goal)*
+  /* ********************************************************** */
+  // !(ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD)
+  static boolean if_goal_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_goal_recover")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !if_goal_recover_0(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD
+  private static boolean if_goal_recover_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_goal_recover_0")) return false;
+    boolean result_;
+    result_ = consumeToken(builder_, ELSEIF_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, ELSE_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, END_KEYWORD);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // IF_KEYWORD goal THEN_KEYWORD if_goal (ELSEIF_KEYWORD goal THEN_KEYWORD if_goal)* (ELSE_KEYWORD if_goal)? END_KEYWORD
+  public static boolean if_then_else(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_then_else")) return false;
+    if (!nextTokenIs(builder_, IF_KEYWORD)) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, IF_THEN_ELSE, null);
+    result_ = consumeToken(builder_, IF_KEYWORD);
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, goal(builder_, level_ + 1));
+    result_ = pinned_ && report_error_(builder_, consumeToken(builder_, THEN_KEYWORD)) && result_;
+    result_ = pinned_ && report_error_(builder_, if_goal(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && report_error_(builder_, if_then_else_4(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && report_error_(builder_, if_then_else_5(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && consumeToken(builder_, END_KEYWORD) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  // (ELSEIF_KEYWORD goal THEN_KEYWORD if_goal)*
   private static boolean if_then_else_4(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "if_then_else_4")) return false;
     while (true) {
@@ -1414,7 +1706,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // ELSEIF_KEYWORD goal THEN_KEYWORD goal
+  // ELSEIF_KEYWORD goal THEN_KEYWORD if_goal
   private static boolean if_then_else_4_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "if_then_else_4_0")) return false;
     boolean result_;
@@ -1422,25 +1714,25 @@ public class PicatParser implements PsiParser, LightPsiParser {
     result_ = consumeToken(builder_, ELSEIF_KEYWORD);
     result_ = result_ && goal(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, THEN_KEYWORD);
-    result_ = result_ && goal(builder_, level_ + 1);
+    result_ = result_ && if_goal(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
-  // (ELSE_KEYWORD goal)?
+  // (ELSE_KEYWORD if_goal)?
   private static boolean if_then_else_5(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "if_then_else_5")) return false;
     if_then_else_5_0(builder_, level_ + 1);
     return true;
   }
 
-  // ELSE_KEYWORD goal
+  // ELSE_KEYWORD if_goal
   private static boolean if_then_else_5_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "if_then_else_5_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, ELSE_KEYWORD);
-    result_ = result_ && goal(builder_, level_ + 1);
+    result_ = result_ && if_goal(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -1685,17 +1977,37 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // !(RBRACKET | PIPE)
+  static boolean list_comp_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_comp_recover")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !list_comp_recover_0(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // RBRACKET | PIPE
+  private static boolean list_comp_recover_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_comp_recover_0")) return false;
+    boolean result_;
+    result_ = consumeToken(builder_, RBRACKET);
+    if (!result_) result_ = consumeToken(builder_, PIPE);
+    return result_;
+  }
+
+  /* ********************************************************** */
   // COMMA (iterator | condition) list_comprehension_tail?
   public static boolean list_comprehension_tail(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_comprehension_tail")) return false;
-    if (!nextTokenIs(builder_, COMMA)) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, LIST_COMPREHENSION_TAIL, "<list comprehension tail>");
     result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && list_comprehension_tail_1(builder_, level_ + 1);
-    result_ = result_ && list_comprehension_tail_2(builder_, level_ + 1);
-    exit_section_(builder_, marker_, LIST_COMPREHENSION_TAIL, result_);
-    return result_;
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, list_comprehension_tail_1(builder_, level_ + 1));
+    result_ = pinned_ && list_comprehension_tail_2(builder_, level_ + 1) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, PicatParser::list_comp_recover);
+    return result_ || pinned_;
   }
 
   // iterator | condition
@@ -1875,17 +2187,37 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // !(RBRACKET | PIPE)
+  static boolean list_items_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_items_recover")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !list_items_recover_0(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // RBRACKET | PIPE
+  private static boolean list_items_recover_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "list_items_recover_0")) return false;
+    boolean result_;
+    result_ = consumeToken(builder_, RBRACKET);
+    if (!result_) result_ = consumeToken(builder_, PIPE);
+    return result_;
+  }
+
+  /* ********************************************************** */
   // COMMA argument list_items_tail?
   public static boolean list_items_tail(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "list_items_tail")) return false;
-    if (!nextTokenIs(builder_, COMMA)) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, LIST_ITEMS_TAIL, "<list items tail>");
     result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && argument(builder_, level_ + 1);
-    result_ = result_ && list_items_tail_2(builder_, level_ + 1);
-    exit_section_(builder_, marker_, LIST_ITEMS_TAIL, result_);
-    return result_;
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, argument(builder_, level_ + 1));
+    result_ = pinned_ && list_items_tail_2(builder_, level_ + 1) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, PicatParser::list_items_recover);
+    return result_ || pinned_;
   }
 
   // list_items_tail?
@@ -1976,13 +2308,13 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // HASH_NOT_OP negated | enclosed_goal
+  // HASH_NOT_OP negated | expression_with_relations
   public static boolean negated(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "negated")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, NEGATED, "<negated>");
     result_ = negated_0(builder_, level_ + 1);
-    if (!result_) result_ = enclosed_goal(builder_, level_ + 1);
+    if (!result_) result_ = expression_with_relations(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
@@ -2102,13 +2434,14 @@ public class PicatParser implements PsiParser, LightPsiParser {
   public static boolean parenthesized_goal(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "parenthesized_goal")) return false;
     if (!nextTokenIs(builder_, LPAR)) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, PARENTHESIZED_GOAL, null);
     result_ = consumeToken(builder_, LPAR);
-    result_ = result_ && goal(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, RPAR);
-    exit_section_(builder_, marker_, PARENTHESIZED_GOAL, result_);
-    return result_;
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, goal(builder_, level_ + 1));
+    result_ = pinned_ && consumeToken(builder_, RPAR) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
   }
 
   /* ********************************************************** */
@@ -2349,7 +2682,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // head [COMMA condition] (ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) body DOT
+  // head &(COMMA | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) [COMMA condition] (ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) body DOT
   public static boolean predicate_rule(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "predicate_rule")) return false;
     boolean result_, pinned_;
@@ -2357,23 +2690,45 @@ public class PicatParser implements PsiParser, LightPsiParser {
     result_ = head(builder_, level_ + 1);
     result_ = result_ && predicate_rule_1(builder_, level_ + 1);
     result_ = result_ && predicate_rule_2(builder_, level_ + 1);
-    pinned_ = result_; // pin = 3
+    result_ = result_ && predicate_rule_3(builder_, level_ + 1);
+    pinned_ = result_; // pin = 4
     result_ = result_ && report_error_(builder_, body(builder_, level_ + 1));
     result_ = pinned_ && consumeToken(builder_, DOT) && result_;
     exit_section_(builder_, level_, marker_, result_, pinned_, null);
     return result_ || pinned_;
   }
 
-  // [COMMA condition]
+  // &(COMMA | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP)
   private static boolean predicate_rule_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "predicate_rule_1")) return false;
-    predicate_rule_1_0(builder_, level_ + 1);
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _AND_);
+    result_ = predicate_rule_1_0(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // COMMA | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP
+  private static boolean predicate_rule_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "predicate_rule_1_0")) return false;
+    boolean result_;
+    result_ = consumeToken(builder_, COMMA);
+    if (!result_) result_ = consumeToken(builder_, ARROW_OP);
+    if (!result_) result_ = consumeToken(builder_, BACKTRACKABLE_ARROW_OP);
+    if (!result_) result_ = consumeToken(builder_, PROLOG_RULE_OP);
+    return result_;
+  }
+
+  // [COMMA condition]
+  private static boolean predicate_rule_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "predicate_rule_2")) return false;
+    predicate_rule_2_0(builder_, level_ + 1);
     return true;
   }
 
   // COMMA condition
-  private static boolean predicate_rule_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "predicate_rule_1_0")) return false;
+  private static boolean predicate_rule_2_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "predicate_rule_2_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, COMMA);
@@ -2383,8 +2738,8 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   // ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP
-  private static boolean predicate_rule_2(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "predicate_rule_2")) return false;
+  private static boolean predicate_rule_3(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "predicate_rule_3")) return false;
     boolean result_;
     result_ = consumeToken(builder_, ARROW_OP);
     if (!result_) result_ = consumeToken(builder_, BACKTRACKABLE_ARROW_OP);
@@ -2432,6 +2787,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   //                | function_definition
   //                | predicate_definition
   //                | actor_definition
+  //                | DOT
   public static boolean program_item(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "program_item")) return false;
     boolean result_;
@@ -2444,12 +2800,13 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = function_definition(builder_, level_ + 1);
     if (!result_) result_ = predicate_definition(builder_, level_ + 1);
     if (!result_) result_ = actor_definition(builder_, level_ + 1);
+    if (!result_) result_ = consumeToken(builder_, DOT);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
   /* ********************************************************** */
-  // IDENTIFIER DOLLAR IDENTIFIER LPAR [function_argument function_argument_list_tail?] RPAR
+  // IDENTIFIER DOLLAR IDENTIFIER LPAR [argument argument_list_tail?] RPAR
   public static boolean qualified_function_call(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "qualified_function_call")) return false;
     if (!nextTokenIs(builder_, IDENTIFIER)) return false;
@@ -2462,28 +2819,28 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // [function_argument function_argument_list_tail?]
+  // [argument argument_list_tail?]
   private static boolean qualified_function_call_4(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "qualified_function_call_4")) return false;
     qualified_function_call_4_0(builder_, level_ + 1);
     return true;
   }
 
-  // function_argument function_argument_list_tail?
+  // argument argument_list_tail?
   private static boolean qualified_function_call_4_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "qualified_function_call_4_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
-    result_ = function_argument(builder_, level_ + 1);
+    result_ = argument(builder_, level_ + 1);
     result_ = result_ && qualified_function_call_4_0_1(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
-  // function_argument_list_tail?
+  // argument_list_tail?
   private static boolean qualified_function_call_4_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "qualified_function_call_4_0_1")) return false;
-    function_argument_list_tail(builder_, level_ + 1);
+    argument_list_tail(builder_, level_ + 1);
     return true;
   }
 
@@ -2602,6 +2959,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   //        | FLOAT
   //        | TRUE
   //        | FALSE
+  //        | STRING
   //        | VARIABLE
   //        | atom_or_call_no_lambda
   //        | list_expr_no_comprehension
@@ -2618,6 +2976,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, FLOAT);
     if (!result_) result_ = consumeToken(builder_, TRUE);
     if (!result_) result_ = consumeToken(builder_, FALSE);
+    if (!result_) result_ = consumeToken(builder_, STRING);
     if (!result_) result_ = consumeToken(builder_, VARIABLE);
     if (!result_) result_ = atom_or_call_no_lambda(builder_, level_ + 1);
     if (!result_) result_ = list_expr_no_comprehension(builder_, level_ + 1);
@@ -2702,17 +3061,38 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // !(RPAR | RBRACKET | PIPE)
+  static boolean term_list_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "term_list_recover")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !term_list_recover_0(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // RPAR | RBRACKET | PIPE
+  private static boolean term_list_recover_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "term_list_recover_0")) return false;
+    boolean result_;
+    result_ = consumeToken(builder_, RPAR);
+    if (!result_) result_ = consumeToken(builder_, RBRACKET);
+    if (!result_) result_ = consumeToken(builder_, PIPE);
+    return result_;
+  }
+
+  /* ********************************************************** */
   // COMMA term term_list_tail?
   public static boolean term_list_tail(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "term_list_tail")) return false;
-    if (!nextTokenIs(builder_, COMMA)) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, TERM_LIST_TAIL, "<term list tail>");
     result_ = consumeToken(builder_, COMMA);
-    result_ = result_ && term(builder_, level_ + 1);
-    result_ = result_ && term_list_tail_2(builder_, level_ + 1);
-    exit_section_(builder_, marker_, TERM_LIST_TAIL, result_);
-    return result_;
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, term(builder_, level_ + 1));
+    result_ = pinned_ && term_list_tail_2(builder_, level_ + 1) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, PicatParser::term_list_recover);
+    return result_ || pinned_;
   }
 
   // term_list_tail?
@@ -2831,6 +3211,17 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // !RBRACKET
+  static boolean var_list_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "var_list_recover")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !consumeToken(builder_, RBRACKET);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  /* ********************************************************** */
   // VARIABLE AT term [AT]
   public static boolean variable_as_pattern(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "variable_as_pattern")) return false;
@@ -2894,13 +3285,13 @@ public class PicatParser implements PsiParser, LightPsiParser {
   // COMMA VARIABLE variable_list_tail?
   public static boolean variable_list_tail(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "variable_list_tail")) return false;
-    if (!nextTokenIs(builder_, COMMA)) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeTokens(builder_, 0, COMMA, VARIABLE);
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, VARIABLE_LIST_TAIL, "<variable list tail>");
+    result_ = consumeTokens(builder_, 1, COMMA, VARIABLE);
+    pinned_ = result_; // pin = 1
     result_ = result_ && variable_list_tail_2(builder_, level_ + 1);
-    exit_section_(builder_, marker_, VARIABLE_LIST_TAIL, result_);
-    return result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, PicatParser::var_list_recover);
+    return result_ || pinned_;
   }
 
   // variable_list_tail?

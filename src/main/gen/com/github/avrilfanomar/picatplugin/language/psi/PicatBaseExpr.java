@@ -20,6 +20,9 @@ public interface PicatBaseExpr extends PsiElement {
   PicatFunctionCall getFunctionCall();
 
   @Nullable
+  PicatFunctionCallNoDot getFunctionCallNoDot();
+
+  @Nullable
   PicatLambdaTerm getLambdaTerm();
 
   @Nullable

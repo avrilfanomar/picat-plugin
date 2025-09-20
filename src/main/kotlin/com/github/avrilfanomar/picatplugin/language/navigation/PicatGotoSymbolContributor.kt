@@ -72,7 +72,7 @@ class PicatGotoSymbolContributor : ChooseByNameContributor {
     }
 }
 
-private fun PicatHead.arity(): Int = this.argumentList.size
+private fun PicatHead.arity(): Int = this.headArgs?.argumentList?.size ?: 0
 
 private fun headAtomName(head: PicatHead): String? {
     val atom = head.atom

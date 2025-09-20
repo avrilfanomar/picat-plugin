@@ -28,9 +28,15 @@ public class PicatConjunctionImpl extends ASTWrapperPsiElement implements PicatC
   }
 
   @Override
+  @Nullable
+  public PicatConjunctionTail getConjunctionTail() {
+    return findChildByClass(PicatConjunctionTail.class);
+  }
+
+  @Override
   @NotNull
-  public List<PicatNegation> getNegationList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatNegation.class);
+  public PicatEnclosedGoal getEnclosedGoal() {
+    return findNotNullChildByClass(PicatEnclosedGoal.class);
   }
 
 }

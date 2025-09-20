@@ -28,9 +28,9 @@ public class PicatTermListTailImpl extends ASTWrapperPsiElement implements Picat
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PicatTerm getTerm() {
-    return findNotNullChildByClass(PicatTerm.class);
+    return findChildByClass(PicatTerm.class);
   }
 
   @Override

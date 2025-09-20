@@ -29,14 +29,14 @@ public class PicatHeadImpl extends ASTWrapperPsiElement implements PicatHead {
 
   @Override
   @NotNull
-  public List<PicatArgument> getArgumentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatArgument.class);
+  public PicatAtom getAtom() {
+    return findNotNullChildByClass(PicatAtom.class);
   }
 
   @Override
-  @NotNull
-  public PicatAtom getAtom() {
-    return findNotNullChildByClass(PicatAtom.class);
+  @Nullable
+  public PicatHeadArgs getHeadArgs() {
+    return findChildByClass(PicatHeadArgs.class);
   }
 
 }

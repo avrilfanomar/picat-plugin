@@ -11,14 +11,14 @@ import static com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.avrilfanomar.picatplugin.language.psi.*;
 
-public class PicatVariableIndexImpl extends ASTWrapperPsiElement implements PicatVariableIndex {
+public class PicatForeachItemsImpl extends ASTWrapperPsiElement implements PicatForeachItems {
 
-  public PicatVariableIndexImpl(@NotNull ASTNode node) {
+  public PicatForeachItemsImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PicatVisitor visitor) {
-    visitor.visitPsiElement(this);
+    visitor.visitForeachItems(this);
   }
 
   @Override
@@ -28,15 +28,15 @@ public class PicatVariableIndexImpl extends ASTWrapperPsiElement implements Pica
   }
 
   @Override
-  @NotNull
-  public List<PicatArgument> getArgumentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatArgument.class);
+  @Nullable
+  public PicatForeachItemsTail getForeachItemsTail() {
+    return findChildByClass(PicatForeachItemsTail.class);
   }
 
   @Override
   @NotNull
-  public PsiElement getVariable() {
-    return findNotNullChildByType(VARIABLE);
+  public PicatIterator getIterator() {
+    return findNotNullChildByClass(PicatIterator.class);
   }
 
 }

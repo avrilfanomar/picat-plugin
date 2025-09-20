@@ -30,7 +30,9 @@ class PicatFoldingBuilder : FoldingBuilderEx(), com.intellij.openapi.project.Dum
         PsiTreeUtil.processElements(root) { element ->
             when (element) {
                 is PicatPredicateRule -> element.body?.let { addBodyFoldIfMultiline(it, document, descriptors) }
-                is PicatFunctionRule -> element.body?.let { addBodyFoldIfMultiline(it, document, descriptors) }
+                is PicatFunctionRule -> element.functionRuleTail.body?.let {
+                    addBodyFoldIfMultiline(it, document, descriptors)
+                }
                 is PicatNonbacktrackablePredicateRule -> addBodyFoldIfMultiline(element.body, document, descriptors)
                 is PicatActionRule -> addBodyFoldIfMultiline(element.body, document, descriptors)
             }
@@ -106,7 +108,7 @@ class PicatFoldingBuilder : FoldingBuilderEx(), com.intellij.openapi.project.Dum
         }
         head ?: return null
         val name = head.atom.text
-        val arity = head.argumentList.size
+        val arity = head.headArgs?.argumentList?.size ?: 0
         return "$name/$arity"
     }
 

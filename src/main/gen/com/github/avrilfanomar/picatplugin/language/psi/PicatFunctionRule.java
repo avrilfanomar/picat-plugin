@@ -10,11 +10,8 @@ public interface PicatFunctionRule extends PsiElement {
   @NotNull
   PicatArgument getArgument();
 
-  @Nullable
-  PicatBody getBody();
-
-  @Nullable
-  PicatCondition getCondition();
+  @NotNull
+  PicatFunctionRuleTail getFunctionRuleTail();
 
   @NotNull
   PicatHead getHead();

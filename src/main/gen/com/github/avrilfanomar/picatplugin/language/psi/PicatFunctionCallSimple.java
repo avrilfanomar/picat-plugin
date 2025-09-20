@@ -5,12 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PicatVariableIndex extends PsiElement {
+public interface PicatFunctionCallSimple extends PsiElement {
+
+  @Nullable
+  PicatArgument getArgument();
+
+  @Nullable
+  PicatArgumentListTail getArgumentListTail();
 
   @NotNull
-  List<PicatArgument> getArgumentList();
-
-  @NotNull
-  PsiElement getVariable();
+  PicatAtom getAtom();
 
 }

@@ -29,8 +29,8 @@ public class PicatArgumentImpl extends ASTWrapperPsiElement implements PicatArgu
 
   @Override
   @NotNull
-  public PicatExpression getExpression() {
-    return findNotNullChildByClass(PicatExpression.class);
+  public PicatExpressionWithRelations getExpressionWithRelations() {
+    return findNotNullChildByClass(PicatExpressionWithRelations.class);
   }
 
 }

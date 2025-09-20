@@ -28,21 +28,15 @@ public class PicatForeachLoopImpl extends ASTWrapperPsiElement implements PicatF
   }
 
   @Override
-  @NotNull
-  public List<PicatCondition> getConditionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatCondition.class);
+  @Nullable
+  public PicatForeachBody getForeachBody() {
+    return findChildByClass(PicatForeachBody.class);
   }
 
   @Override
-  @NotNull
-  public PicatGoal getGoal() {
-    return findNotNullChildByClass(PicatGoal.class);
-  }
-
-  @Override
-  @NotNull
-  public List<PicatIterator> getIteratorList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatIterator.class);
+  @Nullable
+  public PicatForeachItems getForeachItems() {
+    return findChildByClass(PicatForeachItems.class);
   }
 
 }

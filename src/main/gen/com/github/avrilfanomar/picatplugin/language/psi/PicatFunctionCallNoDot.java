@@ -8,12 +8,12 @@ import com.intellij.psi.PsiElement;
 public interface PicatFunctionCallNoDot extends PsiElement {
 
   @Nullable
-  PicatAtom getAtom();
+  PicatArgument getArgument();
 
   @Nullable
-  PicatTerm getTerm();
+  PicatArgumentListTail getArgumentListTail();
 
   @Nullable
-  PicatTermListTail getTermListTail();
+  PicatFunctionCallNoDotSimple getFunctionCallNoDotSimple();
 
 }

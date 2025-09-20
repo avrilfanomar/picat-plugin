@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 public interface PicatNegated extends PsiElement {
 
   @Nullable
-  PicatEnclosedGoal getEnclosedGoal();
+  PicatExpressionWithRelations getExpressionWithRelations();
 
   @Nullable
   PicatNegated getNegated();

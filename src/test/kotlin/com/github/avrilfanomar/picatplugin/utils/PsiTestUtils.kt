@@ -51,17 +51,22 @@ object PsiTestUtils {
      * @param testContext A descriptive context for the test
      */
     fun assertNoPsiErrorsWithDetailedLogging(file: PsiFile, testContext: String) {
-        // Debug output of the entire PSI tree
-        println("[DEBUG_LOG] $testContext PSI Tree:\n" + DebugUtil.psiToString(file, true))
-
         // Check for PSI parsing errors
         val errorElements = PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
-        println("[DEBUG_LOG] Found ${errorElements.size} PSI parsing errors")
+        println("[DEBUG_LOG] Found ${errorElements.size} PSI parsing errors in $testContext")
 
         if (errorElements.isNotEmpty()) {
+            val doc = file.viewProvider.document
             errorElements.forEachIndexed { index, error ->
+                val lineInfo = if (doc != null) {
+                    val line = doc.getLineNumber(error.textOffset) + 1
+                    val start = doc.getLineStartOffset(doc.getLineNumber(error.textOffset))
+                    val end = doc.getLineEndOffset(doc.getLineNumber(error.textOffset))
+                    val lineText = doc.getText(com.intellij.openapi.util.TextRange(start, end)).trim()
+                    " line=$line lineText='$lineText'"
+                } else ""
                 println(
-                    "[DEBUG_LOG] Error $index: '${error.errorDescription}' at text: '${error.text}' parent: '${error.parent?.javaClass?.simpleName}' context: '${
+                    "[DEBUG_LOG] Error $index: '${error.errorDescription}' at text: '${error.text}' parent: '${error.parent?.javaClass?.simpleName}'$lineInfo context: '${
                         error.parent?.text?.take(100)
                     }'"
                 )
@@ -74,6 +79,9 @@ object PsiTestUtils {
                 println("[DEBUG_LOG] Error context: '${error.parent?.text?.take(200)}'")
                 println("[DEBUG_LOG] ---")
             }
+
+            // Debug output suppressed to avoid overly long logs. Uncomment for deep debugging if needed.
+            println("[DEBUG_LOG] $testContext PSI Tree:\n" + DebugUtil.psiToString(file, true))
         }
 
         Assertions.assertEquals(

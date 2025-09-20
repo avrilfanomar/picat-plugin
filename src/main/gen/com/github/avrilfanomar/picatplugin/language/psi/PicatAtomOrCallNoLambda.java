@@ -7,13 +7,13 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatAtomOrCallNoLambda extends PsiElement {
 
+  @Nullable
+  PicatArgument getArgument();
+
+  @Nullable
+  PicatArgumentListTail getArgumentListTail();
+
   @NotNull
   PicatAtom getAtom();
-
-  @Nullable
-  PicatTerm getTerm();
-
-  @Nullable
-  PicatTermListTail getTermListTail();
 
 }

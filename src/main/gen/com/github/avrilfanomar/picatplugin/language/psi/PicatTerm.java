@@ -35,6 +35,9 @@ public interface PicatTerm extends PsiElement {
   PsiElement getInteger();
 
   @Nullable
+  PsiElement getString();
+
+  @Nullable
   PsiElement getVariable();
 
 }

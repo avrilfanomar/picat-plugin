@@ -8,9 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface PicatQualifiedFunctionCall extends PsiElement {
 
   @Nullable
-  PicatFunctionArgument getFunctionArgument();
+  PicatArgument getArgument();
 
   @Nullable
-  PicatFunctionArgumentListTail getFunctionArgumentListTail();
+  PicatArgumentListTail getArgumentListTail();
 
 }

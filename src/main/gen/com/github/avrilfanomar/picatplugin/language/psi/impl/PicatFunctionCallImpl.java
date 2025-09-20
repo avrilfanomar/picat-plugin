@@ -29,20 +29,8 @@ public class PicatFunctionCallImpl extends ASTWrapperPsiElement implements Picat
 
   @Override
   @Nullable
-  public PicatAtom getAtom() {
-    return findChildByClass(PicatAtom.class);
-  }
-
-  @Override
-  @Nullable
-  public PicatFunctionArgument getFunctionArgument() {
-    return findChildByClass(PicatFunctionArgument.class);
-  }
-
-  @Override
-  @Nullable
-  public PicatFunctionArgumentListTail getFunctionArgumentListTail() {
-    return findChildByClass(PicatFunctionArgumentListTail.class);
+  public PicatFunctionCallSimple getFunctionCallSimple() {
+    return findChildByClass(PicatFunctionCallSimple.class);
   }
 
   @Override

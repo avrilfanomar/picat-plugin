@@ -28,21 +28,21 @@ public class PicatAtomOrCallNoLambdaImpl extends ASTWrapperPsiElement implements
   }
 
   @Override
+  @Nullable
+  public PicatArgument getArgument() {
+    return findChildByClass(PicatArgument.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatArgumentListTail getArgumentListTail() {
+    return findChildByClass(PicatArgumentListTail.class);
+  }
+
+  @Override
   @NotNull
   public PicatAtom getAtom() {
     return findNotNullChildByClass(PicatAtom.class);
-  }
-
-  @Override
-  @Nullable
-  public PicatTerm getTerm() {
-    return findChildByClass(PicatTerm.class);
-  }
-
-  @Override
-  @Nullable
-  public PicatTermListTail getTermListTail() {
-    return findChildByClass(PicatTermListTail.class);
   }
 
 }

@@ -34,9 +34,9 @@ public class PicatVariableListTailImpl extends ASTWrapperPsiElement implements P
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PsiElement getVariable() {
-    return findNotNullChildByType(VARIABLE);
+    return findChildByType(VARIABLE);
   }
 
 }

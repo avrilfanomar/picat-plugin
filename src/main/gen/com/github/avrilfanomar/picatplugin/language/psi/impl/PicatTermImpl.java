@@ -83,6 +83,12 @@ public class PicatTermImpl extends ASTWrapperPsiElement implements PicatTerm {
 
   @Override
   @Nullable
+  public PsiElement getString() {
+    return findChildByType(STRING);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getVariable() {
     return findChildByType(VARIABLE);
   }

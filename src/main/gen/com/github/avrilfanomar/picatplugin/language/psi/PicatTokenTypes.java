@@ -27,6 +27,7 @@ public interface PicatTokenTypes {
   IElementType CONDITION = new PicatElementType("CONDITION");
   IElementType CONJUNCTION = new PicatElementType("CONJUNCTION");
   IElementType CONJUNCTION_AND = new PicatElementType("CONJUNCTION_AND");
+  IElementType CONJUNCTION_TAIL = new PicatElementType("CONJUNCTION_TAIL");
   IElementType DISJUNCTION = new PicatElementType("DISJUNCTION");
   IElementType DISJUNCTION_OR = new PicatElementType("DISJUNCTION_OR");
   IElementType DOLLAR_ESCAPED_ATOM = new PicatElementType("DOLLAR_ESCAPED_ATOM");
@@ -38,18 +39,27 @@ public interface PicatTokenTypes {
   IElementType EXCLUSIVE_OR = new PicatElementType("EXCLUSIVE_OR");
   IElementType EXPRESSION = new PicatElementType("EXPRESSION");
   IElementType EXPRESSION_WITH_RELATIONS = new PicatElementType("EXPRESSION_WITH_RELATIONS");
+  IElementType FOREACH_BODY = new PicatElementType("FOREACH_BODY");
+  IElementType FOREACH_GOAL = new PicatElementType("FOREACH_GOAL");
+  IElementType FOREACH_ITEMS = new PicatElementType("FOREACH_ITEMS");
+  IElementType FOREACH_ITEMS_TAIL = new PicatElementType("FOREACH_ITEMS_TAIL");
   IElementType FOREACH_LOOP = new PicatElementType("FOREACH_LOOP");
   IElementType FUNCTION_ARGUMENT = new PicatElementType("FUNCTION_ARGUMENT");
   IElementType FUNCTION_ARGUMENT_LIST_TAIL = new PicatElementType("FUNCTION_ARGUMENT_LIST_TAIL");
   IElementType FUNCTION_CALL = new PicatElementType("FUNCTION_CALL");
   IElementType FUNCTION_CALL_NO_DOT = new PicatElementType("FUNCTION_CALL_NO_DOT");
+  IElementType FUNCTION_CALL_NO_DOT_SIMPLE = new PicatElementType("FUNCTION_CALL_NO_DOT_SIMPLE");
+  IElementType FUNCTION_CALL_SIMPLE = new PicatElementType("FUNCTION_CALL_SIMPLE");
   IElementType FUNCTION_CLAUSE = new PicatElementType("FUNCTION_CLAUSE");
   IElementType FUNCTION_DEFINITION = new PicatElementType("FUNCTION_DEFINITION");
   IElementType FUNCTION_DIRECTIVE = new PicatElementType("FUNCTION_DIRECTIVE");
   IElementType FUNCTION_FACT = new PicatElementType("FUNCTION_FACT");
   IElementType FUNCTION_RULE = new PicatElementType("FUNCTION_RULE");
+  IElementType FUNCTION_RULE_TAIL = new PicatElementType("FUNCTION_RULE_TAIL");
   IElementType GOAL = new PicatElementType("GOAL");
   IElementType HEAD = new PicatElementType("HEAD");
+  IElementType HEAD_ARGS = new PicatElementType("HEAD_ARGS");
+  IElementType IF_GOAL = new PicatElementType("IF_GOAL");
   IElementType IF_THEN_ELSE = new PicatElementType("IF_THEN_ELSE");
   IElementType IMPLICATION = new PicatElementType("IMPLICATION");
   IElementType IMPORT_DECLARATION = new PicatElementType("IMPORT_DECLARATION");
@@ -276,6 +286,9 @@ public interface PicatTokenTypes {
       else if (type == CONJUNCTION_AND) {
         return new PicatConjunctionAndImpl(node);
       }
+      else if (type == CONJUNCTION_TAIL) {
+        return new PicatConjunctionTailImpl(node);
+      }
       else if (type == DISJUNCTION) {
         return new PicatDisjunctionImpl(node);
       }
@@ -309,6 +322,18 @@ public interface PicatTokenTypes {
       else if (type == EXPRESSION_WITH_RELATIONS) {
         return new PicatExpressionWithRelationsImpl(node);
       }
+      else if (type == FOREACH_BODY) {
+        return new PicatForeachBodyImpl(node);
+      }
+      else if (type == FOREACH_GOAL) {
+        return new PicatForeachGoalImpl(node);
+      }
+      else if (type == FOREACH_ITEMS) {
+        return new PicatForeachItemsImpl(node);
+      }
+      else if (type == FOREACH_ITEMS_TAIL) {
+        return new PicatForeachItemsTailImpl(node);
+      }
       else if (type == FOREACH_LOOP) {
         return new PicatForeachLoopImpl(node);
       }
@@ -323,6 +348,12 @@ public interface PicatTokenTypes {
       }
       else if (type == FUNCTION_CALL_NO_DOT) {
         return new PicatFunctionCallNoDotImpl(node);
+      }
+      else if (type == FUNCTION_CALL_NO_DOT_SIMPLE) {
+        return new PicatFunctionCallNoDotSimpleImpl(node);
+      }
+      else if (type == FUNCTION_CALL_SIMPLE) {
+        return new PicatFunctionCallSimpleImpl(node);
       }
       else if (type == FUNCTION_CLAUSE) {
         return new PicatFunctionClauseImpl(node);
@@ -339,11 +370,20 @@ public interface PicatTokenTypes {
       else if (type == FUNCTION_RULE) {
         return new PicatFunctionRuleImpl(node);
       }
+      else if (type == FUNCTION_RULE_TAIL) {
+        return new PicatFunctionRuleTailImpl(node);
+      }
       else if (type == GOAL) {
         return new PicatGoalImpl(node);
       }
       else if (type == HEAD) {
         return new PicatHeadImpl(node);
+      }
+      else if (type == HEAD_ARGS) {
+        return new PicatHeadArgsImpl(node);
+      }
+      else if (type == IF_GOAL) {
+        return new PicatIfGoalImpl(node);
       }
       else if (type == IF_THEN_ELSE) {
         return new PicatIfThenElseImpl(node);

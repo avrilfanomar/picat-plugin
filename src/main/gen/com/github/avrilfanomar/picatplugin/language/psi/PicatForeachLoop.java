@@ -7,13 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatForeachLoop extends PsiElement {
 
-  @NotNull
-  List<PicatCondition> getConditionList();
+  @Nullable
+  PicatForeachBody getForeachBody();
 
-  @NotNull
-  PicatGoal getGoal();
-
-  @NotNull
-  List<PicatIterator> getIteratorList();
+  @Nullable
+  PicatForeachItems getForeachItems();
 
 }
