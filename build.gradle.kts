@@ -97,11 +97,11 @@ intellijPlatform {
     }
 
     pluginVerification {
-        // Avoid relying on transiet EAP builds that may disappear from repositories.
+        // Avoid relying on transient EAP builds that may disappear from repositories.
         // Verify against the explicitly supported/stable IDE version(s) instead.
         ides {
             // Verify only against the declared platform to keep CI stable.
-            ide(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
+            create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion")) { }
         }
     }
 
