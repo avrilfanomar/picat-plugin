@@ -22,6 +22,7 @@ This plugin provides support for the [Picat](http://picat-lang.org/) programming
             <li>Code folding</li>
             <li>File type recognition</li>
             <li>Custom file icon</li>
+            <li>Standard modules recognition: attaches <code>lib</code> directory next to the Picat executable as read-only library; navigate from <code>import</code> to stdlib modules</li>
         </ul>
 
         <p>This plugin is licensed under the <a href="https://github.com/avrilfanomar/picat-plugin/blob/main/LICENSE">Apache License 2.0</a>.</p>

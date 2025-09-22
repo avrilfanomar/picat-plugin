@@ -2,7 +2,9 @@ package com.github.avrilfanomar.picatplugin.language.psi.impl
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPsiImplUtil
+import com.github.avrilfanomar.picatplugin.language.psi.PicatImportItem
 import com.github.avrilfanomar.picatplugin.language.references.PicatReference
+import com.github.avrilfanomar.picatplugin.language.references.PicatImportModuleReference
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
@@ -18,7 +20,13 @@ abstract class PicatAtomMixin(node: ASTNode) : ASTWrapperPsiElement(node), Picat
         val id = nameIdentifier ?: return PsiReference.EMPTY_ARRAY
         val start = id.startOffsetInParent
         val range = TextRange(start, start + id.textLength)
-        return arrayOf(PicatReference(this, range))
+        // If this atom belongs to an import item, resolve it as a stdlib module file
+        val isModule = this.parent is PicatImportItem
+        return if (isModule) {
+            arrayOf(PicatImportModuleReference(this, range))
+        } else {
+            arrayOf(PicatReference(this, range))
+        }
     }
 
     override fun getReference(): PsiReference? = getReferences().firstOrNull()

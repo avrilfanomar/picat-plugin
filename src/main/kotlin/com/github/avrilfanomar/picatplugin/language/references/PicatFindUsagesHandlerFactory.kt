@@ -36,19 +36,21 @@ class PicatFindUsagesHandlerFactory : FindUsagesHandlerFactory() {
                 processor: Processor<in UsageInfo>,
                 options: FindUsagesOptions
             ): Boolean {
-                val project: Project = element.project
-                val helper = PsiSearchHelper.getInstance(project)
-                val scope = options.searchScope
-                val word = element.text
-                // Search for occurrences of the identifier in code
-                helper.processElementsWithWord({ target, _ ->
-                    // Prefer reporting the leaf or the parent PSI element as the usage location
-                    val usageElement: PsiElement = when (target) {
-                        else -> target
-                    }
-                    processor.process(UsageInfo(usageElement))
-                }, scope, word, UsageSearchContext.IN_CODE, true)
-                return true
+                return com.intellij.openapi.application.ReadAction.compute<Boolean, RuntimeException> {
+                    val project: Project = element.project
+                    val helper = PsiSearchHelper.getInstance(project)
+                    val scope = options.searchScope
+                    val word = element.text
+                    // Search for occurrences of the identifier in code
+                    helper.processElementsWithWord({ target, _ ->
+                        // Prefer reporting the leaf or the parent PSI element as the usage location
+                        val usageElement: PsiElement = when (target) {
+                            else -> target
+                        }
+                        processor.process(UsageInfo(usageElement))
+                    }, scope, word, UsageSearchContext.IN_CODE, true)
+                    true
+                }
             }
 
             override fun getPrimaryElements(): Array<PsiElement> {

@@ -6,6 +6,7 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCall
 import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
 import com.github.avrilfanomar.picatplugin.language.psi.PicatArgument
 import com.github.avrilfanomar.picatplugin.language.psi.PicatArgumentListTail
+import com.github.avrilfanomar.picatplugin.stdlib.PicatStdlibUtil
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
@@ -32,11 +33,25 @@ class PicatReference(element: PsiElement, rangeInElement: TextRange) :
             results = ResolveResult.EMPTY_ARRAY
         } else {
             val usageArity = computeUsageArity(element)
-            val heads = PsiTreeUtil.findChildrenOfType(file, PicatHead::class.java)
-                .sortedBy { it.textOffset }
-            val matches = heads.filter { h ->
+            // Local heads in the current file
+            val localHeads = PsiTreeUtil.findChildrenOfType(file, PicatHead::class.java)
+            // Heads from implicit stdlib modules: basic and io (if available)
+            val basicPsi = PicatStdlibUtil.findStdlibModulePsiFile(element.project, "basic")
+            val ioPsi = PicatStdlibUtil.findStdlibModulePsiFile(element.project, "io")
+            val basicHeads = if (basicPsi != null) PsiTreeUtil.findChildrenOfType(basicPsi, PicatHead::class.java) else emptySet()
+            val ioHeads = if (ioPsi != null) PsiTreeUtil.findChildrenOfType(ioPsi, PicatHead::class.java) else emptySet()
+
+            val localMatches = localHeads.filter { h ->
                 h.atomName() == name && (usageArity?.let { it == h.arity() } ?: true)
-            }
+            }.sortedBy { it.textOffset }
+            val basicMatches = basicHeads.filter { h ->
+                h.atomName() == name && (usageArity?.let { it == h.arity() } ?: true)
+            }.sortedBy { it.textOffset }
+            val ioMatches = ioHeads.filter { h ->
+                h.atomName() == name && (usageArity?.let { it == h.arity() } ?: true)
+            }.sortedBy { it.textOffset }
+            val stdlibMatches = basicMatches + ioMatches
+            val matches = if (localMatches.isNotEmpty()) localMatches else stdlibMatches
             results = if (matches.isEmpty()) {
                 ResolveResult.EMPTY_ARRAY
             } else {
@@ -59,7 +74,12 @@ class PicatReference(element: PsiElement, rangeInElement: TextRange) :
 
     override fun getVariants(): Array<Any> {
         val file = element.containingFile ?: return emptyArray()
-        val heads = PsiTreeUtil.findChildrenOfType(file, PicatHead::class.java)
+        val localHeads = PsiTreeUtil.findChildrenOfType(file, PicatHead::class.java)
+        val basicPsi = PicatStdlibUtil.findStdlibModulePsiFile(element.project, "basic")
+        val ioPsi = PicatStdlibUtil.findStdlibModulePsiFile(element.project, "io")
+        val basicHeads = if (basicPsi != null) PsiTreeUtil.findChildrenOfType(basicPsi, PicatHead::class.java) else emptySet()
+        val ioHeads = if (ioPsi != null) PsiTreeUtil.findChildrenOfType(ioPsi, PicatHead::class.java) else emptySet()
+        val heads = localHeads + basicHeads + ioHeads
         val nameArityPairs = heads.mapNotNull { head ->
             val name = head.atomName() ?: return@mapNotNull null
             name to head.arity()
