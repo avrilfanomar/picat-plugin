@@ -35,7 +35,8 @@ class PicatParserDefinition : ParserDefinition {
     override fun getWhitespaceTokens(): TokenSet = TokenSet.create(TokenType.WHITE_SPACE)
 
     override fun getCommentTokens(): TokenSet = TokenSet.create(
-        PicatTokenTypes.COMMENT
+        PicatTokenTypes.COMMENT,
+        PicatTokenTypes.MULTILINE_COMMENT
     )
 
     override fun getStringLiteralElements(): TokenSet = TokenSet.create(PicatTokenTypes.STRING)
