@@ -1,6 +1,5 @@
 package com.github.avrilfanomar.picatplugin.language.references
 
-import com.github.avrilfanomar.picatplugin.language.psi.PicatImportItem
 import com.github.avrilfanomar.picatplugin.stdlib.PicatStdlibUtil
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
@@ -20,15 +19,17 @@ class PicatImportModuleReference(element: PsiElement, rangeInElement: TextRange)
         val moduleName = try {
             fullText.substring(rangeInElement.startOffset, rangeInElement.endOffset)
                 .trim('`', '\'', '"')
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             fullText.trim('`', '\'', '"')
         }
-        if (moduleName.isEmpty()) return null
-
-        val vf = PicatStdlibUtil.findStdlibModuleVFile(project, moduleName) ?: return null
-        return PsiManager.getInstance(project).findFile(vf)
+        val psi = if (moduleName.isEmpty()) {
+            null
+        } else {
+            val vf = PicatStdlibUtil.findStdlibModuleVFile(project, moduleName)
+            vf?.let { PsiManager.getInstance(project).findFile(it) }
+        }
+        return psi
     }
-
 
     override fun getVariants(): Array<Any> = emptyArray()
 }

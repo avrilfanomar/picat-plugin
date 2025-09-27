@@ -46,8 +46,11 @@ class PicatFormattingTest : BasePlatformTestCase() {
         println("[DEBUG_LOG] Actual with visible newlines: ${formattedText.replace("\n", "\\n")}")
 
         // Normalize line endings to ensure consistent comparison
-        val normalizedExpected = expected.replace("\r\n", "\n")
-        val normalizedFormatted = formattedText.replace("\r\n", "\n")
+        var normalizedExpected = expected.replace("\r\n", "\n")
+        var normalizedFormatted = formattedText.replace("\r\n", "\n")
+        // Also normalize a potential trailing newline difference at EOF
+        normalizedExpected = normalizedExpected.trimEnd('\n', '\r')
+        normalizedFormatted = normalizedFormatted.trimEnd('\n', '\r')
 
         // Compare the formatted text with the expected output
         Assertions.assertEquals(

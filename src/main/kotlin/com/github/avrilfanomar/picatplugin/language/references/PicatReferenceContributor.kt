@@ -5,6 +5,7 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtomOrCallNoLambda
 import com.github.avrilfanomar.picatplugin.language.psi.PicatImportItem
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
@@ -18,14 +19,14 @@ import com.intellij.util.ProcessingContext
  *
  * We only attach references to:
  * - PicatAtom nodes (the atom element itself), and
- * - PicatAtomOrCallNoLambda nodes (call expressions without lambda),
+ * - PicatAtomOrCallNoLambda nodes (call expressions without a lambda),
  * - PicatImportItem (module import) atoms to stdlib files,
  * and only over the atom's text range within those elements.
  */
 class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openapi.project.DumbAware {
 
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
-        // Atom element itself
+        // Atom element itself (standalone atoms only, not inside calls)
         registrar.registerReferenceProvider(
             psiElement(PicatAtom::class.java).withLanguage(PicatLanguage),
             object : PsiReferenceProvider() {
@@ -33,24 +34,16 @@ class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openap
                     element: PsiElement,
                     context: ProcessingContext
                 ): Array<PsiReference> {
-                    val atom = element as PicatAtom
-                    // Skip atoms that are part of an import item; they have a dedicated module reference
-                    if (atom.parent is com.github.avrilfanomar.picatplugin.language.psi.PicatImportItem) {
-                        return PsiReference.EMPTY_ARRAY
-                    }
-                    val id = atom.identifier ?: atom.singleQuotedAtom
-                    return if (id != null) {
-                        val startInParent = id.startOffsetInParent
-                        val range = TextRange(startInParent, startInParent + id.textLength)
-                        arrayOf(PicatReference(atom, range))
-                    } else PsiReference.EMPTY_ARRAY
+                    // Disabled atom-level predicate references to avoid ambiguity; call references handle usages.
+                    @Suppress("UNCHECKED_CAST")
+                    return PsiReference.EMPTY_ARRAY as Array<PsiReference>
                 }
             }
         )
 
         // Call node: PicatAtomOrCallNoLambda
         registrar.registerReferenceProvider(
-            psiElement(PicatAtomOrCallNoLambda::class.java).withLanguage(PicatLanguage),
+            psiElement(PicatAtomOrCallNoLambda::class.java),
             object : PsiReferenceProvider() {
                 override fun getReferencesByElement(
                     element: PsiElement,
@@ -59,42 +52,72 @@ class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openap
                     val call = element as PicatAtomOrCallNoLambda
                     val atom = call.atom
                     val id = atom.identifier ?: atom.singleQuotedAtom
-                    return if (id != null) {
-                        val startInParent = id.textOffset - call.textOffset
-                        val range = TextRange(startInParent, startInParent + id.textLength)
+                    val result: Array<PsiReference> = if (id != null) {
+                        val start = id.textOffset - call.textOffset
+                        val range = TextRange(start, start + id.textLength)
                         arrayOf(PicatReference(call, range))
-                    } else PsiReference.EMPTY_ARRAY
+                    } else {
+                        PsiReference.EMPTY_ARRAY
+                    }
+                    return result
                 }
             }
         )
 
         // Import item module reference (e.g., import cp, planner.) -> cp.pi / planner.pi in stdlib
-        // Attach the reference directly to the atom element inside PicatImportItem to ensure visibility
+        // Attaches the reference directly to the atom element inside PicatImportItem to ensure visibility
         registrar.registerReferenceProvider(
             psiElement(PicatAtom::class.java).withLanguage(PicatLanguage),
             object : PsiReferenceProvider() {
-                override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
+                override fun getReferencesByElement(
+                    element: PsiElement,
+                    context: ProcessingContext
+                ): Array<PsiReference> {
                     val atom = element as PicatAtom
-                    if (atom.parent !is PicatImportItem) return PsiReference.EMPTY_ARRAY
-                    val id = atom.identifier ?: atom.singleQuotedAtom ?: return PsiReference.EMPTY_ARRAY
-                    val startInParent = id.startOffsetInParent
-                    val range = TextRange(startInParent, startInParent + id.textLength)
-                    return arrayOf(PicatImportModuleReference(atom, range))
+                    val result: Array<PsiReference> = if (atom.parent !is PicatImportItem) {
+                        @Suppress("UNCHECKED_CAST")
+                        PsiReference.EMPTY_ARRAY as Array<PsiReference>
+                    } else {
+                        val id = atom.identifier ?: atom.singleQuotedAtom
+                        if (id == null) {
+                            @Suppress("UNCHECKED_CAST")
+                            PsiReference.EMPTY_ARRAY as Array<PsiReference>
+                        } else {
+                            val start = id.startOffsetInParent
+                            val range = TextRange(start, start + id.textLength)
+                            arrayOf(PicatImportModuleReference(atom, range))
+                        }
+                    }
+                    return result
                 }
             }
         )
 
-        // Also attach a reference at the PicatImportItem element itself so importItem.references includes it
+        // Also, attach a reference to the PicatImportItem element itself so importItem.references includes it
         registrar.registerReferenceProvider(
             psiElement(PicatImportItem::class.java),
             object : PsiReferenceProvider() {
-                override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
+                override fun getReferencesByElement(
+                    element: PsiElement,
+                    context: ProcessingContext
+                ): Array<PsiReference> {
                     val importItem = element as PicatImportItem
-                    val atom = importItem.atom ?: return PsiReference.EMPTY_ARRAY
-                    val id = atom.identifier ?: atom.singleQuotedAtom ?: return PsiReference.EMPTY_ARRAY
-                    val startInParent = id.textOffset - importItem.textOffset
-                    val range = TextRange(startInParent, startInParent + id.textLength)
-                    return arrayOf(PicatImportModuleReference(importItem, range))
+                    val atom = importItem.atom
+                    val result: Array<PsiReference> = if (atom == null) {
+                        @Suppress("UNCHECKED_CAST")
+                        PsiReference.EMPTY_ARRAY as Array<PsiReference>
+                    } else {
+                        val id = atom.identifier ?: atom.singleQuotedAtom
+                        if (id == null) {
+                            @Suppress("UNCHECKED_CAST")
+                            PsiReference.EMPTY_ARRAY as Array<PsiReference>
+                        } else {
+                            val start = id.textOffset - importItem.textOffset
+                            val range = TextRange(start, start + id.textLength)
+                            arrayOf(PicatImportModuleReference(importItem, range))
+                        }
+                    }
+                    return result
                 }
             }
         )
@@ -104,23 +127,42 @@ class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openap
         registrar.registerReferenceProvider(
             psiElement(),
             object : PsiReferenceProvider() {
-                override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
-                    return when (element) {
+                override fun getReferencesByElement(
+                    element: PsiElement,
+                    context: ProcessingContext
+                ): Array<PsiReference> {
+                    val refs: Array<PsiReference> = when (element) {
                         is PicatImportItem -> {
-                            val atom = element.atom ?: return PsiReference.EMPTY_ARRAY
-                            val id = atom.identifier ?: atom.singleQuotedAtom ?: return PsiReference.EMPTY_ARRAY
-                            val startInParent = id.textOffset - element.textOffset
-                            val range = TextRange(startInParent, startInParent + id.textLength)
-                            arrayOf(PicatImportModuleReference(element, range))
+                            val atom = element.atom
+                            val id = atom?.identifier ?: atom?.singleQuotedAtom
+                            if (id == null) {
+                                @Suppress("UNCHECKED_CAST")
+                                PsiReference.EMPTY_ARRAY as Array<PsiReference>
+                            } else {
+                                val start = id.textOffset - element.textOffset
+                                val range = TextRange(start, start + id.textLength)
+                                arrayOf(PicatImportModuleReference(element, range))
+                            }
                         }
                         is PicatAtom -> {
-                            if (element.parent !is PicatImportItem) return PsiReference.EMPTY_ARRAY
-                            val id = element.identifier ?: element.singleQuotedAtom ?: return PsiReference.EMPTY_ARRAY
-                            val range = TextRange(id.startOffsetInParent, id.startOffsetInParent + id.textLength)
-                            arrayOf(PicatImportModuleReference(element, range))
+                            val parentIsImport = element.parent is PicatImportItem
+                            val id = element.identifier ?: element.singleQuotedAtom
+                            if (!parentIsImport || id == null) {
+                                @Suppress("UNCHECKED_CAST")
+                                PsiReference.EMPTY_ARRAY as Array<PsiReference>
+                            } else {
+                                val start = id.startOffsetInParent
+                                val end = start + id.textLength
+                                val range = TextRange(start, end)
+                                arrayOf(PicatImportModuleReference(element, range))
+                            }
                         }
-                        else -> PsiReference.EMPTY_ARRAY
+                        else -> {
+                            @Suppress("UNCHECKED_CAST")
+                            PsiReference.EMPTY_ARRAY as Array<PsiReference>
+                        }
                     }
+                    return refs
                 }
             }
         )

@@ -25,20 +25,21 @@ class PicatStdlibLibraryProvider : AdditionalLibraryRootsProvider() {
         val exePath = settings.picatExecutablePath.trim()
         if (exePath.isEmpty()) return emptyList()
 
-        val vDir = resolveLibVfsDir(exePath) ?: return emptyList()
-
-        // Create a synthetic library with the lib directory as its source root.
-        val library = object : SyntheticLibrary() {
-            override fun getSourceRoots() = listOf(vDir)
-            override fun equals(other: Any?): Boolean {
-                if (this === other) return true
-                if (other !is SyntheticLibrary) return false
-                return this.sourceRoots == other.sourceRoots
+        val vDir = resolveLibVfsDir(exePath)
+        val library: SyntheticLibrary? = vDir?.let { dir ->
+            // Create a synthetic library with the lib directory as its source root.
+            object : SyntheticLibrary() {
+                override fun getSourceRoots() = listOf(dir)
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) return true
+                    if (other !is SyntheticLibrary) return false
+                    return this.sourceRoots == other.sourceRoots
+                }
+                override fun hashCode(): Int = sourceRoots.hashCode()
+                override fun toString(): String = "Picat Standard Library: " + dir.presentableUrl
             }
-            override fun hashCode(): Int = sourceRoots.hashCode()
-            override fun toString(): String = "Picat Standard Library: " + vDir.presentableUrl
         }
-        return listOf(library)
+        return if (library != null) listOf(library) else emptyList<SyntheticLibrary>()
     }
 
     private fun resolveLibVfsDir(executablePath: String): VirtualFile? {
@@ -46,12 +47,17 @@ class PicatStdlibLibraryProvider : AdditionalLibraryRootsProvider() {
         val baseVf = if (executablePath.contains("://")) {
             vfm.findFileByUrl(executablePath)
         } else {
-            com.intellij.openapi.vfs.LocalFileSystem.getInstance().findFileByPath(executablePath)
+            com.intellij.openapi.vfs.LocalFileSystem.getInstance()
+                .findFileByPath(executablePath)
                 ?: vfm.findFileByUrl("temp://$executablePath")
                 ?: vfm.findFileByUrl("temp:///$executablePath")
-        } ?: return null
-        val home = if (baseVf.isDirectory) baseVf else baseVf.parent ?: return null
-        val lib = home.findChild("lib") ?: return null
-        return if (lib.isDirectory) lib else null
+        }
+        val home = when {
+            baseVf == null -> null
+            baseVf.isDirectory -> baseVf
+            else -> baseVf.parent
+        }
+        val lib = home?.findChild("lib")
+        return if (lib != null && lib.isDirectory) lib else null
     }
 }

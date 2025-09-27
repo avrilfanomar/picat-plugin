@@ -29,17 +29,21 @@ object PicatStdlibUtil {
             vfm.findFileByUrl("file://" + rawPath)
                 ?: vfm.findFileByUrl("temp://" + rawPath)
                 ?: vfm.findFileByUrl("temp:///" + rawPath.trimStart('/'))
-        } ?: return null
-        val picatHome = if (baseVf.isDirectory) baseVf else baseVf.parent ?: return null
-        val libDir = picatHome.findChild("lib") ?: return null
-        return libDir.findChild("$moduleName.pi")
+        }
+        val picatHome = when {
+            baseVf == null -> null
+            baseVf.isDirectory -> baseVf
+            else -> baseVf.parent
+        }
+        val libDir = picatHome?.findChild("lib")
+        return libDir?.findChild("$moduleName.pi")
     }
 
     /**
      * Convenience to get PSI file for a stdlib module by name.
      */
     fun findStdlibModulePsiFile(project: Project, moduleName: String): PsiFile? {
-        val vf = findStdlibModuleVFile(project, moduleName) ?: return null
-        return PsiManager.getInstance(project).findFile(vf)
+        val vf = findStdlibModuleVFile(project, moduleName)
+        return vf?.let { PsiManager.getInstance(project).findFile(it) }
     }
 }
