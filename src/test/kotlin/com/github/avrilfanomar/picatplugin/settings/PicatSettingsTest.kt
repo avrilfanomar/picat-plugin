@@ -1,94 +1,171 @@
 package com.github.avrilfanomar.picatplugin.settings
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
 
-/**
- * Test for the PicatSettings class.
- * This test verifies that the settings are correctly stored and retrieved.
- */
 class PicatSettingsTest : BasePlatformTestCase() {
 
-    @Test
-    fun testGetInstance() {
-        // Get the settings instance for the project
-        val settings = PicatSettings.getInstance(project)
-
-        // Verify that the instance is not null
-        Assertions.assertNotNull(settings, "Settings instance should not be null")
-
-        // Verify that getting the instance again returns the same instance
-        val settings2 = PicatSettings.getInstance(project)
-        Assertions.assertSame(settings, settings2, "Getting the instance twice should return the same instance")
+    fun testSettingsDefaultValues() {
+        assertDoesNotThrow("Settings should have default values") {
+            val settings = PicatSettings()
+            
+            // Test default values
+            assertEquals("Default executable path should be empty", "", settings.picatExecutablePath)
+            assertEquals("Default annotations should be enabled", true, settings.enableAnnotations)
+        }
     }
 
-    @Test
-    fun testPicatExecutablePath() {
-        // Get the settings instance for the project
-        val settings = PicatSettings.getInstance(project)
-
-        // Set the Picat executable path
-        val testPath = "/usr/bin/picat"
-        settings.picatExecutablePath = testPath
-
-        // Verify that the path is correctly stored
-        Assertions.assertEquals(
-            testPath,
-            settings.picatExecutablePath,
-            "Picat executable path should be correctly stored"
-        )
-
-        // Get the settings instance again and verify that the path is still there
-        val settings2 = PicatSettings.getInstance(project)
-        Assertions.assertEquals(
-            testPath,
-            settings2.picatExecutablePath,
-            "Picat executable path should be preserved across instances"
-        )
+    fun testSettingsPropertyAccess() {
+        assertDoesNotThrow("Settings properties should be accessible") {
+            val settings = PicatSettings()
+            
+            // Test setters
+            settings.picatExecutablePath = "/usr/bin/picat"
+            settings.enableAnnotations = false
+            
+            // Test getters
+            assertEquals("/usr/bin/picat", settings.picatExecutablePath)
+            assertEquals(false, settings.enableAnnotations)
+            
+            // Test with different values
+            settings.picatExecutablePath = "/path/to/picat.exe"
+            settings.enableAnnotations = true
+            
+            assertEquals("/path/to/picat.exe", settings.picatExecutablePath)
+            assertEquals(true, settings.enableAnnotations)
+        }
     }
 
-    @Test
-    fun testGetState() {
-        // Get the settings instance for the project
-        val settings = PicatSettings.getInstance(project)
-
-        // Set the Picat executable path
-        val testPath = "/usr/bin/picat"
-        settings.picatExecutablePath = testPath
-
-        // Get the state
-        val state = settings.state
-
-        // Verify that the state is the same as the settings instance
-        Assertions.assertSame(settings, state, "State should be the same as the settings instance")
-
-        // Verify that the state has the correct Picat executable path
-        Assertions.assertEquals(
-            testPath,
-            state.picatExecutablePath,
-            "State should have the correct Picat executable path"
-        )
+    fun testGetStateReturnsInstance() {
+        assertDoesNotThrow("getState should return the instance itself") {
+            val settings = PicatSettings()
+            val state = settings.getState()
+            
+            assertNotNull("State should not be null", state)
+            assertSame("getState should return the same instance", settings, state)
+        }
     }
 
-    @Test
-    fun testLoadState() {
-        // Get the settings instance for the project
-        val settings = PicatSettings.getInstance(project)
+    fun testLoadStateMethod() {
+        assertDoesNotThrow("loadState should work properly") {
+            val settings1 = PicatSettings()
+            val settings2 = PicatSettings()
+            
+            // Set different values in source settings
+            settings1.picatExecutablePath = "/custom/path/picat"
+            settings1.enableAnnotations = false
+            
+            // Load state from settings1 to settings2
+            settings2.loadState(settings1)
+            
+            // Verify state was copied
+            assertEquals("Executable path should be copied", settings1.picatExecutablePath, settings2.picatExecutablePath)
+            assertEquals("Annotations setting should be copied", settings1.enableAnnotations, settings2.enableAnnotations)
+        }
+    }
 
-        // Create a new settings instance with a different path
-        val newSettings = PicatSettings()
-        val testPath = "/usr/local/bin/picat"
-        newSettings.picatExecutablePath = testPath
+    fun testGetInstanceMethod() {
+        assertDoesNotThrow("getInstance should work") {
+            val instance = PicatSettings.getInstance(project)
+            
+            assertNotNull("Instance should not be null", instance)
+            assertTrue("Instance should be PicatSettings", instance is PicatSettings)
+            
+            // Test that getInstance returns consistent instance
+            val instance2 = PicatSettings.getInstance(project)
+            assertSame("getInstance should return the same instance for same project", instance, instance2)
+        }
+    }
 
-        // Load the state from the new settings
-        settings.loadState(newSettings)
+    fun testSettingsWithEmptyStrings() {
+        assertDoesNotThrow("Settings should handle empty strings") {
+            val settings = PicatSettings()
+            
+            settings.picatExecutablePath = ""
+            assertEquals("Should handle empty executable path", "", settings.picatExecutablePath)
+            
+            settings.picatExecutablePath = "   "
+            assertEquals("Should handle whitespace-only path", "   ", settings.picatExecutablePath)
+        }
+    }
 
-        // Verify that the path is correctly loaded
-        Assertions.assertEquals(
-            testPath,
-            settings.picatExecutablePath,
-            "Picat executable path should be correctly loaded"
-        )
+    fun testSettingsWithSpecialCharacters() {
+        assertDoesNotThrow("Settings should handle special characters") {
+            val settings = PicatSettings()
+            
+            // Test path with spaces and special characters
+            val specialPath = "/path with spaces/picat (v1.0)/picat.exe"
+            settings.picatExecutablePath = specialPath
+            assertEquals("Should handle special characters in path", specialPath, settings.picatExecutablePath)
+            
+            // Test very long path
+            val longPath = "/very/long/path/".repeat(20) + "picat"
+            settings.picatExecutablePath = longPath
+            assertEquals("Should handle long paths", longPath, settings.picatExecutablePath)
+        }
+    }
+
+    fun testSettingsPersistenceLifecycle() {
+        assertDoesNotThrow("Settings persistence lifecycle should work") {
+            val original = PicatSettings()
+            original.picatExecutablePath = "/test/path"
+            original.enableAnnotations = false
+            
+            // Get state
+            val state = original.getState()
+            assertNotNull("State should be available", state)
+            
+            // Create new instance and load state
+            val restored = PicatSettings()
+            restored.loadState(state)
+            
+            // Verify restoration
+            assertEquals("Path should be restored", original.picatExecutablePath, restored.picatExecutablePath)
+            assertEquals("Annotations setting should be restored", original.enableAnnotations, restored.enableAnnotations)
+        }
+    }
+
+    fun testMultipleSettingsInstances() {
+        assertDoesNotThrow("Multiple settings instances should work independently") {
+            val settings1 = PicatSettings()
+            val settings2 = PicatSettings()
+            
+            // Set different values
+            settings1.picatExecutablePath = "/path1"
+            settings1.enableAnnotations = true
+            
+            settings2.picatExecutablePath = "/path2"
+            settings2.enableAnnotations = false
+            
+            // Verify independence
+            assertEquals("/path1", settings1.picatExecutablePath)
+            assertEquals("/path2", settings2.picatExecutablePath)
+            assertEquals(true, settings1.enableAnnotations)
+            assertEquals(false, settings2.enableAnnotations)
+        }
+    }
+
+    fun testBooleanPropertyToggling() {
+        assertDoesNotThrow("Boolean property should toggle properly") {
+            val settings = PicatSettings()
+            
+            // Test initial state
+            assertTrue("Initial annotations should be enabled", settings.enableAnnotations)
+            
+            // Toggle
+            settings.enableAnnotations = false
+            assertFalse("Annotations should be disabled", settings.enableAnnotations)
+            
+            // Toggle back
+            settings.enableAnnotations = true
+            assertTrue("Annotations should be enabled again", settings.enableAnnotations)
+        }
+    }
+
+    private fun assertDoesNotThrow(message: String, action: () -> Unit) {
+        try {
+            action()
+        } catch (e: Exception) {
+            fail("$message - Exception: ${e.message}")
+        }
     }
 }
