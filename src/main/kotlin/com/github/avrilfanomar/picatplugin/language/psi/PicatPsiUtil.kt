@@ -11,9 +11,21 @@ import com.intellij.psi.PsiElement
  */
 object PicatPsiUtil {
     // NameIdentifierOwner support for PicatAtom
+    /**
+     * Gets the name of a Picat atom element.
+     * @param element the atom element to get the name from
+     * @return the name text of the atom, or null if not available
+     */
     @JvmStatic
     fun getName(element: PicatAtom?): String? = element?.nameIdentifier?.text
 
+    /**
+     * Sets the name of a Picat atom element.
+     * Currently unsupported - returns the element unchanged to maintain PSI stability.
+     * @param element the atom element to rename
+     * @param newName the new name to set (currently ignored)
+     * @return the unchanged PSI element
+     */
     @JvmStatic
     fun setName(element: PicatAtom, @Suppress("UNUSED_PARAMETER") newName: String?): PsiElement {
         // Name changes are currently unsupported; return an element unchanged to keep PSI stable.
@@ -21,6 +33,12 @@ object PicatPsiUtil {
         return element
     }
 
+    /**
+     * Gets the name identifier element of a Picat atom.
+     * Searches for specific token types like IDENTIFIER, SINGLE_QUOTED_ATOM, MIN, MAX.
+     * @param element the atom element to get the identifier from
+     * @return the name identifier PSI element, or null if not found
+     */
     @JvmStatic
     fun getNameIdentifier(element: PicatAtom): PsiElement? {
         // Prefer specific token types to ensure stability across atoms:

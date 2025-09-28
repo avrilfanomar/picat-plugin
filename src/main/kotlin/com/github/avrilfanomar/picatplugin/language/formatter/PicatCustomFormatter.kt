@@ -2,6 +2,15 @@ package com.github.avrilfanomar.picatplugin.language.formatter
 
 import com.intellij.psi.codeStyle.CodeStyleSettings
 
+/**
+ * Custom formatter for Picat language that handles spacing, indentation, and structural formatting.
+ * 
+ * This formatter processes Picat code by:
+ * - Preserving comments while formatting operators
+ * - Applying appropriate spacing around operators
+ * - Handling structural elements like rule bodies and control blocks
+ * - Managing indentation for nested constructs
+ */
 class PicatCustomFormatter(
     settings: CodeStyleSettings,
 ) {
@@ -12,6 +21,9 @@ class PicatCustomFormatter(
     private val indentEngine = PicatIndentationEngine(settings)
     private val structureFormatter = PicatStructureFormatter(settings)
 
+    /**
+     * Companion object containing constants for formatting behavior.
+     */
     companion object {
         private const val LINE_BREAK_THRESHOLD = 20
     }

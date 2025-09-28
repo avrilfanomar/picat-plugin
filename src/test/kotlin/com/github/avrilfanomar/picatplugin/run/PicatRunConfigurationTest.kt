@@ -1,7 +1,6 @@
 package com.github.avrilfanomar.picatplugin.run
 
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
-import com.intellij.execution.configurations.RuntimeConfigurationError
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.testFramework.fixtures.BasePlatformTestCase

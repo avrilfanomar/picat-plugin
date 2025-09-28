@@ -48,7 +48,9 @@ class PicatSettingsConfigurable(private val project: Project) :
 
     override fun getDisplayName(): String = PicatLanguage.LANGUAGE_ID
 
+    /** Companion object for PicatSettingsConfigurable constants. */
     companion object {
+        /** The unique ID for the Picat settings configurable. */
         const val ID: String = "preferences.picat"
     }
 }

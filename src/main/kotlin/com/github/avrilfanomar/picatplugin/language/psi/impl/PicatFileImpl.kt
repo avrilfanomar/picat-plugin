@@ -6,6 +6,12 @@ import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
 
+/**
+ * PSI file implementation for Picat language files.
+ * 
+ * This class extends PsiFileBase to provide Picat-specific file handling
+ * in the PSI (Program Structure Interface) tree.
+ */
 class PicatFileImpl(viewProvider: FileViewProvider) :
     PsiFileBase(viewProvider, PicatLanguage) {
 

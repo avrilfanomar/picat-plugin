@@ -17,8 +17,11 @@ import com.intellij.psi.tree.IElementType
  * Configuration class for PicatBlock.
  */
 class PicatBlockConfig(
+    /** Code style settings for formatting. */
     val settings: CodeStyleSettings,
+    /** Builder for creating spacing rules. */
     val spacingBuilder: SpacingBuilder? = null,
+    /** Factory for creating child blocks. */
     val blockFactory: PicatBlockFactory? = null
 )
 
@@ -69,8 +72,8 @@ class PicatBlock(
 
     private fun shouldUseNoIndent(context: IndentContext): Boolean {
         return context.elementType == TokenType.WHITE_SPACE ||
-                ((context.elementType == PicatTokenTypes.COMMENT ||
-                        context.elementType == PicatTokenTypes.MULTILINE_COMMENT) && context.parentType == null)
+                (context.elementType == PicatTokenTypes.COMMENT ||
+                        context.elementType == PicatTokenTypes.MULTILINE_COMMENT) && context.parentType == null
     }
 
     private fun shouldUseNormalIndent(context: IndentContext): Boolean {

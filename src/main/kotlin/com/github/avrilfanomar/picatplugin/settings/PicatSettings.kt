@@ -17,7 +17,9 @@ import com.intellij.util.xmlb.XmlSerializerUtil
     storages = [Storage("picatSettings.xml")]
 )
 class PicatSettings : PersistentStateComponent<PicatSettings> {
+    /** Path to the Picat executable. */
     var picatExecutablePath: String = ""
+    /** Whether to enable code annotations and inspections. */
     var enableAnnotations: Boolean = true
 
     override fun getState(): PicatSettings = this
@@ -26,7 +28,9 @@ class PicatSettings : PersistentStateComponent<PicatSettings> {
         XmlSerializerUtil.copyBean(state, this)
     }
 
+    /** Companion object for accessing PicatSettings instances. */
     companion object {
+        /** Gets the PicatSettings instance for the given project. */
         @JvmStatic
         fun getInstance(project: Project): PicatSettings =
             project.getService(PicatSettings::class.java)

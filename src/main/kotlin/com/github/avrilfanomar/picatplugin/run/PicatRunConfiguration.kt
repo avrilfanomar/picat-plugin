@@ -30,8 +30,11 @@ class PicatRunConfiguration(
     name: String
 ) : RunConfigurationBase<PicatRunConfigurationOptions>(project, factory, name) {
 
+    /** Path to the Picat file to execute. */
     var picatFilePath: String = ""
+    /** Command-line parameters to pass to the Picat program. */
     var programParameters: String = ""
+    /** Working directory for the Picat program execution. */
     var workingDirectory: String = project.basePath ?: ""
 
     override fun getOptions(): PicatRunConfigurationOptions {
@@ -101,4 +104,8 @@ class PicatRunConfiguration(
     }
 }
 
+/**
+ * Options class for Picat run configuration.
+ * Extends RunConfigurationOptions to provide Picat-specific configuration storage.
+ */
 class PicatRunConfigurationOptions : RunConfigurationOptions()

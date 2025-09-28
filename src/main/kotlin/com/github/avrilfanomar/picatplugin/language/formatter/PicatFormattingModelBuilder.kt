@@ -21,6 +21,11 @@ class PicatFormatterService {
         return PicatCustomFormatter(defaultSettings)
     }
 
+    /**
+     * Gets or creates a PicatCustomFormatter with specific code style settings.
+     * @param settings the code style settings to use for formatting
+     * @return a PicatCustomFormatter configured with the provided settings
+     */
     fun getFormatter(settings: com.intellij.psi.codeStyle.CodeStyleSettings): PicatCustomFormatter {
         return PicatCustomFormatter(settings)
     }

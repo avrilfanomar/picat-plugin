@@ -14,11 +14,24 @@ import com.intellij.psi.util.PsiTreeUtil
  */
 object PicatElementFactory {
 
+    /**
+     * Creates a temporary Picat file from the given text for PSI element extraction.
+     * @param project the current project
+     * @param text the Picat code text to parse
+     * @return a PSI file containing the parsed code
+     */
     fun createFile(project: Project, text: String): PsiFile {
         return PsiFileFactory.getInstance(project)
             .createFileFromText("dummy.pi", PicatFileType, text)
     }
 
+    /**
+     * Creates a Picat atom element with the specified name.
+     * @param project the current project
+     * @param name the name of the atom to create
+     * @return a PicatAtom PSI element
+     * @throws RuntimeException if the atom cannot be created
+     */
     fun createAtom(project: Project, name: String): PicatAtom {
         val file = createFile(project, "$name.")
         return PsiTreeUtil.findChildOfType(file, PicatAtom::class.java)

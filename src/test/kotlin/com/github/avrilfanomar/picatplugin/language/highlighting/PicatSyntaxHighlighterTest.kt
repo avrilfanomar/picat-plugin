@@ -1,7 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.highlighting
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes
-import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.TokenType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 

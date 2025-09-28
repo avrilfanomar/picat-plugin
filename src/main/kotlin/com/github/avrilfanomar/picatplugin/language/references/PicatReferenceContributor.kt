@@ -5,7 +5,6 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtomOrCallNoLambda
 import com.github.avrilfanomar.picatplugin.language.psi.PicatImportItem
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference

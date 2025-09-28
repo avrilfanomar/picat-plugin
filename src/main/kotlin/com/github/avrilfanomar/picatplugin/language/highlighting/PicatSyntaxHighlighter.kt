@@ -84,29 +84,41 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
     private fun isIdentifier(tokenType: IElementType): Boolean =
         tokenType == PicatTokenTypes.IDENTIFIER
 
+    /** Companion object containing text attribute keys and token sets for syntax highlighting. */
     companion object {
-        // Define text attribute keys for different token types
+        /** Text attributes for Picat keywords. */
         val KEYWORD =
             TextAttributesKey.createTextAttributesKey("PICAT_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD)
+        /** Text attributes for Picat comments. */
         val COMMENT =
             TextAttributesKey.createTextAttributesKey("PICAT_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT)
+        /** Text attributes for Picat strings. */
         val STRING = TextAttributesKey.createTextAttributesKey("PICAT_STRING", DefaultLanguageHighlighterColors.STRING)
+        /** Text attributes for Picat numbers. */
         val NUMBER = TextAttributesKey.createTextAttributesKey("PICAT_NUMBER", DefaultLanguageHighlighterColors.NUMBER)
+        /** Text attributes for Picat operators. */
         val OPERATOR =
             TextAttributesKey.createTextAttributesKey("PICAT_OPERATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN)
+        /** Text attributes for Picat parentheses. */
         val PARENTHESES =
             TextAttributesKey.createTextAttributesKey("PICAT_PARENTHESES", DefaultLanguageHighlighterColors.PARENTHESES)
+        /** Text attributes for Picat braces. */
         val BRACES = TextAttributesKey.createTextAttributesKey("PICAT_BRACES", DefaultLanguageHighlighterColors.BRACES)
+        /** Text attributes for Picat brackets. */
         val BRACKETS =
             TextAttributesKey.createTextAttributesKey("PICAT_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS)
+        /** Text attributes for Picat identifiers. */
         val IDENTIFIER =
             TextAttributesKey.createTextAttributesKey("PICAT_IDENTIFIER", DefaultLanguageHighlighterColors.IDENTIFIER)
+        /** Text attributes for Picat variables. */
         val VARIABLE =
             TextAttributesKey.createTextAttributesKey("PICAT_VARIABLE", DefaultLanguageHighlighterColors.LOCAL_VARIABLE)
 
+        /** Text attributes for bad characters. */
         val BAD_CHARACTER_ATTR =
             TextAttributesKey.createTextAttributesKey("PICAT_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER)
 
+        /** Token set containing all Picat keywords. */
         val KEYWORDS_SET: TokenSet = TokenSet.create(
             PicatTokenTypes.MODULE_KEYWORD,
             PicatTokenTypes.IMPORT_KEYWORD,
@@ -140,6 +152,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.FALSE
         )
 
+        /** Token set containing all Picat operators. */
         val OPERATORS_SET: TokenSet = TokenSet.create(
             PicatTokenTypes.ARROW_OP,
             PicatTokenTypes.ASSIGN_OP,

@@ -54,8 +54,8 @@ class PicatBlockHelper {
      * Checks if the element is a rule body or statement based on parent and grandparent types.
      */
     fun isRuleBodyOrStatement(parentType: IElementType?, grandParentType: IElementType?): Boolean {
-        return (parentType == PicatTokenTypes.BODY &&
-                (grandParentType == PicatTokenTypes.PREDICATE_RULE || grandParentType == PicatTokenTypes.FUNCTION_RULE))
+        return parentType == PicatTokenTypes.BODY &&
+                (grandParentType == PicatTokenTypes.PREDICATE_RULE || grandParentType == PicatTokenTypes.FUNCTION_RULE)
     }
 
     /**
@@ -66,13 +66,13 @@ class PicatBlockHelper {
         grandParentType: IElementType?,
         greatGrandParentType: IElementType?
     ): Boolean {
-        return (parentType == PicatTokenTypes.GOAL &&
+        return parentType == PicatTokenTypes.GOAL &&
                 (grandParentType == PicatTokenTypes.BODY ||
                         grandParentType == PicatTokenTypes.PREDICATE_RULE ||
                         grandParentType == PicatTokenTypes.FUNCTION_RULE) &&
                 (greatGrandParentType == PicatTokenTypes.PREDICATE_RULE ||
                         greatGrandParentType == PicatTokenTypes.FUNCTION_RULE ||
-                        greatGrandParentType == PicatTokenTypes.GOAL))
+                        greatGrandParentType == PicatTokenTypes.GOAL)
     }
 
     /**

@@ -9,6 +9,8 @@ import com.intellij.lang.Language
 object PicatLanguage : Language("Picat") {
     override fun getDisplayName(): String = LANGUAGE_ID
     override fun getMimeTypes(): Array<String> = arrayOf("text/picat")
+    
+    /** The unique identifier for the Picat language. */
     const val LANGUAGE_ID = "Picat"
 
     @Suppress("unused")

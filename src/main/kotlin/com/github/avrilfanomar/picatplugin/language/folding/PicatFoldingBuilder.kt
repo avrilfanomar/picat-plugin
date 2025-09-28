@@ -84,11 +84,11 @@ class PicatFoldingBuilder : FoldingBuilderEx(), com.intellij.openapi.project.Dum
                 // End at the end of the last clause's line including its trailing newline so </fold> is on its own line
                 val endLine = document.getLineNumber(last.textRange.endOffset)
                 val end =
-                    (if (endLine + 1 < document.lineCount) {
+                    if (endLine + 1 < document.lineCount) {
                         document.getLineStartOffset(endLine + 1)
                     } else {
                         document.textLength
-                    })
+                    }
                 val range = TextRange(start, end)
                 // Do not require multiline: groups should fold even if subsequent clause(s) are single-line
                 val placeholder = "+${groupSize - 1} " + if (groupSize - 1 == 1) "clause" else "clauses"
@@ -186,6 +186,9 @@ class PicatFoldingBuilder : FoldingBuilderEx(), com.intellij.openapi.project.Dum
 
     override fun isCollapsedByDefault(node: ASTNode): Boolean = false
 
+    /**
+     * Companion object containing constants for folding behavior.
+     */
     companion object {
         private const val ELLIPSIS = "…"
     }

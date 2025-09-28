@@ -83,8 +83,8 @@ class PicatAnnotatorTest : BasePlatformTestCase() {
         val text = myFixture.file.text
         val anyAnnot = infos.any { info ->
             info.severity == com.intellij.lang.annotation.HighlightSeverity.ERROR ||
-                (info.severity == com.intellij.lang.annotation.HighlightSeverity.WEAK_WARNING &&
-                    text.substring(info.startOffset, info.endOffset) == "'foo'")
+                info.severity == com.intellij.lang.annotation.HighlightSeverity.WEAK_WARNING &&
+                    text.substring(info.startOffset, info.endOffset) == "'foo'"
         }
         assertFalse("No annotations should be produced when disabled in settings", anyAnnot)
 

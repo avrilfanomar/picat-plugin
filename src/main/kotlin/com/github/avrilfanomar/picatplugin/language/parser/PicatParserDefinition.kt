@@ -8,7 +8,6 @@ import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
 import com.intellij.lexer.Lexer
 import com.intellij.lexer.FlexAdapter
-import java.io.Reader
 import com.intellij.openapi.project.Project
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
@@ -48,4 +47,8 @@ class PicatParserDefinition : ParserDefinition {
         PicatFileImpl(viewProvider)
 }
 
+/**
+ * File element type for Picat language files.
+ * Used by the parser to represent the root element of a Picat file in the PSI tree.
+ */
 val FILE = IFileElementType(PicatLanguage)

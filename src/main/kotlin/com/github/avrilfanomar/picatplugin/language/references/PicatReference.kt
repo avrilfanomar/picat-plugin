@@ -39,7 +39,7 @@ class PicatReference(element: PsiElement, rangeInElement: TextRange) :
         var ident = sliced.trim('`', '\'', '"')
         if (ident.isEmpty() || ident.contains('(') || ident.contains(')')) {
             val alt = (element as? PicatAtomOrCallNoLambda)?.atom
-                ?: (element as? PicatAtom)
+                ?: element as? PicatAtom
             val altName = alt?.identifier?.text
                 ?: alt?.singleQuotedAtom?.text?.trim('`', '\'', '"')
             if (!altName.isNullOrBlank()) ident = altName
