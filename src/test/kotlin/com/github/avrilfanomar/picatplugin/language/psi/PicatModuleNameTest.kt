@@ -1,6 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
+import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions
@@ -23,7 +24,7 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all import statements in the file
-        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportDeclaration::class.java)
+        val importStatements = PsiTreeUtil.findChildrenOfType(file as PsiElement, PicatImportDeclaration::class.java)
 
         // Verify that there is exactly one import statement
         Assertions.assertEquals(1, importStatements.size, "There should be exactly one import statement")
@@ -53,7 +54,7 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all import statements in the file
-        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportDeclaration::class.java)
+        val importStatements = PsiTreeUtil.findChildrenOfType(file as PsiElement, PicatImportDeclaration::class.java)
 
         // Verify that there is exactly one import statement
         Assertions.assertEquals(1, importStatements.size, "There should be exactly one import statement")
@@ -85,7 +86,7 @@ class PicatModuleNameTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all import statements in the file
-        val importStatements = PsiTreeUtil.findChildrenOfType(file, PicatImportDeclaration::class.java)
+        val importStatements = PsiTreeUtil.findChildrenOfType(file as PsiElement, PicatImportDeclaration::class.java)
 
         // Verify that there are exactly three import statements
         Assertions.assertEquals(3, importStatements.size, "There should be exactly three import statements")

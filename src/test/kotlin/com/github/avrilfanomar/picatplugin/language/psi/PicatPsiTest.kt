@@ -1,7 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.psi
 
 import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
-import com.intellij.psi.impl.DebugUtil
+import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions
@@ -22,13 +22,13 @@ class PicatPsiTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all predicate facts in the file
-        val facts = PsiTreeUtil.findChildrenOfType(file, PicatPredicateFact::class.java)
+        val facts = PsiTreeUtil.findChildrenOfType(file as PsiElement, PicatPredicateFact::class.java)
 
         // Verify that there is exactly one fact
         Assertions.assertEquals(
             1,
             facts.size,
-            "There should be exactly one fact, psi:" + DebugUtil.psiToString(file, false)
+            "There should be exactly one fact"
         )
 
         val fact = facts.first()
@@ -48,7 +48,7 @@ class PicatPsiTest : BasePlatformTestCase() {
         val file = myFixture.file as PicatFileImpl
 
         // Find all include statements in the file
-        val includeStatements = PsiTreeUtil.findChildrenOfType(file, PicatIncludeDeclaration::class.java)
+        val includeStatements = PsiTreeUtil.findChildrenOfType(file as PsiElement, PicatIncludeDeclaration::class.java)
 
         // Verify that there is exactly one include statement
         Assertions.assertEquals(1, includeStatements.size, "There should be exactly one include statement")
