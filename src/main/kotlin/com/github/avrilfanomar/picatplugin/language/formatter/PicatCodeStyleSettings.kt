@@ -35,7 +35,7 @@ class PicatCodeStyleSettings(settings: CodeStyleSettings) :
     var spaceBeforeRuleOperators = true
     /** Whether to add spaces around constraint operators (#=, #<, #>). */
     @JvmField
-    var spaceAroundConstraintOperators = tru
+    var spaceAroundConstraintOperators = true
     /** Whether to add spaces around term comparison operators (@<, @>, @=<, @>=). */
     @JvmField
     var spaceAroundTermComparisonOperators = true
