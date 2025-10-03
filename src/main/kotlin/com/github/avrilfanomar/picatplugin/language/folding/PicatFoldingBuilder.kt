@@ -39,7 +39,13 @@ class PicatFoldingBuilder : FoldingBuilderEx(), com.intellij.openapi.project.Dum
             true
         }
 
-        // 2) Fold multi-clause predicate groups (same head functor/arity in consecutive definitions)
+        // 2) Fold imports
+        addImportFolds(root, document, descriptors)
+        
+        // 3) Fold large block comments
+        addBlockCommentFolds(root, document, descriptors)
+
+        // 4) Fold multi-clause predicate groups (same head functor/arity in consecutive definitions)
         addPredicateGroupFolds(root, document, descriptors)
 
         return descriptors.toTypedArray()
@@ -53,6 +59,38 @@ class PicatFoldingBuilder : FoldingBuilderEx(), com.intellij.openapi.project.Dum
         val start = moveStartAfterRuleOperator(bodyRange.startOffset, document)
         val adjusted = TextRange(start, end)
         out += FoldingDescriptor(body.node, adjusted, null, ELLIPSIS)
+    }
+
+    private fun addImportFolds(root: PsiElement, document: Document, out: MutableList<FoldingDescriptor>) {
+        // Fold consecutive import declarations
+        val imports = PsiTreeUtil.getChildrenOfTypeAsList(root,
+            com.github.avrilfanomar.picatplugin.language.psi.PicatImportDeclaration::class.java)
+        
+        if (imports.size >= 3) { // Only fold if 3+ imports
+            val range = TextRange(imports.first().textRange.startOffset, imports.last().textRange.endOffset)
+            if (isMultiline(range, document)) {
+                val placeholder = "import ... (${imports.size} imports)"
+                out += FoldingDescriptor(imports.first().node, range, null, placeholder)
+            }
+        }
+    }
+
+    private fun addBlockCommentFolds(root: PsiElement, document: Document, out: MutableList<FoldingDescriptor>) {
+        // Simple approach: find comment tokens and fold large multi-line comments
+        // This is a basic implementation that can be enhanced later
+        PsiTreeUtil.processElements(root) { element ->
+            val text = element.text
+            if (text.startsWith("/*") && text.endsWith("*/") && text.length > MIN_COMMENT_FOLDING_LENGTH) {
+                val range = element.textRange
+                if (isMultiline(range, document)) {
+                    val lines = document.getLineNumber(range.endOffset) - document.getLineNumber(range.startOffset) + 1
+                    if (lines >= 3) { // Only fold large comments
+                        out += FoldingDescriptor(element.node, range, null, "/* ... */")
+                    }
+                }
+            }
+            true
+        }
     }
 
     private fun addPredicateGroupFolds(root: PsiElement, document: Document, out: MutableList<FoldingDescriptor>) {
@@ -191,5 +229,6 @@ class PicatFoldingBuilder : FoldingBuilderEx(), com.intellij.openapi.project.Dum
      */
     companion object {
         private const val ELLIPSIS = "…"
+        private const val MIN_COMMENT_FOLDING_LENGTH = 20
     }
 }
