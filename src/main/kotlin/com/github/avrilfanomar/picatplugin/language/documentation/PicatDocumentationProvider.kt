@@ -1,4 +1,4 @@
-package com.github.avrilfanomar.picatplugin.language
+package com.github.avrilfanomar.picatplugin.language.documentation
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.intellij.lang.documentation.DocumentationProvider

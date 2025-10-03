@@ -161,7 +161,7 @@
 
         <!-- Documentation Provider -->
         <lang.documentationProvider language="Picat"
-                                    implementationClass="com.github.avrilfanomar.picatplugin.language.PicatDocumentationProvider"/>
+                                    implementationClass="com.github.avrilfanomar.picatplugin.language.documentation.PicatDocumentationProvider"/>
 
         <!-- Goto Symbol Contributor -->
         <gotoSymbolContributor
