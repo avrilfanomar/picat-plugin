@@ -1,7 +1,9 @@
 package com.github.avrilfanomar.picatplugin.language.highlighting
 
+import com.github.avrilfanomar.picatplugin.language.intentions.CreatePredicateIntentionAction
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtomOrCallNoLambda
+import com.github.avrilfanomar.picatplugin.language.psi.PicatPsiUtil
 import com.github.avrilfanomar.picatplugin.language.references.PicatReference
 import com.github.avrilfanomar.picatplugin.settings.PicatSettings
 import com.intellij.codeInspection.ProblemHighlightType
@@ -41,11 +43,65 @@ class PicatAnnotator : Annotator, DumbAware {
                 val start = element.textRange.startOffset + ref.rangeInElement.startOffset
                 val end = element.textRange.startOffset + ref.rangeInElement.endOffset
                 val range = TextRange(start, end)
-                holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved reference")
+                val annotation = holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved reference")
                     .range(range)
                     .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
-                    .create()
+                
+                // Add quick-fix to create predicate
+                val quickFix = CreatePredicateIntentionAction.createIfApplicable(element)
+                if (quickFix != null) {
+                    annotation.withFix(quickFix)
+                }
+                
+                annotation.create()
+            } else {
+                // Check arity mismatch for resolved references
+                checkArityMismatch(element, targets, holder)
             }
+        }
+    }
+
+    private fun checkArityMismatch(
+        element: PsiElement,
+        targets: Array<out com.intellij.psi.ResolveResult>,
+        holder: AnnotationHolder
+    ) {
+        // Get the called arity from the element
+        val calledArity = estimateCallArity(element)
+        if (calledArity == null) return
+
+        // Check each target for arity mismatch
+        val mismatchedTarget = targets
+            .mapNotNull { it.element }
+            .firstOrNull { target ->
+                val definedArity = PicatPsiUtil.getHeadArity(target)
+                definedArity != null && definedArity != calledArity
+            }
+            
+        if (mismatchedTarget != null) {
+            val definedArity = PicatPsiUtil.getHeadArity(mismatchedTarget)
+            holder.newAnnotation(
+                HighlightSeverity.ERROR,
+                "Arity mismatch: expected $definedArity arguments, got $calledArity"
+            )
+                .range(element.textRange)
+                .highlightType(ProblemHighlightType.GENERIC_ERROR)
+                .create()
+        }
+    }
+
+    private fun estimateCallArity(element: PsiElement): Int? {
+        // Try to count arguments in a call-like structure
+        val text = element.text
+        val openParen = text.indexOf('(')
+        val closeParen = text.lastIndexOf(')')
+        
+        return if (openParen >= 0 && closeParen > openParen) {
+            val argsText = text.substring(openParen + 1, closeParen).trim()
+            if (argsText.isEmpty()) 0
+            else argsText.count { it == ',' } + 1
+        } else {
+            0 // No parentheses means arity 0
         }
     }
 
