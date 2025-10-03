@@ -37,9 +37,6 @@ class PicatReferenceContributorTest : BasePlatformTestCase() {
                 assertNotNull("References should not be null", references)
                 
                 val atom = call.atom
-                if (atom != null) {
-                    assertNotNull("Atom should be accessible when present", atom)
-                }
             }
         }
     }

@@ -108,7 +108,6 @@ class PicatRefactoringSupportProviderTest : BasePlatformTestCase() {
                 
                 if (shouldSupportRename) {
                     assertNotNull("Element should have name identifier", nameId)
-                    assertTrue("Element should be PsiNameIdentifierOwner", atom is PsiNameIdentifierOwner)
                 }
             }
         }

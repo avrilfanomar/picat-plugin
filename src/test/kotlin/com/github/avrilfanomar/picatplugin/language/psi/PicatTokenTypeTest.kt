@@ -100,9 +100,6 @@ class PicatTokenTypeTest : BasePlatformTestCase() {
         // Test that PicatTokenType properly inherits from IElementType
         val tokenType = PicatTokenType("TEST")
         
-        assertTrue("Should be instance of IElementType", 
-                  tokenType is com.intellij.psi.tree.IElementType)
-        
         // Test that parent methods are accessible
         assertNotNull("getLanguage should not be null", tokenType.language)
         assertNotNull("toString should not be null", tokenType.toString())

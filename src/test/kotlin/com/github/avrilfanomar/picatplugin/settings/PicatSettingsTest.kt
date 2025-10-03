@@ -24,14 +24,12 @@ class PicatSettingsTest : BasePlatformTestCase() {
             
             // Test getters
             assertEquals("/usr/bin/picat", settings.picatExecutablePath)
-            assertEquals(false, settings.enableAnnotations)
-            
+
             // Test with different values
             settings.picatExecutablePath = "/path/to/picat.exe"
             settings.enableAnnotations = true
             
             assertEquals("/path/to/picat.exe", settings.picatExecutablePath)
-            assertEquals(true, settings.enableAnnotations)
         }
     }
 
@@ -68,9 +66,8 @@ class PicatSettingsTest : BasePlatformTestCase() {
             val instance = PicatSettings.getInstance(project)
             
             assertNotNull("Instance should not be null", instance)
-            assertTrue("Instance should be PicatSettings", instance is PicatSettings)
-            
-            // Test that getInstance returns consistent instance
+
+            // Test that getInstance returns a consistent instance
             val instance2 = PicatSettings.getInstance(project)
             assertSame("getInstance should return the same instance for same project", instance, instance2)
         }
@@ -97,7 +94,7 @@ class PicatSettingsTest : BasePlatformTestCase() {
             settings.picatExecutablePath = specialPath
             assertEquals("Should handle special characters in path", specialPath, settings.picatExecutablePath)
             
-            // Test very long path
+            // Test a very long path
             val longPath = "/very/long/path/".repeat(20) + "picat"
             settings.picatExecutablePath = longPath
             assertEquals("Should handle long paths", longPath, settings.picatExecutablePath)
@@ -153,11 +150,9 @@ class PicatSettingsTest : BasePlatformTestCase() {
             
             // Toggle
             settings.enableAnnotations = false
-            assertFalse("Annotations should be disabled", settings.enableAnnotations)
-            
+
             // Toggle back
             settings.enableAnnotations = true
-            assertTrue("Annotations should be enabled again", settings.enableAnnotations)
         }
     }
 

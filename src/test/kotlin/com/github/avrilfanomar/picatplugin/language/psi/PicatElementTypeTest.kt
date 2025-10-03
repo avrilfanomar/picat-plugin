@@ -111,10 +111,7 @@ class PicatElementTypeTest : BasePlatformTestCase() {
     fun testInheritanceFromIElementType() {
         // Test that PicatElementType properly inherits from IElementType
         val elementType = PicatElementType("TEST")
-        
-        assertTrue("Should be instance of IElementType", 
-                  elementType is com.intellij.psi.tree.IElementType)
-        
+
         // Test that parent methods are accessible
         assertNotNull("getLanguage should not be null", elementType.language)
         assertNotNull("toString should not be null", elementType.toString())
