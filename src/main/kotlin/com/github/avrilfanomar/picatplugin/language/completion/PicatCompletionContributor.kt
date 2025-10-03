@@ -1,6 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.completion
 
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
+import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
 import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
@@ -8,6 +9,7 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.patterns.PlatformPatterns
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 
 /**
@@ -31,6 +33,9 @@ class PicatCompletionContributor : CompletionContributor() {
             context: ProcessingContext,
             result: CompletionResultSet
         ) {
+            // Add local symbols first
+            addLocalSymbols(parameters, result)
+            
             // Add keywords
             addKeywords(result)
 
@@ -39,6 +44,36 @@ class PicatCompletionContributor : CompletionContributor() {
 
             // Add built-in constants
             addBuiltInConstants(result)
+        }
+
+        /**
+         * Add local symbols (predicates/functions) with arity hints (P1 requirement).
+         * Prioritizes local symbols for context-aware completion.
+         */
+        private fun addLocalSymbols(parameters: CompletionParameters, result: CompletionResultSet) {
+            val file = parameters.originalFile
+            val heads = PsiTreeUtil.findChildrenOfType(file, PicatHead::class.java)
+            
+            // Group heads by name and collect their arities
+            val symbolMap = mutableMapOf<String, MutableSet<Int>>()
+            heads.forEach { head ->
+                val atomName = head.atom.text
+                if (!atomName.isNullOrBlank()) {
+                    val arity = head.headArgs?.argumentList?.size ?: 0
+                    symbolMap.getOrPut(atomName) { mutableSetOf() }.add(arity)
+                }
+            }
+            
+            // Add completion items with arity information
+            symbolMap.forEach { (name, arities) ->
+                arities.forEach { arity ->
+                    result.addElement(
+                        LookupElementBuilder.create(name)
+                            .withTypeText("local predicate/function")
+                            .withTailText("/$arity", true) // P1: include arity hints
+                    )
+                }
+            }
         }
 
         private fun addKeywords(result: CompletionResultSet) {
@@ -89,12 +124,6 @@ class PicatCompletionContributor : CompletionContributor() {
                     LookupElementBuilder.create(function)
                         .withTypeText("built-in function")
                         .withTailText("()")
-                        .withInsertHandler { context, _ ->
-                            val editor = context.editor
-                            val caretOffset = editor.caretModel.offset
-                            editor.document.insertString(caretOffset, "()")
-                            editor.caretModel.moveToOffset(caretOffset + 1)
-                        }
                 )
             }
         }
