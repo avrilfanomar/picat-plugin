@@ -77,4 +77,74 @@
       <option name="PICAT" value="true" />
     </context>
   </template>
+
+  <!-- guard condition -->
+  <template name="guard" value="$HEAD$ ?=> $GUARD$ | $BODY$." description="guard condition" toReformat="true" toShortenFQNames="false">
+    <variable name="HEAD" expression="" defaultValue="pred" alwaysStopAt="true" />
+    <variable name="GUARD" expression="" defaultValue="true" alwaysStopAt="true" />
+    <variable name="BODY" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+
+  <!-- list comprehension -->
+  <template name="listcomp" value="[$EXPR$ : $VAR$ in $LIST$, $COND$]" description="list comprehension" toReformat="true" toShortenFQNames="false">
+    <variable name="EXPR" expression="" defaultValue="X" alwaysStopAt="true" />
+    <variable name="VAR" expression="" defaultValue="X" alwaysStopAt="true" />
+    <variable name="LIST" expression="" defaultValue="L" alwaysStopAt="true" />
+    <variable name="COND" expression="" defaultValue="true" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+
+  <!-- array comprehension -->
+  <template name="arraycomp" value="{$EXPR$ : $VAR$ in $LIST$, $COND$}" description="array comprehension" toReformat="true" toShortenFQNames="false">
+    <variable name="EXPR" expression="" defaultValue="X" alwaysStopAt="true" />
+    <variable name="VAR" expression="" defaultValue="X" alwaysStopAt="true" />
+    <variable name="LIST" expression="" defaultValue="L" alwaysStopAt="true" />
+    <variable name="COND" expression="" defaultValue="true" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+
+  <!-- predicate rule -->
+  <template name="pred" value="$NAME$($ARGS$) =>&#10;    $BODY$." description="predicate rule" toReformat="true" toShortenFQNames="false">
+    <variable name="NAME" expression="" defaultValue="pred_name" alwaysStopAt="true" />
+    <variable name="ARGS" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="BODY" expression="" defaultValue="true" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+
+  <!-- function rule -->
+  <template name="func" value="$NAME$($ARGS$) = $EXPR$ =>&#10;    $BODY$." description="function rule" toReformat="true" toShortenFQNames="false">
+    <variable name="NAME" expression="" defaultValue="func_name" alwaysStopAt="true" />
+    <variable name="ARGS" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="EXPR" expression="" defaultValue="Result" alwaysStopAt="true" />
+    <variable name="BODY" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+
+  <!-- fact -->
+  <template name="fact" value="$NAME$($ARGS$)." description="fact" toReformat="true" toShortenFQNames="false">
+    <variable name="NAME" expression="" defaultValue="fact_name" alwaysStopAt="true" />
+    <variable name="ARGS" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
+
+  <!-- main entry point -->
+  <template name="main" value="main =>&#10;    $BODY$." description="main entry point" toReformat="true" toShortenFQNames="false">
+    <variable name="BODY" expression="" defaultValue="println(&quot;Hello, Picat!&quot;)" alwaysStopAt="true" />
+    <context>
+      <option name="PICAT" value="true" />
+    </context>
+  </template>
 </templateSet>
