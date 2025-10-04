@@ -12,7 +12,7 @@ import com.intellij.psi.PsiManager
  */
 object PicatStdlibUtil {
     /**
-     * Finds a VirtualFile for a stdlib module file (e.g., moduleName "basic" => basic.pi),
+     * Finds a VirtualFile for a stdlib module file (e.g., moduleName "basic" => 'basic.pi'),
      * according to the configured Picat executable path. Returns null if not found
      * or if the path is not configured.
      */
@@ -26,8 +26,8 @@ object PicatStdlibUtil {
             vfm.findFileByUrl(rawPath)
         } else {
             // Try file:// then temp:// URL forms
-            vfm.findFileByUrl("file://" + rawPath)
-                ?: vfm.findFileByUrl("temp://" + rawPath)
+            vfm.findFileByUrl("file://$rawPath")
+                ?: vfm.findFileByUrl("temp://$rawPath")
                 ?: vfm.findFileByUrl("temp:///" + rawPath.trimStart('/'))
         }
         val picatHome = when {
@@ -40,7 +40,8 @@ object PicatStdlibUtil {
     }
 
     /**
-     * Convenience to get PSI file for a stdlib module by name.
+     * Convenience to get a PSI file for a stdlib module by name.
+     * If an external stdlib is not found, falls back to embedded stdlib files.
      */
     fun findStdlibModulePsiFile(project: Project, moduleName: String): PsiFile? {
         val vf = findStdlibModuleVFile(project, moduleName)
