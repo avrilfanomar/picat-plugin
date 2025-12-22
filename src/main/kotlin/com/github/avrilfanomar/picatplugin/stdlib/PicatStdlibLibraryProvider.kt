@@ -4,8 +4,8 @@ import com.github.avrilfanomar.picatplugin.settings.PicatSettings
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.AdditionalLibraryRootsProvider
 import com.intellij.openapi.roots.SyntheticLibrary
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.VirtualFileManager
 
 /**
  * Exposes Picat standard modules as a read-only library attached to the project.
@@ -39,24 +39,12 @@ class PicatStdlibLibraryProvider : AdditionalLibraryRootsProvider() {
                 override fun toString(): String = "Picat Standard Library: " + dir.presentableUrl
             }
         }
-        return if (library != null) listOf(library) else emptyList<SyntheticLibrary>()
+        return if (library != null) listOf(library) else emptyList()
     }
 
     private fun resolveLibVfsDir(executablePath: String): VirtualFile? {
-        val vfm = VirtualFileManager.getInstance()
-        val baseVf = if (executablePath.contains("://")) {
-            vfm.findFileByUrl(executablePath)
-        } else {
-            com.intellij.openapi.vfs.LocalFileSystem.getInstance()
-                .findFileByPath(executablePath)
-                ?: vfm.findFileByUrl("temp://$executablePath")
-                ?: vfm.findFileByUrl("temp:///$executablePath")
-        }
-        val home = when {
-            baseVf == null -> null
-            baseVf.isDirectory -> baseVf
-            else -> baseVf.parent
-        }
+        val baseVf = LocalFileSystem.getInstance().findFileByPath(executablePath) ?: return null
+        val home = if (baseVf.isDirectory) baseVf else baseVf.parent
         val lib = home?.findChild("lib")
         return if (lib != null && lib.isDirectory) lib else null
     }
