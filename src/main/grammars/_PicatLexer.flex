@@ -54,6 +54,7 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "end"                          { return END_KEYWORD; }
   "foreach"                      { return FOREACH_KEYWORD; }
   "in"                           { return IN_KEYWORD; }
+  "notin"                        { return NOT_IN_KEYWORD; }
   "while"                        { return WHILE_KEYWORD; }
   "loop"                         { return LOOP_KEYWORD; }
   "try"                          { return TRY_KEYWORD; }
@@ -99,7 +100,6 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   ".."                           { return RANGE_OP; }
   "!="                           { return NOT_EQUAL; }
   "=="                           { return IDENTICAL; }
-  "=.."                          { return UNIV_OP; }
   ">"                            { return GREATER; }
   "<="                           { return LESS_EQUAL; }
   ">="                           { return GREATER_EQUAL; }
@@ -109,8 +109,6 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "**"                           { return POWER; }
   ":-"                           { return PROLOG_RULE_OP; }
   "++"                           { return CONCAT_OP; }
-  "&&"                           { return AND_AND; }
-  "||"                           { return OR_OR; }
   "<<"                           { return SHIFT_LEFT; }
   ">>"                           { return SHIFT_RIGHT; }
   "//"                           { return INT_DIVIDE; }
@@ -127,9 +125,11 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "*"                            { return MULTIPLY; }
   "^"                            { return BITWISE_XOR; }
   "~"                            { return COMPLEMENT; }
-  "\\+"                          { return BACKSLASH_PLUS; }
   "!"                            { return EXCLAMATION; }
-  "."                            { return DOT; }
+  "&&"                           { return AND_AND; }
+  "||"                           { return OR_OR; }
+  "=.."                          { return UNIV_OP; }
+  "\\\\+"                        { return BACKSLASH_PLUS; }
   ","                            { return COMMA; }
   ";"                            { return SEMICOLON; }
   ":"                            { return COLON; }
@@ -142,6 +142,7 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "|"                            { return PIPE; }
   "@"                            { return AT; }
   "$"                            { return DOLLAR; }
+  "."                            { return DOT; }
   "true"                         { return TRUE; }
   "false"                        { return FALSE; }
 
