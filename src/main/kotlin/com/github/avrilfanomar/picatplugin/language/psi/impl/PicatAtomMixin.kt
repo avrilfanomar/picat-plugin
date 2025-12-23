@@ -2,6 +2,7 @@ package com.github.avrilfanomar.picatplugin.language.psi.impl
 
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatImportItem
+import com.github.avrilfanomar.picatplugin.language.psi.PicatModuleDeclaration
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPsiImplUtil
 import com.github.avrilfanomar.picatplugin.language.references.PicatImportModuleReference
 import com.github.avrilfanomar.picatplugin.language.references.PicatReference
@@ -32,8 +33,10 @@ abstract class PicatAtomMixin(node: ASTNode) : ASTWrapperPsiElement(node), Picat
         // Attach a reference for all non-import atoms so findReferenceAt() at the identifier works
         // reliably in tests and in editor. The resolution logic inside PicatReference ensures correct
         // scoping (local > imported > implicit stdlib) and arity filtering.
+        // Module declarations don't need references since they define the module name, not reference it.
         val refs: Array<PsiReference> = when {
             this.parent is PicatImportItem -> arrayOf(PicatImportModuleReference(this, range))
+            this.parent is PicatModuleDeclaration -> PsiReference.EMPTY_ARRAY
             else -> arrayOf(PicatReference(this, range))
         }
         return refs
