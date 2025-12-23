@@ -37,6 +37,7 @@ abstract class PicatAtomMixin(node: ASTNode) : ASTWrapperPsiElement(node), Picat
         val refs: Array<PsiReference> = when {
             this.parent is PicatImportItem -> arrayOf(PicatImportModuleReference(this, range))
             this.parent is PicatModuleDeclaration -> PsiReference.EMPTY_ARRAY
+            setOf("fail", "repeat", "true", "false", "bp").contains(name) -> PsiReference.EMPTY_ARRAY
             else -> arrayOf(PicatReference(this, range))
         }
         return refs
