@@ -1,11 +1,9 @@
 package com.github.avrilfanomar.picatplugin.stdlib
 
-import com.github.avrilfanomar.picatplugin.settings.PicatSettings
+import com.github.avrilfanomar.picatplugin.stdlib.PicatStdlibUtil.resolveLibVfsDir
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.AdditionalLibraryRootsProvider
 import com.intellij.openapi.roots.SyntheticLibrary
-import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.VirtualFile
 
 /**
  * Exposes Picat standard modules as a read-only library attached to the project.
@@ -21,11 +19,7 @@ import com.intellij.openapi.vfs.VirtualFile
  */
 class PicatStdlibLibraryProvider : AdditionalLibraryRootsProvider() {
     override fun getAdditionalProjectLibraries(project: Project): Collection<SyntheticLibrary> {
-        val settings = PicatSettings.getInstance(project)
-        val exePath = settings.picatExecutablePath.trim()
-        if (exePath.isEmpty()) return emptyList()
-
-        val vDir = resolveLibVfsDir(exePath)
+        val vDir = resolveLibVfsDir(project)
         val library: SyntheticLibrary? = vDir?.let { dir ->
             // Create a synthetic library with the lib directory as its source root.
             object : SyntheticLibrary() {
@@ -35,17 +29,11 @@ class PicatStdlibLibraryProvider : AdditionalLibraryRootsProvider() {
                     if (other !is SyntheticLibrary) return false
                     return this.sourceRoots == other.sourceRoots
                 }
+
                 override fun hashCode(): Int = sourceRoots.hashCode()
                 override fun toString(): String = "Picat Standard Library: " + dir.presentableUrl
             }
         }
         return if (library != null) listOf(library) else emptyList()
-    }
-
-    private fun resolveLibVfsDir(executablePath: String): VirtualFile? {
-        val baseVf = LocalFileSystem.getInstance().findFileByPath(executablePath) ?: return null
-        val home = if (baseVf.isDirectory) baseVf else baseVf.parent
-        val lib = home?.findChild("lib")
-        return if (lib != null && lib.isDirectory) lib else null
     }
 }

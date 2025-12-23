@@ -12,6 +12,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
+import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiPolyVariantReferenceBase
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.util.PsiTreeUtil
@@ -166,15 +167,11 @@ class PicatReference(element: PsiElement, rangeInElement: TextRange) :
     }
 
     private fun collectImplicitStdlibHeads(): Set<PicatHead> {
-        val basicPsi = PicatStdlibUtil.findStdlibModulePsiFile(element.project, "basic")
-        val ioPsi = PicatStdlibUtil.findStdlibModulePsiFile(element.project, "io")
-        val basicHeads = if (basicPsi != null) {
-            PsiTreeUtil.findChildrenOfType(basicPsi, PicatHead::class.java)
-        } else emptySet()
-        val ioHeads = if (ioPsi != null) {
-            PsiTreeUtil.findChildrenOfType(ioPsi, PicatHead::class.java)
-        } else emptySet()
-        return (basicHeads + ioHeads).toSet()
+        val vf = PicatStdlibUtil.resolveLibVfsDir(element.project)
+        return vf?.children?.mapNotNull { child ->
+            PsiManager.getInstance(element.project).findFile(child)
+                ?.let { PsiTreeUtil.findChildrenOfType(it, PicatHead::class.java) }
+        }?.flatMap { it }?.toSet() ?: emptySet()
     }
 
     private fun filterAndSort(
