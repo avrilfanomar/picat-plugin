@@ -26,6 +26,9 @@ public interface PicatEnclosedGoal extends PsiElement {
   PicatLoopWhile getLoopWhile();
 
   @Nullable
+  PicatThrowStatement getThrowStatement();
+
+  @Nullable
   PicatTryCatch getTryCatch();
 
   @Nullable

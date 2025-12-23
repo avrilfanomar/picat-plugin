@@ -380,6 +380,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitThrowStatement(@NotNull PicatThrowStatement o) {
+    visitPsiElement(o);
+  }
+
   public void visitTryCatch(@NotNull PicatTryCatch o) {
     visitPsiElement(o);
   }

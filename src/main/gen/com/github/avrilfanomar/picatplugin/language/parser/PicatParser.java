@@ -324,7 +324,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX
+  // IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | TRUE | FALSE
   public static boolean atom(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom")) return false;
     boolean result_;
@@ -334,6 +334,17 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = dollar_escaped_atom(builder_, level_ + 1);
     if (!result_) result_ = consumeToken(builder_, MIN);
     if (!result_) result_ = consumeToken(builder_, MAX);
+    if (!result_) result_ = consumeToken(builder_, CATCH_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, THROW_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, DIV_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, MOD_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, REM_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, FAIL_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, REPEAT_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, ONCE_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, NOT_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, TRUE);
+    if (!result_) result_ = consumeToken(builder_, FALSE);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
@@ -836,6 +847,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   //                 | while_loop
   //                 | loop_while
   //                 | try_catch
+  //                 | throw_statement
   //                 | type_annotation
   //                 | NOT_KEYWORD goal
   //                 | BACKSLASH_PLUS goal
@@ -850,9 +862,10 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = while_loop(builder_, level_ + 1);
     if (!result_) result_ = loop_while(builder_, level_ + 1);
     if (!result_) result_ = try_catch(builder_, level_ + 1);
+    if (!result_) result_ = throw_statement(builder_, level_ + 1);
     if (!result_) result_ = type_annotation(builder_, level_ + 1);
-    if (!result_) result_ = enclosed_goal_6(builder_, level_ + 1);
     if (!result_) result_ = enclosed_goal_7(builder_, level_ + 1);
+    if (!result_) result_ = enclosed_goal_8(builder_, level_ + 1);
     if (!result_) result_ = equivalence(builder_, level_ + 1);
     if (!result_) result_ = expression_with_relations(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
@@ -860,8 +873,8 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   // NOT_KEYWORD goal
-  private static boolean enclosed_goal_6(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "enclosed_goal_6")) return false;
+  private static boolean enclosed_goal_7(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "enclosed_goal_7")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, NOT_KEYWORD);
@@ -871,8 +884,8 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   // BACKSLASH_PLUS goal
-  private static boolean enclosed_goal_7(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "enclosed_goal_7")) return false;
+  private static boolean enclosed_goal_8(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "enclosed_goal_8")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, BACKSLASH_PLUS);
@@ -3100,6 +3113,20 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(builder_, level_, "term_list_tail_2")) return false;
     term_list_tail(builder_, level_ + 1);
     return true;
+  }
+
+  /* ********************************************************** */
+  // THROW_KEYWORD LPAR argument RPAR
+  public static boolean throw_statement(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "throw_statement")) return false;
+    if (!nextTokenIs(builder_, THROW_KEYWORD)) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokens(builder_, 0, THROW_KEYWORD, LPAR);
+    result_ = result_ && argument(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, RPAR);
+    exit_section_(builder_, marker_, THROW_STATEMENT, result_);
+    return result_;
   }
 
   /* ********************************************************** */

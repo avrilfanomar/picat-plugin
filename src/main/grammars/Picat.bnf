@@ -34,6 +34,7 @@
     TRY_KEYWORD="try"
     CATCH_KEYWORD="catch"
     FINALLY_KEYWORD="finally"
+    THROW_KEYWORD="throw"
     NOT_KEYWORD="not"
     DIV_KEYWORD="div"
     MOD_KEYWORD="mod"
@@ -239,6 +240,7 @@ enclosed_goal ::= if_then_else
                 | while_loop
                 | loop_while
                 | try_catch
+                | throw_statement
                 | type_annotation
                 | NOT_KEYWORD goal
                 | BACKSLASH_PLUS goal
@@ -270,6 +272,8 @@ try_catch ::= TRY_KEYWORD goal catch_clause* [FINALLY_KEYWORD goal] END_KEYWORD
 catch_clause ::= CATCH_KEYWORD LPAR exception_pattern RPAR goal
 
 exception_pattern ::= term
+
+throw_statement ::= THROW_KEYWORD LPAR argument RPAR
 
 expression_with_relations ::= expression (bin_rel_op expression)*
 
@@ -406,7 +410,7 @@ function_argument_list_tail ::= COMMA function_argument function_argument_list_t
 
 term_list_tail ::= COMMA term term_list_tail? {pin=1 recoverWhile=term_list_recover}
 
-atom ::= IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX {implements="com.github.avrilfanomar.picatplugin.language.references.PicatNameIdentifierOwner" mixin="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatAtomMixin" methods=["getName" "setName" "getNameIdentifier"]}
+atom ::= IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | TRUE | FALSE {implements="com.github.avrilfanomar.picatplugin.language.references.PicatNameIdentifierOwner" mixin="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatAtomMixin" methods=["getName" "setName" "getNameIdentifier"]}
 
 dollar_escaped_atom ::= DOLLAR IDENTIFIER
 

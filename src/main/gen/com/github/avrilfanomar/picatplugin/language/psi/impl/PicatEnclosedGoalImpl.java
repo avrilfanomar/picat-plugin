@@ -65,6 +65,12 @@ public class PicatEnclosedGoalImpl extends ASTWrapperPsiElement implements Picat
 
   @Override
   @Nullable
+  public PicatThrowStatement getThrowStatement() {
+    return findChildByClass(PicatThrowStatement.class);
+  }
+
+  @Override
+  @Nullable
   public PicatTryCatch getTryCatch() {
     return findChildByClass(PicatTryCatch.class);
   }

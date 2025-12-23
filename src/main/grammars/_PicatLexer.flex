@@ -60,6 +60,7 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "try"                          { return TRY_KEYWORD; }
   "catch"                        { return CATCH_KEYWORD; }
   "finally"                      { return FINALLY_KEYWORD; }
+  "throw"                        { return THROW_KEYWORD; }
   "not"                          { return NOT_KEYWORD; }
   "div"                          { return DIV_KEYWORD; }
   "mod"                          { return MOD_KEYWORD; }

@@ -101,6 +101,7 @@ public interface PicatTokenTypes {
   IElementType TERM = new PicatElementType("TERM");
   IElementType TERM_CONSTRUCTOR = new PicatElementType("TERM_CONSTRUCTOR");
   IElementType TERM_LIST_TAIL = new PicatElementType("TERM_LIST_TAIL");
+  IElementType THROW_STATEMENT = new PicatElementType("THROW_STATEMENT");
   IElementType TRY_CATCH = new PicatElementType("TRY_CATCH");
   IElementType TYPE_ANNOTATION = new PicatElementType("TYPE_ANNOTATION");
   IElementType UNARY_EXPR = new PicatElementType("UNARY_EXPR");
@@ -219,6 +220,7 @@ public interface PicatTokenTypes {
   IElementType STRING = new PicatTokenType("STRING");
   IElementType TABLE_KEYWORD = new PicatTokenType("table");
   IElementType THEN_KEYWORD = new PicatTokenType("then");
+  IElementType THROW_KEYWORD = new PicatTokenType("throw");
   IElementType TRUE = new PicatTokenType("true");
   IElementType TRY_KEYWORD = new PicatTokenType("try");
   IElementType UNIV_OP = new PicatTokenType("=..");
@@ -507,6 +509,9 @@ public interface PicatTokenTypes {
       }
       else if (type == TERM_LIST_TAIL) {
         return new PicatTermListTailImpl(node);
+      }
+      else if (type == THROW_STATEMENT) {
+        return new PicatThrowStatementImpl(node);
       }
       else if (type == TRY_CATCH) {
         return new PicatTryCatchImpl(node);
