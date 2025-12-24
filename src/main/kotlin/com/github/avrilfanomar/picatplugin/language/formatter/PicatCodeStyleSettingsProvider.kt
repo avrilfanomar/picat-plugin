@@ -18,6 +18,8 @@ import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
 class PicatCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
     override fun getConfigurableDisplayName(): String = "Picat"
 
+    override fun getLanguage() = PicatLanguage
+
     override fun createConfigurable(
         settings: CodeStyleSettings,
         modelSettings: CodeStyleSettings
