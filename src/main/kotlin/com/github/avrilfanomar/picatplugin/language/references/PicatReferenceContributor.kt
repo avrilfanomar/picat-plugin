@@ -3,7 +3,9 @@ package com.github.avrilfanomar.picatplugin.language.references
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtomOrCallNoLambda
+import com.github.avrilfanomar.picatplugin.language.psi.PicatDotAccess
 import com.github.avrilfanomar.picatplugin.language.psi.PicatImportItem
+import com.github.avrilfanomar.picatplugin.language.psi.PicatPsiUtil
 import com.intellij.openapi.util.TextRange
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.psi.PsiElement
@@ -20,6 +22,7 @@ import com.intellij.util.ProcessingContext
  * - PicatAtom nodes (the atom element itself), and
  * - PicatAtomOrCallNoLambda nodes (call expressions without a lambda),
  * - PicatImportItem (module import) atoms to stdlib files,
+ * - PicatDotAccess (module-qualified calls like bp.predicate(...)),
  * and only over the atom's text range within those elements.
  */
 class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openapi.project.DumbAware {
@@ -162,6 +165,39 @@ class PicatReferenceContributor : PsiReferenceContributor(), com.intellij.openap
                         }
                     }
                     return refs
+                }
+            }
+        )
+
+        // Dot access (module-qualified calls like bp.predicate(...))
+        registrar.registerReferenceProvider(
+            psiElement(PicatDotAccess::class.java),
+            object : PsiReferenceProvider() {
+                override fun getReferencesByElement(
+                    element: PsiElement,
+                    context: ProcessingContext
+                ): Array<PsiReference> {
+                    val dotAccess = element as PicatDotAccess
+                    val predicateName = PicatPsiUtil.getDotAccessName(dotAccess)
+
+                    val result: Array<PsiReference> = if (predicateName == null) {
+                        @Suppress("UNCHECKED_CAST")
+                        PsiReference.EMPTY_ARRAY as Array<PsiReference>
+                    } else {
+                        // Create a reference over the predicate name (after the dot)
+                        val dotId = dotAccess.dotIdentifier ?: dotAccess.dotSingleQuotedAtom
+                        if (dotId == null) {
+                            @Suppress("UNCHECKED_CAST")
+                            PsiReference.EMPTY_ARRAY as Array<PsiReference>
+                        } else {
+                            val start = dotId.textOffset - dotAccess.textOffset
+                            // Skip the leading dot
+                            val adjustedStart = start + 1
+                            val range = TextRange(adjustedStart, adjustedStart + predicateName.length)
+                            arrayOf(PicatDotAccessReference(dotAccess, range))
+                        }
+                    }
+                    return result
                 }
             }
         )

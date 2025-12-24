@@ -143,5 +143,54 @@ object PicatPsiUtil {
         return if ("::" in text) text.substringBefore("::").takeIf { it.isNotBlank() } else null
     }
 
+    /**
+     * Extract the module qualifier from a dot access expression (e.g., "bp" from "bp.predicate(...)").
+     * @param dotAccess the PicatDotAccess element
+     * @return the module name if the dot access is qualified, null otherwise
+     */
+    @JvmStatic
+    @Suppress("ReturnCount")
+    fun getDotAccessModuleQualifier(dotAccess: PicatDotAccess): String? {
+        // Navigate up the PSI tree to find the base expression
+        // Structure: primary_expr -> base_expr (atom_no_args) + postfix_ops (contains dot_access)
+        val primaryExpr = dotAccess.parent?.parent?.parent as? PicatPrimaryExpr ?: return null
+        val baseExpr = primaryExpr.baseExpr
+
+        // The module qualifier is the atom in the base expression
+        val atomNoArgs = baseExpr.atomNoArgs ?: return null
+        val atom = atomNoArgs.atom
+        return atom.identifier?.text ?: atom.singleQuotedAtom?.text?.trim('\'', '"', '`')
+    }
+
+    /**
+     * Extract the predicate/function name from a dot access expression (e.g., "b_XOR_ccf" from "bp.b_XOR_ccf(...)").
+     * @param dotAccess the PicatDotAccess element
+     * @return the predicate/function name, or null if not available
+     */
+    @JvmStatic
+    @Suppress("ReturnCount")
+    fun getDotAccessName(dotAccess: PicatDotAccess): String? {
+        val dotId = dotAccess.dotIdentifier
+        if (dotId != null) {
+            // Remove the leading dot
+            val text = dotId.text
+            return if (text.startsWith(".")) text.substring(1) else text
+        }
+        val dotAtom = dotAccess.dotSingleQuotedAtom ?: return null
+        val text = dotAtom.text
+        val withoutDot = if (text.startsWith(".")) text.substring(1) else text
+        return withoutDot.trim('\'', '"', '`')
+    }
+
+    /**
+     * Get the arity of a dot access call (number of arguments).
+     * @param dotAccess the PicatDotAccess element
+     * @return the arity, or 0 if no arguments
+     */
+    @JvmStatic
+    fun getDotAccessArity(dotAccess: PicatDotAccess): Int {
+        return dotAccess.argumentList.size
+    }
+
     private val IDENT_REGEX = Regex("[A-Za-z_][A-Za-z0-9_]*")
 }
