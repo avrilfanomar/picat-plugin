@@ -50,6 +50,94 @@ This is an IntelliJ IDEA plugin that provides comprehensive language support for
 
 **Critical Rule:** Never manually modify files in `src/main/gen/`. All parser/PSI changes must be made in `src/main/grammars/Picat.bnf` (`src/main/grammars/_PicatLexer.flex` is being manually generated from `Picat.bnf`, you should prompt the used to do so if needed), then regenerated. Always commit regenerated sources when modifying grammar.
 
+## IDE Integration with MCP Tools
+
+This project has MCP (Model Context Protocol) servers enabled that provide IntelliJ IDEA-specific tools for working with the codebase. **Always prefer MCP tools over command-line equivalents** when available.
+
+### Available MCP Tool Categories
+
+**IntelliJ MCP Server** (`mcp__Intellij_mcp__*`):
+- File operations: `get_file_text_by_path`, `create_new_file`, `replace_text_in_file`
+- File search: `find_files_by_name_keyword`, `find_files_by_glob`, `search_in_files_by_text`, `search_in_files_by_regex`
+- Project structure: `get_project_modules`, `get_project_dependencies`, `get_all_open_file_paths`, `list_directory_tree`
+- Code intelligence: `get_symbol_info`, `get_file_problems`, `rename_refactoring`, `reformat_file`
+- Execution: `execute_run_configuration`, `get_run_configurations`, `execute_terminal_command`
+
+**PSI MCP Server** (`mcp__jetbrain-psi-mcp-server__*`):
+- Symbol navigation: `find-symbol`, `find-definition`, `find-usages`
+- Code structure: `get-references`, `get-inheritors`, `get-supers`, `get-containing-context`
+- Module analysis: `get-module-info`, `dump-all-module-info`, `fuzzy-search-module`
+
+**IDE MCP Server** (`mcp__ide__*`):
+- Diagnostics: `getDiagnostics`
+
+### When to Use MCP Tools
+
+**ALWAYS use MCP tools for:**
+1. **Reading files**: `get_file_text_by_path` instead of `cat`, `head`, `tail`
+2. **Searching code**: `search_in_files_by_text` or `search_in_files_by_regex` instead of `grep`, `rg`, `find`
+3. **Finding files**: `find_files_by_name_keyword` or `find_files_by_glob` instead of `find`, `ls -R`
+4. **File editing**: `replace_text_in_file` for targeted changes
+5. **Code navigation**: `find-symbol`, `find-definition`, `find-usages` for understanding code relationships
+6. **Getting diagnostics**: `getDiagnostics` and `get_file_problems` for analyzing errors/warnings
+7. **Refactoring**: `rename_refactoring` for safe symbol renaming across the codebase
+8. **Running tests**: `execute_run_configuration` for test execution
+9. **Project structure**: `list_directory_tree` for exploring directory contents
+10. **Symbol information**: `get_symbol_info` for understanding code at specific positions
+
+**Use command-line tools for:**
+- Git operations: `git status`, `git diff`, `git log`, `git commit`
+- Gradle builds: `./gradlew build`, `./gradlew test`, `./gradlew detekt`
+- Grammar generation: `./gradlew generateParser`, `./gradlew generateLexer`
+- System operations that don't involve reading/modifying source code
+
+### Examples
+
+**Reading a file:**
+```
+✅ PREFERRED: Use get_file_text_by_path with pathInProject="src/main/kotlin/MyFile.kt"
+❌ AVOID: cat src/main/kotlin/MyFile.kt
+```
+
+**Finding files:**
+```
+✅ PREFERRED: Use find_files_by_name_keyword with nameKeyword="Parser"
+❌ AVOID: find . -name "*Parser*"
+```
+
+**Searching code:**
+```
+✅ PREFERRED: Use search_in_files_by_text with searchText="PicatAtom"
+❌ AVOID: grep -r "PicatAtom" src/
+```
+
+**Finding symbol definitions:**
+```
+✅ PREFERRED: Use find-symbol with symbol_name="PicatAtom"
+❌ AVOID: grep -r "class PicatAtom" or manual file searches
+```
+
+**Getting diagnostics:**
+```
+✅ PREFERRED: Use get_file_problems with filePath="src/main/kotlin/MyFile.kt"
+❌ AVOID: ./gradlew build (for just checking errors in one file)
+```
+
+**Renaming symbols:**
+```
+✅ PREFERRED: Use rename_refactoring to safely rename across all usages
+❌ AVOID: Manual find-replace operations that might miss references
+```
+
+### Benefits of MCP Tools
+
+1. **Faster**: MCP tools use IntelliJ's indexes and don't require spawning shell processes
+2. **More accurate**: Leverage IDE's semantic understanding of code structure
+3. **Project-aware**: Automatically respect project boundaries and .gitignore rules
+4. **Type-safe**: Work with PSI (Program Structure Interface) for precise code operations
+5. **Safe refactoring**: Tools like `rename_refactoring` update all references correctly
+6. **Better diagnostics**: Get real-time IDE analysis instead of waiting for full builds
+
 ## Architecture Overview
 
 ### Core Language Implementation (`language/` package)
@@ -177,13 +265,14 @@ From `.junie/guidelines.md`:
 
 ## Important Development Rules
 
-1. **Never modify generated code**: All changes to parsing must go through grammar files (`Picat.bnf` or `_PicatLexer.flex`)
-2. **Always regenerate after grammar changes**: Use `./gradlew generateParser generateLexer` and commit results
-3. **Detekt is mandatory**: All issues must be resolved before finalizing tasks
-4. **Test coverage matters**: Write tests for new grammar rules and language features
-5. **Error recovery**: Add proper error recovery in grammar for robust parsing with malformed code
-6. **Cache expensive operations**: Use `PicatPsiCache` for repeated PSI operations
-7. **Safe PSI traversal**: Use `PsiTreeUtil` methods for safe navigation
+1. **Prefer MCP tools over command-line**: Always use IntelliJ MCP tools for file operations, code search, and navigation (see "IDE Integration with MCP Tools" section)
+2. **Never modify generated code**: All changes to parsing must go through grammar files (`Picat.bnf` or `_PicatLexer.flex`)
+3. **Always regenerate after grammar changes**: Use `./gradlew generateParser generateLexer` and commit results
+4. **Detekt is mandatory**: All issues must be resolved before finalizing tasks
+5. **Test coverage matters**: Write tests for new grammar rules and language features
+6. **Error recovery**: Add proper error recovery in grammar for robust parsing with malformed code
+7. **Cache expensive operations**: Use `PicatPsiCache` for repeated PSI operations
+8. **Safe PSI traversal**: Use `PsiTreeUtil` methods for safe navigation
 
 ## Plugin Metadata
 
