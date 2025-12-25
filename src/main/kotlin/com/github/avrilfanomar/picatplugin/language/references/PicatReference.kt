@@ -72,25 +72,30 @@ class PicatReference(element: PsiElement, rangeInElement: TextRange) :
         val localHeads = PsiTreeUtil.findChildrenOfType(file, PicatHead::class.java)
         val importedHeads = collectImportedHeads(file)
         val stdlibHeads = collectImplicitStdlibHeads()
+        val primitiveHeads = collectPrimitiveHeads()
 
         val localMatches = filterAndSort(localHeads, ident, usageArity)
         val importedMatches = filterAndSort(importedHeads, ident, usageArity)
         val stdlibMatches = filterAndSort(stdlibHeads, ident, usageArity)
+        val primitiveMatches = filterAndSort(primitiveHeads, ident, usageArity)
 
         var matches = when {
             localMatches.isNotEmpty() -> localMatches
             importedMatches.isNotEmpty() -> importedMatches
-            else -> stdlibMatches
+            stdlibMatches.isNotEmpty() -> stdlibMatches
+            else -> primitiveMatches
         }
         if (matches.isEmpty()) {
-            // Fallback: try name-only matching within local, then imported, then stdlib
+            // Fallback: try name-only matching within local, imported, stdlib, then primitives
             val nameOnlyLocal = localHeads.filter { it.atomName() == ident }.sortedBy { it.textOffset }
             val nameOnlyImported = importedHeads.filter { it.atomName() == ident }.sortedBy { it.textOffset }
             val nameOnlyStd = stdlibHeads.filter { it.atomName() == ident }.sortedBy { it.textOffset }
+            val nameOnlyPrimitives = primitiveHeads.filter { it.atomName() == ident }.sortedBy { it.textOffset }
             matches = when {
                 nameOnlyLocal.isNotEmpty() -> prioritizeByArity(nameOnlyLocal, usageArity)
                 nameOnlyImported.isNotEmpty() -> prioritizeByArity(nameOnlyImported, usageArity)
-                else -> prioritizeByArity(nameOnlyStd, usageArity)
+                nameOnlyStd.isNotEmpty() -> prioritizeByArity(nameOnlyStd, usageArity)
+                else -> prioritizeByArity(nameOnlyPrimitives, usageArity)
             }
         }
         var results: Array<ResolveResult> = if (matches.isEmpty()) {
@@ -133,7 +138,8 @@ class PicatReference(element: PsiElement, rangeInElement: TextRange) :
         val localHeads = PsiTreeUtil.findChildrenOfType(file, PicatHead::class.java)
         val importedHeads = collectImportedHeads(file)
         val implicitStdlib = collectImplicitStdlibHeads()
-        val heads = localHeads + importedHeads + implicitStdlib
+        val primitives = collectPrimitiveHeads()
+        val heads = localHeads + importedHeads + implicitStdlib + primitives
 
         val nameArityPairs = heads
             .mapNotNull { head -> head.atomName()?.let { it to head.arity() } }
@@ -172,6 +178,13 @@ class PicatReference(element: PsiElement, rangeInElement: TextRange) :
             PsiManager.getInstance(element.project).findFile(child)
                 ?.let { PsiTreeUtil.findChildrenOfType(it, PicatHead::class.java) }
         }?.flatMap { it }?.toSet() ?: emptySet()
+    }
+
+    private fun collectPrimitiveHeads(): Set<PicatHead> {
+        val primitivesPsiFile = PicatStdlibUtil.getPrimitivesPsiFile(element.project)
+        return primitivesPsiFile?.let {
+            PsiTreeUtil.findChildrenOfType(it, PicatHead::class.java).toSet()
+        } ?: emptySet()
     }
 
     private fun filterAndSort(

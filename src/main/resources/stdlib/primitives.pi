@@ -1,0 +1,257 @@
+% Picat Language Primitives
+% This file contains synthetic declarations for built-in language primitives
+% that are not defined in any stdlib module but are compiled into the language.
+% These symbols are always available without imports.
+
+module primitives.
+
+% Conditional expression - special built-in construct
+% Returns ThenExp if Condition is true, ElseExp otherwise
+cond(_, _, _) = _.
+
+% Basic control flow predicates
+true.
+
+% Negation
+not(_) => true.
+
+% Note: fail and false are reserved keywords, handled specially by the language
+
+% Committed choice - execute goal once without backtracking
+once(_) => true.
+
+% Exception handling primitives
+throw(_) => true.
+catch(_, _, _) => true.
+call_cleanup(_, _) => true.
+
+% Apply - higher-order call
+apply(_).
+apply(_, _).
+apply(_, _, _).
+apply(_, _, _, _).
+apply(_, _, _, _, _).
+
+% Call - meta-call predicate
+call(_).
+call(_, _).
+call(_, _, _).
+call(_, _, _, _).
+call(_, _, _, _, _).
+
+% Freeze - constraint primitive (delays goal until variable is bound)
+freeze(_, _).
+frozen(_, _).
+
+% Tabling directives (these are predicates that can be called)
+table_all.
+table_all(_).
+
+% Assertion predicates
+assert(_).
+asserta(_).
+assertz(_).
+retract(_).
+retractall(_).
+
+% Global variables
+get_global_map() = _.
+get_global(_) = _.
+put_global(_, _).
+
+% Garbage collection
+gc.
+statistics.
+statistics(_).
+
+% Time measurement
+time(_).
+time(_,_).
+time2(_).
+time2(_,_).
+time_out(_, _, _).
+
+% Current predicate/function checking
+current_predicate(_).
+current_predicate(_, _).
+
+% Clause inspection
+clause(_, _).
+clause_list(_) = _.
+
+% Dynamic predicate declaration
+dynamic(_).
+
+% Module system
+import(_).
+import(_, _).
+
+% Binding/variable tests (may also be in basic, but included here for completeness)
+var(_).
+nonvar(_).
+ground(_).
+
+% Type tests
+atom(_).
+atomic(_).
+number(_).
+integer(_).
+real(_).
+float(_).
+compound(_).
+is_list(_).
+is_array(_).
+
+% Structure inspection
+functor(_, _, _).
+arg(_, _, _).
+name(_) = _.
+name(_, _).
+
+% Univ operator
+=..(_,_).
+
+% List operations (basic ones that might be primitives)
+append(_, _, _).
+member(_, _).
+membchk(_, _).
+length(_) = _.
+length(_, _).
+reverse(_) = _.
+reverse(_, _).
+
+% Sorting
+sort(_) = _.
+sort(_, _).
+sorted(_).
+
+% Findall family
+findall(_, _, _).
+findall(_, _, _, _).
+
+% Comparison
+compare(_, _, _).
+
+% Copy term
+copy_term(_) = _.
+copy_term(_, _).
+copy_term_vars(_, _).
+
+% Hash operations
+hash_code(_) = _.
+
+% String/atom operations
+atom_codes(_, _).
+atom_chars(_, _).
+atom_string(_, _).
+char_code(_, _).
+char_int(_, _).
+
+% Arithmetic evaluation
+is(_, _).
+
+% Range operator (used in loops and comprehensions)
+% Note: .. is an operator, but we can declare it as a function
+'..'(_, _) = _.
+
+% List concatenation
+'++'(_, _) = _.
+
+% min/max
+min(_, _) = _.
+max(_, _) = _.
+min(_) = _.
+max(_) = _.
+
+% abs
+abs(_) = _.
+
+% Sign operations
+sign(_) = _.
+
+% Random
+random() = _.
+random(_) = _.
+random(_, _) = _.
+
+% Bitwise operations
+'/\'(_, _) = _.
+'\/'(_, _) = _.
+
+% halt
+halt.
+halt(_).
+
+% trace/debug
+trace.
+notrace.
+spy(_).
+nospy(_).
+
+% chr (constraint handling rules) - if used
+chr(_).
+
+% nl (newline)
+nl.
+
+% tab (spacing)
+tab(_).
+
+% Writeln family (might be in io, but included for safety)
+write(_).
+writeln(_).
+print(_).
+println(_).
+
+% Read operations
+read() = _.
+read_int() = _.
+read_real() = _.
+read_atom() = _.
+read_line() = _.
+read_char() = _.
+
+% Format operations
+format(_, _).
+printf(_, _).
+printf(_).
+
+% Parse term
+parse_term(_) = _.
+parse_term(_, _).
+
+% to_string conversions
+to_string(_) = _.
+to_int(_) = _.
+to_real(_) = _.
+to_atom(_) = _.
+
+% List/array creation
+new_list(_) = _.
+new_list(_, _) = _.
+new_array(_) = _.
+new_array(_, _) = _.
+new_array(_, _, _) = _.
+
+% Map/set operations
+new_map() = _.
+new_set() = _.
+
+% foreach (as a predicate, not just syntax)
+% Note: foreach is primarily a language construct, but may have predicate form
+
+% Arithmetic constraints (if cp primitives leak into base)
+#=(_, _).
+'#='(_, _).
+#<(_, _).
+'#<'(_, _).
+#>(_, _).
+'#>'(_, _).
+#=<(_, _).
+'#=<'(_, _).
+#>=(_, _).
+'#>='(_, _).
+#!=(_, _).
+'#!='(_, _).
+
+% end of primitives

@@ -1,11 +1,13 @@
 package com.github.avrilfanomar.picatplugin.stdlib
 
+import com.github.avrilfanomar.picatplugin.language.PicatFileType
 import com.github.avrilfanomar.picatplugin.settings.PicatSettings
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiManager
 
 /**
@@ -75,5 +77,21 @@ object PicatStdlibUtil {
         }
         val lib = home?.findChild("lib")
         return if (lib != null && lib.isDirectory) lib else null
+    }
+
+    /**
+     * Returns a PSI file for the embedded language primitives.
+     * This synthetic file contains declarations for built-in language primitives
+     * like cond/3, true/0, fail/0, etc. that are not defined in any stdlib module.
+     */
+    fun getPrimitivesPsiFile(project: Project): PsiFile? {
+        val resourcePath = "/stdlib/primitives.pi"
+        val content = PicatStdlibUtil::class.java.getResourceAsStream(resourcePath)
+            ?.bufferedReader()
+            ?.use { it.readText() }
+            ?: return null
+
+        return PsiFileFactory.getInstance(project)
+            .createFileFromText("primitives.pi", PicatFileType, content)
     }
 }
