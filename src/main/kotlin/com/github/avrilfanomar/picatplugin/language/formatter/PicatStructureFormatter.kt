@@ -5,6 +5,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 /**
  * Handles structural formatting (rule bodies, blocks, ends). Assumes operators/spaces already handled.
  */
+@Suppress("TooManyFunctions")
 internal class PicatStructureFormatter(private val settings: CodeStyleSettings) {
 
     fun formatCode(code: String): String {
@@ -71,8 +72,61 @@ internal class PicatStructureFormatter(private val settings: CodeStyleSettings) 
 
             isEndStatement(line) -> handleEndStatement(line, result, state)
             line.endsWith(".") -> handleRuleBodyEnd(line, result, state)
+            // Prolog-style if-then-else handling
+            isPrologStyleStart(line) -> handlePrologStyleStart(line, result, state)
+            isPrologStyleSemicolon(line) -> handlePrologStyleSemicolon(line, result, state)
+            isPrologStyleEnd(line) -> handlePrologStyleEnd(line, result, state)
             else -> handleRegularRuleBodyLine(line, result, state)
         }
+    }
+
+    // Prolog-style if-then-else: (cond -> then ; else)
+
+    private fun isPrologStyleStart(line: String): Boolean {
+        return line.startsWith("(") && line.endsWith("->")
+    }
+
+    private fun isPrologStyleSemicolon(line: String): Boolean {
+        return line.startsWith(";")
+    }
+
+    private fun isPrologStyleEnd(line: String): Boolean {
+        return (line == ")" || line == ")." || line == "),") && prologDepth > 0
+    }
+
+    private var prologDepth = 0
+    private var prologExpectingConsequence = false
+
+    private fun handlePrologStyleStart(line: String, result: StringBuilder, state: FormatState) {
+        // Add extra indentation if we're already inside a Prolog construct
+        val extraIndent = if (prologDepth > 0) prologDepth else 0
+        val effectiveLevel = state.indentLevel + extraIndent
+        prologDepth++
+        prologExpectingConsequence = true
+        result.append(PicatIndentUtil.getIndentation(settings, effectiveLevel)).append(line).append("\n")
+    }
+
+    private fun handlePrologStyleSemicolon(line: String, result: StringBuilder, state: FormatState) {
+        prologExpectingConsequence = true
+        // Normalize spacing: ensure space after ; (unless it's just ";" alone)
+        val normalizedLine = if (line.length > 1 && line[1] != ' ') {
+            "; " + line.substring(1)
+        } else {
+            line
+        }
+        // Semicolons in nested constructs need extra indentation (depth - 1)
+        val extraIndent = if (prologDepth > 1) prologDepth - 1 else 0
+        val effectiveLevel = state.indentLevel + extraIndent
+        result.append(PicatIndentUtil.getIndentation(settings, effectiveLevel)).append(normalizedLine).append("\n")
+    }
+
+    private fun handlePrologStyleEnd(line: String, result: StringBuilder, state: FormatState) {
+        prologDepth--
+        prologExpectingConsequence = false
+        // Closing parens need extra indentation based on remaining depth
+        val extraIndent = if (prologDepth > 0) prologDepth else 0
+        val effectiveLevel = state.indentLevel + extraIndent
+        result.append(PicatIndentUtil.getIndentation(settings, effectiveLevel)).append(line).append("\n")
     }
 
     private fun isIfThenStatement(line: String) =
@@ -147,10 +201,20 @@ internal class PicatStructureFormatter(private val settings: CodeStyleSettings) 
         }
         state.inRuleBody = false
         state.indentLevel = 0
+        // Reset Prolog-style state
+        prologDepth = 0
+        prologExpectingConsequence = false
     }
 
     private fun handleRegularRuleBodyLine(line: String, result: StringBuilder, state: FormatState) {
-        result.append(PicatIndentUtil.getIndentation(settings, state.indentLevel)).append(line).append("\n")
+        // When inside a Prolog-style construct, add extra indentation for consequence/alternative lines
+        val extraIndent = if (prologDepth > 0) prologDepth else 0
+        val effectiveLevel = state.indentLevel + extraIndent
+        result.append(PicatIndentUtil.getIndentation(settings, effectiveLevel)).append(line).append("\n")
+        // Reset the expecting flag after processing a consequence line
+        if (prologExpectingConsequence) {
+            prologExpectingConsequence = false
+        }
     }
 
     private data class FormatState(

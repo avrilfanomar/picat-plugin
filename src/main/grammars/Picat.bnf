@@ -217,7 +217,8 @@ goal ::= disjunction
 
 disjunction ::= if_then ((SEMICOLON | OR_OR) if_then)*
 
-if_then ::= conjunction (IF_THEN_OP conjunction)?
+//avoid exponential backtracking
+if_then ::= conjunction [IF_THEN_OP conjunction]
 
 conjunction ::= enclosed_goal conjunction_tail?
 

@@ -1691,7 +1691,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // conjunction (IF_THEN_OP conjunction)?
+  // conjunction [IF_THEN_OP conjunction]
   public static boolean if_then(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "if_then")) return false;
     boolean result_;
@@ -1702,7 +1702,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // (IF_THEN_OP conjunction)?
+  // [IF_THEN_OP conjunction]
   private static boolean if_then_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "if_then_1")) return false;
     if_then_1_0(builder_, level_ + 1);

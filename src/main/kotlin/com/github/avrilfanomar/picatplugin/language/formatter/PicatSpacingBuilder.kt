@@ -157,13 +157,13 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .around(ASSIGNMENT_OPERATORS)
             .spaces(1)
 
-            // Special handling for EQUAL token (used for both assignment and equality)
-            .around(PicatTokenTypes.EQUAL)
-            .spaces(1)
-
             // Logical operators (&&, ||, !)
             .around(LOGICAL_OPERATORS)
             .spaceIf(picatSettings.spaceAroundLogicalOperators)
+
+            // If-then operator (->) - MUST come before MINUS to take precedence
+            .around(PicatTokenTypes.IF_THEN_OP)
+            .spaces(1)
 
             // Equality operators (!=, ===, !==)
             .around(EQUALITY_OPERATORS)
@@ -219,6 +219,12 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             .after(PicatTokenTypes.COMMA)
             .spaces(1)
 
+            // Semicolon spacing (for Prolog-style if-then-else disjunctions)
+            .before(PicatTokenTypes.SEMICOLON)
+            .spaces(0)
+            .after(PicatTokenTypes.SEMICOLON)
+            .spaces(1)
+
             // Ensure a space before inline single-line comments when attached to code
             .before(PicatTokenTypes.COMMENT)
             .spaces(1)
@@ -229,6 +235,10 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
 
             // Ensure proper spacing around colon
             .around(PicatTokenTypes.COLON)
+            .spaces(1)
+
+            // Special handling for EQUAL token (used for both assignment and equality)
+            .around(PicatTokenTypes.EQUAL)
             .spaces(1)
 
             // Parentheses, brackets, braces

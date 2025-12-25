@@ -800,4 +800,90 @@ literals_and_access =>
         doFormatTest(code, expected)
     }
 
+    @Test
+    fun testPrologStyleIfThenElseFormatting() {
+        // Test formatting of Prolog-style if-then-else with -> operator
+        val code = """
+% Prolog-style if-then-else example
+fibg(N)=F=>
+(N==0->
+F=1
+;N==1->
+F=1
+;
+F=fibg(N-1)+fibg(N-2)
+).
+        """
+
+        val expected = """
+% Prolog-style if-then-else example
+fibg(N) = F =>
+    (N == 0 ->
+        F = 1
+    ; N == 1 ->
+        F = 1
+    ;
+        F = fibg(N - 1) + fibg(N - 2)
+    ).
+        """.trim()
+
+        doFormatTest(code, expected)
+    }
+
+    @Test
+    fun testPrologStyleIfThenElseSimple() {
+        // Test simple Prolog-style if-then-else
+        val code = """
+test(X,Y)=>
+(X>Y->
+println("X is greater")
+;
+println("Y is greater or equal")
+).
+        """
+
+        val expected = """
+test(X, Y) =>
+    (X > Y ->
+        println("X is greater")
+    ;
+        println("Y is greater or equal")
+    ).
+        """.trim()
+
+        doFormatTest(code, expected)
+    }
+
+    @Test
+    fun testPrologStyleIfThenElseNested() {
+        // Test nested Prolog-style if-then-else
+        val code = """
+complex_test(X,Y,Z)=>
+(X>Y->
+(Y>Z->
+println("X > Y > Z")
+;
+println("X > Y but Y <= Z")
+)
+;
+println("X <= Y")
+).
+        """
+
+        val expected = """
+complex_test(X, Y, Z) =>
+    (X > Y ->
+        (Y > Z ->
+            println("X > Y > Z")
+        ;
+            println("X > Y but Y <= Z")
+        )
+    ;
+        println("X <= Y")
+    ).
+        """.trim()
+
+        doFormatTest(code, expected)
+    }
+
 }

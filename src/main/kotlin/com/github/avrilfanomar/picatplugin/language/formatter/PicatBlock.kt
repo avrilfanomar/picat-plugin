@@ -53,20 +53,21 @@ class PicatBlock(
             parentType = myNode.treeParent?.elementType,
             grandParentType = myNode.treeParent?.treeParent?.elementType,
             greatGrandParentType = myNode.treeParent?.treeParent?.treeParent?.elementType,
-            picatSettings = config.settings.getCustomSettings(PicatCodeStyleSettings::class.java)
+            picatSettings = config.settings.getCustomSettings(PicatCodeStyleSettings::class.java),
+            node = myNode
         )
 
         return determineIndent(context)
     }
 
-    private fun determineIndent(context: IndentContext): Indent {
+    private fun determineIndent(context: IndentContext): Indent? {
         return when {
             // Handle whitespace and file-level comments
             shouldUseNoIndent(context) -> Indent.getNoneIndent()
             // Handle cases that require normal indentation
             shouldUseNormalIndent(context) -> Indent.getNormalIndent()
-            // Default to no indentation
-            else -> Indent.getNoneIndent()
+            // Default to null (use parent's child indent)
+            else -> null
         }
     }
 
@@ -93,7 +94,69 @@ class PicatBlock(
                 helper.shouldIndentFunctionArguments(context.elementType) ||
                 helper.shouldIndentListElements(context.elementType, context.parentType) ||
                 helper.shouldIndentNestedExpressions(context.parentType, context.grandParentType) ||
-                isElementAfterRuleOperator(context.parentType)
+                isElementAfterRuleOperator(context.parentType) ||
+                isConsequenceConjunction(context) ||
+                isIfThenAfterSemicolon(context)
+    }
+
+    /**
+     * Checks if this CONJUNCTION is the second child of IF_THEN (the consequence after ->).
+     * In Prolog-style if-then-else, the consequence after -> should be indented.
+     */
+    private fun isConsequenceConjunction(context: IndentContext): Boolean {
+        val isConjunctionInIfThen =
+            context.elementType == PicatTokenTypes.CONJUNCTION &&
+                context.parentType == PicatTokenTypes.IF_THEN
+        return isConjunctionInIfThen && hasIfThenOpBefore(context.node)
+    }
+
+    /**
+     * Checks if the node has an IF_THEN_OP (arrow) immediately before it (skipping whitespace).
+     */
+    private fun hasIfThenOpBefore(node: ASTNode): Boolean {
+        var sibling = node.treePrev
+        while (sibling != null) {
+            val elementType = sibling.elementType
+            if (elementType == TokenType.WHITE_SPACE) {
+                sibling = sibling.treePrev
+                continue
+            }
+            return elementType == PicatTokenTypes.IF_THEN_OP
+        }
+        return false
+    }
+
+    /**
+     * Checks if this IF_THEN element comes after a SEMICOLON in a disjunction.
+     * In Prolog-style if-then-else, else branches after ; should be indented.
+     */
+    private fun isIfThenAfterSemicolon(context: IndentContext): Boolean {
+        val isIfThenInDisjunction =
+            context.elementType == PicatTokenTypes.IF_THEN &&
+                context.parentType == PicatTokenTypes.DISJUNCTION
+        return isIfThenInDisjunction && hasSemicolonBefore(context.node)
+    }
+
+    /**
+     * Checks if the node has a SEMICOLON or OR_OR before it (skipping whitespace and comments).
+     */
+    private fun hasSemicolonBefore(node: ASTNode): Boolean {
+        var sibling = node.treePrev
+        while (sibling != null) {
+            val elementType = sibling.elementType
+            if (isWhitespaceOrComment(elementType)) {
+                sibling = sibling.treePrev
+                continue
+            }
+            return elementType == PicatTokenTypes.SEMICOLON || elementType == PicatTokenTypes.OR_OR
+        }
+        return false
+    }
+
+    private fun isWhitespaceOrComment(elementType: IElementType): Boolean {
+        return elementType == TokenType.WHITE_SPACE ||
+            elementType == PicatTokenTypes.COMMENT ||
+            elementType == PicatTokenTypes.MULTILINE_COMMENT
     }
 
     private fun isCommentInRuleBody(context: IndentContext): Boolean {
@@ -114,19 +177,21 @@ class PicatBlock(
         val parentType: IElementType?,
         val grandParentType: IElementType?,
         val greatGrandParentType: IElementType?,
-        val picatSettings: PicatCodeStyleSettings
+        val picatSettings: PicatCodeStyleSettings,
+        val node: ASTNode
     )
 
     /**
      * Determines the indentation for child blocks.
+     * This is called to determine the indent that should be applied to children of this node.
+     * Returns Normal indent for specific element types, null otherwise to let children decide.
      */
     override fun getChildIndent(): Indent? {
         val elementType = myNode.elementType
-
         return if (shouldIndentChildElements(elementType)) {
             Indent.getNormalIndent()
         } else {
-            Indent.getNoneIndent()
+            null
         }
     }
 
@@ -136,7 +201,8 @@ class PicatBlock(
                 elementType == PicatTokenTypes.LIST_EXPR ||
                 elementType == PicatTokenTypes.EXPRESSION ||
                 elementType == PicatTokenTypes.PREDICATE_RULE ||
-                elementType == PicatTokenTypes.FUNCTION_RULE
+                elementType == PicatTokenTypes.FUNCTION_RULE ||
+                elementType == PicatTokenTypes.IF_THEN
     }
 
     override fun isLeaf(): Boolean {

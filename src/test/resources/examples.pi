@@ -35,16 +35,14 @@ fibi(N) = F =>
     end.
 
 % Using Prolog-style if-then-else
-/* not supported for now
 fibg(N) = F =>
     (N == 0 ->
         F = 1
-    ;N == 1 ->
+    ; N == 1 ->
         F = 1
     ;
-        F = fibg(N-1)+fibg(N-2)
+        F = fibg(N - 1) + fibg(N - 2)
     ).
-*/
 
 % Using a conditional expression
 fibc(N) = cond((N == 0; N == 1), 1, fibc(N - 1) + fibc(N - 2)).

@@ -38,6 +38,9 @@ internal class PicatOperatorFormatter(private val settings: PicatCodeStyleSettin
         "__HASH_ARROW_OP__",
         "__HASH_BICONDITIONAL_OP__"
     )
+    val controlFlowOps = listOf(
+        "__IF_THEN_OP__"
+    )
     val constraintOps = listOf(
         "__HASH_EQUAL_OP__",
         "__HASH_NOT_EQUAL_OP__",
@@ -108,6 +111,7 @@ internal class PicatOperatorFormatter(private val settings: PicatCodeStyleSettin
         result = result.replace(":=", "__ASSIGN_OP__")
         result = result.replace("?:", "__TERNARY_COLON_OP__")
         result = result.replace("?=>", "__BACKTRACKABLE_ARROW_OP__")
+        result = result.replace("->", "__IF_THEN_OP__")  // Prolog-style if-then-else
         result = result.replace("=>", "__ARROW_OP__")
         result = result.replace(":-", "__PROLOG_RULE_OP__")
         result = result.replace("#", "__HASH_OP__")
@@ -117,6 +121,7 @@ internal class PicatOperatorFormatter(private val settings: PicatCodeStyleSettin
     fun restoreSpecialOperators(code: String): String {
         var result = code
         result = result.replace("__BACKTRACKABLE_ARROW_OP__", "?=>")
+        result = result.replace("__IF_THEN_OP__", "->")  // Prolog-style if-then-else
         result = result.replace("__ARROW_OP__", "=>")
         result = result.replace("__AT_LESS_EQUAL_OP__", "@<=")
         result = result.replace("__AT_LESS_EQUAL_PROLOG_OP__", "@=<")
@@ -202,6 +207,7 @@ internal class PicatOperatorFormatter(private val settings: PicatCodeStyleSettin
         result = applyForOps(result, logicalOps, settings.spaceAroundLogicalOperators)
         result = applyForOps(result, bitwiseOps, settings.spaceAroundBitwiseOperators)
         result = applyForOps(result, ruleOps, settings.spaceBeforeRuleOperators)
+        result = applyForOps(result, controlFlowOps, true)  // Always add spaces around ->
         result = applyForOps(result, constraintOps, settings.spaceAroundConstraintOperators)
         result = applyForOps(result, termOps, settings.spaceAroundTermComparisonOperators)
         result = applyForOps(result, typeConstraintOps, settings.spaceAroundTypeConstraintOperator)
