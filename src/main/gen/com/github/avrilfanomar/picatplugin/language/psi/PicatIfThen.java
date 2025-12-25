@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PicatDisjunction extends PsiElement {
+public interface PicatIfThen extends PsiElement {
 
   @NotNull
-  List<PicatIfThen> getIfThenList();
+  List<PicatConjunction> getConjunctionList();
 
 }

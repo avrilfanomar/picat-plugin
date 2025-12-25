@@ -291,4 +291,22 @@ class PicatLexerTest {
         )
     }
 
+    @Test
+    fun testIfThenOperator() {
+        val tokens = tokenize("->")
+        Assertions.assertEquals(1, tokens.size)
+        Assertions.assertEquals(PicatTokenTypes.IF_THEN_OP, tokens[0].first)
+        Assertions.assertEquals("->", tokens[0].second)
+    }
+
+    @Test
+    fun testIfThenWithMinusAndGreater() {
+        val tokens = tokenize("N-1 -> F=1")
+        val types = tokens.map { it.first }
+        // Verify that N-1 has separate MINUS and -> is IF_THEN_OP
+        Assertions.assertTrue(types.contains(PicatTokenTypes.MINUS), "Should contain MINUS token")
+        Assertions.assertTrue(types.contains(PicatTokenTypes.IF_THEN_OP), "Should contain IF_THEN_OP token")
+        Assertions.assertFalse(types.contains(PicatTokenTypes.GREATER), "Should NOT contain GREATER token")
+    }
+
 }

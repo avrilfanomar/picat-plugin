@@ -89,6 +89,7 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "#\\/"                         { return HASH_OR_OP; }
   "#^"                           { return HASH_XOR_OP; }
   "#\\"                          { return HASH_AND_OP; }
+  "->"                           { return IF_THEN_OP; }
   "=>"                           { return ARROW_OP; }
   "#~"                           { return HASH_NOT_OP; }
   "#="                           { return HASH_EQUAL_OP; }

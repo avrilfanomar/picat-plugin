@@ -65,6 +65,7 @@
     HASH_OR_OP="#\/"
     HASH_XOR_OP="#^"
     HASH_AND_OP='#\'
+    IF_THEN_OP="->"
     ARROW_OP="=>"
     HASH_NOT_OP="#~"
     HASH_EQUAL_OP="#="
@@ -214,7 +215,9 @@ goal ::= disjunction
        | REPEAT_KEYWORD [goal UNTIL_KEYWORD goal]
        | ONCE_KEYWORD goal
 
-disjunction ::= conjunction ((SEMICOLON | OR_OR) conjunction)*
+disjunction ::= if_then ((SEMICOLON | OR_OR) if_then)*
+
+if_then ::= conjunction (IF_THEN_OP conjunction)?
 
 conjunction ::= enclosed_goal conjunction_tail?
 
@@ -422,4 +425,4 @@ private list_comp_recover ::= !(RBRACKET | PIPE)
 private args_recover ::= !RPAR
 private term_list_recover ::= !(RPAR | RBRACKET | PIPE)
 private var_list_recover ::= !RBRACKET
-private conjunction_recover ::= !(SEMICOLON | OR_OR | RPAR | RBRACKET | RBRACE | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP)
+private conjunction_recover ::= !(SEMICOLON | OR_OR | IF_THEN_OP | RPAR | RBRACKET | RBRACE | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP)

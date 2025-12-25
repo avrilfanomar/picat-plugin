@@ -216,6 +216,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitIfThen(@NotNull PicatIfThen o) {
+    visitPsiElement(o);
+  }
+
   public void visitIfThenElse(@NotNull PicatIfThenElse o) {
     visitPsiElement(o);
   }

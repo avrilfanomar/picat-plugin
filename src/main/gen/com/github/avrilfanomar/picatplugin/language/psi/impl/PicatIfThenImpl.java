@@ -11,14 +11,14 @@ import static com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.avrilfanomar.picatplugin.language.psi.*;
 
-public class PicatDisjunctionImpl extends ASTWrapperPsiElement implements PicatDisjunction {
+public class PicatIfThenImpl extends ASTWrapperPsiElement implements PicatIfThen {
 
-  public PicatDisjunctionImpl(@NotNull ASTNode node) {
+  public PicatIfThenImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PicatVisitor visitor) {
-    visitor.visitDisjunction(this);
+    visitor.visitIfThen(this);
   }
 
   @Override
@@ -29,8 +29,8 @@ public class PicatDisjunctionImpl extends ASTWrapperPsiElement implements PicatD
 
   @Override
   @NotNull
-  public List<PicatIfThen> getIfThenList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatIfThen.class);
+  public List<PicatConjunction> getConjunctionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatConjunction.class);
   }
 
 }

@@ -60,6 +60,7 @@ public interface PicatTokenTypes {
   IElementType HEAD = new PicatElementType("HEAD");
   IElementType HEAD_ARGS = new PicatElementType("HEAD_ARGS");
   IElementType IF_GOAL = new PicatElementType("IF_GOAL");
+  IElementType IF_THEN = new PicatElementType("IF_THEN");
   IElementType IF_THEN_ELSE = new PicatElementType("IF_THEN_ELSE");
   IElementType IMPLICATION = new PicatElementType("IMPLICATION");
   IElementType IMPORT_DECLARATION = new PicatElementType("IMPORT_DECLARATION");
@@ -170,6 +171,7 @@ public interface PicatTokenTypes {
   IElementType IDENTICAL = new PicatTokenType("==");
   IElementType IDENTIFIER = new PicatTokenType("IDENTIFIER");
   IElementType IF_KEYWORD = new PicatTokenType("if");
+  IElementType IF_THEN_OP = new PicatTokenType("->");
   IElementType IMPORT_KEYWORD = new PicatTokenType("import");
   IElementType INCLUDE_KEYWORD = new PicatTokenType("include");
   IElementType INDEX_KEYWORD = new PicatTokenType("index");
@@ -386,6 +388,9 @@ public interface PicatTokenTypes {
       }
       else if (type == IF_GOAL) {
         return new PicatIfGoalImpl(node);
+      }
+      else if (type == IF_THEN) {
+        return new PicatIfThenImpl(node);
       }
       else if (type == IF_THEN_ELSE) {
         return new PicatIfThenElseImpl(node);

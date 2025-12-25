@@ -600,7 +600,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !(SEMICOLON | OR_OR | RPAR | RBRACKET | RBRACE | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP)
+  // !(SEMICOLON | OR_OR | IF_THEN_OP | RPAR | RBRACKET | RBRACE | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP)
   static boolean conjunction_recover(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "conjunction_recover")) return false;
     boolean result_;
@@ -610,12 +610,13 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // SEMICOLON | OR_OR | RPAR | RBRACKET | RBRACE | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP
+  // SEMICOLON | OR_OR | IF_THEN_OP | RPAR | RBRACKET | RBRACE | DOT | THEN_KEYWORD | ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP
   private static boolean conjunction_recover_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "conjunction_recover_0")) return false;
     boolean result_;
     result_ = consumeToken(builder_, SEMICOLON);
     if (!result_) result_ = consumeToken(builder_, OR_OR);
+    if (!result_) result_ = consumeToken(builder_, IF_THEN_OP);
     if (!result_) result_ = consumeToken(builder_, RPAR);
     if (!result_) result_ = consumeToken(builder_, RBRACKET);
     if (!result_) result_ = consumeToken(builder_, RBRACE);
@@ -672,18 +673,18 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // conjunction ((SEMICOLON | OR_OR) conjunction)*
+  // if_then ((SEMICOLON | OR_OR) if_then)*
   public static boolean disjunction(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "disjunction")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, DISJUNCTION, "<disjunction>");
-    result_ = conjunction(builder_, level_ + 1);
+    result_ = if_then(builder_, level_ + 1);
     result_ = result_ && disjunction_1(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
-  // ((SEMICOLON | OR_OR) conjunction)*
+  // ((SEMICOLON | OR_OR) if_then)*
   private static boolean disjunction_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "disjunction_1")) return false;
     while (true) {
@@ -694,13 +695,13 @@ public class PicatParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (SEMICOLON | OR_OR) conjunction
+  // (SEMICOLON | OR_OR) if_then
   private static boolean disjunction_1_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "disjunction_1_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = disjunction_1_0_0(builder_, level_ + 1);
-    result_ = result_ && conjunction(builder_, level_ + 1);
+    result_ = result_ && if_then(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -1686,6 +1687,36 @@ public class PicatParser implements PsiParser, LightPsiParser {
     result_ = consumeToken(builder_, ELSEIF_KEYWORD);
     if (!result_) result_ = consumeToken(builder_, ELSE_KEYWORD);
     if (!result_) result_ = consumeToken(builder_, END_KEYWORD);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // conjunction (IF_THEN_OP conjunction)?
+  public static boolean if_then(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_then")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, IF_THEN, "<if then>");
+    result_ = conjunction(builder_, level_ + 1);
+    result_ = result_ && if_then_1(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // (IF_THEN_OP conjunction)?
+  private static boolean if_then_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_then_1")) return false;
+    if_then_1_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // IF_THEN_OP conjunction
+  private static boolean if_then_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_then_1_0")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, IF_THEN_OP);
+    result_ = result_ && conjunction(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
