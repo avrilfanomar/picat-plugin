@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface PicatParenthesizedGoal extends PsiElement {
 
   @Nullable
-  PicatGoal getGoal();
+  PicatParenthesizedGoalContent getParenthesizedGoalContent();
 
 }

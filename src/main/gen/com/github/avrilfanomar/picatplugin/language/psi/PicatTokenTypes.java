@@ -23,7 +23,9 @@ public interface PicatTokenTypes {
   IElementType BASE_EXPR = new PicatElementType("BASE_EXPR");
   IElementType BIN_REL_OP = new PicatElementType("BIN_REL_OP");
   IElementType BODY = new PicatElementType("BODY");
+  IElementType CATCH_BODY = new PicatElementType("CATCH_BODY");
   IElementType CATCH_CLAUSE = new PicatElementType("CATCH_CLAUSE");
+  IElementType CATCH_PATTERN_CONTENT = new PicatElementType("CATCH_PATTERN_CONTENT");
   IElementType CONDITION = new PicatElementType("CONDITION");
   IElementType CONJUNCTION = new PicatElementType("CONJUNCTION");
   IElementType CONJUNCTION_AND = new PicatElementType("CONJUNCTION_AND");
@@ -32,6 +34,7 @@ public interface PicatTokenTypes {
   IElementType DISJUNCTION_OR = new PicatElementType("DISJUNCTION_OR");
   IElementType DOLLAR_ESCAPED_ATOM = new PicatElementType("DOLLAR_ESCAPED_ATOM");
   IElementType DOT_ACCESS = new PicatElementType("DOT_ACCESS");
+  IElementType ELSEIF_CONDITION = new PicatElementType("ELSEIF_CONDITION");
   IElementType ENCLOSED_GOAL = new PicatElementType("ENCLOSED_GOAL");
   IElementType EQUIVALENCE = new PicatElementType("EQUIVALENCE");
   IElementType EVENT_PATTERN = new PicatElementType("EVENT_PATTERN");
@@ -39,6 +42,7 @@ public interface PicatTokenTypes {
   IElementType EXCLUSIVE_OR = new PicatElementType("EXCLUSIVE_OR");
   IElementType EXPRESSION = new PicatElementType("EXPRESSION");
   IElementType EXPRESSION_WITH_RELATIONS = new PicatElementType("EXPRESSION_WITH_RELATIONS");
+  IElementType FINALLY_BODY = new PicatElementType("FINALLY_BODY");
   IElementType FOREACH_BODY = new PicatElementType("FOREACH_BODY");
   IElementType FOREACH_GOAL = new PicatElementType("FOREACH_GOAL");
   IElementType FOREACH_ITEMS = new PicatElementType("FOREACH_ITEMS");
@@ -59,6 +63,7 @@ public interface PicatTokenTypes {
   IElementType GOAL = new PicatElementType("GOAL");
   IElementType HEAD = new PicatElementType("HEAD");
   IElementType HEAD_ARGS = new PicatElementType("HEAD_ARGS");
+  IElementType IF_CONDITION = new PicatElementType("IF_CONDITION");
   IElementType IF_GOAL = new PicatElementType("IF_GOAL");
   IElementType IF_THEN = new PicatElementType("IF_THEN");
   IElementType IF_THEN_ELSE = new PicatElementType("IF_THEN_ELSE");
@@ -77,6 +82,8 @@ public interface PicatTokenTypes {
   IElementType LIST_EXPR_NO_COMPREHENSION = new PicatElementType("LIST_EXPR_NO_COMPREHENSION");
   IElementType LIST_EXPR_STANDARD = new PicatElementType("LIST_EXPR_STANDARD");
   IElementType LIST_ITEMS_TAIL = new PicatElementType("LIST_ITEMS_TAIL");
+  IElementType LOOP_BODY = new PicatElementType("LOOP_BODY");
+  IElementType LOOP_CONDITION = new PicatElementType("LOOP_CONDITION");
   IElementType LOOP_WHILE = new PicatElementType("LOOP_WHILE");
   IElementType MODULE_DECLARATION = new PicatElementType("MODULE_DECLARATION");
   IElementType MULTIPLICATIVE_EXPR = new PicatElementType("MULTIPLICATIVE_EXPR");
@@ -85,6 +92,7 @@ public interface PicatTokenTypes {
   IElementType NONBACKTRACKABLE_PREDICATE_RULE = new PicatElementType("NONBACKTRACKABLE_PREDICATE_RULE");
   IElementType OR_EXPR = new PicatElementType("OR_EXPR");
   IElementType PARENTHESIZED_GOAL = new PicatElementType("PARENTHESIZED_GOAL");
+  IElementType PARENTHESIZED_GOAL_CONTENT = new PicatElementType("PARENTHESIZED_GOAL_CONTENT");
   IElementType POSTFIX_OP = new PicatElementType("POSTFIX_OP");
   IElementType POSTFIX_OPS = new PicatElementType("POSTFIX_OPS");
   IElementType POWER_EXPR = new PicatElementType("POWER_EXPR");
@@ -102,13 +110,17 @@ public interface PicatTokenTypes {
   IElementType TERM = new PicatElementType("TERM");
   IElementType TERM_CONSTRUCTOR = new PicatElementType("TERM_CONSTRUCTOR");
   IElementType TERM_LIST_TAIL = new PicatElementType("TERM_LIST_TAIL");
+  IElementType THROW_CONTENT = new PicatElementType("THROW_CONTENT");
   IElementType THROW_STATEMENT = new PicatElementType("THROW_STATEMENT");
+  IElementType TRY_BODY = new PicatElementType("TRY_BODY");
   IElementType TRY_CATCH = new PicatElementType("TRY_CATCH");
   IElementType TYPE_ANNOTATION = new PicatElementType("TYPE_ANNOTATION");
   IElementType UNARY_EXPR = new PicatElementType("UNARY_EXPR");
   IElementType VARIABLE_AS_PATTERN = new PicatElementType("VARIABLE_AS_PATTERN");
   IElementType VARIABLE_LIST = new PicatElementType("VARIABLE_LIST");
   IElementType VARIABLE_LIST_TAIL = new PicatElementType("VARIABLE_LIST_TAIL");
+  IElementType WHILE_BODY = new PicatElementType("WHILE_BODY");
+  IElementType WHILE_CONDITION = new PicatElementType("WHILE_CONDITION");
   IElementType WHILE_LOOP = new PicatElementType("WHILE_LOOP");
   IElementType XOR_EXPR = new PicatElementType("XOR_EXPR");
 
@@ -278,8 +290,14 @@ public interface PicatTokenTypes {
       else if (type == BODY) {
         return new PicatBodyImpl(node);
       }
+      else if (type == CATCH_BODY) {
+        return new PicatCatchBodyImpl(node);
+      }
       else if (type == CATCH_CLAUSE) {
         return new PicatCatchClauseImpl(node);
+      }
+      else if (type == CATCH_PATTERN_CONTENT) {
+        return new PicatCatchPatternContentImpl(node);
       }
       else if (type == CONDITION) {
         return new PicatConditionImpl(node);
@@ -305,6 +323,9 @@ public interface PicatTokenTypes {
       else if (type == DOT_ACCESS) {
         return new PicatDotAccessImpl(node);
       }
+      else if (type == ELSEIF_CONDITION) {
+        return new PicatElseifConditionImpl(node);
+      }
       else if (type == ENCLOSED_GOAL) {
         return new PicatEnclosedGoalImpl(node);
       }
@@ -325,6 +346,9 @@ public interface PicatTokenTypes {
       }
       else if (type == EXPRESSION_WITH_RELATIONS) {
         return new PicatExpressionWithRelationsImpl(node);
+      }
+      else if (type == FINALLY_BODY) {
+        return new PicatFinallyBodyImpl(node);
       }
       else if (type == FOREACH_BODY) {
         return new PicatForeachBodyImpl(node);
@@ -386,6 +410,9 @@ public interface PicatTokenTypes {
       else if (type == HEAD_ARGS) {
         return new PicatHeadArgsImpl(node);
       }
+      else if (type == IF_CONDITION) {
+        return new PicatIfConditionImpl(node);
+      }
       else if (type == IF_GOAL) {
         return new PicatIfGoalImpl(node);
       }
@@ -440,6 +467,12 @@ public interface PicatTokenTypes {
       else if (type == LIST_ITEMS_TAIL) {
         return new PicatListItemsTailImpl(node);
       }
+      else if (type == LOOP_BODY) {
+        return new PicatLoopBodyImpl(node);
+      }
+      else if (type == LOOP_CONDITION) {
+        return new PicatLoopConditionImpl(node);
+      }
       else if (type == LOOP_WHILE) {
         return new PicatLoopWhileImpl(node);
       }
@@ -463,6 +496,9 @@ public interface PicatTokenTypes {
       }
       else if (type == PARENTHESIZED_GOAL) {
         return new PicatParenthesizedGoalImpl(node);
+      }
+      else if (type == PARENTHESIZED_GOAL_CONTENT) {
+        return new PicatParenthesizedGoalContentImpl(node);
       }
       else if (type == POSTFIX_OP) {
         return new PicatPostfixOpImpl(node);
@@ -515,8 +551,14 @@ public interface PicatTokenTypes {
       else if (type == TERM_LIST_TAIL) {
         return new PicatTermListTailImpl(node);
       }
+      else if (type == THROW_CONTENT) {
+        return new PicatThrowContentImpl(node);
+      }
       else if (type == THROW_STATEMENT) {
         return new PicatThrowStatementImpl(node);
+      }
+      else if (type == TRY_BODY) {
+        return new PicatTryBodyImpl(node);
       }
       else if (type == TRY_CATCH) {
         return new PicatTryCatchImpl(node);
@@ -535,6 +577,12 @@ public interface PicatTokenTypes {
       }
       else if (type == VARIABLE_LIST_TAIL) {
         return new PicatVariableListTailImpl(node);
+      }
+      else if (type == WHILE_BODY) {
+        return new PicatWhileBodyImpl(node);
+      }
+      else if (type == WHILE_CONDITION) {
+        return new PicatWhileConditionImpl(node);
       }
       else if (type == WHILE_LOOP) {
         return new PicatWhileLoopImpl(node);

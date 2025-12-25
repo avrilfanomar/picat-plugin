@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatLoopWhile extends PsiElement {
 
-  @NotNull
-  List<PicatGoal> getGoalList();
+  @Nullable
+  PicatLoopBody getLoopBody();
+
+  @Nullable
+  PicatLoopCondition getLoopCondition();
 
 }

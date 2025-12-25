@@ -7,10 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatCatchClause extends PsiElement {
 
-  @NotNull
-  PicatExceptionPattern getExceptionPattern();
+  @Nullable
+  PicatCatchBody getCatchBody();
 
-  @NotNull
-  PicatGoal getGoal();
+  @Nullable
+  PicatCatchPatternContent getCatchPatternContent();
 
 }

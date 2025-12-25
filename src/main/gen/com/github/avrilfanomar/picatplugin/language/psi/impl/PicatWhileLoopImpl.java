@@ -28,9 +28,15 @@ public class PicatWhileLoopImpl extends ASTWrapperPsiElement implements PicatWhi
   }
 
   @Override
-  @NotNull
-  public List<PicatGoal> getGoalList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatGoal.class);
+  @Nullable
+  public PicatWhileBody getWhileBody() {
+    return findChildByClass(PicatWhileBody.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatWhileCondition getWhileCondition() {
+    return findChildByClass(PicatWhileCondition.class);
   }
 
 }

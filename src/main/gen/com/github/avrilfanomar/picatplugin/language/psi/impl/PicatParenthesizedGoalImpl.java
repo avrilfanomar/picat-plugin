@@ -29,8 +29,8 @@ public class PicatParenthesizedGoalImpl extends ASTWrapperPsiElement implements 
 
   @Override
   @Nullable
-  public PicatGoal getGoal() {
-    return findChildByClass(PicatGoal.class);
+  public PicatParenthesizedGoalContent getParenthesizedGoalContent() {
+    return findChildByClass(PicatParenthesizedGoalContent.class);
   }
 
 }

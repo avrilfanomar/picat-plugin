@@ -29,8 +29,14 @@ public class PicatIfThenElseImpl extends ASTWrapperPsiElement implements PicatIf
 
   @Override
   @NotNull
-  public List<PicatGoal> getGoalList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatGoal.class);
+  public List<PicatElseifCondition> getElseifConditionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatElseifCondition.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatIfCondition getIfCondition() {
+    return findChildByClass(PicatIfCondition.class);
   }
 
   @Override

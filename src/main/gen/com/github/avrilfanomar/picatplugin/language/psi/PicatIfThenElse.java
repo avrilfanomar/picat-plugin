@@ -8,7 +8,10 @@ import com.intellij.psi.PsiElement;
 public interface PicatIfThenElse extends PsiElement {
 
   @NotNull
-  List<PicatGoal> getGoalList();
+  List<PicatElseifCondition> getElseifConditionList();
+
+  @Nullable
+  PicatIfCondition getIfCondition();
 
   @NotNull
   List<PicatIfGoal> getIfGoalList();

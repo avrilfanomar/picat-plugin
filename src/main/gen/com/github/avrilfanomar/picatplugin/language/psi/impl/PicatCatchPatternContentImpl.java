@@ -11,14 +11,14 @@ import static com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.avrilfanomar.picatplugin.language.psi.*;
 
-public class PicatCatchClauseImpl extends ASTWrapperPsiElement implements PicatCatchClause {
+public class PicatCatchPatternContentImpl extends ASTWrapperPsiElement implements PicatCatchPatternContent {
 
-  public PicatCatchClauseImpl(@NotNull ASTNode node) {
+  public PicatCatchPatternContentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PicatVisitor visitor) {
-    visitor.visitCatchClause(this);
+    visitor.visitCatchPatternContent(this);
   }
 
   @Override
@@ -28,15 +28,9 @@ public class PicatCatchClauseImpl extends ASTWrapperPsiElement implements PicatC
   }
 
   @Override
-  @Nullable
-  public PicatCatchBody getCatchBody() {
-    return findChildByClass(PicatCatchBody.class);
-  }
-
-  @Override
-  @Nullable
-  public PicatCatchPatternContent getCatchPatternContent() {
-    return findChildByClass(PicatCatchPatternContent.class);
+  @NotNull
+  public PicatExceptionPattern getExceptionPattern() {
+    return findNotNullChildByClass(PicatExceptionPattern.class);
   }
 
 }

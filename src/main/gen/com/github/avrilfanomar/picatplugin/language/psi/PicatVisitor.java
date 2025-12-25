@@ -68,7 +68,15 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitCatchBody(@NotNull PicatCatchBody o) {
+    visitPsiElement(o);
+  }
+
   public void visitCatchClause(@NotNull PicatCatchClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitCatchPatternContent(@NotNull PicatCatchPatternContent o) {
     visitPsiElement(o);
   }
 
@@ -104,6 +112,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitElseifCondition(@NotNull PicatElseifCondition o) {
+    visitPsiElement(o);
+  }
+
   public void visitEnclosedGoal(@NotNull PicatEnclosedGoal o) {
     visitPsiElement(o);
   }
@@ -129,6 +141,10 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitExpressionWithRelations(@NotNull PicatExpressionWithRelations o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFinallyBody(@NotNull PicatFinallyBody o) {
     visitPsiElement(o);
   }
 
@@ -212,6 +228,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitIfCondition(@NotNull PicatIfCondition o) {
+    visitPsiElement(o);
+  }
+
   public void visitIfGoal(@NotNull PicatIfGoal o) {
     visitPsiElement(o);
   }
@@ -284,6 +304,14 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitLoopBody(@NotNull PicatLoopBody o) {
+    visitPsiElement(o);
+  }
+
+  public void visitLoopCondition(@NotNull PicatLoopCondition o) {
+    visitPsiElement(o);
+  }
+
   public void visitLoopWhile(@NotNull PicatLoopWhile o) {
     visitPsiElement(o);
   }
@@ -313,6 +341,10 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitParenthesizedGoal(@NotNull PicatParenthesizedGoal o) {
+    visitPsiElement(o);
+  }
+
+  public void visitParenthesizedGoalContent(@NotNull PicatParenthesizedGoalContent o) {
     visitPsiElement(o);
   }
 
@@ -384,7 +416,15 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitThrowContent(@NotNull PicatThrowContent o) {
+    visitPsiElement(o);
+  }
+
   public void visitThrowStatement(@NotNull PicatThrowStatement o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTryBody(@NotNull PicatTryBody o) {
     visitPsiElement(o);
   }
 
@@ -409,6 +449,14 @@ public class PicatVisitor extends PsiElementVisitor {
   }
 
   public void visitVariableListTail(@NotNull PicatVariableListTail o) {
+    visitPsiElement(o);
+  }
+
+  public void visitWhileBody(@NotNull PicatWhileBody o) {
+    visitPsiElement(o);
+  }
+
+  public void visitWhileCondition(@NotNull PicatWhileCondition o) {
     visitPsiElement(o);
   }
 

@@ -10,7 +10,10 @@ public interface PicatTryCatch extends PsiElement {
   @NotNull
   List<PicatCatchClause> getCatchClauseList();
 
-  @NotNull
-  List<PicatGoal> getGoalList();
+  @Nullable
+  PicatFinallyBody getFinallyBody();
+
+  @Nullable
+  PicatTryBody getTryBody();
 
 }

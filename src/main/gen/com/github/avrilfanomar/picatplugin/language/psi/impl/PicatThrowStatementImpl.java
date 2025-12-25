@@ -28,9 +28,9 @@ public class PicatThrowStatementImpl extends ASTWrapperPsiElement implements Pic
   }
 
   @Override
-  @NotNull
-  public PicatArgument getArgument() {
-    return findNotNullChildByClass(PicatArgument.class);
+  @Nullable
+  public PicatThrowContent getThrowContent() {
+    return findChildByClass(PicatThrowContent.class);
   }
 
 }

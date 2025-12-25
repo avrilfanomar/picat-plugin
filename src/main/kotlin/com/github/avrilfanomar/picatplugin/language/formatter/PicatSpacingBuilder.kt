@@ -134,19 +134,6 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             PicatTokenTypes.THEN_KEYWORD,
             PicatTokenTypes.ELSE_KEYWORD
         )
-
-        /** Block end keywords (end, else, elseif). */
-        val BLOCK_END_KEYWORDS = TokenSet.create(
-            PicatTokenTypes.END_KEYWORD,
-            PicatTokenTypes.ELSE_KEYWORD,
-            PicatTokenTypes.ELSEIF_KEYWORD
-        )
-
-        /** Loop keywords (foreach, while, for). */
-        val LOOP_KEYWORDS = TokenSet.create(
-            PicatTokenTypes.FOREACH_KEYWORD,
-            PicatTokenTypes.WHILE_KEYWORD
-        )
     }
 
     init {

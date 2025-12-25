@@ -34,9 +34,15 @@ public class PicatTryCatchImpl extends ASTWrapperPsiElement implements PicatTryC
   }
 
   @Override
-  @NotNull
-  public List<PicatGoal> getGoalList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PicatGoal.class);
+  @Nullable
+  public PicatFinallyBody getFinallyBody() {
+    return findChildByClass(PicatFinallyBody.class);
+  }
+
+  @Override
+  @Nullable
+  public PicatTryBody getTryBody() {
+    return findChildByClass(PicatTryBody.class);
   }
 
 }

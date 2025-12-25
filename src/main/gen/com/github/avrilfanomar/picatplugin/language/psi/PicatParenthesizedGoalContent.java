@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PicatWhileLoop extends PsiElement {
+public interface PicatParenthesizedGoalContent extends PsiElement {
 
-  @Nullable
-  PicatWhileBody getWhileBody();
-
-  @Nullable
-  PicatWhileCondition getWhileCondition();
+  @NotNull
+  PicatGoal getGoal();
 
 }

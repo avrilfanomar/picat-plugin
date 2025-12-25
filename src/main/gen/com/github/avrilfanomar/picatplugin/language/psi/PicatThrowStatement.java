@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface PicatThrowStatement extends PsiElement {
 
-  @NotNull
-  PicatArgument getArgument();
+  @Nullable
+  PicatThrowContent getThrowContent();
 
 }

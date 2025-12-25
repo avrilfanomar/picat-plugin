@@ -177,7 +177,7 @@ function_definition ::= function_directive* function_clause
 function_clause ::= function_rule | function_fact
 
 function_rule ::= head EQUAL argument function_rule_tail DOT
-function_rule_tail ::= [COMMA condition] ARROW_OP body {pin=2}
+function_rule_tail ::= [COMMA condition] ARROW_OP body {pin=2;recoverWhile=function_rule_tail_recover}
 private function_rule_tail_recover ::= !DOT
 
 function_fact ::= head EQUAL argument DOT {pin=2}
@@ -203,7 +203,9 @@ table_mode ::= PLUS | MINUS | MIN | MAX | NT
 
 // === Heads ===
 head ::= atom head_args?
-head_args ::= LPAR [argument (COMMA argument)*] RPAR {pin=1}
+head_args ::= LPAR head_args_inner RPAR {pin=1}
+private head_args_inner ::= [argument (COMMA argument)*] {recoverWhile=head_args_recover}
+private head_args_recover ::= !RPAR
 
 // === Conditions & Bodies ===
 condition ::= goal
@@ -251,7 +253,11 @@ enclosed_goal ::= if_then_else
                 | equivalence
                 | expression_with_relations
 
-if_then_else ::= IF_KEYWORD goal THEN_KEYWORD if_goal (ELSEIF_KEYWORD goal THEN_KEYWORD if_goal)* (ELSE_KEYWORD if_goal)? END_KEYWORD {pin=1}
+if_then_else ::= IF_KEYWORD if_condition THEN_KEYWORD if_goal (ELSEIF_KEYWORD elseif_condition THEN_KEYWORD if_goal)* (ELSE_KEYWORD if_goal)? END_KEYWORD {pin=1}
+if_condition ::= goal {recoverWhile=if_condition_recover}
+private if_condition_recover ::= !THEN_KEYWORD
+elseif_condition ::= goal {recoverWhile=elseif_condition_recover}
+private elseif_condition_recover ::= !THEN_KEYWORD
 if_goal ::= goal {recoverWhile=if_goal_recover}
 private if_goal_recover ::= !(ELSEIF_KEYWORD | ELSE_KEYWORD | END_KEYWORD)
 
@@ -267,17 +273,35 @@ foreach_items ::= iterator foreach_items_tail?
 foreach_items_tail ::= COMMA (iterator | condition) foreach_items_tail? {pin=1 recoverWhile=foreach_items_recover}
 private foreach_items_recover ::= !RPAR
 
-while_loop ::= WHILE_KEYWORD LPAR goal RPAR [LOOP_KEYWORD] goal END_KEYWORD
+while_loop ::= WHILE_KEYWORD LPAR while_condition RPAR [LOOP_KEYWORD] while_body END_KEYWORD {pin=1}
+while_condition ::= goal {recoverWhile=while_condition_recover}
+private while_condition_recover ::= !RPAR
+while_body ::= goal {recoverWhile=while_body_recover}
+private while_body_recover ::= !END_KEYWORD
 
-loop_while ::= LOOP_KEYWORD goal WHILE_KEYWORD LPAR goal RPAR
+loop_while ::= LOOP_KEYWORD loop_body WHILE_KEYWORD LPAR loop_condition RPAR {pin=1}
+loop_body ::= goal {recoverWhile=loop_body_recover}
+private loop_body_recover ::= !WHILE_KEYWORD
+loop_condition ::= goal {recoverWhile=loop_condition_recover}
+private loop_condition_recover ::= !RPAR
 
-try_catch ::= TRY_KEYWORD goal catch_clause* [FINALLY_KEYWORD goal] END_KEYWORD
+try_catch ::= TRY_KEYWORD try_body catch_clause* [FINALLY_KEYWORD finally_body] END_KEYWORD {pin=1}
+try_body ::= goal {recoverWhile=try_body_recover}
+private try_body_recover ::= !(CATCH_KEYWORD | FINALLY_KEYWORD | END_KEYWORD)
+finally_body ::= goal {recoverWhile=finally_body_recover}
+private finally_body_recover ::= !END_KEYWORD
 
-catch_clause ::= CATCH_KEYWORD LPAR exception_pattern RPAR goal
+catch_clause ::= CATCH_KEYWORD LPAR catch_pattern_content RPAR catch_body {pin=1}
+catch_pattern_content ::= exception_pattern {recoverWhile=catch_pattern_recover}
+private catch_pattern_recover ::= !RPAR
+catch_body ::= goal {recoverWhile=catch_body_recover}
+private catch_body_recover ::= !(CATCH_KEYWORD | FINALLY_KEYWORD | END_KEYWORD)
 
 exception_pattern ::= term
 
-throw_statement ::= THROW_KEYWORD LPAR argument RPAR
+throw_statement ::= THROW_KEYWORD LPAR throw_content RPAR {pin=1}
+throw_content ::= argument {recoverWhile=throw_recover}
+private throw_recover ::= !RPAR
 
 expression_with_relations ::= expression (bin_rel_op expression)*
 
@@ -320,8 +344,13 @@ postfix_ops ::= postfix_op postfix_ops?
 
 postfix_op ::= dot_access | index_access
 
-dot_access ::= (DOT_IDENTIFIER | DOT_SINGLE_QUOTED_ATOM) [LPAR [argument (COMMA argument)*] RPAR]
-index_access ::= LBRACKET argument (COMMA argument)* RBRACKET
+dot_access ::= (DOT_IDENTIFIER | DOT_SINGLE_QUOTED_ATOM) [LPAR dot_access_inner RPAR]
+private dot_access_inner ::= [argument (COMMA argument)*] {recoverWhile=dot_access_recover}
+private dot_access_recover ::= !RPAR
+
+index_access ::= LBRACKET index_access_inner RBRACKET
+private index_access_inner ::= argument (COMMA argument)* {recoverWhile=index_access_recover}
+private index_access_recover ::= !RBRACKET
 
 base_expr ::= function_call
             | function_call_no_dot
@@ -341,7 +370,9 @@ base_expr ::= function_call
 
 atom_no_args ::= atom !LPAR
 
-parenthesized_goal ::= LPAR goal RPAR {pin=1}
+parenthesized_goal ::= LPAR parenthesized_goal_content RPAR {pin=1}
+parenthesized_goal_content ::= goal {recoverWhile=parenthesized_goal_recover}
+private parenthesized_goal_recover ::= !RPAR
 
 type_annotation ::= VARIABLE DOUBLE_COLON_OP expression
 
