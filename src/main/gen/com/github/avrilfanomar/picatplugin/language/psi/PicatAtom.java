@@ -15,6 +15,9 @@ public interface PicatAtom extends PicatNameIdentifierOwner {
   PsiElement getIdentifier();
 
   @Nullable
+  PsiElement getQualifiedAtom();
+
+  @Nullable
   PsiElement getSingleQuotedAtom();
 
 }

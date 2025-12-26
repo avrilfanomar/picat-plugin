@@ -40,6 +40,12 @@ public class PicatAtomImpl extends PicatAtomMixin implements PicatAtom {
 
   @Override
   @Nullable
+  public PsiElement getQualifiedAtom() {
+    return findChildByType(QUALIFIED_ATOM);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getSingleQuotedAtom() {
     return findChildByType(SINGLE_QUOTED_ATOM);
   }

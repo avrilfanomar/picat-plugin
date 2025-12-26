@@ -445,7 +445,7 @@ function_argument_list_tail ::= COMMA function_argument function_argument_list_t
 
 term_list_tail ::= COMMA term term_list_tail? {pin=1 recoverWhile=term_list_recover}
 
-atom ::= IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | TRUE | FALSE {implements="com.github.avrilfanomar.picatplugin.language.references.PicatNameIdentifierOwner" mixin="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatAtomMixin" methods=["getName" "setName" "getNameIdentifier"]}
+atom ::= IDENTIFIER | QUALIFIED_ATOM | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | TRUE | FALSE {implements="com.github.avrilfanomar.picatplugin.language.references.PicatNameIdentifierOwner" mixin="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatAtomMixin" methods=["getName" "setName" "getNameIdentifier"]}
 
 dollar_escaped_atom ::= DOLLAR IDENTIFIER
 

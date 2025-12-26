@@ -324,12 +324,13 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IDENTIFIER | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | TRUE | FALSE
+  // IDENTIFIER | QUALIFIED_ATOM | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | TRUE | FALSE
   public static boolean atom(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, ATOM, "<atom>");
     result_ = consumeToken(builder_, IDENTIFIER);
+    if (!result_) result_ = consumeToken(builder_, QUALIFIED_ATOM);
     if (!result_) result_ = consumeToken(builder_, SINGLE_QUOTED_ATOM);
     if (!result_) result_ = dollar_escaped_atom(builder_, level_ + 1);
     if (!result_) result_ = consumeToken(builder_, MIN);
