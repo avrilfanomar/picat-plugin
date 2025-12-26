@@ -1,6 +1,12 @@
 package com.github.avrilfanomar.picatplugin.language.structure
 
+import com.github.avrilfanomar.picatplugin.language.psi.PicatActionRule
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionRule
+import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
+import com.github.avrilfanomar.picatplugin.language.psi.PicatNonbacktrackablePredicateRule
+import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateFact
+import com.github.avrilfanomar.picatplugin.language.psi.PicatPredicateRule
+import com.github.avrilfanomar.picatplugin.language.psi.impl.PicatFileImpl
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
@@ -8,6 +14,7 @@ import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 
 /**
  * Structure view element for Picat files.
@@ -30,12 +37,11 @@ class PicatStructureViewElement(private val element: PsiElement) :
     override fun canNavigateToSource(): Boolean =
         element is NavigatablePsiElement && element.canNavigateToSource()
 
-    override fun getAlphaSortKey(): String =
-        element.toString()
+    override fun getAlphaSortKey(): String = getPresentableText()
 
     override fun getPresentation(): ItemPresentation {
         return PresentationData(
-            element.text ?: element.toString(),
+            getPresentableText(),
             null,
             null,
             null
@@ -43,25 +49,59 @@ class PicatStructureViewElement(private val element: PsiElement) :
     }
 
     override fun getChildren(): Array<TreeElement> {
-        // For PicatFunctionRule, we might not want to show further children in the structure view,
-        // or we might want to show specific parts of its body if relevant.
-        // For a file root, you'd iterate through its top-level definitions.
-        if (element is PicatFunctionRule) {
-            return emptyArray() // Example: function rules are leaves in this view
+        // Rules are leaves in the structure view
+        if (isRuleElement(element)) {
+            return emptyArray()
         }
 
-        // If the element is the root of the file (PicatFile), find all function rules.
-        // This part needs to be adapted based on the actual root PSI element type.
-        // For now, let's assume 'element' could be a PicatFile (or similar root)
-        // and we want to show PicatFunctionRule children.
+        // For the file root, find all top-level rules
         val children = mutableListOf<TreeElement>()
-        element.children.forEach { child ->
-            if (child is PicatFunctionRule) {
-                children.add(PicatStructureViewElement(child))
-            }
-            // Add other top-level elements you want to see in the structure view
-            // e.g., if (child is PicatPredicateRule) { children.add(PicatStructureViewElement(child)) }
+        if (element is PicatFileImpl) {
+            // Collect all rule types from the file
+            PsiTreeUtil.findChildrenOfType(element, PicatFunctionRule::class.java)
+                .forEach { children.add(PicatStructureViewElement(it)) }
+            PsiTreeUtil.findChildrenOfType(element, PicatPredicateRule::class.java)
+                .forEach { children.add(PicatStructureViewElement(it)) }
+            PsiTreeUtil.findChildrenOfType(element, PicatActionRule::class.java)
+                .forEach { children.add(PicatStructureViewElement(it)) }
+            PsiTreeUtil.findChildrenOfType(element, PicatNonbacktrackablePredicateRule::class.java)
+                .forEach { children.add(PicatStructureViewElement(it)) }
+            PsiTreeUtil.findChildrenOfType(element, PicatPredicateFact::class.java)
+                .forEach { children.add(PicatStructureViewElement(it)) }
         }
         return children.toTypedArray()
+    }
+
+    private fun getPresentableText(): String {
+        return when (element) {
+            is PicatFileImpl -> element.name
+            is PicatFunctionRule -> presentHead(element.head)
+            is PicatPredicateRule -> presentHead(element.head)
+            is PicatActionRule -> presentHead(element.head)
+            is PicatNonbacktrackablePredicateRule -> presentHead(element.head)
+            is PicatPredicateFact -> presentHead(element.head)
+            else -> element.text?.take(MAX_TEXT_LENGTH) ?: element.toString()
+        }
+    }
+
+    private fun presentHead(head: PicatHead): String {
+        val name = head.atom.identifier?.text
+            ?: head.atom.singleQuotedAtom?.text?.trim('"', '\'', '`')
+            ?: "<head>"
+        val arity = head.headArgs?.argumentList?.size ?: 0
+        return "$name/$arity"
+    }
+
+    private fun isRuleElement(element: PsiElement): Boolean {
+        return element is PicatFunctionRule ||
+            element is PicatPredicateRule ||
+            element is PicatActionRule ||
+            element is PicatNonbacktrackablePredicateRule ||
+            element is PicatPredicateFact
+    }
+
+    /** Constants for structure view element presentation. */
+    companion object {
+        private const val MAX_TEXT_LENGTH = 50
     }
 }
