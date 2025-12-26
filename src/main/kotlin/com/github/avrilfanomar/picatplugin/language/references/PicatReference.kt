@@ -1,5 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.references
 
+import com.github.avrilfanomar.picatplugin.cache.PicatPsiCache
 import com.github.avrilfanomar.picatplugin.language.psi.PicatArgument
 import com.github.avrilfanomar.picatplugin.language.psi.PicatArgumentListTail
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
@@ -12,7 +13,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
-import com.intellij.psi.PsiManager
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiPolyVariantReferenceBase
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.util.PsiTreeUtil
@@ -69,10 +70,11 @@ class PicatReference(element: PsiElement, rangeInElement: TextRange) :
                 }
             }
         }
-        val localHeads = PsiTreeUtil.findChildrenOfType(file, PicatHead::class.java)
-        val importedHeads = collectImportedHeads(file)
-        val stdlibHeads = collectImplicitStdlibHeads()
-        val primitiveHeads = collectPrimitiveHeads()
+        val cache = PicatPsiCache.getInstance(element.project)
+        val localHeads = cache.getFileHeads(file)
+        val importedHeads = collectImportedHeadsCached(file, cache)
+        val stdlibHeads = cache.getStdlibHeads()
+        val primitiveHeads = cache.getPrimitiveHeads()
 
         val localMatches = filterAndSort(localHeads, ident, usageArity)
         val importedMatches = filterAndSort(importedHeads, ident, usageArity)
@@ -135,10 +137,11 @@ class PicatReference(element: PsiElement, rangeInElement: TextRange) :
 
     override fun getVariants(): Array<Any> {
         val file = element.containingFile ?: return emptyArray()
-        val localHeads = PsiTreeUtil.findChildrenOfType(file, PicatHead::class.java)
-        val importedHeads = collectImportedHeads(file)
-        val implicitStdlib = collectImplicitStdlibHeads()
-        val primitives = collectPrimitiveHeads()
+        val cache = PicatPsiCache.getInstance(element.project)
+        val localHeads = cache.getFileHeads(file)
+        val importedHeads = collectImportedHeadsCached(file, cache)
+        val implicitStdlib = cache.getStdlibHeads()
+        val primitives = cache.getPrimitiveHeads()
         val heads = localHeads + importedHeads + implicitStdlib + primitives
 
         val nameArityPairs = heads
@@ -152,39 +155,20 @@ class PicatReference(element: PsiElement, rangeInElement: TextRange) :
         return variants.toTypedArray()
     }
 
-    private fun collectImportedHeads(file: com.intellij.psi.PsiFile): Set<PicatHead> {
+    /**
+     * Collects heads from imported modules using the cache for file heads.
+     */
+    private fun collectImportedHeadsCached(file: PsiFile, cache: PicatPsiCache): Set<PicatHead> {
         val importedItems = PsiTreeUtil.findChildrenOfType(file, PicatImportItem::class.java)
         val importedModuleNames = importedItems
             .mapNotNull { it.importModuleName() }
             .distinct()
-        val importedPsiFiles = importedModuleNames
+        return importedModuleNames
             .mapNotNull { moduleName ->
                 PicatStdlibUtil.findStdlibModulePsiFile(element.project, moduleName)
             }
-        @Suppress("UNCHECKED_CAST")
-        return importedPsiFiles
-            .flatMap { psiFile ->
-                PsiTreeUtil.findChildrenOfType(
-                    psiFile,
-                    PicatHead::class.java
-                )
-            }
+            .flatMap { psiFile -> cache.getFileHeads(psiFile) }
             .toSet()
-    }
-
-    private fun collectImplicitStdlibHeads(): Set<PicatHead> {
-        val vf = PicatStdlibUtil.resolveLibVfsDir(element.project)
-        return vf?.children?.mapNotNull { child ->
-            PsiManager.getInstance(element.project).findFile(child)
-                ?.let { PsiTreeUtil.findChildrenOfType(it, PicatHead::class.java) }
-        }?.flatMap { it }?.toSet() ?: emptySet()
-    }
-
-    private fun collectPrimitiveHeads(): Set<PicatHead> {
-        val primitivesPsiFile = PicatStdlibUtil.getPrimitivesPsiFile(element.project)
-        return primitivesPsiFile?.let {
-            PsiTreeUtil.findChildrenOfType(it, PicatHead::class.java).toSet()
-        } ?: emptySet()
     }
 
     private fun filterAndSort(

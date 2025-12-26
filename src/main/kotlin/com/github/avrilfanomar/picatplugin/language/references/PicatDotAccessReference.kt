@@ -1,5 +1,6 @@
 package com.github.avrilfanomar.picatplugin.language.references
 
+import com.github.avrilfanomar.picatplugin.cache.PicatPsiCache
 import com.github.avrilfanomar.picatplugin.language.psi.PicatDotAccess
 import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
 import com.github.avrilfanomar.picatplugin.language.psi.PicatPsiUtil
@@ -10,7 +11,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.PsiPolyVariantReferenceBase
 import com.intellij.psi.ResolveResult
-import com.intellij.psi.util.PsiTreeUtil
 
 /**
  * Reference for Picat dot access calls (e.g., bp.predicate(...)).
@@ -45,8 +45,9 @@ class PicatDotAccessReference(element: PicatDotAccess, rangeInElement: TextRange
             moduleQualifier
         ) ?: return ResolveResult.EMPTY_ARRAY
 
-        // Find all heads in the module file that match the predicate name and arity
-        val heads = PsiTreeUtil.findChildrenOfType(moduleFile, PicatHead::class.java)
+        // Find all heads in the module file that match the predicate name and arity (cached)
+        val cache = PicatPsiCache.getInstance(dotAccess.project)
+        val heads = cache.getFileHeads(moduleFile)
         val matches = heads.filter { head ->
             val headName = head.atomName()
             val headArity = head.arity()
@@ -85,7 +86,9 @@ class PicatDotAccessReference(element: PicatDotAccess, rangeInElement: TextRange
             moduleQualifier
         ) ?: return emptyArray()
 
-        val heads = PsiTreeUtil.findChildrenOfType(moduleFile, PicatHead::class.java)
+        // Use cached heads for completion
+        val cache = PicatPsiCache.getInstance(dotAccess.project)
+        val heads = cache.getFileHeads(moduleFile)
         val nameArityPairs = heads
             .mapNotNull { head -> head.atomName()?.let { it to head.arity() } }
             .distinct()

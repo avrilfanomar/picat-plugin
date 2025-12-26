@@ -1,7 +1,7 @@
 package com.github.avrilfanomar.picatplugin.language.completion
 
+import com.github.avrilfanomar.picatplugin.cache.PicatPsiCache
 import com.github.avrilfanomar.picatplugin.language.PicatLanguage
-import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
 import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
@@ -9,7 +9,6 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.patterns.PlatformPatterns
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 
 /**
@@ -49,11 +48,13 @@ class PicatCompletionContributor : CompletionContributor() {
         /**
          * Add local symbols (predicates/functions) with arity hints (P1 requirement).
          * Prioritizes local symbols for context-aware completion.
+         * Uses cached heads for performance.
          */
         private fun addLocalSymbols(parameters: CompletionParameters, result: CompletionResultSet) {
             val file = parameters.originalFile
-            val heads = PsiTreeUtil.findChildrenOfType(file, PicatHead::class.java)
-            
+            val cache = PicatPsiCache.getInstance(file.project)
+            val heads = cache.getFileHeads(file)
+
             // Group heads by name and collect their arities
             val symbolMap = mutableMapOf<String, MutableSet<Int>>()
             heads.forEach { head ->
@@ -63,14 +64,14 @@ class PicatCompletionContributor : CompletionContributor() {
                     symbolMap.getOrPut(atomName) { mutableSetOf() }.add(arity)
                 }
             }
-            
+
             // Add completion items with arity information
             symbolMap.forEach { (name, arities) ->
                 arities.forEach { arity ->
                     result.addElement(
                         LookupElementBuilder.create(name)
                             .withTypeText("local predicate/function")
-                            .withTailText("/$arity", true) // P1: include arity hints
+                            .withTailText("/$arity", true)
                     )
                 }
             }

@@ -184,5 +184,8 @@
         <!-- Additional Library Roots: Picat Stdlib -->
         <additionalLibraryRootsProvider implementation="com.github.avrilfanomar.picatplugin.stdlib.PicatStdlibLibraryProvider"/>
 
+        <!-- PSI Cache Service -->
+        <projectService serviceImplementation="com.github.avrilfanomar.picatplugin.cache.PicatPsiCache"/>
+
     </extensions>
 </idea-plugin>
