@@ -7,6 +7,45 @@ import org.junit.jupiter.api.Test
 class PicatImportedModulePredicateReferenceTest : BasePlatformTestCase() {
 
     @Test
+    fun testResolvePredicateFromProjectSourceRoots() {
+        // Arrange: module in project lib/ directory (no stdlib configured)
+        // This tests the fallback mechanism when Picat executable is not set
+        val settings = PicatSettings.getInstance(project)
+        settings.picatExecutablePath = "" // No stdlib configured
+
+        // Create planner module in lib/ subdirectory
+        myFixture.tempDirFixture.createFile(
+            "lib/planner.pi",
+            """
+                module planner.
+                
+                plan(S, Plan).
+                plan(S, Limit, Plan).
+            """.trimIndent()
+        )
+
+        // Picat file that imports planner and uses plan/2
+        val file = myFixture.configureByText(
+            "main.pi",
+            """
+            import planner.
+            module m.
+            
+            farmer() => p<caret>lan(state, result).
+            """.trimIndent()
+        )
+
+        val caretOffset = file.text.indexOf("plan(state")
+        val ref = file.findReferenceAt(caretOffset) ?: error("No reference at plan(state, result)")
+        val resolved = ref.resolve() ?: error("plan/2 did not resolve from project source roots")
+        val path = resolved.containingFile?.virtualFile?.path ?: ""
+        assertTrue(
+            "Expected resolution to lib/planner.pi but got: $path",
+            path.endsWith("/lib/planner.pi") || path.endsWith("\\lib\\planner.pi")
+        )
+    }
+
+    @Test
     fun testResolvePredicateFromImportedStdlibModule() {
         // Arrange: fake stdlib module cp.pi with foo/1 predicate
         val vFile = myFixture.tempDirFixture.createFile(

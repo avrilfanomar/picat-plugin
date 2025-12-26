@@ -6,14 +6,21 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatArgumentListTail
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtom
 import com.github.avrilfanomar.picatplugin.language.psi.PicatAtomOrCallNoLambda
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCall
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCallNoDot
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCallNoDotSimple
+import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCallSimple
 import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
 import com.github.avrilfanomar.picatplugin.language.psi.PicatImportItem
 import com.github.avrilfanomar.picatplugin.stdlib.PicatStdlibUtil
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiPolyVariantReferenceBase
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.util.PsiTreeUtil
@@ -24,277 +31,381 @@ import com.intellij.psi.util.PsiTreeUtil
  * Resolves to matching heads (predicate/function) in the same file by
  * name AND arity. multiResolve() returns all candidates; resolve() prefers
  * a single candidate when available.
+ *
+ * Resolution priority:
+ * 1. Local definitions in the current file
+ * 2. Imported module definitions
+ * 3. Standard library definitions
+ * 4. Built-in primitives
  */
 class PicatReference(element: PsiElement, rangeInElement: TextRange) :
     PsiPolyVariantReferenceBase<PsiElement>(element, rangeInElement, false) {
 
-    @Suppress("LongMethod", "CyclomaticComplexMethod")
+    @Suppress("ReturnCount")
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        // Use the reference range to extract the identifier text. For call nodes,
-        // element.text includes arguments, so we must slice by rangeInElement.
-        val rawText = element.text
-        val sliced = try {
-            rawText.substring(rangeInElement.startOffset, rangeInElement.endOffset)
-        } catch (_: Exception) {
-            rawText
-        }
-        var ident = sliced.trim('`', '\'', '"')
-        if (ident.isEmpty() || ident.contains('(') || ident.contains(')')) {
-            val alt = (element as? PicatAtomOrCallNoLambda)?.atom
-                ?: element as? PicatAtom
-            val altName = alt?.identifier?.text
-                ?: alt?.singleQuotedAtom?.text?.trim('`', '\'', '"')
-            if (!altName.isNullOrBlank()) ident = altName
-        }
-        val file = element.containingFile
-        val earlyEmpty = file == null || ident.isBlank()
-        if (earlyEmpty) return ResolveResult.EMPTY_ARRAY
+        val file = element.containingFile ?: return ResolveResult.EMPTY_ARRAY
+        val identifier = IdentifierExtractor.extract(element, rangeInElement) ?: return ResolveResult.EMPTY_ARRAY
 
-        var usageArity = computeUsageArity(element)
-        if (usageArity == null) {
-            // Robust fallback: derive arity from raw file text immediately after the reference name
-            val fileText = element.containingFile?.text
-            if (fileText != null) {
-                val afterNameOffset = try {
-                    element.textRange.startOffset + rangeInElement.endOffset
-                } catch (_: Exception) {
-                    element.textRange.endOffset
-                }
-                if (afterNameOffset in 0..fileText.length && fileText.startsWith("(", afterNameOffset)) {
-                    val tail = fileText.substring(afterNameOffset)
-                    val r = tail.indexOf(')')
-                    if (r >= 0) {
-                        val inside = tail.substring(1, r)
-                        usageArity = if (inside.isBlank()) 0 else inside.count { it == ',' } + 1
-                    }
-                }
-            }
-        }
-        val cache = PicatPsiCache.getInstance(element.project)
-        val localHeads = cache.getFileHeads(file)
-        val importedHeads = collectImportedHeadsCached(file, cache)
-        val stdlibHeads = cache.getStdlibHeads()
-        val primitiveHeads = cache.getPrimitiveHeads()
+        val usageArity = ArityComputer.computeFromUsage(element, rangeInElement)
+        val headCollections = HeadCollector.collectAll(file, element.project)
+        val matches = HeadMatcher.findMatches(headCollections, identifier, usageArity)
 
-        val localMatches = filterAndSort(localHeads, ident, usageArity)
-        val importedMatches = filterAndSort(importedHeads, ident, usageArity)
-        val stdlibMatches = filterAndSort(stdlibHeads, ident, usageArity)
-        val primitiveMatches = filterAndSort(primitiveHeads, ident, usageArity)
-
-        var matches = when {
-            localMatches.isNotEmpty() -> localMatches
-            importedMatches.isNotEmpty() -> importedMatches
-            stdlibMatches.isNotEmpty() -> stdlibMatches
-            else -> primitiveMatches
-        }
-        if (matches.isEmpty()) {
-            // Fallback: try name-only matching within local, imported, stdlib, then primitives
-            val nameOnlyLocal = localHeads.filter { it.atomName() == ident }.sortedBy { it.textOffset }
-            val nameOnlyImported = importedHeads.filter { it.atomName() == ident }.sortedBy { it.textOffset }
-            val nameOnlyStd = stdlibHeads.filter { it.atomName() == ident }.sortedBy { it.textOffset }
-            val nameOnlyPrimitives = primitiveHeads.filter { it.atomName() == ident }.sortedBy { it.textOffset }
-            matches = when {
-                nameOnlyLocal.isNotEmpty() -> prioritizeByArity(nameOnlyLocal, usageArity)
-                nameOnlyImported.isNotEmpty() -> prioritizeByArity(nameOnlyImported, usageArity)
-                nameOnlyStd.isNotEmpty() -> prioritizeByArity(nameOnlyStd, usageArity)
-                else -> prioritizeByArity(nameOnlyPrimitives, usageArity)
-            }
-        }
-        var results: Array<ResolveResult> = if (matches.isEmpty()) {
-            ResolveResult.EMPTY_ARRAY
-        } else {
-            matches
-                .map { PsiElementResolveResult(headTarget(it)) as ResolveResult }
-                .toTypedArray()
-        }
-        if (results.isEmpty()) {
-            // Last-resort fallback: try to find a local head that textually matches "name("
-            val localTextual = localHeads
-                .filter { h ->
-                    val t = h.text
-                    t.startsWith("$ident(") || t.contains("$ident(")
-                }
-                .sortedBy { it.textOffset }
-            if (localTextual.isNotEmpty()) {
-                results = arrayOf(PsiElementResolveResult(headTarget(localTextual.first())))
-            } else {
-                val loose = localHeads.firstOrNull { h ->
-                    val nm = h.atomName() ?: ""
-                    nm.contains(ident)
-                }
-                if (loose != null) {
-                    results = arrayOf(PsiElementResolveResult(headTarget(loose)))
-                }
-            }
-        }
-        return results
+        return matches
+            .map { PsiElementResolveResult(resolveTarget(it)) as ResolveResult }
+            .toTypedArray()
     }
 
-    override fun resolve(): PsiElement? {
-        val results = multiResolve(false)
-        return results.firstOrNull()?.element
-    }
+    override fun resolve(): PsiElement? = multiResolve(false).firstOrNull()?.element
 
     override fun getVariants(): Array<Any> {
         val file = element.containingFile ?: return emptyArray()
-        val cache = PicatPsiCache.getInstance(element.project)
-        val localHeads = cache.getFileHeads(file)
-        val importedHeads = collectImportedHeadsCached(file, cache)
-        val implicitStdlib = cache.getStdlibHeads()
-        val primitives = cache.getPrimitiveHeads()
-        val heads = localHeads + importedHeads + implicitStdlib + primitives
+        val headCollections = HeadCollector.collectAll(file, element.project)
+        val allHeads = headCollections.all()
 
-        val nameArityPairs = heads
+        return allHeads
             .mapNotNull { head -> head.atomName()?.let { it to head.arity() } }
             .distinct()
-        val variants = nameArityPairs.map { (name, arity) ->
-            LookupElementBuilder
-                .create(name)
-                .withTypeText("/$arity", true)
-        }
-        return variants.toTypedArray()
+            .map { (name, arity) ->
+                LookupElementBuilder.create(name).withTypeText("/$arity", true)
+            }
+            .toTypedArray()
     }
 
     /**
-     * Collects heads from imported modules using the cache for file heads.
+     * Returns the target element for navigation (the identifier within the head).
      */
-    private fun collectImportedHeadsCached(file: PsiFile, cache: PicatPsiCache): Set<PicatHead> {
-        val importedItems = PsiTreeUtil.findChildrenOfType(file, PicatImportItem::class.java)
-        val importedModuleNames = importedItems
+    private fun resolveTarget(head: PicatHead): PsiElement =
+        head.atom.identifier ?: head.atom
+}
+
+/**
+ * Extracts the identifier text from a PSI element reference.
+ */
+private object IdentifierExtractor {
+
+    /**
+     * Extracts the identifier name from the element using the given range.
+     * Returns null if the identifier cannot be determined or is invalid.
+     */
+    fun extract(element: PsiElement, rangeInElement: TextRange): String? {
+        val slicedText = extractSlicedText(element, rangeInElement)
+        val trimmed = trimQuotes(slicedText)
+
+        return when {
+            trimmed.isNotEmpty() && !containsParentheses(trimmed) -> trimmed
+            else -> extractFromAtom(element)
+        }?.takeIf { it.isNotBlank() }
+    }
+
+    private fun extractSlicedText(element: PsiElement, range: TextRange): String {
+        val rawText = element.text
+        return try {
+            rawText.substring(range.startOffset, range.endOffset)
+        } catch (_: Exception) {
+            rawText
+        }
+    }
+
+    private fun containsParentheses(text: String): Boolean =
+        text.contains('(') || text.contains(')')
+
+    private fun extractFromAtom(element: PsiElement): String? {
+        val atom = (element as? PicatAtomOrCallNoLambda)?.atom
+            ?: element as? PicatAtom
+            ?: return null
+
+        return atom.identifier?.text
+            ?: atom.singleQuotedAtom?.text?.let { trimQuotes(it) }
+    }
+}
+
+/**
+ * Computes the arity (number of arguments) at a usage site.
+ */
+private object ArityComputer {
+
+    /**
+     * Computes the arity from the PSI context at the usage site.
+     * Returns null if arity cannot be determined.
+     */
+    fun computeFromUsage(element: PsiElement, rangeInElement: TextRange): Int? =
+        computeFromPsi(element) ?: computeFromRawText(element, rangeInElement)
+
+    private fun computeFromPsi(element: PsiElement): Int? = when (element) {
+        is PicatAtomOrCallNoLambda -> countCallArgs(element.argument, element.argumentListTail)
+        else -> computeFromAtomContext(element)
+    }
+
+    @Suppress("ReturnCount")
+    private fun computeFromAtomContext(element: PsiElement): Int? {
+        val atom = element as? PicatAtom ?: element.parent as? PicatAtom ?: return null
+
+        // Check if atom is part of a head definition
+        atom.parentOfType<PicatHead>()?.arity()?.let { return it }
+
+        // Try various call node shapes
+        return findCallArityFromParent(atom)
+    }
+
+    @Suppress("ReturnCount")
+    private fun findCallArityFromParent(atom: PsiElement): Int? {
+        atom.parentOfType<PicatAtomOrCallNoLambda>()?.let { call ->
+            return countCallArgs(call.argument, call.argumentListTail)
+        }
+
+        atom.parentOfType<PicatFunctionCall>()?.let { fn ->
+            val simple = fn.functionCallSimple
+            val qualified = fn.qualifiedFunctionCall
+            val first = simple?.argument ?: qualified?.argument
+            val tail = simple?.argumentListTail ?: qualified?.argumentListTail
+            return countCallArgs(first, tail)
+        }
+
+        atom.parentOfType<PicatFunctionCallNoDot>()?.let { fn ->
+            val simple = fn.functionCallNoDotSimple
+            return countCallArgs(simple?.argument, simple?.argumentListTail)
+        }
+
+        atom.parentOfType<PicatFunctionCallNoDotSimple>()?.let { fn ->
+            return countCallArgs(fn.argument, fn.argumentListTail)
+        }
+
+        atom.parentOfType<PicatFunctionCallSimple>()?.let { fn ->
+            return countCallArgs(fn.argument, fn.argumentListTail)
+        }
+
+        return null
+    }
+
+    /**
+     * Fallback: derive arity from raw file text after the reference name.
+     */
+    @Suppress("ReturnCount")
+    private fun computeFromRawText(element: PsiElement, rangeInElement: TextRange): Int? {
+        val fileText = element.containingFile?.text ?: return null
+        val afterNameOffset = computeAfterNameOffset(element, rangeInElement)
+
+        if (afterNameOffset !in 0..fileText.length) return null
+        if (!fileText.startsWith("(", afterNameOffset)) return null
+
+        return parseArityFromParentheses(fileText.substring(afterNameOffset))
+    }
+
+    private fun computeAfterNameOffset(element: PsiElement, range: TextRange): Int = try {
+        element.textRange.startOffset + range.endOffset
+    } catch (_: Exception) {
+        element.textRange.endOffset
+    }
+
+    private fun parseArityFromParentheses(tail: String): Int? {
+        val closeIndex = tail.indexOf(')')
+        if (closeIndex < 0) return null
+
+        val inside = tail.substring(1, closeIndex)
+        return if (inside.isBlank()) 0 else inside.count { it == ',' } + 1
+    }
+
+    private fun countCallArgs(first: PicatArgument?, tail: PicatArgumentListTail?): Int =
+        if (first == null) 0 else 1 + countTail(tail)
+
+    private tailrec fun countTail(tail: PicatArgumentListTail?, acc: Int = 0): Int =
+        if (tail == null) acc else countTail(tail.argumentListTail, acc + 1)
+}
+
+/**
+ * Container for head collections from different sources with priority ordering.
+ */
+private data class HeadCollections(
+    val local: List<PicatHead>,
+    val imported: Set<PicatHead>,
+    val stdlib: Set<PicatHead>,
+    val primitives: Set<PicatHead>
+) {
+    fun all(): List<PicatHead> = local + imported + stdlib + primitives
+}
+
+/**
+ * Collects heads from various sources: local file, imports, stdlib, and primitives.
+ */
+private object HeadCollector {
+
+    fun collectAll(file: PsiFile, project: Project): HeadCollections {
+        val cache = PicatPsiCache.getInstance(project)
+        return HeadCollections(
+            local = cache.getFileHeads(file),
+            imported = collectFromImports(file, cache, project),
+            stdlib = cache.getStdlibHeads(),
+            primitives = cache.getPrimitiveHeads()
+        )
+    }
+
+    private fun collectFromImports(file: PsiFile, cache: PicatPsiCache, project: Project): Set<PicatHead> {
+        val importedModuleNames = PsiTreeUtil.findChildrenOfType(file, PicatImportItem::class.java)
             .mapNotNull { it.importModuleName() }
             .distinct()
+
         return importedModuleNames
-            .mapNotNull { moduleName ->
-                PicatStdlibUtil.findStdlibModulePsiFile(element.project, moduleName)
-            }
+            .mapNotNull { moduleName -> findModulePsiFile(project, moduleName) }
             .flatMap { psiFile -> cache.getFileHeads(psiFile) }
             .toSet()
     }
 
-    private fun filterAndSort(
-        heads: Collection<PicatHead>,
-        name: String,
-        usageArity: Int?
-    ): List<PicatHead> {
-        val nameMatches = heads.filter { h -> h.atomName() == name }
+    private fun findModulePsiFile(project: Project, moduleName: String): PsiFile? =
+        PicatStdlibUtil.findStdlibModulePsiFile(project, moduleName)
+            ?: findModuleInProjectRoots(project, moduleName)
+
+    private fun findModuleInProjectRoots(project: Project, moduleName: String): PsiFile? {
+        val psiManager = PsiManager.getInstance(project)
+        val fileName = "$moduleName.pi"
+        val rootManager = ProjectRootManager.getInstance(project)
+        val allRoots = (rootManager.contentSourceRoots.toList() + rootManager.contentRoots.toList()).distinct()
+
+        return allRoots
+            .firstNotNullOfOrNull { root ->
+                findModuleFile(root, fileName)?.let { vf ->
+                    psiManager.findFile(vf)?.takeIf { it.isValid }
+                }
+            }
+    }
+
+    private fun findModuleFile(dir: VirtualFile, fileName: String): VirtualFile? {
+        if (!dir.isValid || !dir.isDirectory) return null
+
+        // Check lib subdirectory first, then direct child
+        val libDir = dir.findChild("lib")
+        val inLib = libDir?.takeIf { it.isValid && it.isDirectory }?.findChild(fileName)
+        val directChild = dir.findChild(fileName)
+
+        return listOfNotNull(inLib, directChild)
+            .firstOrNull { it.isValid && !it.isDirectory }
+    }
+}
+
+/**
+ * Matches heads by name and arity with priority-based resolution.
+ */
+private object HeadMatcher {
+
+    /**
+     * Finds matching heads with priority: local > imported > stdlib > primitives.
+     * Falls back to name-only matching if exact name+arity match fails.
+     */
+    @Suppress("ReturnCount")
+    fun findMatches(collections: HeadCollections, name: String, arity: Int?): List<PicatHead> {
+        // Try exact name+arity match in priority order
+        val exactMatch = findExactMatch(collections, name, arity)
+        if (exactMatch.isNotEmpty()) return exactMatch
+
+        // Fallback: name-only matching
+        val nameOnlyMatch = findNameOnlyMatch(collections, name, arity)
+        if (nameOnlyMatch.isNotEmpty()) return nameOnlyMatch
+
+        // Last resort: textual matching in local heads
+        return findTextualMatch(collections.local, name)
+    }
+
+    private fun findExactMatch(collections: HeadCollections, name: String, arity: Int?): List<PicatHead> {
+        val sources = listOf(
+            collections.local,
+            collections.imported.toList(),
+            collections.stdlib.toList(),
+            collections.primitives.toList()
+        )
+
+        for (source in sources) {
+            val matches = filterByNameAndArity(source, name, arity)
+            if (matches.isNotEmpty()) return matches
+        }
+
+        return emptyList()
+    }
+
+    private fun findNameOnlyMatch(collections: HeadCollections, name: String, arity: Int?): List<PicatHead> {
+        val sources = listOf(
+            collections.local,
+            collections.imported.toList(),
+            collections.stdlib.toList(),
+            collections.primitives.toList()
+        )
+
+        for (source in sources) {
+            val matches = source.filter { it.atomName() == name }
+            if (matches.isNotEmpty()) return prioritizeByArity(matches, arity)
+        }
+
+        return emptyList()
+    }
+
+    private fun findTextualMatch(localHeads: List<PicatHead>, name: String): List<PicatHead> {
+        // Try to find a local head that textually matches "name("
+        val textualMatch = localHeads
+            .filter { h -> h.text.startsWith("$name(") || h.text.contains("$name(") }
+            .minByOrNull { it.textOffset }
+
+        if (textualMatch != null) return listOf(textualMatch)
+
+        // Loose match: name contains identifier
+        val looseMatch = localHeads.firstOrNull { h ->
+            h.atomName()?.contains(name) == true
+        }
+
+        return listOfNotNull(looseMatch)
+    }
+
+    private fun filterByNameAndArity(heads: Collection<PicatHead>, name: String, arity: Int?): List<PicatHead> {
+        val nameMatches = heads.filter { it.atomName() == name }
         if (nameMatches.isEmpty()) return emptyList()
-        val prioritized = if (usageArity != null) {
-            nameMatches.sortedWith(compareBy<PicatHead> { h -> h.arity() != usageArity }
-                .thenBy { h -> h.textOffset })
+
+        return if (arity != null) {
+            nameMatches.sortedWith(
+                compareBy<PicatHead> { it.arity() != arity }.thenBy { it.textOffset }
+            )
         } else {
             nameMatches.sortedBy { it.textOffset }
         }
-        return prioritized
     }
 
-    private fun headTarget(h: PicatHead): PsiElement {
-        // Always resolve to the predicate/function name (atom identifier). This ensures callers
-        // that compare offsets against the start of the head (or the name itself) behave
-        // consistently for both 0- and >0-arity heads, and aligns with reference expectations
-        // in tests where the resolution should point to the name rather than arguments.
-        return h.atom.identifier ?: h.atom
-    }
-
-    private fun prioritizeByArity(list: List<PicatHead>, usageArity: Int?): List<PicatHead> =
-        if (usageArity == null) list else list.sortedWith(
-            compareBy<PicatHead> { it.arity() != usageArity }.thenBy { it.textOffset }
-        )
+    private fun prioritizeByArity(heads: List<PicatHead>, arity: Int?): List<PicatHead> =
+        if (arity == null) {
+            heads.sortedBy { it.textOffset }
+        } else {
+            heads.sortedWith(
+                compareBy<PicatHead> { it.arity() != arity }.thenBy { it.textOffset }
+            )
+        }
 }
+
+// Extension functions for PicatHead
 
 private fun PicatHead.arity(): Int = this.headArgs?.argumentList?.size ?: 0
 
 private fun PicatHead.atomName(): String? {
     val a = this.atom
-    return a.identifier?.text ?: a.singleQuotedAtom?.text?.trim('\'', '"', '`')
+    return a.identifier?.text ?: a.singleQuotedAtom?.text?.let { trimQuotes(it) }
 }
 
-/**
- * Compute the arity at the usage site (where the reference is placed),
- * if it can be determined from the PSI context. Returns null if unknown
- * (e.g., standalone atom that could be 0-arity or part of a different construct).
- */
-@Suppress("LongMethod", "CyclomaticComplexMethod", "ReturnCount")
-private fun computeUsageArity(leaf: PsiElement): Int? {
-    var result: Int? = null
-
-    when (leaf) {
-        is PicatAtomOrCallNoLambda -> {
-            result = countCallArgs(leaf.argument, leaf.argumentListTail)
-        }
-
-        else -> {
-            val atom = when (leaf) {
-                is PicatAtom -> leaf
-                else -> leaf.parent as? PicatAtom
-            }
-            if (atom != null) {
-                val headArity = atom.parentOfType<PicatHead>()?.arity()
-                if (headArity != null) return headArity
-
-                // Try various call node shapes around the atom
-                atom.parentOfType<PicatAtomOrCallNoLambda>()?.let { call ->
-                    return countCallArgs(call.argument, call.argumentListTail)
-                }
-                val fn = atom.parentOfType<PicatFunctionCall>()
-                if (fn != null) {
-                    val simple = fn.functionCallSimple
-                    val qualified = fn.qualifiedFunctionCall
-                    val first = simple?.argument ?: qualified?.argument
-                    val tail = simple?.argumentListTail ?: qualified?.argumentListTail
-                    return countCallArgs(first, tail)
-                }
-                val fnNoDot =
-                    atom.parentOfType<com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCallNoDot>()
-                if (fnNoDot != null) {
-                    val simple = fnNoDot.functionCallNoDotSimple
-                    val first = simple?.argument
-                    val tail = simple?.argumentListTail
-                    return countCallArgs(first, tail)
-                }
-                val fnNoDotSimple =
-                    atom.parentOfType<com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCallNoDotSimple>()
-                if (fnNoDotSimple != null) {
-                    return countCallArgs(fnNoDotSimple.argument, fnNoDotSimple.argumentListTail)
-                }
-                val fnSimple =
-                    atom.parentOfType<com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCallSimple>()
-                if (fnSimple != null) {
-                    return countCallArgs(fnSimple.argument, fnSimple.argumentListTail)
-                }
-            }
-        }
-    }
-    // Fallback heuristic: scan raw file text right after the atom for a '(...)' argument list
-    if (result == null) {
-        val fileText = leaf.containingFile?.text
-        val atomEnd = (leaf as? com.github.avrilfanomar.picatplugin.language.psi.PicatAtom)?.textRange?.endOffset
-            ?: (leaf.parent as? com.github.avrilfanomar.picatplugin.language.psi.PicatAtom)?.textRange?.endOffset
-        if (fileText != null && atomEnd != null && atomEnd in 0..fileText.length) {
-            val tail = fileText.substring(atomEnd)
-            if (tail.startsWith("(")) {
-                val r = tail.indexOf(')')
-                if (r >= 0) {
-                    val inside = tail.substring(1, r)
-                    result = if (inside.isBlank()) 0 else inside.count { it == ',' } + 1
-                }
-            }
-        }
-    }
-    return result
-}
-
-private tailrec fun countArgTail(tail: PicatArgumentListTail?, acc: Int): Int =
-    if (tail == null) acc else countArgTail(tail.argumentListTail, acc + 1)
-
-private fun countCallArgs(first: PicatArgument?, tail: PicatArgumentListTail?): Int? =
-    if (first == null) 0 else 1 + countArgTail(tail, 0)
+// Extension function for import items
 
 private fun PicatImportItem.importModuleName(): String? {
     val atom = this.atom ?: return null
-    val raw = atom.identifier?.text ?: atom.singleQuotedAtom?.text?.trim('\'', '"', '`')
-    val name = raw?.trim()
-    return if (name.isNullOrEmpty()) null else name
+    val raw = atom.identifier?.text ?: atom.singleQuotedAtom?.text?.let { trimQuotes(it) }
+    return raw?.trim()?.takeIf { it.isNotEmpty() }
 }
+
+// Utility functions
+
+/**
+ * Trims quote characters (backtick, single quote, double quote) from both ends of a string.
+ */
+private fun trimQuotes(text: String): String {
+    var start = 0
+    var end = text.length
+    while (start < end && text[start] in QUOTE_CHARS) start++
+    while (end > start && text[end - 1] in QUOTE_CHARS) end--
+    return if (start == 0 && end == text.length) text else text.substring(start, end)
+}
+
+private val QUOTE_CHARS = setOf('`', '\'', '"')
 
 private inline fun <reified T : PsiElement> PsiElement.parentOfType(): T? {
     var curr: PsiElement? = this.parent
