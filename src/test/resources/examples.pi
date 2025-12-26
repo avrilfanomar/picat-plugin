@@ -308,24 +308,18 @@ power_set([H | T]) = P1 ++ P2 =>
 
 % generate permutations
 perm([]) = [[]].
-/* Hard case: list comprehension with method call
 perm(Lst) = [[E|P] : E in Lst, P in perm(Lst.delete(E))].
-*/
 
 %another definition
 perm1([]) = [[]].
-/* Hard case: complex list comprehension
-perm1([H|T]) = [insert(P,I,H) : P in Ps, I in 1..P.length+1] => Ps = perm1(T).
-*/
+perm1([H|T]) = [insert(P, I, H) : P in Ps, I in 1..P.length + 1] => Ps = perm1(T).
 
 % A*B=C
-/* Hard case: list comprehension in foreach and dot access
-matrix_multi(A,B) = C =>
-    C = new_array(A.length,B[1].length),
+matrix_multi(A, B) = C =>
+    C = new_array(A.length, B[1].length),
     foreach(I in 1..A.length, J in 1..B[1].length)
-        C[I,J] = sum([A[I,K]*B[K,J] : K in 1..A[1].length])
+        C[I, J] = sum([A[I, K] * B[K, J] : K in 1..A[1].length])
     end.
-*/
 
 % Sieve of Eratosthenes
 my_primes(N) = L =>
@@ -510,18 +504,16 @@ read_array(A) = Len =>
     Len = Count.
 
 % copy a text file line-by-line
-/* Hard case: dot access operations
-copy(IName,OName) =>
+copy(IName, OName) =>
     IStream = open(IName),
-    OStream = open(OName,write),
+    OStream = open(OName, write),
     Line = IStream.read_line(),
     while (Line != end_of_file)
-        OStream.printf("%s%n",Line),
+        OStream.printf("%s%n", Line),
         Line := IStream.read_line()
     end,
     close(IStream),
     close(OStream).
-*/
 
 % Picat> output_students([$student("john","cs",3),$student("mary","math",4.0)])
 %      john         cs  3.00
@@ -553,7 +545,6 @@ my_fold(F, Acc, [H | T]) = my_fold(F, apply(F, H, Acc), T).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% ACTION RULES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-/* Hard case: action rules with dot access and dollar-escaped atoms
 test_ar =>
     watch_event(X),
     watch_dom(X),
@@ -567,44 +558,37 @@ test_ar =>
     X.post_event_any(any).
 
 watch_event(X),
-    {event(X,T)}
+{event(X, T)}
 =>
     writeln($event(T)).
 
 watch_dom(X),
-    {dom(X,T)}
-=>
+{dom(X, T)} =>
     writeln($dom(T)).
 
 watch_dom_any(X),
-    {dom_any(X,T)}
-=>
+{dom_any(X, T)} =>
     writeln($dom_any(T)).
 
 watch_ins(X),
-    {ins(X)}
-=>
+{ins(X)} =>
     writeln($ins(X)).
 
 watch_bound(X),
-    {bound(X)}
-=>
+{bound(X)} =>
     writeln($bound(X)).
-*/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% EXCEPTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-/* Hard case: catch with dollar-escaped atom
 catch_divided_by_zero =>
-   catch(write(myd(4,0)),E, $handle(E)).
+    catch(write(myd(4, 0)), E, $handle(E)).
 
-myd(X,Y)=X/Y.
+myd(X, Y) = X / Y.
 
 handle(E) =>
     writeln(E),
     throw(E).  % just re-throw it
-*/
 
 /* end file exs.pi */
