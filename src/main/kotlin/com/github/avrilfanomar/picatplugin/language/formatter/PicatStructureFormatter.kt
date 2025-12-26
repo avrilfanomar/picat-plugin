@@ -55,29 +55,68 @@ internal class PicatStructureFormatter(private val settings: CodeStyleSettings) 
         state.indentLevel = 1
     }
 
-    @Suppress("CyclomaticComplexMethod")
     private fun handleRuleBodyLine(line: String, result: StringBuilder, state: FormatState) {
-        when {
-            isIfThenStatement(line) -> handleIfThenStatement(line, result, state)
-            line.startsWith("elseif") || line.startsWith("else if") -> handleElseIfStatement(line, result, state)
-            line.startsWith("else") -> handleElseStatement(line, result, state)
-            line.contains(" then") -> handleThenStatement(line, result, state)
-            line.startsWith("foreach") || line.startsWith("for ") -> handleForeachStatement(line, result, state)
-            line.startsWith("while") || line.startsWith("loop") -> handleLoopStatement(line, result, state)
-            line.startsWith("try") || line.startsWith("catch") || line.startsWith("finally") -> handleTryCatchStatement(
-                line,
-                result,
-                state
-            )
+        val lineType = classifyLine(line)
+        dispatchLineHandler(lineType, line, result, state)
+    }
 
-            isEndStatement(line) -> handleEndStatement(line, result, state)
-            line.endsWith(".") -> handleRuleBodyEnd(line, result, state)
-            // Prolog-style if-then-else handling
-            isPrologStyleStart(line) -> handlePrologStyleStart(line, result, state)
-            isPrologStyleSemicolon(line) -> handlePrologStyleSemicolon(line, result, state)
-            isPrologStyleEnd(line) -> handlePrologStyleEnd(line, result, state)
-            else -> handleRegularRuleBodyLine(line, result, state)
+    private fun classifyLine(line: String): LineType =
+        classifyControlFlow(line)
+            ?: classifyLoopOrException(line)
+            ?: classifyEndOrProlog(line)
+            ?: LineType.REGULAR
+
+    private fun classifyControlFlow(line: String): LineType? = when {
+        isIfThenStatement(line) -> LineType.IF_THEN
+        isElseIfStatement(line) -> LineType.ELSE_IF
+        line.startsWith("else") -> LineType.ELSE
+        line.contains(" then") -> LineType.THEN
+        else -> null
+    }
+
+    private fun classifyLoopOrException(line: String): LineType? = when {
+        isForeachStatement(line) -> LineType.FOREACH
+        isLoopStatement(line) -> LineType.LOOP
+        isTryCatchStatement(line) -> LineType.TRY_CATCH
+        else -> null
+    }
+
+    private fun classifyEndOrProlog(line: String): LineType? = when {
+        isEndStatement(line) -> LineType.END
+        line.endsWith(".") -> LineType.RULE_BODY_END
+        isPrologStyleStart(line) -> LineType.PROLOG_START
+        isPrologStyleSemicolon(line) -> LineType.PROLOG_SEMICOLON
+        isPrologStyleEnd(line) -> LineType.PROLOG_END
+        else -> null
+    }
+
+    private fun isElseIfStatement(line: String) = line.startsWith("elseif") || line.startsWith("else if")
+    private fun isForeachStatement(line: String) = line.startsWith("foreach") || line.startsWith("for ")
+    private fun isLoopStatement(line: String) = line.startsWith("while") || line.startsWith("loop")
+    private fun isTryCatchStatement(line: String) =
+        line.startsWith("try") || line.startsWith("catch") || line.startsWith("finally")
+
+    private fun dispatchLineHandler(type: LineType, line: String, result: StringBuilder, state: FormatState) {
+        when (type) {
+            LineType.IF_THEN -> handleIfThenStatement(line, result, state)
+            LineType.ELSE_IF -> handleElseIfStatement(line, result, state)
+            LineType.ELSE -> handleElseStatement(line, result, state)
+            LineType.THEN -> handleThenStatement(line, result, state)
+            LineType.FOREACH -> handleForeachStatement(line, result, state)
+            LineType.LOOP -> handleLoopStatement(line, result, state)
+            LineType.TRY_CATCH -> handleTryCatchStatement(line, result, state)
+            LineType.END -> handleEndStatement(line, result, state)
+            LineType.RULE_BODY_END -> handleRuleBodyEnd(line, result, state)
+            LineType.PROLOG_START -> handlePrologStyleStart(line, result, state)
+            LineType.PROLOG_SEMICOLON -> handlePrologStyleSemicolon(line, result, state)
+            LineType.PROLOG_END -> handlePrologStyleEnd(line, result, state)
+            LineType.REGULAR -> handleRegularRuleBodyLine(line, result, state)
         }
+    }
+
+    private enum class LineType {
+        IF_THEN, ELSE_IF, ELSE, THEN, FOREACH, LOOP, TRY_CATCH, END,
+        RULE_BODY_END, PROLOG_START, PROLOG_SEMICOLON, PROLOG_END, REGULAR
     }
 
     // Prolog-style if-then-else: (cond -> then ; else)

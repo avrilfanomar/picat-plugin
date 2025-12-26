@@ -21,42 +21,32 @@ import com.intellij.psi.ResolveResult
 class PicatDotAccessReference(element: PicatDotAccess, rangeInElement: TextRange) :
     PsiPolyVariantReferenceBase<PicatDotAccess>(element, rangeInElement, false) {
 
-    @Suppress("ReturnCount")
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         val dotAccess = element
-        val moduleQualifier = PicatPsiUtil.getDotAccessModuleQualifier(dotAccess)
-        val predicateName = PicatPsiUtil.getDotAccessName(dotAccess)
+        val moduleQualifier = PicatPsiUtil.getDotAccessModuleQualifier(dotAccess)?.takeIf { it.isNotBlank() }
+        val predicateName = PicatPsiUtil.getDotAccessName(dotAccess)?.takeIf { it.isNotBlank() }
+
+        // Require valid non-bp module qualifier and predicate name
+        if (moduleQualifier == null || predicateName == null || moduleQualifier == "bp") {
+            return ResolveResult.EMPTY_ARRAY
+        }
+        return resolveFromModuleFile(dotAccess, moduleQualifier, predicateName)
+    }
+
+    private fun resolveFromModuleFile(
+        dotAccess: PicatDotAccess,
+        moduleQualifier: String,
+        predicateName: String
+    ): Array<ResolveResult> {
+        val moduleFile = PicatStdlibUtil.findStdlibModulePsiFile(dotAccess.project, moduleQualifier)
+            ?: return ResolveResult.EMPTY_ARRAY
+
         val arity = PicatPsiUtil.getDotAccessArity(dotAccess)
-
-        if (moduleQualifier.isNullOrBlank() || predicateName.isNullOrBlank()) {
-            return ResolveResult.EMPTY_ARRAY
-        }
-
-        // Special handling for "bp" module (C-defined built-ins)
-        if (moduleQualifier == "bp") {
-            // For now, we don't resolve bp predicates to definitions since they're defined in C
-            // In the future, we could create a stub file with signatures
-            return ResolveResult.EMPTY_ARRAY
-        }
-
-        // For other modules, try to find the module file and resolve to matching heads
-        val moduleFile = PicatStdlibUtil.findStdlibModulePsiFile(
-            dotAccess.project,
-            moduleQualifier
-        ) ?: return ResolveResult.EMPTY_ARRAY
-
-        // Find all heads in the module file that match the predicate name and arity (cached)
         val cache = PicatPsiCache.getInstance(dotAccess.project)
-        val heads = cache.getFileHeads(moduleFile)
-        val matches = heads.filter { head ->
-            val headName = head.atomName()
-            val headArity = head.arity()
-            headName == predicateName && headArity == arity
-        }
-
-        return matches.map { head ->
-            PsiElementResolveResult(headTarget(head)) as ResolveResult
-        }.toTypedArray()
+        return cache.getFileHeads(moduleFile)
+            .filter { it.atomName() == predicateName && it.arity() == arity }
+            .map { PsiElementResolveResult(headTarget(it)) as ResolveResult }
+            .toTypedArray()
     }
 
     override fun resolve(): PsiElement? {
@@ -64,42 +54,26 @@ class PicatDotAccessReference(element: PicatDotAccess, rangeInElement: TextRange
         return results.firstOrNull()?.element
     }
 
-    @Suppress("ReturnCount")
     override fun getVariants(): Array<Any> {
         val dotAccess = element
         val moduleQualifier = PicatPsiUtil.getDotAccessModuleQualifier(dotAccess)
+            ?.takeIf { it.isNotBlank() && it != "bp" } ?: return emptyArray()
 
-        if (moduleQualifier.isNullOrBlank()) {
-            return emptyArray()
-        }
+        return collectVariantsFromModule(dotAccess, moduleQualifier)
+    }
 
-        // Special handling for "bp" module
-        if (moduleQualifier == "bp") {
-            // For now, return empty variants
-            // In the future, we could provide completion for known bp predicates
-            return emptyArray()
-        }
+    private fun collectVariantsFromModule(dotAccess: PicatDotAccess, moduleQualifier: String): Array<Any> {
+        val moduleFile = PicatStdlibUtil.findStdlibModulePsiFile(dotAccess.project, moduleQualifier)
+            ?: return emptyArray()
 
-        // For other modules, provide completion for all predicates in the module
-        val moduleFile = PicatStdlibUtil.findStdlibModulePsiFile(
-            dotAccess.project,
-            moduleQualifier
-        ) ?: return emptyArray()
-
-        // Use cached heads for completion
         val cache = PicatPsiCache.getInstance(dotAccess.project)
-        val heads = cache.getFileHeads(moduleFile)
-        val nameArityPairs = heads
+        return cache.getFileHeads(moduleFile)
             .mapNotNull { head -> head.atomName()?.let { it to head.arity() } }
             .distinct()
-
-        val variants = nameArityPairs.map { (name, arity) ->
-            LookupElementBuilder
-                .create(name)
-                .withTypeText("/$arity", true)
-        }
-
-        return variants.toTypedArray()
+            .map { (name, arity) ->
+                LookupElementBuilder.create(name).withTypeText("/$arity", true)
+            }
+            .toTypedArray()
     }
 
     private fun headTarget(h: PicatHead): PsiElement {

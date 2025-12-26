@@ -69,16 +69,9 @@ class PicatStructureAwareNavbar : StructureAwareNavBarModelExtension() {
 
 private fun <T> PsiElement.parentOfType(clazz: Class<T>): T? {
     var cur: PsiElement? = this
-    var found: T? = null
-    while (cur != null && found == null) {
-        if (clazz.isInstance(cur)) {
-            @Suppress("UNCHECKED_CAST")
-            found = cur as T
-        } else if (cur is PicatFileImpl) {
-            break
-        } else {
-            cur = cur.parent
-        }
+    while (cur != null && cur !is PicatFileImpl) {
+        if (clazz.isInstance(cur)) return clazz.cast(cur)
+        cur = cur.parent
     }
-    return found
+    return null
 }

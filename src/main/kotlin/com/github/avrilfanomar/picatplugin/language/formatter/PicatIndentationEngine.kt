@@ -5,6 +5,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 /**
  * Applies line breaks after rule operators and adds indentation for rule bodies.
  */
+@Suppress("TooManyFunctions")
 internal class PicatIndentationEngine(private val settings: CodeStyleSettings) {
 
     fun addLineBreaksAfterRuleOperators(code: String): String {
@@ -47,22 +48,61 @@ internal class PicatIndentationEngine(private val settings: CodeStyleSettings) {
         state.indentLevel = 1
     }
 
-    @Suppress("CyclomaticComplexMethod")
     private fun handleIndentationRuleBodyLine(line: String, result: StringBuilder, state: IndentationState) {
-        when {
-            isIfThenStatement(line) -> handleIndentationIfThen(line, result, state)
-            line.startsWith("elseif") || line.startsWith("else if") -> handleIndentationElseIf(line, result, state)
-            line.startsWith("else") -> handleIndentationElse(line, result, state)
-            line.contains(" then") -> handleIndentationThen(line, result, state)
-            line.startsWith("foreach") || line.startsWith("for ") -> handleIndentationForeach(line, result, state)
-            line.startsWith("while") || line.startsWith("loop") -> handleIndentationForeach(line, result, state)
-            line.startsWith("try") || line.startsWith("catch") || line.startsWith("finally") ->
-                handleIndentationTryCatch(line, result, state)
+        val lineType = classifyLine(line)
+        dispatchLineHandler(lineType, line, result, state)
+    }
 
-            isEndStatement(line) -> handleIndentationEnd(line, result, state)
-            line.endsWith(".") -> handleIndentationRuleBodyEnd(line, result, state)
-            else -> handleIndentationRegularLine(line, result, state)
+    private fun classifyLine(line: String): LineType =
+        classifyControlFlow(line)
+            ?: classifyLoopOrException(line)
+            ?: classifyTerminator(line)
+            ?: LineType.REGULAR
+
+    private fun classifyControlFlow(line: String): LineType? = when {
+        isIfThenStatement(line) -> LineType.IF_THEN
+        isElseIfStatement(line) -> LineType.ELSE_IF
+        line.startsWith("else") -> LineType.ELSE
+        line.contains(" then") -> LineType.THEN
+        else -> null
+    }
+
+    private fun classifyLoopOrException(line: String): LineType? = when {
+        isForeachStatement(line) -> LineType.FOREACH
+        isLoopStatement(line) -> LineType.LOOP
+        isTryCatchStatement(line) -> LineType.TRY_CATCH
+        else -> null
+    }
+
+    private fun classifyTerminator(line: String): LineType? = when {
+        isEndStatement(line) -> LineType.END
+        line.endsWith(".") -> LineType.RULE_BODY_END
+        else -> null
+    }
+
+    private fun isElseIfStatement(line: String) = line.startsWith("elseif") || line.startsWith("else if")
+    private fun isForeachStatement(line: String) = line.startsWith("foreach") || line.startsWith("for ")
+    private fun isLoopStatement(line: String) = line.startsWith("while") || line.startsWith("loop")
+    private fun isTryCatchStatement(line: String) =
+        line.startsWith("try") || line.startsWith("catch") || line.startsWith("finally")
+
+    private fun dispatchLineHandler(type: LineType, line: String, result: StringBuilder, state: IndentationState) {
+        when (type) {
+            LineType.IF_THEN -> handleIndentationIfThen(line, result, state)
+            LineType.ELSE_IF -> handleIndentationElseIf(line, result, state)
+            LineType.ELSE -> handleIndentationElse(line, result, state)
+            LineType.THEN -> handleIndentationThen(line, result, state)
+            LineType.FOREACH -> handleIndentationForeach(line, result, state)
+            LineType.LOOP -> handleIndentationForeach(line, result, state)
+            LineType.TRY_CATCH -> handleIndentationTryCatch(line, result, state)
+            LineType.END -> handleIndentationEnd(line, result, state)
+            LineType.RULE_BODY_END -> handleIndentationRuleBodyEnd(line, result, state)
+            LineType.REGULAR -> handleIndentationRegularLine(line, result, state)
         }
+    }
+
+    private enum class LineType {
+        IF_THEN, ELSE_IF, ELSE, THEN, FOREACH, LOOP, TRY_CATCH, END, RULE_BODY_END, REGULAR
     }
 
     private fun isEndStatement(line: String) =
