@@ -19,13 +19,13 @@ class PicatStructureViewModel(psiFile: PsiFile) :
     override fun getSorters(): Array<Sorter> = arrayOf(Sorter.ALPHA_SORTER)
 
     override fun isAlwaysShowsPlus(element: StructureViewTreeElement): Boolean =
-        element.value is PicatFileImpl // Changed to PicatFileImpl
+        element.value is PicatFileImpl
 
     override fun isAlwaysLeaf(element: StructureViewTreeElement): Boolean =
         element.value is PicatFunctionRule
 
     override fun getSuitableClasses(): Array<Class<*>> = arrayOf(
-        PicatFileImpl::class.java, // Changed to PicatFileImpl
+        PicatFileImpl::class.java,
         PicatFunctionRule::class.java
     )
 }

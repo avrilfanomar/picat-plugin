@@ -114,13 +114,13 @@ class PicatBasicModuleTest : LexerTestCase() {
             // Check if the token is a basic module function
             val isIdentifier = tokenType == PicatTokenTypes.IDENTIFIER
             val isExpectedFunction = expectedBasicModuleFunctions.contains(tokenText)
-            if (isIdentifier && isExpectedFunction) { // Changed here
+            if (isIdentifier && isExpectedFunction) {
                 basicModuleFunctionsFound.add(tokenText)
             }
 
             // Check for expected basic module functions that are not recognized
             val isNotIdentifier = tokenType != PicatTokenTypes.IDENTIFIER
-            if (isExpectedFunction && isNotIdentifier) { // Changed here
+            if (isExpectedFunction && isNotIdentifier) {
                 val errorMessage = "Basic module function not recognized as IDENTIFIER: " +
                         "'$tokenText' at position ${lexer.tokenStart}"
                 issues.add(errorMessage)

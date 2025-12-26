@@ -61,7 +61,7 @@ class PicatExamplesLexerTest : LexerTestCase() {
         position: Int,
         issues: MutableList<String>
     ) {
-        if (tokenType == TokenType.BAD_CHARACTER) { // Changed here
+        if (tokenType == TokenType.BAD_CHARACTER) {
             issues.add("Bad character: '$tokenText' at position $position")
         }
     }
@@ -91,7 +91,7 @@ class PicatExamplesLexerTest : LexerTestCase() {
         position: Int,
         issues: MutableList<String>
     ) {
-        if (tokenText.contains("?=>") && tokenType == TokenType.BAD_CHARACTER) { // Changed here
+        if (tokenText.contains("?=>") && tokenType == TokenType.BAD_CHARACTER) {
             issues.add("Backtrackable rule operator not recognized: '$tokenText' at position $position")
         }
     }

@@ -53,7 +53,7 @@ class PicatStdlibUtilTest : BasePlatformTestCase() {
             val settings = PicatSettings.getInstance(project)
             settings.picatExecutablePath = "/test/picat"
             
-            val moduleNames = listOf("basic", "io", "cp", "planner", "util", "nonexistent")
+            val moduleNames = listOf("basic", "io", "cp", "math", "planner", "util", "nonexistent")
             
             moduleNames.forEach { moduleName ->
                 val result = PicatStdlibUtil.findStdlibModuleVFile(project, moduleName)

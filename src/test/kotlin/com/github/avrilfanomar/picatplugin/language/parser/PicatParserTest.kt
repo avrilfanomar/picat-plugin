@@ -144,4 +144,24 @@ class PicatParserTest : BasePlatformTestCase() {
         Assertions.assertEquals(1, rules.size, DebugUtil.psiToString(file, true))
         PsiTestUtils.assertNoPsiErrors(file, "test.pi")
     }
+
+    @Test
+    fun testQualifiedFunctionCall() {
+        // Test parsing qualified function calls (module.function syntax)
+        val code = """
+            new_state_list_aux([],SList0,SList) => SList = SList0.
+            new_state_list_aux([E|List],SList0,SList) =>
+                bp.b_INSERT_STATE_LIST_ccf(SList0,E,SList1),
+                new_state_list_aux(List,SList1,SList).
+
+            insert_state_list(SList0, Elm) = SList => bp.b_INSERT_STATE_LIST_ccf(SList0,Elm,SList).
+        """.trimIndent()
+
+        myFixture.configureByText("test.pi", code)
+        val file = myFixture.file as PicatFileImpl
+
+        val rules = PsiTreeUtil.collectElementsOfType(file, PicatPredicateRule::class.java)
+        Assertions.assertEquals(2, rules.size, "Should have 2 predicate rules. PSI:\n${DebugUtil.psiToString(file, true)}")
+        PsiTestUtils.assertNoPsiErrors(file, "test.pi")
+    }
 }

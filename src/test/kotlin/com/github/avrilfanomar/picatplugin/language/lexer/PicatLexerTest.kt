@@ -42,7 +42,7 @@ class PicatLexerTest {
     fun testWhitespace() {
         val tokens = tokenize("  \t\n")
         Assertions.assertEquals(1, tokens.size, "Should have one whitespace token")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[0].first) // Changed here
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[0].first)
         Assertions.assertEquals(tokens[0].second, "  \t\n")
     }
 
@@ -52,7 +52,7 @@ class PicatLexerTest {
         Assertions.assertEquals(3, tokens.size, "Should have 3 tokens (2 identifiers and 1 whitespace)")
         Assertions.assertEquals(PicatTokenTypes.IDENTIFIER, tokens[0].first)
         Assertions.assertEquals(tokens[0].second, "factorial")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[1].first) // Changed here
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[1].first)
         Assertions.assertEquals(tokens[1].second, " ")
         Assertions.assertEquals(PicatTokenTypes.IDENTIFIER, tokens[2].first)
         Assertions.assertEquals(tokens[2].second, "fibonacci")
@@ -64,11 +64,11 @@ class PicatLexerTest {
         Assertions.assertEquals(5, tokens.size, "Should have 5 tokens (3 variables and 2 whitespaces)")
         Assertions.assertEquals(PicatTokenTypes.VARIABLE, tokens[0].first)
         Assertions.assertEquals(tokens[0].second, "X")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[1].first) // Changed here
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[1].first)
         Assertions.assertEquals(tokens[1].second, " ")
         Assertions.assertEquals(PicatTokenTypes.VARIABLE, tokens[2].first)
         Assertions.assertEquals(tokens[2].second, "Y")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[3].first) // Changed here
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[3].first)
         Assertions.assertEquals(tokens[3].second, " ")
         Assertions.assertEquals(PicatTokenTypes.VARIABLE, tokens[4].first)
         Assertions.assertEquals(tokens[4].second, "_var")
@@ -80,19 +80,19 @@ class PicatLexerTest {
         Assertions.assertEquals(9, tokens.size, "Should have 9 tokens (5 keywords and 4 whitespaces)")
         Assertions.assertEquals(PicatTokenTypes.IMPORT_KEYWORD, tokens[0].first)
         Assertions.assertEquals(tokens[0].second, "import")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[1].first) // Changed here
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[1].first)
         Assertions.assertEquals(tokens[1].second, " ")
         Assertions.assertEquals(PicatTokenTypes.MODULE_KEYWORD, tokens[2].first)
         Assertions.assertEquals(tokens[2].second, "module")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[3].first) // Changed here
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[3].first)
         Assertions.assertEquals(tokens[3].second, " ")
         Assertions.assertEquals(PicatTokenTypes.IF_KEYWORD, tokens[4].first)
         Assertions.assertEquals(tokens[4].second, "if")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[5].first) // Changed here
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[5].first)
         Assertions.assertEquals(tokens[5].second, " ")
         Assertions.assertEquals(PicatTokenTypes.THEN_KEYWORD, tokens[6].first)
         Assertions.assertEquals(tokens[6].second, "then")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[7].first) // Changed here
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[7].first)
         Assertions.assertEquals(tokens[7].second, " ")
         Assertions.assertEquals(PicatTokenTypes.ELSE_KEYWORD, tokens[8].first)
         Assertions.assertEquals(tokens[8].second, "else")
@@ -104,7 +104,7 @@ class PicatLexerTest {
         Assertions.assertEquals(9, tokens.size, "Should have 9 tokens (5 numbers and 4 whitespaces)")
         Assertions.assertEquals(PicatTokenTypes.INTEGER, tokens[0].first)
         Assertions.assertEquals(tokens[0].second, "123")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[1].first) // Changed here
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[1].first)
         Assertions.assertEquals(tokens[1].second, " ")
         Assertions.assertEquals(PicatTokenTypes.FLOAT, tokens[2].first)
         Assertions.assertEquals(tokens[2].second, "3.14")
@@ -116,19 +116,19 @@ class PicatLexerTest {
         Assertions.assertEquals(9, tokens.size, "Should have 9 tokens (5 operators and 4 whitespaces)")
         Assertions.assertEquals(PicatTokenTypes.PLUS, tokens[0].first)
         Assertions.assertEquals(tokens[0].second, "+")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[1].first) // Changed here
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[1].first)
         Assertions.assertEquals(tokens[1].second, " ")
         Assertions.assertEquals(PicatTokenTypes.MINUS, tokens[2].first)
         Assertions.assertEquals(tokens[2].second, "-")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[3].first) // Changed here
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[3].first)
         Assertions.assertEquals(tokens[3].second, " ")
         Assertions.assertEquals(PicatTokenTypes.MULTIPLY, tokens[4].first)
         Assertions.assertEquals(tokens[4].second, "*")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[5].first) // Changed here
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[5].first)
         Assertions.assertEquals(tokens[5].second, " ")
         Assertions.assertEquals(PicatTokenTypes.DIVIDE, tokens[6].first)
         Assertions.assertEquals(tokens[6].second, "/")
-        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[7].first) // Changed here
+        Assertions.assertEquals(TokenType.WHITE_SPACE, tokens[7].first)
         Assertions.assertEquals(tokens[7].second, " ")
         Assertions.assertEquals(PicatTokenTypes.ASSIGN_OP, tokens[8].first)
         Assertions.assertEquals(tokens[8].second, "=")
@@ -309,4 +309,44 @@ class PicatLexerTest {
         Assertions.assertFalse(types.contains(PicatTokenTypes.GREATER), "Should NOT contain GREATER token")
     }
 
+    @Test
+    fun testQualifiedAtom() {
+        // Test module-qualified function call like bp.b_INSERT_STATE_LIST_ccf
+        val tokens = tokenize("bp.foo")
+        val types = tokens.map { it.first }
+        val texts = tokens.map { it.second }
+        Assertions.assertEquals(
+            listOf(PicatTokenTypes.QUALIFIED_ATOM),
+            types,
+            "bp.foo should be tokenized as a single QUALIFIED_ATOM. Got: $types / $texts"
+        )
+        Assertions.assertEquals("bp.foo", tokens[0].second)
+    }
+
+    @Test
+    fun testDotIdentifier() {
+        // Test method-style access like X.length
+        val tokens = tokenize("X.length")
+        val types = tokens.map { it.first }
+        val texts = tokens.map { it.second }
+        Assertions.assertEquals(
+            listOf(PicatTokenTypes.VARIABLE, PicatTokenTypes.DOT_IDENTIFIER),
+            types,
+            "X.length should be VARIABLE + DOT_IDENTIFIER. Got: $types / $texts"
+        )
+    }
+
+    @Test
+    fun testQualifiedAtomWithUnderscores() {
+        // Test qualified atom with underscores like bp.b_INSERT_STATE_LIST_ccf
+        val tokens = tokenize("bp.b_INSERT_STATE_LIST_ccf")
+        val types = tokens.map { it.first }
+        val texts = tokens.map { it.second }
+        Assertions.assertEquals(
+            listOf(PicatTokenTypes.QUALIFIED_ATOM),
+            types,
+            "bp.b_INSERT_STATE_LIST_ccf should be tokenized as QUALIFIED_ATOM. Got: $types / $texts"
+        )
+        Assertions.assertEquals("bp.b_INSERT_STATE_LIST_ccf", tokens[0].second)
+    }
 }
