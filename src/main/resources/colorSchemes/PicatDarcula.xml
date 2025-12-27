@@ -27,6 +27,12 @@
       <option name="FONT_TYPE" value="1"/>
     </value>
   </option>
+  <option name="PICAT_CONSTRAINT_OPERATOR">
+    <value>
+      <option name="FOREGROUND" value="C586C0"/>
+      <option name="FONT_TYPE" value="1"/>
+    </value>
+  </option>
   <option name="PICAT_PARENTHESES">
     <value>
       <option name="FOREGROUND" value="D4D4D4"/>

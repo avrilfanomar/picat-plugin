@@ -21,6 +21,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
         return FlexAdapter(_PicatLexer())
     }
 
+    @Suppress("CyclomaticComplexMethod")
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
         // Check for bad characters first
         if (isBadCharacter(tokenType)) {
@@ -34,12 +35,12 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             isComment(tokenType) -> pack(COMMENT)
             isString(tokenType) -> pack(STRING)
             isNumber(tokenType) -> pack(NUMBER)
+            isConstraintOperator(tokenType) -> pack(CONSTRAINT_OPERATOR) // Check before regular operators
             isOperator(tokenType) -> pack(OPERATOR)
             isParenthesis(tokenType) -> pack(PARENTHESES)
             isBrace(tokenType) -> pack(BRACES)
             isBracket(tokenType) -> pack(BRACKETS)
             isVariable(tokenType) -> pack(VARIABLE)
-            // isBasicModuleFunction(tokenType) -> pack(BASIC_MODULE_FUNCTION) // Removed for now
             isIdentifier(tokenType) -> pack(IDENTIFIER)
             else -> TextAttributesKey.EMPTY_ARRAY
         }
@@ -65,6 +66,9 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
         tokenType == PicatTokenTypes.INTEGER ||
                 tokenType == PicatTokenTypes.FLOAT
 
+
+    private fun isConstraintOperator(tokenType: IElementType): Boolean =
+        tokenType in CONSTRAINT_OPERATORS_SET
 
     private fun isOperator(tokenType: IElementType): Boolean =
         tokenType in OPERATORS_SET
@@ -118,6 +122,13 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
         val BAD_CHARACTER_ATTR =
             TextAttributesKey.createTextAttributesKey("PICAT_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER)
 
+        /** Text attributes for Picat constraint operators (CLP/FD). */
+        val CONSTRAINT_OPERATOR =
+            TextAttributesKey.createTextAttributesKey(
+                "PICAT_CONSTRAINT_OPERATOR",
+                DefaultLanguageHighlighterColors.KEYWORD
+            )
+
         /** Token set containing all Picat keywords. */
         val KEYWORDS_SET: TokenSet = TokenSet.create(
             PicatTokenTypes.MODULE_KEYWORD,
@@ -152,7 +163,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.FALSE
         )
 
-        /** Token set containing all Picat operators. */
+        /** Token set containing all Picat operators (excluding constraint operators). */
         val OPERATORS_SET: TokenSet = TokenSet.create(
             PicatTokenTypes.ARROW_OP,
             PicatTokenTypes.ASSIGN_OP,
@@ -167,10 +178,6 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.EQUAL,
             PicatTokenTypes.GREATER,
             PicatTokenTypes.GREATER_EQUAL,
-            PicatTokenTypes.HASH_AND_OP,
-            PicatTokenTypes.HASH_ARROW_OP,
-            PicatTokenTypes.HASH_BICONDITIONAL_OP,
-            PicatTokenTypes.HASH_OR_OP,
             PicatTokenTypes.IDENTICAL,
             PicatTokenTypes.INT_DIVIDE,
             PicatTokenTypes.LESS,
@@ -191,6 +198,29 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.UNIV_OP,
             PicatTokenTypes.BACKSLASH_PLUS
             // Note: LPAR, RPAR, LBRACE, RBRACE, LBRACKET, RBRACKET are handled separately
+            // Note: Constraint operators are in CONSTRAINT_OPERATORS_SET
+        )
+
+        /** Token set containing Picat constraint operators (CLP/FD). */
+        val CONSTRAINT_OPERATORS_SET: TokenSet = TokenSet.create(
+            // Arithmetic constraint operators
+            PicatTokenTypes.HASH_EQUAL_OP,           // #=
+            PicatTokenTypes.HASH_NOT_EQUAL_OP,       // #!=
+            PicatTokenTypes.HASH_LESS_OP,            // #<
+            PicatTokenTypes.HASH_GREATER_OP,         // #>
+            PicatTokenTypes.HASH_LESS_EQUAL_OP,      // #=<
+            PicatTokenTypes.HASH_LESS_EQUAL_ALT_OP,  // #<=
+            PicatTokenTypes.HASH_GREATER_EQUAL_OP,   // #>=
+            // Boolean constraint operators
+            PicatTokenTypes.HASH_NOT_OP,             // #~
+            PicatTokenTypes.HASH_AND_OP,             // #/\
+            PicatTokenTypes.HASH_XOR_OP,             // #^
+            PicatTokenTypes.HASH_OR_OP,              // #\/
+            PicatTokenTypes.HASH_ARROW_OP,           // #=>
+            PicatTokenTypes.HASH_BICONDITIONAL_OP,   // #<=>
+            // Domain constraint operators
+            PicatTokenTypes.DOUBLE_COLON_OP,         // ::
+            PicatTokenTypes.NOT_IN_KEYWORD           // notin
         )
     }
 }

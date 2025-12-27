@@ -19,6 +19,7 @@ class PicatColorSettingsPage : ColorSettingsPage {
         AttributesDescriptor("String", PicatSyntaxHighlighter.STRING),
         AttributesDescriptor("Number", PicatSyntaxHighlighter.NUMBER),
         AttributesDescriptor("Operator", PicatSyntaxHighlighter.OPERATOR),
+        AttributesDescriptor("Constraint Operator", PicatSyntaxHighlighter.CONSTRAINT_OPERATOR),
         AttributesDescriptor("Parentheses", PicatSyntaxHighlighter.PARENTHESES),
         AttributesDescriptor("Braces", PicatSyntaxHighlighter.BRACES),
         AttributesDescriptor("Brackets", PicatSyntaxHighlighter.BRACKETS),
@@ -44,8 +45,9 @@ class PicatColorSettingsPage : ColorSettingsPage {
         % This is a sample Picat program
 
         import util.
+        import cp.
 
-        main => 
+        main =>
             println("Hello, world!"),
             X = 42,
             Y = X + 10,
@@ -70,6 +72,25 @@ class PicatColorSettingsPage : ColorSettingsPage {
         fibonacci(0) = 0.
         fibonacci(1) = 1.
         fibonacci(N) = fibonacci(N-1) + fibonacci(N-2) => N > 1.
+
+        % Constraint programming example (N-Queens)
+        queens(N, Q) =>
+            Q = new_list(N),
+            Q :: 1..N,
+            all_different(Q),
+            foreach(I in 1..N, J in I+1..N)
+                Q[I] #!= Q[J],
+                Q[I] + I #!= Q[J] + J,
+                Q[I] - I #!= Q[J] - J
+            end,
+            solve([ff], Q).
+
+        % Boolean constraints example
+        example_bool(X, Y, B) =>
+            X :: 0..10,
+            Y :: 0..10,
+            X #< Y #/\ Y #< 5 #<=> B,
+            X #>= 2 #=> Y #=< 8.
     """.trimIndent()
 
     override fun getAdditionalHighlightingTagToDescriptorMap(): MutableMap<String, TextAttributesKey>? = null
