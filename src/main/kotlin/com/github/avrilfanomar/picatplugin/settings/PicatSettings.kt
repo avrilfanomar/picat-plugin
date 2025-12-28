@@ -43,7 +43,30 @@ class PicatSettings : PersistentStateComponent<PicatSettings>, ModificationTrack
             }
         }
 
+    /**
+     * Picat module search paths (PICATPATH).
+     * Colon-separated on Unix, semicolon-separated on Windows.
+     */
+    var picatPath: String = ""
+        set(value) {
+            if (field != value) {
+                field = value
+                modificationCount++
+            }
+        }
+
     override fun getModificationCount(): Long = modificationCount
+
+    /**
+     * Returns PICATPATH directories as a list of paths.
+     * Handles both Unix (:) and Windows (;) path separators.
+     */
+    fun getPicatPathDirectories(): List<String> {
+        if (picatPath.isBlank()) return emptyList()
+        return picatPath.split(java.io.File.pathSeparatorChar)
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+    }
 
     override fun getState(): PicatSettings = this
 

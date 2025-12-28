@@ -5,9 +5,7 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.RawCommandLineEditor
-import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
-import java.io.File
 import javax.swing.JComponent
 
 /**
@@ -18,7 +16,6 @@ class PicatRunConfigurationEditor(project: Project) : SettingsEditor<PicatRunCon
     private val picatFilePathField = TextFieldWithBrowseButton()
     private val programParametersField = RawCommandLineEditor()
     private val workingDirectoryField = TextFieldWithBrowseButton()
-    private val picatPathField = JBTextField()
 
     init {
         picatFilePathField.addBrowseFolderListener(
@@ -40,26 +37,19 @@ class PicatRunConfigurationEditor(project: Project) : SettingsEditor<PicatRunCon
         picatFilePathField.text = configuration.picatFilePath
         programParametersField.text = configuration.programParameters
         workingDirectoryField.text = configuration.workingDirectory
-        picatPathField.text = configuration.picatPath
     }
 
     override fun applyEditorTo(configuration: PicatRunConfiguration) {
         configuration.picatFilePath = picatFilePathField.text
         configuration.programParameters = programParametersField.text
         configuration.workingDirectory = workingDirectoryField.text
-        configuration.picatPath = picatPathField.text
     }
 
     override fun createEditor(): JComponent {
-        val pathSeparatorHint = if (File.pathSeparatorChar == ':') "colon" else "semicolon"
-        val panel = FormBuilder.createFormBuilder()
+        return FormBuilder.createFormBuilder()
             .addLabeledComponent("Picat file:", picatFilePathField)
             .addLabeledComponent("Program parameters:", programParametersField)
             .addLabeledComponent("Working directory:", workingDirectoryField)
-            .addLabeledComponent("Module paths (PICATPATH):", picatPathField)
-            .addTooltip("Directories where Picat looks for modules. Separate paths with $pathSeparatorHint. " +
-                    "Paths can be relative to working dir or absolute.")
             .panel
-        return panel
     }
 }

@@ -8,6 +8,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
+import java.io.File
 
 /**
  * Settings UI for configuring the Picat plugin.
@@ -37,6 +38,15 @@ class PicatSettingsConfigurable(private val project: Project) :
                 )
                 .resizableColumn()
         }
+        row("Module paths (PICATPATH):") {
+            textField()
+                .bindText(
+                    { settings.picatPath },
+                    { settings.picatPath = it }
+                )
+                .resizableColumn()
+                .comment(buildPicatPathComment())
+        }
         row {
             checkBox("Enable basic code annotations (unresolved references, style hints)")
                 .bindSelected(
@@ -44,6 +54,11 @@ class PicatSettingsConfigurable(private val project: Project) :
                     { settings.enableAnnotations = it }
                 )
         }
+    }
+
+    private fun buildPicatPathComment(): String {
+        val separator = if (File.pathSeparatorChar == ':') "colon" else "semicolon"
+        return "Directories where Picat looks for modules. Separate paths with $separator."
     }
 
     override fun getDisplayName(): String = PicatLanguage.LANGUAGE_ID

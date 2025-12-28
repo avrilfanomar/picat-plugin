@@ -36,8 +36,6 @@ class PicatRunConfiguration(
     var programParameters: String = ""
     /** Working directory for the Picat program execution. */
     var workingDirectory: String = project.basePath ?: ""
-    /** Picat module search paths (PICATPATH). Colon-separated on Unix, semicolon-separated on Windows. */
-    var picatPath: String = ""
 
     override fun getOptions(): PicatRunConfigurationOptions {
         return super.getOptions() as PicatRunConfigurationOptions
@@ -79,9 +77,9 @@ class PicatRunConfiguration(
                     .withParameters(picatFilePath)
                     .withWorkDirectory(workingDirectory)
 
-                // Set PICATPATH environment variable if module paths are specified
-                if (picatPath.isNotBlank()) {
-                    commandLine.withEnvironment("PICATPATH", picatPath)
+                // Set PICATPATH environment variable from project settings
+                if (settings.picatPath.isNotBlank()) {
+                    commandLine.withEnvironment("PICATPATH", settings.picatPath)
                 }
 
                 // Add additional program parameters if specified
@@ -101,7 +99,6 @@ class PicatRunConfiguration(
         JDOMExternalizerUtil.writeField(element, "PICAT_FILE_PATH", picatFilePath)
         JDOMExternalizerUtil.writeField(element, "PROGRAM_PARAMETERS", programParameters)
         JDOMExternalizerUtil.writeField(element, "WORKING_DIRECTORY", workingDirectory)
-        JDOMExternalizerUtil.writeField(element, "PICAT_PATH", picatPath)
     }
 
     override fun readExternal(element: Element) {
@@ -109,7 +106,6 @@ class PicatRunConfiguration(
         picatFilePath = JDOMExternalizerUtil.readField(element, "PICAT_FILE_PATH", "")
         programParameters = JDOMExternalizerUtil.readField(element, "PROGRAM_PARAMETERS", "")
         workingDirectory = JDOMExternalizerUtil.readField(element, "WORKING_DIRECTORY", project.basePath ?: "")
-        picatPath = JDOMExternalizerUtil.readField(element, "PICAT_PATH", "")
     }
 }
 

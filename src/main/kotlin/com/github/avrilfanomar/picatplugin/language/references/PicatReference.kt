@@ -11,12 +11,14 @@ import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCallNoDotSi
 import com.github.avrilfanomar.picatplugin.language.psi.PicatFunctionCallSimple
 import com.github.avrilfanomar.picatplugin.language.psi.PicatHead
 import com.github.avrilfanomar.picatplugin.language.psi.PicatImportItem
+import com.github.avrilfanomar.picatplugin.settings.PicatSettings
 import com.github.avrilfanomar.picatplugin.stdlib.PicatStdlibUtil
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.PsiFile
@@ -248,7 +250,43 @@ private object HeadCollector {
 
     private fun findModulePsiFile(project: Project, moduleName: String): PsiFile? =
         PicatStdlibUtil.findStdlibModulePsiFile(project, moduleName)
+            ?: findModuleInPicatPath(project, moduleName)
             ?: findModuleInProjectRoots(project, moduleName)
+
+    private fun findModuleInPicatPath(project: Project, moduleName: String): PsiFile? {
+        val settings = PicatSettings.getInstance(project)
+        val picatPathDirs = settings.getPicatPathDirectories()
+        if (picatPathDirs.isEmpty()) return null
+
+        val psiManager = PsiManager.getInstance(project)
+        val fileName = "$moduleName.pi"
+        val vfm = VirtualFileManager.getInstance()
+
+        return picatPathDirs
+            .firstNotNullOfOrNull { dirPath ->
+                findDirectoryByPath(vfm, dirPath)?.let { dir ->
+                    findModuleFile(dir, fileName)?.let { vf ->
+                        psiManager.findFile(vf)?.takeIf { it.isValid }
+                    }
+                }
+            }
+    }
+
+    /**
+     * Finds a directory VirtualFile by path, trying multiple VFS schemes.
+     * Supports both real file system paths and temp:// paths used in tests.
+     */
+    private fun findDirectoryByPath(vfm: VirtualFileManager, path: String): VirtualFile? {
+        if (path.contains("://")) {
+            return vfm.findFileByUrl(path)?.takeIf { it.isDirectory }
+        }
+        // Try file:// then temp:// URL forms (temp:// is used in tests)
+        return (
+            vfm.findFileByUrl("file://$path")
+                ?: vfm.findFileByUrl("temp://$path")
+                ?: vfm.findFileByUrl("temp:///" + path.trimStart('/'))
+            )?.takeIf { it.isDirectory }
+    }
 
     private fun findModuleInProjectRoots(project: Project, moduleName: String): PsiFile? {
         val psiManager = PsiManager.getInstance(project)
