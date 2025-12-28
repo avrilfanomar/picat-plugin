@@ -261,10 +261,11 @@ private object HeadCollector {
         val psiManager = PsiManager.getInstance(project)
         val fileName = "$moduleName.pi"
         val vfm = VirtualFileManager.getInstance()
+        val contentRoots = ProjectRootManager.getInstance(project).contentRoots.toList()
 
         return picatPathDirs
             .firstNotNullOfOrNull { dirPath ->
-                findDirectoryByPath(vfm, dirPath)?.let { dir ->
+                findDirectoryByPath(vfm, dirPath, contentRoots)?.let { dir ->
                     findModuleFile(dir, fileName)?.let { vf ->
                         psiManager.findFile(vf)?.takeIf { it.isValid }
                     }
@@ -274,18 +275,30 @@ private object HeadCollector {
 
     /**
      * Finds a directory VirtualFile by path, trying multiple VFS schemes.
-     * Supports both real file system paths and temp:// paths used in tests.
+     * Supports absolute paths, relative paths (resolved against content roots),
+     * and temp:// paths used in tests.
      */
-    private fun findDirectoryByPath(vfm: VirtualFileManager, path: String): VirtualFile? {
+    private fun findDirectoryByPath(
+        vfm: VirtualFileManager,
+        path: String,
+        contentRoots: List<VirtualFile>
+    ): VirtualFile? {
+        // Handle URL-style paths directly
         if (path.contains("://")) {
             return vfm.findFileByUrl(path)?.takeIf { it.isDirectory }
         }
-        // Try file:// then temp:// URL forms (temp:// is used in tests)
+
+        // Try file:// then temp:// URL forms (temp:// is used in tests), then relative path
         return (
-            vfm.findFileByUrl("file://$path")
-                ?: vfm.findFileByUrl("temp://$path")
-                ?: vfm.findFileByUrl("temp:///" + path.trimStart('/'))
-            )?.takeIf { it.isDirectory }
+                vfm.findFileByUrl("file://$path")
+                    ?: vfm.findFileByUrl("temp://$path")
+                    ?: vfm.findFileByUrl("temp:///" + path.trimStart('/'))
+                )?.takeIf { it.isDirectory }
+            ?:
+            // Handle relative path - resolve against content roots
+            contentRoots.firstNotNullOfOrNull { root ->
+                root.findFileByRelativePath(path)?.takeIf { it.isDirectory }
+            }
     }
 
     private fun findModuleInProjectRoots(project: Project, moduleName: String): PsiFile? {

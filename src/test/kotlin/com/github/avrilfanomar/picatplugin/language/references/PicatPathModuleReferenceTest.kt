@@ -322,4 +322,98 @@ class PicatPathModuleReferenceTest : BasePlatformTestCase() {
             path.contains("fallback.pi")
         )
     }
+
+    @Test
+    fun testResolveFromRelativePicatPath() {
+        // Create a module in a subdirectory (relative to project root)
+        myFixture.tempDirFixture.createFile(
+            "modules/relmod.pi",
+            """
+                module relmod.
+
+                relative_func(X).
+            """.trimIndent()
+        )
+
+        val settings = PicatSettings.getInstance(project)
+        settings.picatExecutablePath = ""
+        // Use relative path instead of absolute path
+        settings.picatPath = "modules"
+
+        val file = myFixture.configureByText(
+            "use_relative.pi",
+            """
+            import relmod.
+            module use_relative.
+
+            run() => relative_func(42).
+            """.trimIndent()
+        )
+
+        val ref = file.findReferenceAt(file.text.indexOf("relative_func(42)"))
+            ?: error("No reference at relative_func(42)")
+        val resolved = ref.resolve() ?: error("relative_func/1 did not resolve from relative PICATPATH")
+        val path = resolved.containingFile?.virtualFile?.path ?: ""
+        assertTrue(
+            "Expected resolution to modules/relmod.pi but got: $path",
+            path.contains("modules") && path.contains("relmod.pi")
+        )
+    }
+
+    @Test
+    fun testMixedAbsoluteAndRelativePicatPaths() {
+        // Create modules in two directories - one for absolute path, one for relative
+        val absModule = myFixture.tempDirFixture.createFile(
+            "absolute-dir/absmod.pi",
+            """
+                module absmod.
+
+                abs_func(X).
+            """.trimIndent()
+        )
+        myFixture.tempDirFixture.createFile(
+            "relative-dir/relmod.pi",
+            """
+                module relmod.
+
+                rel_func(X).
+            """.trimIndent()
+        )
+
+        val settings = PicatSettings.getInstance(project)
+        settings.picatExecutablePath = ""
+        // Mix absolute and relative paths
+        val absolutePath = absModule.parent.path
+        settings.picatPath = "$absolutePath${java.io.File.pathSeparatorChar}relative-dir"
+
+        val file = myFixture.configureByText(
+            "mixed_paths.pi",
+            """
+            import absmod.
+            import relmod.
+            module mixed_paths.
+
+            test1() => abs_func(1).
+            test2() => rel_func(2).
+            """.trimIndent()
+        )
+
+        // Verify abs_func resolves (from absolute path)
+        val refAbs = file.findReferenceAt(file.text.indexOf("abs_func(1)"))
+            ?: error("No reference at abs_func(1)")
+        val resolvedAbs = refAbs.resolve() ?: error("abs_func/1 did not resolve")
+        assertTrue(
+            "abs_func should resolve to absmod.pi",
+            resolvedAbs.containingFile?.virtualFile?.path?.contains("absmod.pi") == true
+        )
+
+        // Verify rel_func resolves (from relative path)
+        val refRel = file.findReferenceAt(file.text.indexOf("rel_func(2)"))
+            ?: error("No reference at rel_func(2)")
+        val resolvedRel = refRel.resolve() ?: error("rel_func/1 did not resolve")
+        assertTrue(
+            "rel_func should resolve to relmod.pi",
+            resolvedRel.containingFile?.virtualFile?.path?.contains("relmod.pi") == true
+        )
+    }
 }

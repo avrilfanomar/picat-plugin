@@ -5,8 +5,8 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.BoundSearchableConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import java.io.File
 
@@ -58,7 +58,8 @@ class PicatSettingsConfigurable(private val project: Project) :
 
     private fun buildPicatPathComment(): String {
         val separator = if (File.pathSeparatorChar == ':') "colon" else "semicolon"
-        return "Directories where Picat looks for modules. Separate paths with $separator."
+        return "Directories where Picat looks for modules. " +
+            "Separate paths with $separator. ('${File.pathSeparatorChar}')"
     }
 
     override fun getDisplayName(): String = PicatLanguage.LANGUAGE_ID
