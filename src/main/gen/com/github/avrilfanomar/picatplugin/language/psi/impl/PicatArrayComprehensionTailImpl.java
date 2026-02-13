@@ -11,14 +11,14 @@ import static com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.avrilfanomar.picatplugin.language.psi.*;
 
-public class PicatArrayExprImpl extends ASTWrapperPsiElement implements PicatArrayExpr {
+public class PicatArrayComprehensionTailImpl extends ASTWrapperPsiElement implements PicatArrayComprehensionTail {
 
-  public PicatArrayExprImpl(@NotNull ASTNode node) {
+  public PicatArrayComprehensionTailImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PicatVisitor visitor) {
-    visitor.visitArrayExpr(this);
+    visitor.visitArrayComprehensionTail(this);
   }
 
   @Override
@@ -29,20 +29,20 @@ public class PicatArrayExprImpl extends ASTWrapperPsiElement implements PicatArr
 
   @Override
   @Nullable
-  public PicatArrayExprComprehension getArrayExprComprehension() {
-    return findChildByClass(PicatArrayExprComprehension.class);
+  public PicatArrayComprehensionTail getArrayComprehensionTail() {
+    return findChildByClass(PicatArrayComprehensionTail.class);
   }
 
   @Override
   @Nullable
-  public PicatArrayExprEmpty getArrayExprEmpty() {
-    return findChildByClass(PicatArrayExprEmpty.class);
+  public PicatCondition getCondition() {
+    return findChildByClass(PicatCondition.class);
   }
 
   @Override
   @Nullable
-  public PicatArrayExprStandard getArrayExprStandard() {
-    return findChildByClass(PicatArrayExprStandard.class);
+  public PicatIterator getIterator() {
+    return findChildByClass(PicatIterator.class);
   }
 
 }

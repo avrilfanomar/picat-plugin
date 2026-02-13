@@ -390,7 +390,15 @@ list_comprehension_tail ::= COMMA (iterator | condition) list_comprehension_tail
 
 list_items_tail ::= COMMA argument list_items_tail? {pin=1 recoverWhile=list_items_recover}
 
-array_expr ::= LBRACE [argument array_items_tail?] RBRACE
+array_expr ::= array_expr_comprehension | array_expr_standard | array_expr_empty
+
+array_expr_comprehension ::= LBRACE argument COLON iterator array_comprehension_tail? RBRACE
+
+array_expr_standard ::= LBRACE argument !COLON array_items_tail? RBRACE
+
+array_expr_empty ::= LBRACE RBRACE
+
+array_comprehension_tail ::= COMMA (iterator | condition) array_comprehension_tail? {pin=1 recoverWhile=array_comp_recover}
 
 array_items_tail ::= COMMA argument array_items_tail? {pin=1 recoverWhile=array_items_recover}
 
@@ -453,6 +461,7 @@ dollar_escaped_atom ::= DOLLAR IDENTIFIER
 // === Recovery predicates ===
 private list_items_recover ::= !(RBRACKET | PIPE)
 private array_items_recover ::= !RBRACE
+private array_comp_recover ::= !RBRACE
 private list_comp_recover ::= !(RBRACKET | PIPE)
 private args_recover ::= !RPAR
 private term_list_recover ::= !(RPAR | RBRACKET | PIPE)

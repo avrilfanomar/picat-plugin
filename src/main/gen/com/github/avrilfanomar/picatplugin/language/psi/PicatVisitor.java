@@ -32,7 +32,23 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitArrayComprehensionTail(@NotNull PicatArrayComprehensionTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitArrayExpr(@NotNull PicatArrayExpr o) {
+    visitPsiElement(o);
+  }
+
+  public void visitArrayExprComprehension(@NotNull PicatArrayExprComprehension o) {
+    visitPsiElement(o);
+  }
+
+  public void visitArrayExprEmpty(@NotNull PicatArrayExprEmpty o) {
+    visitPsiElement(o);
+  }
+
+  public void visitArrayExprStandard(@NotNull PicatArrayExprStandard o) {
     visitPsiElement(o);
   }
 

@@ -14,7 +14,11 @@ public interface PicatTokenTypes {
   IElementType AND_EXPR = new PicatElementType("AND_EXPR");
   IElementType ARGUMENT = new PicatElementType("ARGUMENT");
   IElementType ARGUMENT_LIST_TAIL = new PicatElementType("ARGUMENT_LIST_TAIL");
+  IElementType ARRAY_COMPREHENSION_TAIL = new PicatElementType("ARRAY_COMPREHENSION_TAIL");
   IElementType ARRAY_EXPR = new PicatElementType("ARRAY_EXPR");
+  IElementType ARRAY_EXPR_COMPREHENSION = new PicatElementType("ARRAY_EXPR_COMPREHENSION");
+  IElementType ARRAY_EXPR_EMPTY = new PicatElementType("ARRAY_EXPR_EMPTY");
+  IElementType ARRAY_EXPR_STANDARD = new PicatElementType("ARRAY_EXPR_STANDARD");
   IElementType ARRAY_ITEMS_TAIL = new PicatElementType("ARRAY_ITEMS_TAIL");
   IElementType AS_PATTERN = new PicatElementType("AS_PATTERN");
   IElementType ATOM = new PicatElementType("ATOM");
@@ -263,8 +267,20 @@ public interface PicatTokenTypes {
       else if (type == ARGUMENT_LIST_TAIL) {
         return new PicatArgumentListTailImpl(node);
       }
+      else if (type == ARRAY_COMPREHENSION_TAIL) {
+        return new PicatArrayComprehensionTailImpl(node);
+      }
       else if (type == ARRAY_EXPR) {
         return new PicatArrayExprImpl(node);
+      }
+      else if (type == ARRAY_EXPR_COMPREHENSION) {
+        return new PicatArrayExprComprehensionImpl(node);
+      }
+      else if (type == ARRAY_EXPR_EMPTY) {
+        return new PicatArrayExprEmptyImpl(node);
+      }
+      else if (type == ARRAY_EXPR_STANDARD) {
+        return new PicatArrayExprStandardImpl(node);
       }
       else if (type == ARRAY_ITEMS_TAIL) {
         return new PicatArrayItemsTailImpl(node);

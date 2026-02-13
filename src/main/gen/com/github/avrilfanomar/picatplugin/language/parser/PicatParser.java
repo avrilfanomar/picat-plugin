@@ -232,40 +232,125 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LBRACE [argument array_items_tail?] RBRACE
+  // !RBRACE
+  static boolean array_comp_recover(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_comp_recover")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !consumeToken(builder_, RBRACE);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // COMMA (iterator | condition) array_comprehension_tail?
+  public static boolean array_comprehension_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_comprehension_tail")) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, ARRAY_COMPREHENSION_TAIL, "<array comprehension tail>");
+    result_ = consumeToken(builder_, COMMA);
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, array_comprehension_tail_1(builder_, level_ + 1));
+    result_ = pinned_ && array_comprehension_tail_2(builder_, level_ + 1) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, PicatParser::array_comp_recover);
+    return result_ || pinned_;
+  }
+
+  // iterator | condition
+  private static boolean array_comprehension_tail_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_comprehension_tail_1")) return false;
+    boolean result_;
+    result_ = iterator(builder_, level_ + 1);
+    if (!result_) result_ = condition(builder_, level_ + 1);
+    return result_;
+  }
+
+  // array_comprehension_tail?
+  private static boolean array_comprehension_tail_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_comprehension_tail_2")) return false;
+    array_comprehension_tail(builder_, level_ + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // array_expr_comprehension | array_expr_standard | array_expr_empty
   public static boolean array_expr(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "array_expr")) return false;
     if (!nextTokenIs(builder_, LBRACE)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, LBRACE);
-    result_ = result_ && array_expr_1(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, RBRACE);
+    result_ = array_expr_comprehension(builder_, level_ + 1);
+    if (!result_) result_ = array_expr_standard(builder_, level_ + 1);
+    if (!result_) result_ = array_expr_empty(builder_, level_ + 1);
     exit_section_(builder_, marker_, ARRAY_EXPR, result_);
     return result_;
   }
 
-  // [argument array_items_tail?]
-  private static boolean array_expr_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "array_expr_1")) return false;
-    array_expr_1_0(builder_, level_ + 1);
+  /* ********************************************************** */
+  // LBRACE argument COLON iterator array_comprehension_tail? RBRACE
+  public static boolean array_expr_comprehension(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_expr_comprehension")) return false;
+    if (!nextTokenIs(builder_, LBRACE)) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, LBRACE);
+    result_ = result_ && argument(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, COLON);
+    result_ = result_ && iterator(builder_, level_ + 1);
+    result_ = result_ && array_expr_comprehension_4(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, RBRACE);
+    exit_section_(builder_, marker_, ARRAY_EXPR_COMPREHENSION, result_);
+    return result_;
+  }
+
+  // array_comprehension_tail?
+  private static boolean array_expr_comprehension_4(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_expr_comprehension_4")) return false;
+    array_comprehension_tail(builder_, level_ + 1);
     return true;
   }
 
-  // argument array_items_tail?
-  private static boolean array_expr_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "array_expr_1_0")) return false;
+  /* ********************************************************** */
+  // LBRACE RBRACE
+  public static boolean array_expr_empty(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_expr_empty")) return false;
+    if (!nextTokenIs(builder_, LBRACE)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
-    result_ = argument(builder_, level_ + 1);
-    result_ = result_ && array_expr_1_0_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = consumeTokens(builder_, 0, LBRACE, RBRACE);
+    exit_section_(builder_, marker_, ARRAY_EXPR_EMPTY, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // LBRACE argument !COLON array_items_tail? RBRACE
+  public static boolean array_expr_standard(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_expr_standard")) return false;
+    if (!nextTokenIs(builder_, LBRACE)) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, LBRACE);
+    result_ = result_ && argument(builder_, level_ + 1);
+    result_ = result_ && array_expr_standard_2(builder_, level_ + 1);
+    result_ = result_ && array_expr_standard_3(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, RBRACE);
+    exit_section_(builder_, marker_, ARRAY_EXPR_STANDARD, result_);
+    return result_;
+  }
+
+  // !COLON
+  private static boolean array_expr_standard_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_expr_standard_2")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !consumeToken(builder_, COLON);
+    exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
   // array_items_tail?
-  private static boolean array_expr_1_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "array_expr_1_0_1")) return false;
+  private static boolean array_expr_standard_3(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "array_expr_standard_3")) return false;
     array_items_tail(builder_, level_ + 1);
     return true;
   }

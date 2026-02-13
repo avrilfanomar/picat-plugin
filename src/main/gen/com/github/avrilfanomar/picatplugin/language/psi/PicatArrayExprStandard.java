@@ -5,15 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PicatArrayExpr extends PsiElement {
+public interface PicatArrayExprStandard extends PsiElement {
+
+  @NotNull
+  PicatArgument getArgument();
 
   @Nullable
-  PicatArrayExprComprehension getArrayExprComprehension();
-
-  @Nullable
-  PicatArrayExprEmpty getArrayExprEmpty();
-
-  @Nullable
-  PicatArrayExprStandard getArrayExprStandard();
+  PicatArrayItemsTail getArrayItemsTail();
 
 }
