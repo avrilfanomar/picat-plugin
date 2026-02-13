@@ -88,6 +88,7 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "=:="                          { return NUMERICALLY_EQUAL; }
   "=\\="                         { return NUMERICALLY_NON_EQUAL; }
   "!=="                          { return NOT_IDENTICAL; }
+  "#/\\"                         { return HASH_AND_OP; }
   "#\\/"                         { return HASH_OR_OP; }
   "#^"                           { return HASH_XOR_OP; }
   "#\\"                          { return HASH_NOT_BACKSLASH_OP; }
@@ -151,7 +152,6 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "."                            { return DOT; }
   "true"                         { return TRUE; }
   "false"                        { return FALSE; }
-  "HASH_AND_OP"                  { return HASH_AND_OP; }
 
   {IDENTIFIER}                   { return IDENTIFIER; }
   {DOT_IDENTIFIER}               { return DOT_IDENTIFIER; }

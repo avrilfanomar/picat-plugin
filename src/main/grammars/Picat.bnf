@@ -64,7 +64,7 @@
     NUMERICALLY_EQUAL="=:="
     NUMERICALLY_NON_EQUAL="=\="
     NOT_IDENTICAL="!=="
-    HASH_AND_OP="#/\"
+    HASH_AND_OP='#/\'
     HASH_OR_OP="#\/"
     HASH_XOR_OP="#^"
     HASH_NOT_BACKSLASH_OP='#\'

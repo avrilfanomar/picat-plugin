@@ -173,7 +173,7 @@ public interface PicatTokenTypes {
   IElementType FOREACH_KEYWORD = new PicatTokenType("foreach");
   IElementType GREATER = new PicatTokenType(">");
   IElementType GREATER_EQUAL = new PicatTokenType(">=");
-  IElementType HASH_AND_OP = new PicatTokenType("HASH_AND_OP");
+  IElementType HASH_AND_OP = new PicatTokenType("#/\\");
   IElementType HASH_ARROW_OP = new PicatTokenType("#=>");
   IElementType HASH_BICONDITIONAL_OP = new PicatTokenType("#<=>");
   IElementType HASH_EQUAL_OP = new PicatTokenType("#=");
