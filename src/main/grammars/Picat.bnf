@@ -63,9 +63,10 @@
     NUMERICALLY_EQUAL="=:="
     NUMERICALLY_NON_EQUAL="=\="
     NOT_IDENTICAL="!=="
+    HASH_AND_OP="#/\"
     HASH_OR_OP="#\/"
     HASH_XOR_OP="#^"
-    HASH_AND_OP='#\'
+    HASH_NOT_BACKSLASH_OP='#\'
     IF_THEN_OP="->"
     ARROW_OP="=>"
     HASH_NOT_OP="#~"
@@ -241,7 +242,7 @@ exclusive_or ::= conjunction_and (HASH_XOR_OP conjunction_and)*
 
 conjunction_and ::= negated (HASH_AND_OP negated)*
 
-negated ::= HASH_NOT_OP negated | expression_with_relations
+negated ::= HASH_NOT_OP negated | HASH_NOT_BACKSLASH_OP negated | expression_with_relations
 
 // Control structures and annotated expressions
 enclosed_goal ::= if_then_else

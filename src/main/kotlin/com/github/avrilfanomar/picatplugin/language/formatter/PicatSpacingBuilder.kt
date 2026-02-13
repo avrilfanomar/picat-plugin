@@ -87,6 +87,7 @@ class PicatSpacingBuilder(settings: CodeStyleSettings) {
             PicatTokenTypes.HASH_OR_OP,
             PicatTokenTypes.HASH_XOR_OP,
             PicatTokenTypes.HASH_NOT_OP,
+            PicatTokenTypes.HASH_NOT_BACKSLASH_OP,
             PicatTokenTypes.HASH_EQUAL_OP,
             PicatTokenTypes.HASH_NOT_EQUAL_OP,
             PicatTokenTypes.HASH_GREATER_OP,

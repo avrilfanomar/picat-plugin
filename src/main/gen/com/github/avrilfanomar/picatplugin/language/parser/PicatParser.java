@@ -2658,12 +2658,13 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // HASH_NOT_OP negated | expression_with_relations
+  // HASH_NOT_OP negated | HASH_NOT_BACKSLASH_OP negated | expression_with_relations
   public static boolean negated(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "negated")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, NEGATED, "<negated>");
     result_ = negated_0(builder_, level_ + 1);
+    if (!result_) result_ = negated_1(builder_, level_ + 1);
     if (!result_) result_ = expression_with_relations(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
@@ -2675,6 +2676,17 @@ public class PicatParser implements PsiParser, LightPsiParser {
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, HASH_NOT_OP);
+    result_ = result_ && negated(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // HASH_NOT_BACKSLASH_OP negated
+  private static boolean negated_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "negated_1")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, HASH_NOT_BACKSLASH_OP);
     result_ = result_ && negated(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;

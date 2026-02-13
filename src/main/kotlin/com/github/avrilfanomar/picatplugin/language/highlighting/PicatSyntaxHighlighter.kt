@@ -216,6 +216,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.HASH_GREATER_EQUAL_OP,   // #>=
             // Boolean constraint operators
             PicatTokenTypes.HASH_NOT_OP,             // #~
+            PicatTokenTypes.HASH_NOT_BACKSLASH_OP,   // #\
             PicatTokenTypes.HASH_AND_OP,             // #/\
             PicatTokenTypes.HASH_XOR_OP,             // #^
             PicatTokenTypes.HASH_OR_OP,              // #\/

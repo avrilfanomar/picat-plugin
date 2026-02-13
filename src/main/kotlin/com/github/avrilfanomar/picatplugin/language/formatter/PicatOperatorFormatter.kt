@@ -53,7 +53,8 @@ internal class PicatOperatorFormatter(private val settings: PicatCodeStyleSettin
         "__HASH_OR_OP__",
         "__HASH_XOR_OP__",
         "__HASH_AND_OP__",
-        "__HASH_NOT_OP__"
+        "__HASH_NOT_OP__",
+        "__HASH_NOT_BACKSLASH_OP__"
     )
     val termOps = listOf(
         "__AT_LESS_EQUAL_PROLOG_OP__",
@@ -67,9 +68,10 @@ internal class PicatOperatorFormatter(private val settings: PicatCodeStyleSettin
         var result = code
         result = result.replace("#<=>", "__HASH_BICONDITIONAL_OP__")
         result = result.replace("#=>", "__HASH_ARROW_OP__")
+        result = result.replace("#/\\", "__HASH_AND_OP__")
         result = result.replace("#\\/", "__HASH_OR_OP__")
         result = result.replace("#^", "__HASH_XOR_OP__")
-        result = result.replace("#\\", "__HASH_AND_OP__")
+        result = result.replace("#\\", "__HASH_NOT_BACKSLASH_OP__")
         result = result.replace("#~", "__HASH_NOT_OP__")
         result = result.replace("#!=", "__HASH_NOT_EQUAL_OP__")
         result = result.replace("#>=", "__HASH_GE_OP__")
@@ -140,7 +142,8 @@ internal class PicatOperatorFormatter(private val settings: PicatCodeStyleSettin
         result = result.replace("__HASH_OP__", "#")
         result = result.replace("__HASH_OR_OP__", "#\\/")
         result = result.replace("__HASH_XOR_OP__", "#^")
-        result = result.replace("__HASH_AND_OP__", "#\\")
+        result = result.replace("__HASH_AND_OP__", "#/\\")
+        result = result.replace("__HASH_NOT_BACKSLASH_OP__", "#\\")
         result = result.replace("__HASH_NOT_OP__", "#~")
         result = result.replace("__DOUBLE_EQUAL_OP__", "==")
         result = result.replace("__NOT_EQUAL_OP__", "!=")
