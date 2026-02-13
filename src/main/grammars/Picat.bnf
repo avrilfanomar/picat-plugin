@@ -48,6 +48,7 @@
     IS_KEYWORD="is"
 
     // Operators
+    DCG_ARROW_OP="-->"
     SHIFT_RIGHT_TRIPLE=">>>"
     BACKTRACKABLE_ARROW_OP="?=>"
     BICONDITIONAL_OP="<=>"
@@ -170,9 +171,11 @@ include_declaration ::= INCLUDE_KEYWORD STRING (COMMA STRING)* DOT {pin=1}
 // === Predicate and Function Definitions ===
 predicate_definition ::= predicate_directive* predicate_clause
 
-predicate_clause ::= predicate_rule | predicate_fact
+predicate_clause ::= predicate_rule | dcg_rule | predicate_fact
 
 predicate_rule ::= head &(COMMA | ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) [COMMA condition] (ARROW_OP | BACKTRACKABLE_ARROW_OP | PROLOG_RULE_OP) body DOT {pin=4}
+
+dcg_rule ::= head DCG_ARROW_OP body DOT {pin=2}
 
 predicate_fact ::= head DOT {pin=2}
 
@@ -458,7 +461,7 @@ function_argument_list_tail ::= COMMA function_argument function_argument_list_t
 
 term_list_tail ::= COMMA term term_list_tail? {pin=1 recoverWhile=term_list_recover}
 
-atom ::= IDENTIFIER | QUALIFIED_ATOM | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | IS_KEYWORD | TRUE | FALSE {implements="com.github.avrilfanomar.picatplugin.language.references.PicatNameIdentifierOwner" mixin="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatAtomMixin" methods=["getName" "setName" "getNameIdentifier"]}
+atom ::= IDENTIFIER | QUALIFIED_ATOM | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | IS_KEYWORD | CARDINALITY_KEYWORD | TRUE | FALSE {implements="com.github.avrilfanomar.picatplugin.language.references.PicatNameIdentifierOwner" mixin="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatAtomMixin" methods=["getName" "setName" "getNameIdentifier"]}
 
 dollar_escaped_atom ::= DOLLAR IDENTIFIER
 

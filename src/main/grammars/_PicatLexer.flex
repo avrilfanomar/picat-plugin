@@ -72,6 +72,7 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "until"                        { return UNTIL_KEYWORD; }
   "once"                         { return ONCE_KEYWORD; }
   "is"                           { return IS_KEYWORD; }
+  "-->"                          { return DCG_ARROW_OP; }
   ">>>"                          { return SHIFT_RIGHT_TRIPLE; }
   "?=>"                          { return BACKTRACKABLE_ARROW_OP; }
   "<=>"                          { return BICONDITIONAL_OP; }

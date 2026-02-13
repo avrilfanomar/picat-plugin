@@ -112,6 +112,10 @@ public class PicatVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitDcgRule(@NotNull PicatDcgRule o) {
+    visitPsiElement(o);
+  }
+
   public void visitDisjunction(@NotNull PicatDisjunction o) {
     visitPsiElement(o);
   }

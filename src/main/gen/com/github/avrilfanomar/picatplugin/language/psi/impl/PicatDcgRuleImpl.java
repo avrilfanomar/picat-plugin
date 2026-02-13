@@ -11,14 +11,14 @@ import static com.github.avrilfanomar.picatplugin.language.psi.PicatTokenTypes.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.avrilfanomar.picatplugin.language.psi.*;
 
-public class PicatPredicateClauseImpl extends ASTWrapperPsiElement implements PicatPredicateClause {
+public class PicatDcgRuleImpl extends ASTWrapperPsiElement implements PicatDcgRule {
 
-  public PicatPredicateClauseImpl(@NotNull ASTNode node) {
+  public PicatDcgRuleImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PicatVisitor visitor) {
-    visitor.visitPredicateClause(this);
+    visitor.visitDcgRule(this);
   }
 
   @Override
@@ -29,20 +29,14 @@ public class PicatPredicateClauseImpl extends ASTWrapperPsiElement implements Pi
 
   @Override
   @Nullable
-  public PicatDcgRule getDcgRule() {
-    return findChildByClass(PicatDcgRule.class);
+  public PicatBody getBody() {
+    return findChildByClass(PicatBody.class);
   }
 
   @Override
-  @Nullable
-  public PicatPredicateFact getPredicateFact() {
-    return findChildByClass(PicatPredicateFact.class);
-  }
-
-  @Override
-  @Nullable
-  public PicatPredicateRule getPredicateRule() {
-    return findChildByClass(PicatPredicateRule.class);
+  @NotNull
+  public PicatHead getHead() {
+    return findNotNullChildByClass(PicatHead.class);
   }
 
 }

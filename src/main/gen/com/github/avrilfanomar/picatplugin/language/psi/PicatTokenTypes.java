@@ -34,6 +34,7 @@ public interface PicatTokenTypes {
   IElementType CONJUNCTION = new PicatElementType("CONJUNCTION");
   IElementType CONJUNCTION_AND = new PicatElementType("CONJUNCTION_AND");
   IElementType CONJUNCTION_TAIL = new PicatElementType("CONJUNCTION_TAIL");
+  IElementType DCG_RULE = new PicatElementType("DCG_RULE");
   IElementType DISJUNCTION = new PicatElementType("DISJUNCTION");
   IElementType DISJUNCTION_OR = new PicatElementType("DISJUNCTION_OR");
   IElementType DOLLAR_ESCAPED_ATOM = new PicatElementType("DOLLAR_ESCAPED_ATOM");
@@ -150,6 +151,7 @@ public interface PicatTokenTypes {
   IElementType COMMENT = new PicatTokenType("COMMENT");
   IElementType COMPLEMENT = new PicatTokenType("~");
   IElementType CONCAT_OP = new PicatTokenType("++");
+  IElementType DCG_ARROW_OP = new PicatTokenType("-->");
   IElementType DIVIDE = new PicatTokenType("/");
   IElementType DIV_KEYWORD = new PicatTokenType("div");
   IElementType DIV_LEFT = new PicatTokenType("/<");
@@ -330,6 +332,9 @@ public interface PicatTokenTypes {
       }
       else if (type == CONJUNCTION_TAIL) {
         return new PicatConjunctionTailImpl(node);
+      }
+      else if (type == DCG_RULE) {
+        return new PicatDcgRuleImpl(node);
       }
       else if (type == DISJUNCTION) {
         return new PicatDisjunctionImpl(node);

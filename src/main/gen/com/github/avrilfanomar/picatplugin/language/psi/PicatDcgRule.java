@@ -5,15 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PicatPredicateClause extends PsiElement {
+public interface PicatDcgRule extends PsiElement {
 
   @Nullable
-  PicatDcgRule getDcgRule();
+  PicatBody getBody();
 
-  @Nullable
-  PicatPredicateFact getPredicateFact();
-
-  @Nullable
-  PicatPredicateRule getPredicateRule();
+  @NotNull
+  PicatHead getHead();
 
 }

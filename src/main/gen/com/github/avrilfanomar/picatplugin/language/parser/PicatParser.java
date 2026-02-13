@@ -409,7 +409,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IDENTIFIER | QUALIFIED_ATOM | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | IS_KEYWORD | TRUE | FALSE
+  // IDENTIFIER | QUALIFIED_ATOM | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | IS_KEYWORD | CARDINALITY_KEYWORD | TRUE | FALSE
   public static boolean atom(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom")) return false;
     boolean result_;
@@ -430,6 +430,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, ONCE_KEYWORD);
     if (!result_) result_ = consumeToken(builder_, NOT_KEYWORD);
     if (!result_) result_ = consumeToken(builder_, IS_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, CARDINALITY_KEYWORD);
     if (!result_) result_ = consumeToken(builder_, TRUE);
     if (!result_) result_ = consumeToken(builder_, FALSE);
     exit_section_(builder_, level_, marker_, result_, false, null);
@@ -816,6 +817,21 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(builder_, level_, "conjunction_tail_3")) return false;
     conjunction_tail(builder_, level_ + 1);
     return true;
+  }
+
+  /* ********************************************************** */
+  // head DCG_ARROW_OP body DOT
+  public static boolean dcg_rule(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "dcg_rule")) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, DCG_RULE, "<dcg rule>");
+    result_ = head(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, DCG_ARROW_OP);
+    pinned_ = result_; // pin = 2
+    result_ = result_ && report_error_(builder_, body(builder_, level_ + 1));
+    result_ = pinned_ && consumeToken(builder_, DOT) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
   }
 
   /* ********************************************************** */
@@ -2890,12 +2906,13 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // predicate_rule | predicate_fact
+  // predicate_rule | dcg_rule | predicate_fact
   public static boolean predicate_clause(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "predicate_clause")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, PREDICATE_CLAUSE, "<predicate clause>");
     result_ = predicate_rule(builder_, level_ + 1);
+    if (!result_) result_ = dcg_rule(builder_, level_ + 1);
     if (!result_) result_ = predicate_fact(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;

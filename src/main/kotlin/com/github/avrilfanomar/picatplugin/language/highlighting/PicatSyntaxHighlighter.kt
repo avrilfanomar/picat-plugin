@@ -170,6 +170,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.ASSIGN_OP,
             PicatTokenTypes.AT,
             PicatTokenTypes.BACKTRACKABLE_ARROW_OP,
+            PicatTokenTypes.DCG_ARROW_OP,
             PicatTokenTypes.BICONDITIONAL_OP,
             PicatTokenTypes.COLON,
             PicatTokenTypes.COMMA,
