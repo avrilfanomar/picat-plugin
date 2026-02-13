@@ -197,6 +197,8 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.AND_AND,
             PicatTokenTypes.OR_OR,
             PicatTokenTypes.UNIV_OP,
+            PicatTokenTypes.NOT_UNIFIABLE_OP,
+            PicatTokenTypes.NOT_IDENTICAL_PROLOG_OP,
             PicatTokenTypes.BACKSLASH_PLUS
             // Note: LPAR, RPAR, LBRACE, RBRACE, LBRACKET, RBRACKET are handled separately
             // Note: Constraint operators are in CONSTRAINT_OPERATORS_SET

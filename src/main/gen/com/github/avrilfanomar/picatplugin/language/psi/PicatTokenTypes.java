@@ -212,8 +212,10 @@ public interface PicatTokenTypes {
   IElementType MULTIPLY = new PicatTokenType("*");
   IElementType NOT_EQUAL = new PicatTokenType("!=");
   IElementType NOT_IDENTICAL = new PicatTokenType("!==");
+  IElementType NOT_IDENTICAL_PROLOG_OP = new PicatTokenType("\\==");
   IElementType NOT_IN_KEYWORD = new PicatTokenType("notin");
   IElementType NOT_KEYWORD = new PicatTokenType("not");
+  IElementType NOT_UNIFIABLE_OP = new PicatTokenType("\\=");
   IElementType NT = new PicatTokenType("nt");
   IElementType NUMERICALLY_EQUAL = new PicatTokenType("=:=");
   IElementType NUMERICALLY_NON_EQUAL = new PicatTokenType("=\\=");

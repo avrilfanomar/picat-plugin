@@ -132,6 +132,8 @@ MULTILINE_COMMENT="/"[*]([^*]|[*][^/])*[*]"/"
   "&&"                           { return AND_AND; }
   "||"                           { return OR_OR; }
   "=.."                          { return UNIV_OP; }
+  "\\=="                         { return NOT_IDENTICAL_PROLOG_OP; }
+  "\\="                          { return NOT_UNIFIABLE_OP; }
   "\\\\+"                        { return BACKSLASH_PLUS; }
   ","                            { return COMMA; }
   ";"                            { return SEMICOLON; }

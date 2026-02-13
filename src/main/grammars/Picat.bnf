@@ -108,6 +108,8 @@
     AND_AND="&&"
     OR_OR="||"
     UNIV_OP="=.."
+    NOT_IDENTICAL_PROLOG_OP="\=="
+    NOT_UNIFIABLE_OP="\="
     BACKSLASH_PLUS="\\+"
 
     // Separators
@@ -312,6 +314,7 @@ bin_rel_op ::= EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_N
              | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | HASH_GREATER_OP | HASH_LESS_OP
              | AT_LESS_EQUAL_OP | AT_GREATER_EQUAL_OP
              | AT_GREATER_OP | AT_LESS_OP | AT_LESS_EQUAL_PROLOG_OP
+             | NOT_UNIFIABLE_OP | NOT_IDENTICAL_PROLOG_OP
 
 // === Arguments & Expressions ===
 argument ::= expression_with_relations
