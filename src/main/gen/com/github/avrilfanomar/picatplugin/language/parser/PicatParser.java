@@ -409,7 +409,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IDENTIFIER | QUALIFIED_ATOM | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | TRUE | FALSE
+  // IDENTIFIER | QUALIFIED_ATOM | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | IS_KEYWORD | TRUE | FALSE
   public static boolean atom(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom")) return false;
     boolean result_;
@@ -429,6 +429,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, REPEAT_KEYWORD);
     if (!result_) result_ = consumeToken(builder_, ONCE_KEYWORD);
     if (!result_) result_ = consumeToken(builder_, NOT_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, IS_KEYWORD);
     if (!result_) result_ = consumeToken(builder_, TRUE);
     if (!result_) result_ = consumeToken(builder_, FALSE);
     exit_section_(builder_, level_, marker_, result_, false, null);
@@ -555,7 +556,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_NON_EQUAL | IDENTICAL | NOT_IDENTICAL | UNIV_OP | DOUBLE_COLON_OP
   //              | GREATER | GREATER_EQUAL | LESS | LESS_EQUAL | LESS_EQUAL_PROLOG
-  //              | IN_KEYWORD | NOT_IN_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
+  //              | IN_KEYWORD | NOT_IN_KEYWORD | IS_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
   //              | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | HASH_GREATER_OP | HASH_LESS_OP
   //              | AT_LESS_EQUAL_OP | AT_GREATER_EQUAL_OP
   //              | AT_GREATER_OP | AT_LESS_OP | AT_LESS_EQUAL_PROLOG_OP
@@ -579,6 +580,7 @@ public class PicatParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, LESS_EQUAL_PROLOG);
     if (!result_) result_ = consumeToken(builder_, IN_KEYWORD);
     if (!result_) result_ = consumeToken(builder_, NOT_IN_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, IS_KEYWORD);
     if (!result_) result_ = consumeToken(builder_, HASH_LESS_EQUAL_ALT_OP);
     if (!result_) result_ = consumeToken(builder_, HASH_LESS_EQUAL_OP);
     if (!result_) result_ = consumeToken(builder_, HASH_GREATER_EQUAL_OP);

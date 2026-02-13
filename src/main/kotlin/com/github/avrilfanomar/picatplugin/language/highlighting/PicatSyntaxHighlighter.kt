@@ -159,6 +159,7 @@ class PicatSyntaxHighlighter : SyntaxHighlighterBase() {
             PicatTokenTypes.REPEAT_KEYWORD,
             PicatTokenTypes.UNTIL_KEYWORD,
             PicatTokenTypes.ONCE_KEYWORD,
+            PicatTokenTypes.IS_KEYWORD,
             PicatTokenTypes.TRUE,
             PicatTokenTypes.FALSE
         )

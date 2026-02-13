@@ -45,6 +45,7 @@
     REPEAT_KEYWORD="repeat"
     UNTIL_KEYWORD="until"
     ONCE_KEYWORD="once"
+    IS_KEYWORD="is"
 
     // Operators
     SHIFT_RIGHT_TRIPLE=">>>"
@@ -307,7 +308,7 @@ expression_with_relations ::= expression (bin_rel_op expression)*
 
 bin_rel_op ::= EQUAL | NOT_EQUAL | ASSIGN_OP | NUMERICALLY_EQUAL | NUMERICALLY_NON_EQUAL | IDENTICAL | NOT_IDENTICAL | UNIV_OP | DOUBLE_COLON_OP
              | GREATER | GREATER_EQUAL | LESS | LESS_EQUAL | LESS_EQUAL_PROLOG
-             | IN_KEYWORD | NOT_IN_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
+             | IN_KEYWORD | NOT_IN_KEYWORD | IS_KEYWORD | HASH_LESS_EQUAL_ALT_OP | HASH_LESS_EQUAL_OP | HASH_GREATER_EQUAL_OP
              | HASH_EQUAL_OP | HASH_NOT_EQUAL_OP | HASH_GREATER_OP | HASH_LESS_OP
              | AT_LESS_EQUAL_OP | AT_GREATER_EQUAL_OP
              | AT_GREATER_OP | AT_LESS_OP | AT_LESS_EQUAL_PROLOG_OP
@@ -453,7 +454,7 @@ function_argument_list_tail ::= COMMA function_argument function_argument_list_t
 
 term_list_tail ::= COMMA term term_list_tail? {pin=1 recoverWhile=term_list_recover}
 
-atom ::= IDENTIFIER | QUALIFIED_ATOM | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | TRUE | FALSE {implements="com.github.avrilfanomar.picatplugin.language.references.PicatNameIdentifierOwner" mixin="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatAtomMixin" methods=["getName" "setName" "getNameIdentifier"]}
+atom ::= IDENTIFIER | QUALIFIED_ATOM | SINGLE_QUOTED_ATOM | dollar_escaped_atom | MIN | MAX | CATCH_KEYWORD | THROW_KEYWORD | DIV_KEYWORD | MOD_KEYWORD | REM_KEYWORD | FAIL_KEYWORD | REPEAT_KEYWORD | ONCE_KEYWORD | NOT_KEYWORD | IS_KEYWORD | TRUE | FALSE {implements="com.github.avrilfanomar.picatplugin.language.references.PicatNameIdentifierOwner" mixin="com.github.avrilfanomar.picatplugin.language.psi.impl.PicatAtomMixin" methods=["getName" "setName" "getNameIdentifier"]}
 
 dollar_escaped_atom ::= DOLLAR IDENTIFIER
 

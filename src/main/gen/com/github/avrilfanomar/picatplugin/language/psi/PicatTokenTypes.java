@@ -194,6 +194,7 @@ public interface PicatTokenTypes {
   IElementType INTEGER = new PicatTokenType("INTEGER");
   IElementType INT_DIVIDE = new PicatTokenType("//");
   IElementType IN_KEYWORD = new PicatTokenType("in");
+  IElementType IS_KEYWORD = new PicatTokenType("is");
   IElementType LAMBDA_KEYWORD = new PicatTokenType("lambda");
   IElementType LBRACE = new PicatTokenType("{");
   IElementType LBRACKET = new PicatTokenType("[");
