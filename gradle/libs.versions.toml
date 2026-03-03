@@ -6,7 +6,7 @@ junit6 = "6.0.3"
 opentest4j = "1.3.0"
 
 # plugins
-grammar-kit = "2023.3.0.2"
+grammar-kit = "2023.3.0.3"
 intelliJPlatform = "2.11.0"
 kotlin = "2.3.10"
 kover = "0.9.7"
